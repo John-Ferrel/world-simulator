@@ -1424,7 +1424,7 @@ const places: Record<string, Place> = {
     name: 'Klosterneuburg und Umgebung',
     kind: 'other',
     settlementId: ID.places.klosterneuburg,
-    regionId: 'region-lower-austria',
+    regionId: 'region-klosterneuburg',
     polityId: 'polity-austria-hungary',
     offers: [],
   },

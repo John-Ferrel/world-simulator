@@ -1670,4 +1670,43 @@ describe('v4 annual engine', () => {
       ),
     ).toBeCloseTo(0.56, 5);
   });
+
+  it('gates a scene on a birth-contract capability rather than only a weight', () => {
+    const world = vienna();
+    const person = world.persons['person:anna']!;
+    const gate = scene({
+      id: 'test:literacy-gate',
+      stage: 'childhood',
+      ageWindow: { min: 11, max: 11 },
+      rate: 1,
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 11, maxAge: 11 }],
+      conditions: [{ kind: 'capability', capability: 'literacy' }],
+      tags: ['education'],
+      outcomes: [{ id: 'read', weight: 1, immediateText: 'read', effects: [] }],
+    });
+    const without = advanceV4Year(world, [gate], {
+      eventRuntime: true,
+      economy: { enabled: false },
+      statisticalModel: false,
+      maxOrdinaryEventsPerPerson: 1,
+    });
+    expect(without.events.some((event) => event.action.startsWith('test:literacy-gate'))).toBe(
+      false,
+    );
+    person.lifeContract = {
+      originalWish: 'learn to read',
+      mode: 'ordinary',
+      createdAt: { year: 1912, month: 1 },
+      capability: 'literacy',
+    };
+    const withCapability = advanceV4Year(world, [gate], {
+      eventRuntime: true,
+      economy: { enabled: false },
+      statisticalModel: false,
+      maxOrdinaryEventsPerPerson: 1,
+    });
+    expect(
+      withCapability.events.some((event) => event.action.startsWith('test:literacy-gate')),
+    ).toBe(true);
+  });
 });

@@ -79,16 +79,31 @@ export const MACRO_DEFAULT_PARAMETERS: MacroParameters = {
 export const POPULATION_AGE_BANDS = ['0-4', '5-14', '15-44', '45-64', '65+'] as const;
 export type PopulationAgeBand = (typeof POPULATION_AGE_BANDS)[number];
 export type PopulationByAgeBand = Record<PopulationAgeBand, number>;
+export const POPULATION_MAX_AGE = 100;
+export type PopulationSex = 'female' | 'male';
+
+/** Single-year cohorts; index 100 means 100+. */
+export type UnnamedCohorts = Record<PopulationSex, number[]>;
 
 export type RegionalPopulation = {
   regionId: string;
   /** Background population not represented by a Person row. */
-  unnamedByAgeBand: PopulationByAgeBand;
+  unnamedByAgeSex: UnnamedCohorts;
+  /** Legacy 5-band projection; read-only compatibility for old saves. */
+  unnamedByAgeBand?: PopulationByAgeBand;
   namedAlive: number;
   births: number;
   deaths: number;
   migrations: number;
   lastUpdated: WorldDate;
+};
+
+export type MacroEffect = {
+  id: string;
+  start: WorldDate;
+  end: WorldDate;
+  changes: Partial<Record<MacroParamKey, number>>;
+  source: string;
 };
 
 export type MacroRegion = {
@@ -98,6 +113,9 @@ export type MacroRegion = {
   effectiveFrom: WorldDate;
   effectiveTo?: WorldDate;
   parameters: MacroParameters;
+  /** Immutable baseline for this era; active effects are applied on top. */
+  baselineParameters?: MacroParameters;
+  effects?: MacroEffect[];
   source: string;
   notes?: string;
 };
@@ -127,12 +145,43 @@ export type MacroHistoryEntry = {
   confidence: number;
 };
 
+export type DevelopmentStatus = 'emerging' | 'active' | 'declining' | 'ended' | 'blocked';
+
+export type WorldDevelopment = {
+  id: string;
+  type: string;
+  regionId: string;
+  description: string;
+  severity: number;
+  start: WorldDate;
+  end: WorldDate;
+  status: DevelopmentStatus;
+  eventFamilyIds: string[];
+  organizationId?: string;
+  organization?: {
+    name: string;
+    kind?:
+      | 'household_firm'
+      | 'factory'
+      | 'school'
+      | 'union'
+      | 'party'
+      | 'army'
+      | 'state'
+      | 'church'
+      | 'other';
+    placeId?: string;
+  };
+  source: string;
+};
+
 export type MacroState = {
   version: number;
   updatedAt: WorldDate;
   regions: Record<string, MacroRegion>;
   population: Record<string, RegionalPopulation>;
   eventPool: Record<string, EventPoolState>;
+  developments?: Record<string, WorldDevelopment>;
   history: MacroHistoryEntry[];
 };
 
@@ -154,6 +203,21 @@ export type MacroDevelopment = {
   type: MacroDevelopmentType;
   description: string;
   severity: number;
+  organization?: {
+    name: string;
+    kind?:
+      | 'household_firm'
+      | 'factory'
+      | 'school'
+      | 'union'
+      | 'party'
+      | 'army'
+      | 'state'
+      | 'church'
+      | 'other';
+    placeId?: string;
+  };
+  eventFamilyIds?: string[];
 };
 
 export type EventPoolChange = {
@@ -203,6 +267,14 @@ export type MacroSnapshot = {
     enabled: boolean;
     weightMultiplier: number;
   }[];
+  developments: {
+    id: string;
+    type: string;
+    description: string;
+    severity: number;
+    status: DevelopmentStatus;
+    organizationId?: string;
+  }[];
   availableFamilies: string[];
 };
 
@@ -233,6 +305,26 @@ const MacroDevelopmentSchema = z.object({
   type: z.string().trim().min(1).max(80),
   description: z.string().trim().min(1).max(500),
   severity: z.number().min(0).max(1),
+  organization: z
+    .object({
+      name: z.string().trim().min(1).max(160),
+      kind: z
+        .enum([
+          'household_firm',
+          'factory',
+          'school',
+          'union',
+          'party',
+          'army',
+          'state',
+          'church',
+          'other',
+        ])
+        .optional(),
+      placeId: z.string().trim().min(1).max(160).optional(),
+    })
+    .optional(),
+  eventFamilyIds: z.array(z.string().trim().min(1).max(160)).max(8).optional(),
 });
 
 const EventPoolChangeSchema = z.object({
@@ -292,11 +384,127 @@ export function personAgeBand(age: number): PopulationAgeBand {
   return '65+';
 }
 
+function emptyCohorts(): UnnamedCohorts {
+  return {
+    female: Array.from({ length: POPULATION_MAX_AGE + 1 }, () => 0),
+    male: Array.from({ length: POPULATION_MAX_AGE + 1 }, () => 0),
+  };
+}
+
+/** Convert a legacy 5-band population into single-year cohorts. */
+export function normalizeUnnamedCohorts(population: RegionalPopulation): UnnamedCohorts {
+  if (population.unnamedByAgeSex && Array.isArray(population.unnamedByAgeSex.female))
+    return {
+      female: [...population.unnamedByAgeSex.female],
+      male: [...population.unnamedByAgeSex.male],
+    };
+  const cohorts = emptyCohorts();
+  const bands: { band: PopulationAgeBand; from: number; to: number }[] = [
+    { band: '0-4', from: 0, to: 4 },
+    { band: '5-14', from: 5, to: 14 },
+    { band: '15-44', from: 15, to: 44 },
+    { band: '45-64', from: 45, to: 64 },
+    { band: '65+', from: 65, to: POPULATION_MAX_AGE },
+  ];
+  for (const { band, from, to } of bands) {
+    const total = Math.max(0, population.unnamedByAgeBand?.[band] ?? 0);
+    const perAge = total / (to - from + 1);
+    for (let age = from; age <= to; age += 1) {
+      cohorts.female[age] += perAge * 0.51;
+      cohorts.male[age] += perAge * 0.49;
+    }
+  }
+  return cohorts;
+}
+
+export function populationFromAgeBands(
+  regionId: string,
+  unnamedByAgeBand: PopulationByAgeBand,
+  namedAlive: number,
+  date: WorldDate,
+  births = 0,
+  deaths = 0,
+  migrations = 0,
+): RegionalPopulation {
+  const legacy = {
+    regionId,
+    unnamedByAgeBand,
+    namedAlive,
+    births,
+    deaths,
+    migrations,
+    lastUpdated: date,
+  } as RegionalPopulation;
+  return {
+    ...legacy,
+    unnamedByAgeSex: normalizeUnnamedCohorts(legacy),
+  };
+}
+
 export function populationTotal(population: RegionalPopulation): number {
+  const cohorts = normalizeUnnamedCohorts(population);
   return (
-    Object.values(population.unnamedByAgeBand).reduce((sum, count) => sum + Math.max(0, count), 0) +
+    cohorts.female.reduce((sum, count) => sum + Math.max(0, count), 0) +
+    cohorts.male.reduce((sum, count) => sum + Math.max(0, count), 0) +
     Math.max(0, population.namedAlive)
   );
+}
+
+export function cohortCount(
+  population: RegionalPopulation,
+  age: number,
+  sex: PopulationSex,
+): number {
+  const cohorts = normalizeUnnamedCohorts(population);
+  return cohorts[sex][Math.min(POPULATION_MAX_AGE, Math.max(0, age))] ?? 0;
+}
+
+/** Remove one background person at the exact age/sex; false if unavailable. */
+export function takeBackgroundPerson(
+  population: RegionalPopulation,
+  age: number,
+  sex: PopulationSex,
+): boolean {
+  const cohorts = normalizeUnnamedCohorts(population);
+  const index = Math.min(POPULATION_MAX_AGE, Math.max(0, Math.floor(age)));
+  if ((cohorts[sex][index] ?? 0) < 1) return false;
+  population.unnamedByAgeSex = cohorts;
+  cohorts[sex][index] -= 1;
+  delete population.unnamedByAgeBand;
+  return true;
+}
+
+/** Move exact age/sex cohorts between regions, conserving both ends. */
+export function moveBackgroundCohorts(
+  state: MacroState,
+  fromRegionId: string,
+  toRegionId: string,
+  moves: { age: number; sex: PopulationSex; count: number }[],
+): void {
+  const from = state.population[fromRegionId];
+  const to = state.population[toRegionId];
+  if (!from || !to || fromRegionId === toRegionId) return;
+  from.unnamedByAgeSex = normalizeUnnamedCohorts(from);
+  to.unnamedByAgeSex = normalizeUnnamedCohorts(to);
+  for (const move of moves) {
+    const age = Math.min(POPULATION_MAX_AGE, Math.max(0, Math.floor(move.age)));
+    const count = Math.max(0, Math.min(move.count, from.unnamedByAgeSex[move.sex][age] ?? 0));
+    if (count <= 0) continue;
+    from.unnamedByAgeSex[move.sex][age] -= count;
+    to.unnamedByAgeSex[move.sex][age] += count;
+    from.migrations -= count;
+    to.migrations += count;
+  }
+  delete from.unnamedByAgeBand;
+  delete to.unnamedByAgeBand;
+}
+
+function fillCohorts(total: number, from: number, to: number, cohorts: UnnamedCohorts): void {
+  const perAge = total / (to - from + 1);
+  for (let age = from; age <= to; age += 1) {
+    cohorts.female[age] += perAge * 0.51;
+    cohorts.male[age] += perAge * 0.49;
+  }
 }
 
 function defaultPopulation(
@@ -307,23 +515,21 @@ function defaultPopulation(
   // Vienna's background population is aggregate only. It never creates named
   // people, and named persons are counted separately so the two ledgers cannot
   // double count the same person.
-  const background = regionId === MACRO_DEFAULT_REGION ? 1_900_000 : 0;
-  const shares: PopulationByAgeBand = {
-    '0-4': 0.09,
-    '5-14': 0.16,
-    '15-44': 0.46,
-    '45-64': 0.21,
-    '65+': 0.08,
-  };
+  const background =
+    regionId === MACRO_DEFAULT_REGION
+      ? 1_900_000
+      : regionId === 'region-klosterneuburg'
+        ? 5_000
+        : 0;
+  const cohorts = emptyCohorts();
+  fillCohorts(background * 0.09, 0, 4, cohorts);
+  fillCohorts(background * 0.16, 5, 14, cohorts);
+  fillCohorts(background * 0.46, 15, 44, cohorts);
+  fillCohorts(background * 0.21, 45, 64, cohorts);
+  fillCohorts(background * 0.08, 65, POPULATION_MAX_AGE, cohorts);
   return {
     regionId,
-    unnamedByAgeBand: {
-      '0-4': Math.round(background * shares['0-4']),
-      '5-14': Math.round(background * shares['5-14']),
-      '15-44': Math.round(background * shares['15-44']),
-      '45-64': Math.round(background * shares['45-64']),
-      '65+': Math.round(background * shares['65+']),
-    },
+    unnamedByAgeSex: cohorts,
     namedAlive,
     births: 0,
     deaths: 0,
@@ -361,6 +567,8 @@ export function defaultMacroState(world: WorldState, date: WorldDate = world.dat
       scope: regionId === MACRO_DEFAULT_REGION ? 'region' : 'region',
       effectiveFrom: cloneDate(date),
       parameters: { ...MACRO_DEFAULT_PARAMETERS },
+      baselineParameters: { ...MACRO_DEFAULT_PARAMETERS },
+      effects: [],
       source: 'vienna-1912-baseline',
     };
     population[regionId] = defaultPopulation(regionId, namedAlive, date);
@@ -371,6 +579,7 @@ export function defaultMacroState(world: WorldState, date: WorldDate = world.dat
     regions,
     population,
     eventPool: {},
+    developments: {},
     history: [],
   };
 }
@@ -437,12 +646,16 @@ export function validateMacroProposal(
     throw new MacroContractError('宏观提案生效时间必须落在当前月或过去 12 个月内');
   }
   const changes = validateParameterChanges(proposal.parameterChanges, region);
+  const hasExecutableDevelopment = proposal.developments.some(
+    (development) => development.organization || (development.eventFamilyIds?.length ?? 0) > 0,
+  );
   if (
     Object.keys(changes).length === 0 &&
     proposal.eventPoolChanges.length === 0 &&
+    !hasExecutableDevelopment &&
     !proposal.maintainStatus
   ) {
-    throw new MacroContractError('宏观提案没有可执行的参数或事件池变化');
+    throw new MacroContractError('宏观提案没有可执行的参数、事件池或发展对象');
   }
   const knownTypes = new Set([
     'war',
@@ -463,6 +676,9 @@ export function validateMacroProposal(
     type: (knownTypes.has(development.type)
       ? development.type
       : 'other') as MacroDevelopment['type'],
+    eventFamilyIds: (development.eventFamilyIds ?? []).filter((familyId) =>
+      context.knownFamilies.has(familyId),
+    ),
   }));
   const validEventPoolChanges = proposal.eventPoolChanges.filter((change) => {
     if (!context.knownFamilies.has(change.familyId)) return false;
@@ -477,9 +693,12 @@ export function validateMacroProposal(
   if (
     Object.keys(changes).length === 0 &&
     validEventPoolChanges.length === 0 &&
+    !normalizedDevelopments.some(
+      (development) => development.organization || development.eventFamilyIds.length > 0,
+    ) &&
     !proposal.maintainStatus
   ) {
-    throw new MacroContractError('宏观提案没有可执行的参数或事件池变化');
+    throw new MacroContractError('宏观提案没有可执行的参数、事件池或发展对象');
   }
   return {
     ...proposal,
@@ -502,6 +721,46 @@ export function parseMacroProposal(
   return validateMacroProposal(value, context);
 }
 
+function recomputeRegion(region: MacroRegion): void {
+  const baseline = region.baselineParameters ?? region.parameters;
+  const parameters = { ...baseline };
+  for (const effect of region.effects ?? []) {
+    for (const [key, delta] of Object.entries(effect.changes)) {
+      const param = key as MacroParamKey;
+      const bound = PARAM_BOUNDS[param];
+      parameters[param] = clamp(parameters[param] + Number(delta), bound.min, bound.max);
+    }
+  }
+  region.parameters = parameters;
+  region.baselineParameters = baseline;
+}
+
+/**
+ * Expire duration-bound effects at a tick boundary. This makes a proposal an
+ * explicit temporary regime rather than a permanent, ever-stacking delta.
+ */
+export function expireMacroEffects(state: MacroState, date: WorldDate): MacroState {
+  const next = structuredClone(state);
+  const month = date.year * 12 + date.month;
+  for (const region of Object.values(next.regions)) {
+    const effects = region.effects ?? [];
+    const active = effects.filter((effect) => effect.end.year * 12 + effect.end.month >= month);
+    if (active.length !== effects.length) {
+      region.effects = active;
+      recomputeRegion(region);
+    }
+  }
+  for (const development of Object.values(next.developments ?? {})) {
+    if (
+      development.status === 'active' &&
+      development.end.year * 12 + development.end.month < month
+    ) {
+      development.status = 'ended';
+    }
+  }
+  return next;
+}
+
 /**
  * Apply a validated proposal. This is pure: the caller persists the returned
  * state and bumps the world revision in the same transaction.
@@ -515,19 +774,36 @@ export function applyMacroProposal(
 ): MacroState {
   const next = structuredClone(state);
   const region = next.regions[proposal.regionId]!;
-  for (const [key, delta] of Object.entries(proposal.parameterChanges)) {
-    const param = key as MacroParamKey;
-    const bound = PARAM_BOUNDS[param];
-    region.parameters[param] = clamp(
-      region.parameters[param] + Number(delta),
-      bound.min,
-      bound.max,
-    );
-  }
+  if (!region.baselineParameters) region.baselineParameters = { ...region.parameters };
+  if (!region.effects) region.effects = [];
   const effectiveFrom = cloneDate(proposal.effectiveFrom);
+  const effectEnd = addMonths(effectiveFrom, proposal.durationMonths);
+  if (Object.keys(proposal.parameterChanges).length > 0) {
+    region.effects.push({
+      id: `macro-effect:${proposalId}`,
+      start: effectiveFrom,
+      end: effectEnd,
+      changes: { ...proposal.parameterChanges },
+      source: `macro-proposal:${proposalId}`,
+    });
+    recomputeRegion(region);
+  }
   region.effectiveFrom = effectiveFrom;
-  region.effectiveTo = addMonths(effectiveFrom, proposal.durationMonths);
+  region.effectiveTo = effectEnd;
   region.source = `macro-proposal:${proposalId}`;
+  for (const development of proposal.developments) {
+    if (!development.eventFamilyIds || development.eventFamilyIds.length === 0) continue;
+    for (const familyId of development.eventFamilyIds) {
+      const existing = next.eventPool[familyId];
+      next.eventPool[familyId] = {
+        familyId,
+        enabled: true,
+        weightMultiplier: Math.max(existing?.weightMultiplier ?? 1, 1.15),
+        source: `development:${proposalId}`,
+        updatedAt: cloneDate(date),
+      };
+    }
+  }
   for (const change of proposal.eventPoolChanges) {
     const existing = next.eventPool[change.familyId];
     next.eventPool[change.familyId] = {
@@ -540,6 +816,26 @@ export function applyMacroProposal(
       updatedAt: cloneDate(date),
     };
   }
+  if (!next.developments) next.developments = {};
+  proposal.developments.forEach((development, index) => {
+    if (development.type === 'other' && !development.organization && !development.eventFamilyIds)
+      return;
+    const id = `development:${proposalId}:${index}`;
+    const end = addMonths(effectiveFrom, proposal.durationMonths);
+    next.developments![id] = {
+      id,
+      type: development.type,
+      regionId: proposal.regionId,
+      description: development.description,
+      severity: development.severity,
+      start: effectiveFrom,
+      end,
+      status: 'active',
+      eventFamilyIds: development.eventFamilyIds ?? [],
+      organization: development.organization,
+      source: `macro-proposal:${proposalId}`,
+    };
+  });
   const mappedDevelopmentTypes = new Set([
     'war',
     'peace',
@@ -603,10 +899,7 @@ export function macroSnapshot(
         effectiveTo: region.effectiveTo,
         population: {
           namedAlive: population.namedAlive,
-          unnamedTotal: Object.values(population.unnamedByAgeBand).reduce(
-            (sum, value) => sum + value,
-            0,
-          ),
+          unnamedTotal: populationTotal(population) - population.namedAlive,
           total: populationTotal(population),
         },
       };
@@ -617,8 +910,70 @@ export function macroSnapshot(
       enabled: policy.enabled,
       weightMultiplier: policy.weightMultiplier,
     })),
+    developments: Object.values(state.developments ?? {}).map((development) => ({
+      id: development.id,
+      type: development.type,
+      description: development.description,
+      severity: development.severity,
+      status: development.status,
+      organizationId: development.organizationId,
+    })),
     availableFamilies: [...knownFamilies].sort(),
   };
+}
+
+/**
+ * Turn a supported development into a real Organization in the world. This is
+ * intentionally generic: the Director names the organization, the engine picks
+ * a valid place and creates a persistent entity. Organizations without a valid
+ * region/place are left as explicit capability gaps.
+ */
+export function materializeDevelopments(
+  world: WorldState,
+  state: MacroState,
+  proposal: MacroProposal,
+  proposalId: string,
+  date: WorldDate,
+): MacroState {
+  const next = structuredClone(state);
+  for (const development of Object.values(next.developments ?? {})) {
+    if (development.source !== `macro-proposal:${proposalId}` || !development.organization)
+      continue;
+    const spec = development.organization;
+    const regionPlaces = Object.values(world.places).filter(
+      (place) => (place.regionId ?? MACRO_DEFAULT_REGION) === development.regionId,
+    );
+    const place =
+      regionPlaces.find((candidate) => candidate.id === spec.placeId) ??
+      regionPlaces.find((candidate) => candidate.kind === 'other') ??
+      regionPlaces[0];
+    if (!place) {
+      development.status = 'blocked';
+      continue;
+    }
+    const existingOrganization = Object.values(world.organizations).find(
+      (organization) => organization.name === spec.name,
+    );
+    const slug = development.id.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 120);
+    const organizationId = existingOrganization?.id ?? `org-development-${slug}`;
+    if (!world.organizations[organizationId]) {
+      world.organizations[organizationId] = {
+        id: organizationId,
+        name: spec.name,
+        kind: spec.kind ?? 'other',
+        placeId: place.id,
+        memberIds: [],
+        positions: [],
+        treasury: 0,
+        authorityRules: [],
+        projects: [],
+        status: 'active',
+        causeIds: [],
+      };
+    }
+    development.organizationId = organizationId;
+  }
+  return next;
 }
 
 export function defaultRegionForWorld(world: WorldState): string {

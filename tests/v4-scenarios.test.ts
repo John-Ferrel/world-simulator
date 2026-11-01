@@ -6,6 +6,7 @@ import { VIENNA_1912_SEED } from '../packages/v4/content/vienna-1912.js';
 import { advanceAggregatePopulation, estimateAnnualRisks } from '../packages/v4/statistics.js';
 import {
   MACRO_DEFAULT_REGION,
+  populationFromAgeBands,
   type MacroParameters,
   type RegionalPopulation,
 } from '../packages/v4/macro.js';
@@ -73,21 +74,12 @@ function underFive(parameters: MacroParameters): number {
 }
 
 function aggregate(paramsByYear: (year: number) => MacroParameters): RegionalPopulation {
-  let population: RegionalPopulation = {
-    regionId: MACRO_DEFAULT_REGION,
-    unnamedByAgeBand: {
-      '0-4': 80000,
-      '5-14': 150000,
-      '15-44': 430000,
-      '45-64': 200000,
-      '65+': 70000,
-    },
-    namedAlive: 26,
-    births: 0,
-    deaths: 0,
-    migrations: 0,
-    lastUpdated: { year: 1912, month: 1 },
-  };
+  let population: RegionalPopulation = populationFromAgeBands(
+    MACRO_DEFAULT_REGION,
+    { '0-4': 80000, '5-14': 150000, '15-44': 430000, '45-64': 200000, '65+': 70000 },
+    26,
+    { year: 1912, month: 1 },
+  );
   for (let year = 1912; year <= 1920; year += 1)
     population = advanceAggregatePopulation(
       population,
@@ -134,27 +126,22 @@ describe('Phase 3 historical scenarios', () => {
     const c = aggregate((year) =>
       MACRO_SCENARIOS['food-and-sanitation-crisis'].parametersForYear(year),
     );
-    expect(c.deaths).toBeGreaterThan(b.deaths);
+    const total = (population: RegionalPopulation) =>
+      population.namedAlive +
+      population.unnamedByAgeSex.female.reduce((sum, value) => sum + value, 0) +
+      population.unnamedByAgeSex.male.reduce((sum, value) => sum + value, 0);
+    expect(total(c)).toBeLessThan(total(b));
   });
 
   it('aggregate population keeps named people separate from background cohorts', () => {
     const params = MACRO_SCENARIOS['historical-vienna-1912-1920'].parametersForYear(1912);
     const next = advanceAggregatePopulation(
-      {
-        regionId: MACRO_DEFAULT_REGION,
-        unnamedByAgeBand: {
-          '0-4': 10000,
-          '5-14': 10000,
-          '15-44': 20000,
-          '45-64': 10000,
-          '65+': 5000,
-        },
-        namedAlive: 26,
-        births: 0,
-        deaths: 0,
-        migrations: 0,
-        lastUpdated: date,
-      },
+      populationFromAgeBands(
+        MACRO_DEFAULT_REGION,
+        { '0-4': 10000, '5-14': 10000, '15-44': 20000, '45-64': 10000, '65+': 5000 },
+        26,
+        date,
+      ),
       params,
       { year: 1919, month: 1 },
       25,
@@ -162,7 +149,7 @@ describe('Phase 3 historical scenarios', () => {
     expect(next.namedAlive).toBe(25);
     expect(next.births).toBeGreaterThan(0);
     expect(next.deaths).toBeGreaterThan(0);
-    expect(next.unnamedByAgeBand['0-4']).not.toBe(10000);
+    expect(next.unnamedByAgeSex.female[0] + next.unnamedByAgeSex.male[0]).not.toBe(10000);
   });
 
   it('turns a high war macro state into an explicit content gap for the author', () => {

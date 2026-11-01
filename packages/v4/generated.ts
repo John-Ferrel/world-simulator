@@ -95,6 +95,7 @@ const VALID_EFFECTS = new Set<EventEffect['type']>([
   'relation',
   'relation_end',
   'role',
+  'organization_membership',
   'move',
   'household',
   'residence',
@@ -114,6 +115,9 @@ const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
   'placeKind',
   'hasRole',
   'notHasRole',
+  'development',
+  'developmentType',
+  'capability',
   'hasRelation',
   'notHasRelation',
   'worldYear',
@@ -255,6 +259,10 @@ function validateEffect(nodeId: string, outcomeId: string, effect: EventEffect, 
     case 'reputation':
     case 'flag':
       if (!ref(effect.personId)) errors.push(`${label}: bad person`);
+      break;
+    case 'organization_membership':
+      if (!ref(effect.personId) || !ref(effect.organizationId))
+        errors.push(`${label}: bad organization membership`);
       break;
     case 'skill':
       if (!ref(effect.personId)) errors.push(`${label}: bad person`);

@@ -44,8 +44,10 @@ import {
 } from './domain.js';
 import {
   eventPoolMultiplier,
+  expireMacroEffects,
   macroForPerson,
   regionIdForPerson,
+  takeBackgroundPerson,
   syncMacroPressures,
   type MacroState,
 } from './macro.js';
@@ -100,6 +102,8 @@ export type V4AdvanceOptions = {
   eventRuntime?: boolean;
   /** Soft cap for ordinary statistical events per person-year. Fact events bypass. */
   maxOrdinaryEventsPerPerson?: number;
+  /** Allow required missing roles to be taken from the background cohort. */
+  materializePopulation?: boolean;
   /** Use the Phase 3 statistical risk engine when the world has macro state. */
   statisticalModel?: boolean;
   economy?: {
@@ -141,7 +145,7 @@ export type V4AdvanceDiagnostics = {
   scenesBlocked: number;
   eventsCreated: number;
   deaths: Id[];
-  statistical: { deaths: number; infections: number; recoveries: number };
+  statistical: { deaths: number; infections: number; recoveries: number; materialized: number };
   economy: V4EconomyDiagnostics;
   warnings: V4Warning[];
 };
@@ -159,6 +163,7 @@ type NormalizedOptions = {
   maxScenesPerPerson: number;
   eventRuntime: boolean;
   maxOrdinaryEventsPerPerson: number;
+  materializePopulation: boolean;
   statisticalModel: boolean;
   economyEnabled: boolean;
   foodPerPersonPerMonth: number;
@@ -178,6 +183,7 @@ type EngineContext = {
   sceneHistory: Map<string, number>;
   definitions: SceneDefinition[];
   triggerIndex: Map<string, SceneDefinition[]>;
+  materializedCount: number;
 };
 
 type EffectBinding = {
@@ -307,7 +313,7 @@ export function advanceV4Year(
     scenesBlocked: 0,
     eventsCreated: 0,
     deaths: [],
-    statistical: { deaths: 0, infections: 0, recoveries: 0 },
+    statistical: { deaths: 0, infections: 0, recoveries: 0, materialized: 0 },
     economy: {
       months: 0,
       wagesPaid: 0,
@@ -331,7 +337,10 @@ export function advanceV4Year(
     warn(diagnostics, 'world_not_running', `world status is ${draft.status}; year not advanced`);
     return { world: draft, events: [], scenes: [], diagnostics };
   }
-  if (draft.macro) syncMacroPressures(draft, draft.macro);
+  if (draft.macro) {
+    draft.macro = expireMacroEffects(draft.macro, draft.date);
+    syncMacroPressures(draft, draft.macro);
+  }
 
   const context: EngineContext = {
     world: draft,
@@ -344,6 +353,7 @@ export function advanceV4Year(
     sceneHistory: resolvedSceneHistory(draft),
     definitions: [],
     triggerIndex: new Map(),
+    materializedCount: 0,
   };
 
   const definitions = usableDefinitions(scenes, diagnostics).filter(
@@ -436,6 +446,7 @@ function normalizeOptions(options: V4AdvanceOptions): NormalizedOptions {
   return {
     maxScenesPerPerson,
     eventRuntime: options.eventRuntime === true,
+    materializePopulation: options.materializePopulation !== false,
     statisticalModel: options.statisticalModel !== false,
     maxOrdinaryEventsPerPerson:
       typeof options.maxOrdinaryEventsPerPerson === 'number' &&
@@ -613,18 +624,46 @@ function appendScene(context: EngineContext, scene: SceneInstance): void {
 }
 
 function nextEventIdentity(context: EngineContext): { id: Id; sequence: number } {
-  let sequence = context.world.historyMeta.sequence;
-  let id = '';
-  do {
-    sequence += 1;
-    id = `evt:${context.world.id}:${String(sequence).padStart(6, '0')}`;
-  } while (context.world.events.some((event) => event.id === id));
+  // historyMeta.sequence is the canonical monotonic counter. Scanning every
+  // event for every commit is O(n²) and becomes visible in long audits.
+  const sequence = context.world.historyMeta.sequence + 1;
+  const id = `evt:${context.world.id}:${String(sequence).padStart(6, '0')}`;
   return { id, sequence };
 }
 
 // ---------------------------------------------------------------------------
 // Scene eligibility, casting and outcomes
 // ---------------------------------------------------------------------------
+
+const relationsByPersonCache = new WeakMap<WorldState, Map<Id, Relation[]>>();
+
+function relationIndexFor(world: WorldState): Map<Id, Relation[]> {
+  let index = relationsByPersonCache.get(world);
+  if (index) return index;
+  index = new Map();
+  for (const relation of Object.values(world.relations)) {
+    for (const id of [relation.a, relation.b]) {
+      const list = index.get(id) ?? [];
+      list.push(relation);
+      index.set(id, list);
+    }
+  }
+  relationsByPersonCache.set(world, index);
+  return index;
+}
+
+function relationsFor(world: WorldState, id: Id): Relation[] {
+  return relationIndexFor(world).get(id) ?? [];
+}
+
+function rememberRelation(world: WorldState, relation: Relation): void {
+  const index = relationIndexFor(world);
+  for (const id of [relation.a, relation.b]) {
+    const list = index.get(id) ?? [];
+    if (!list.some((candidate) => candidate.id === relation.id)) list.push(relation);
+    index.set(id, list);
+  }
+}
 
 function conditionPasses(
   world: WorldState,
@@ -692,10 +731,32 @@ function conditionPasses(
       return subject.roles.includes(condition.role);
     case 'notHasRole':
       return !subject.roles.includes(condition.role);
+    case 'development': {
+      const development = world.macro?.developments?.[condition.id];
+      const now = date.year * 12 + date.month;
+      return Boolean(
+        development &&
+        development.status === 'active' &&
+        development.end.year * 12 + development.end.month >= now,
+      );
+    }
+    case 'capability': {
+      const contract = subject.lifeContract?.capability;
+      const flag = subject.life?.flags.find((item) => item.startsWith('capability:'))?.slice(11);
+      return contract === condition.capability || flag === condition.capability;
+    }
+    case 'developmentType': {
+      const now = date.year * 12 + date.month;
+      return Object.values(world.macro?.developments ?? {}).some(
+        (development) =>
+          development.type === condition.type &&
+          development.status === 'active' &&
+          development.end.year * 12 + development.end.month >= now,
+      );
+    }
     case 'hasRelation':
-      return Object.values(world.relations).some((relation) => {
+      return relationsFor(world, subject.id).some((relation) => {
         if (relation.kind !== condition.relationKind) return false;
-        if (relation.a !== subject.id && relation.b !== subject.id) return false;
         if (relation.end !== undefined) return false;
         if (condition.sameHousehold) {
           const otherId = relation.a === subject.id ? relation.b : relation.a;
@@ -705,9 +766,8 @@ function conditionPasses(
         return relation.trust >= condition.minTrust;
       });
     case 'notHasRelation':
-      return !Object.values(world.relations).some((relation) => {
+      return !relationsFor(world, subject.id).some((relation) => {
         if (relation.kind !== condition.relationKind) return false;
-        if (relation.a !== subject.id && relation.b !== subject.id) return false;
         if (relation.end !== undefined) return false;
         if (condition.sameHousehold) {
           const otherId = relation.a === subject.id ? relation.b : relation.a;
@@ -720,7 +780,18 @@ function conditionPasses(
       if (typeof condition.max === 'number' && date.year > condition.max) return false;
       return true;
     case 'pressure': {
-      const value = world.pressures[condition.key];
+      const region = macroForPerson(world, subject);
+      const macroValue: Record<string, number> | undefined = region
+        ? {
+            war_supply_stress: region.parameters.warIntensity,
+            influenza_1918: region.parameters.epidemicInfluenza,
+            infant_diarrhoea: 1 - region.parameters.sanitation,
+            household_cash_shortfall: 1 - region.parameters.foodSupply,
+            family_separation: region.parameters.warIntensity,
+            orphan_risk: region.parameters.warIntensity * 0.75,
+          }
+        : undefined;
+      const value = macroValue?.[condition.key] ?? world.pressures[condition.key];
       return typeof value === 'number' && Number.isFinite(value) && value >= condition.min;
     }
     default:
@@ -805,7 +876,9 @@ function personMatchesRole(
 ): boolean {
   if (person.died || !aliveAt(person, date)) return false;
   if (!ageFits(person, requirement, date)) return false;
-  if (requirement.sex !== undefined && person.sex !== requirement.sex) return false;
+  const expectedSex =
+    requirement.sex === 'opposite' ? (subject.sex === 'male' ? 'female' : 'male') : requirement.sex;
+  if (expectedSex !== undefined && person.sex !== expectedSex) return false;
   if (requirement.sameHousehold === true && person.householdId !== subject.householdId) {
     return false;
   }
@@ -933,7 +1006,8 @@ function roleCandidates(
         if (person.parentIds.includes(subject.id) || subject.parentIds.includes(person.id))
           continue;
         if (person.parentIds.some((parentId) => subject.parentIds.includes(parentId))) continue;
-        const partneredWithSubject = Object.values(world.relations).some(
+        const personRelations = relationsFor(world, id);
+        const partneredWithSubject = personRelations.some(
           (relation) =>
             relation.kind === 'partner' &&
             relation.end === undefined &&
@@ -941,7 +1015,7 @@ function roleCandidates(
               (relation.b === id && relation.a === subject.id)),
         );
         if (requirement.sameHousehold === true && !partneredWithSubject) continue;
-        const partneredWithAnother = Object.values(world.relations).some(
+        const partneredWithAnother = personRelations.some(
           (relation) =>
             relation.kind === 'partner' &&
             relation.end === undefined &&
@@ -1098,6 +1172,162 @@ function candidateFits(
   return personMatchesRole(world, subject, person, requirement, date);
 }
 
+const MATERIALIZABLE_ROLES = new Set(['neighbor', 'worker', 'teacher', 'official', 'partner']);
+
+const MATERIALIZED_SURNAMES = [
+  'Huber',
+  'Bauer',
+  'Lechner',
+  'Stein',
+  'Winter',
+  'Moser',
+  'Kral',
+  'Weiss',
+  'Hofer',
+  'Berg',
+];
+
+/**
+ * Take one person from the region's real single-year cohort and give them a
+ * stable Person/household identity. This is the only route from background
+ * population to named population; no scene can conjure a person without a
+ * cohort debit.
+ */
+function materializeRoleCandidate(
+  context: EngineContext,
+  subject: Person,
+  requirement: {
+    key: string;
+    kind: string;
+    minAge?: number;
+    maxAge?: number;
+    sex?: Person['sex'] | 'opposite';
+  },
+  date: WorldDate,
+): Id | undefined {
+  if (!context.options.materializePopulation || !context.world.macro) return undefined;
+  // A scene may need a shopkeeper/neighbour/partner, but the annual audit and
+  // gameplay must not turn every missing role into a new named person.
+  if (context.materializedCount >= 4) return undefined;
+  if (!MATERIALIZABLE_ROLES.has(requirement.kind)) return undefined;
+  const regionId = regionIdForPerson(context.world, subject);
+  const population = context.world.macro.population[regionId];
+  if (!population) return undefined;
+  const rng = seededRng(
+    context.world.seed,
+    'materialize',
+    subject.id,
+    requirement.key,
+    date.year,
+    date.month,
+    context.materializedCount,
+  );
+  const min = Math.max(16, Math.floor(requirement.minAge ?? 18));
+  const max = Math.max(min, Math.min(90, Math.floor(requirement.maxAge ?? 65)));
+  const age = Math.min(max, Math.max(min, Math.floor(min + rng() * (max - min + 1))));
+  const sex: Person['sex'] =
+    requirement.sex === 'opposite'
+      ? subject.sex === 'male'
+        ? 'female'
+        : 'male'
+      : requirement.sex === 'male' || requirement.sex === 'female'
+        ? requirement.sex
+        : rng() < 0.5
+          ? 'female'
+          : 'male';
+  const cohortSex = sex;
+  if (!takeBackgroundPerson(population, age, cohortSex)) return undefined;
+  population.namedAlive = Math.max(0, population.namedAlive + 1);
+  let ordinal = context.materializedCount + 1;
+  let id = `person-materialized-${context.world.id}-${ordinal}`;
+  while (context.world.persons[id]) {
+    ordinal += 1;
+    id = `person-materialized-${context.world.id}-${ordinal}`;
+  }
+  const homes = Object.values(context.world.places).filter(
+    (place) => place.kind === 'home' && (place.regionId ?? 'region-lower-austria') === regionId,
+  );
+  const residence = homes[Math.floor(rng() * homes.length)] ?? homes[0];
+  if (!residence) {
+    // Put the cohort back if the region has no usable home; never create a
+    // person without a valid place/household.
+    population.unnamedByAgeSex![cohortSex][Math.min(100, age)] += 1;
+    population.namedAlive = Math.max(0, population.namedAlive - 1);
+    return undefined;
+  }
+  const householdId = `household-materialized-${context.world.id}-${ordinal}`;
+  const givenPool = sex === 'male' ? MALE_GIVEN_NAMES : FEMALE_GIVEN_NAMES;
+  const given = givenPool[Math.floor(rng() * givenPool.length)]!;
+  const surname = MATERIALIZED_SURNAMES[Math.floor(rng() * MATERIALIZED_SURNAMES.length)]!;
+  let name = `${given} ${surname}`;
+  let suffix = 1;
+  while (Object.values(context.world.persons).some((person) => person.name === name)) {
+    suffix += 1;
+    name = `${given} ${surname} ${suffix}`;
+  }
+  const role =
+    requirement.kind === 'teacher'
+      ? 'teacher'
+      : requirement.kind === 'official'
+        ? 'official'
+        : requirement.kind === 'worker'
+          ? 'worker'
+          : 'resident';
+  const person: Person = {
+    id,
+    name,
+    sex,
+    born: { year: date.year - age, month: 1 },
+    locationId: residence.id,
+    householdId,
+    parentIds: [],
+    guardianIds: [],
+    health: { vitality: 0.82, conditions: [], nutrition: 0.8 },
+    traits: {
+      care: 0.4 + rng() * 0.4,
+      ambition: 0.3 + rng() * 0.5,
+      tradition: 0.3 + rng() * 0.5,
+      openness: 0.3 + rng() * 0.5,
+      conscientiousness: 0.4 + rng() * 0.4,
+      extraversion: 0.3 + rng() * 0.5,
+      agreeableness: 0.4 + rng() * 0.4,
+      neuroticism: 0.3 + rng() * 0.4,
+    },
+    education: {
+      status: age < 15 ? 'primary' : 'primary',
+      level: age < 15 ? 1 : 2,
+    },
+    roles: ['resident', ...(role === 'resident' ? [] : [role])],
+    projectIds: [],
+    relationshipIds: [],
+    knowledgeIds: [],
+    life: {
+      mood: 0,
+      reputation: 0,
+      skills: { literacy: 0.1, numeracy: 0.1, craft: 0, social: 0 },
+      flags: [],
+    },
+    provenance: { kind: 'materialized_population', sourceId: regionId },
+  };
+  context.world.persons[id] = person;
+  context.world.households[householdId] = {
+    id: householdId,
+    residenceId: residence.id,
+    memberIds: [id],
+    guardianIds: [],
+    cash: 5,
+    food: 5,
+    debt: 0,
+    rent: 1,
+    obligations: [],
+    assets: [],
+    sharingRules: 'pooled',
+  };
+  context.materializedCount += 1;
+  context.diagnostics.statistical.materialized += 1;
+  return id;
+}
+
 function castSceneRoles(
   context: EngineContext,
   definition: SceneDefinition,
@@ -1115,13 +1345,45 @@ function castSceneRoles(
       continue;
     }
     const required = requirement.required !== false;
-    const candidates = roleCandidates(context.world, subject, requirement).filter((id) =>
+    let candidates = roleCandidates(context.world, subject, requirement).filter((id) =>
       candidateFits(context.world, subject, id, requirement, date),
     );
+    // Development scenes must use the organization created by the active
+    // development, not an unrelated army/church/party that happens to match the
+    // generic organization role.
+    if (
+      requirement.kind === 'organization' &&
+      (definition.tags.includes('development') || definition.tags.includes('social_movement'))
+    ) {
+      const socialMovement = definition.tags.includes('social_movement');
+      const activeDevelopmentOrgs = new Set(
+        Object.values(context.world.macro?.developments ?? {})
+          .filter(
+            (development) =>
+              development.status === 'active' &&
+              development.organizationId &&
+              development.end.year * 12 + development.end.month >= date.year * 12 + date.month &&
+              (!socialMovement ||
+                development.type === 'social_change' ||
+                development.eventFamilyIds.includes('vienna-social-movement')),
+          )
+          .map((development) => development.organizationId!),
+      );
+      const preferred = candidates.filter((id) => activeDevelopmentOrgs.has(id));
+      if (preferred.length > 0) candidates = preferred;
+    }
     const unused = candidates.filter((id) => !usedPeople.has(id) || requirement.kind === 'subject');
     const pool = unused.length > 0 ? unused : candidates;
     if (pool.length === 0) {
-      if (required) missing.push(requirement.key);
+      if (required) {
+        const materialized = materializeRoleCandidate(context, subject, requirement, date);
+        if (materialized) {
+          roles[requirement.key] = materialized;
+          usedPeople.add(materialized);
+          continue;
+        }
+        missing.push(requirement.key);
+      }
       continue;
     }
     const rng = seededRng(
@@ -2063,6 +2325,46 @@ function recordBlocked(
   });
 }
 
+function hasRelationBetween(world: WorldState, a: Id, b: Id): boolean {
+  return relationsFor(world, a).some(
+    (relation) =>
+      relation.end === undefined &&
+      ((relation.a === a && relation.b === b) || (relation.a === b && relation.b === a)),
+  );
+}
+
+function materializedContactEffects(
+  context: EngineContext,
+  subject: Person,
+  roles: Record<Id, Id>,
+  outcome: SceneOutcome,
+): EventEffect[] {
+  const effects: EventEffect[] = [];
+  for (const id of new Set(Object.values(roles))) {
+    if (id === subject.id) continue;
+    const person = context.world.persons[id];
+    if (!person || person.provenance.kind !== 'materialized_population') continue;
+    if (hasRelationBetween(context.world, subject.id, id)) continue;
+    const already = outcome.effects.some(
+      (effect) =>
+        effect.type === 'relation' &&
+        ((effect.a === subject.id && effect.b === id) ||
+          (effect.a === id && effect.b === subject.id)),
+    );
+    if (already) continue;
+    effects.push({
+      type: 'relation',
+      a: subject.id,
+      b: id,
+      kind: 'acquaintance',
+      trust: 0.03,
+      affection: 0.01,
+      reason: `met through ${person.name}'s household and neighbourhood`,
+    });
+  }
+  return effects;
+}
+
 function resolveScene(
   context: EngineContext,
   definition: SceneDefinition,
@@ -2087,7 +2389,11 @@ function resolveScene(
     action: `${definition.id}/${outcome.id}`,
     title: definition.title,
     causes: causeEventId ? [causeEventId] : [],
-    effects: [...outcome.effects, ...birthContractCostEffects(subject, definition, date)],
+    effects: [
+      ...outcome.effects,
+      ...birthContractCostEffects(subject, definition, date),
+      ...materializedContactEffects(context, subject, roles, outcome),
+    ],
     immediateText: selectNarration(context, definition, outcome, subject, roles, date),
     significance:
       typeof outcome.significance === 'number' && Number.isFinite(outcome.significance)
@@ -2416,6 +2722,8 @@ function applyEffect(
       return applyRelationEnd(context, effect, binding);
     case 'role':
       return applyRole(context, effect, binding);
+    case 'organization_membership':
+      return applyOrganizationMembership(context, effect, binding);
     case 'project':
       return applyProject(context, effect, binding);
     case 'interaction':
@@ -2665,7 +2973,7 @@ function applyRelationEnd(
   effect: Extract<EventEffect, { type: 'relation_end' }>,
   binding: EffectBinding,
 ): EventEffect | undefined {
-  const relation = Object.values(context.world.relations).find(
+  const relation = relationsFor(context.world, effect.a).find(
     (candidate) =>
       candidate.kind === effect.kind &&
       candidate.end === undefined &&
@@ -2823,14 +3131,15 @@ function applyRelation(
   }
   if (!RELATION_KINDS.includes(effect.kind)) return undefined;
   const undirected = !['employer'].includes(effect.kind);
-  const existing = Object.values(context.world.relations).find(
+  const existing = relationsFor(context.world, effect.a).find(
     (candidate) =>
       candidate.kind === effect.kind &&
       candidate.end === undefined &&
       (undirected
         ? (candidate.a === effect.a && candidate.b === effect.b) ||
           (candidate.a === effect.b && candidate.b === effect.a)
-        : candidate.a === effect.a && candidate.b === effect.b),
+        : (candidate.a === effect.a && candidate.b === effect.b) ||
+          (candidate.a === effect.b && candidate.b === effect.a)),
   );
   const id = existing?.id ?? `rel:${effect.a}:${effect.b}:${effect.kind}`;
   let relation = existing ?? context.world.relations[id];
@@ -2892,6 +3201,15 @@ function applyRole(
     return undefined;
   }
   if (typeof effect.role !== 'string' || effect.role.length === 0) return undefined;
+  const organizationId = (effect as { organizationId?: unknown }).organizationId;
+  if (typeof organizationId === 'string' && context.world.organizations[organizationId]) {
+    const organization = context.world.organizations[organizationId]!;
+    if (effect.add && !organization.memberIds.includes(person.id)) {
+      organization.memberIds.push(person.id);
+    } else if (!effect.add) {
+      organization.memberIds = organization.memberIds.filter((id) => id !== person.id);
+    }
+  }
   const index = person.roles.indexOf(effect.role);
   if (effect.add) {
     if (index >= 0) return undefined;
@@ -2899,6 +3217,25 @@ function applyRole(
   } else {
     if (index < 0) return undefined;
     person.roles.splice(index, 1);
+  }
+  return { ...effect };
+}
+
+function applyOrganizationMembership(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'organization_membership' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const person = context.world.persons[effect.personId];
+  const organization = context.world.organizations[effect.organizationId];
+  if (!person || person.died || !organization || organization.status !== 'active') return undefined;
+  const index = organization.memberIds.indexOf(person.id);
+  if (effect.add) {
+    if (index >= 0) return undefined;
+    organization.memberIds.push(person.id);
+  } else {
+    if (index < 0) return undefined;
+    organization.memberIds.splice(index, 1);
   }
   return { ...effect };
 }

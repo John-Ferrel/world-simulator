@@ -410,7 +410,7 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     cooldownYears: 2,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 35 },
-      { key: 'partner', kind: 'partner', required: true, minAge: 18, maxAge: 45 },
+      { key: 'partner', kind: 'partner', required: true, minAge: 18, maxAge: 45, sex: 'opposite' },
     ],
     conditions: [
       { kind: 'age', min: 18, max: 35 },

@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import {
   PHASE2_FAMILY_BRIEFS,
   PHASE3_FAMILY_BRIEFS,
+  PHASE4_FAMILY_BRIEFS,
   auditPacks,
   briefById,
   describeBrief,
@@ -16,7 +17,7 @@ import { validateGeneratedPack, type GeneratedPack } from '../packages/v4/genera
 import type { MacroState } from '../packages/v4/macro.js';
 
 const packDir = resolve('packages/v4/content/generated');
-const allBriefs = [...PHASE2_FAMILY_BRIEFS, ...PHASE3_FAMILY_BRIEFS];
+const allBriefs = [...PHASE2_FAMILY_BRIEFS, ...PHASE3_FAMILY_BRIEFS, ...PHASE4_FAMILY_BRIEFS];
 const auditFile = resolve('docs/v4/content-audit.json');
 
 function readPacks(): GeneratedPack[] {

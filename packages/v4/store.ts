@@ -3,7 +3,7 @@ import { migrate as migrateBase, pool } from '../storage/index.js';
 import type { EventFact, Household, Person, Place, Relation, WorldState } from './domain.js';
 import { defaultMacroState, type MacroState } from './macro.js';
 
-const V4_MIGRATION_VERSION = 5;
+const V4_MIGRATION_VERSION = 6;
 
 /**
  * Apply the v4 schema. The schema is additive and independent of the archived
@@ -28,6 +28,7 @@ export async function migrateV4(): Promise<void> {
       3: '003_v4.sql',
       4: '004_v4_birth_contracts.sql',
       5: '005_v4_macro.sql',
+      6: '006_v4_runtime_content.sql',
     };
     for (let version = Math.max(3, latest + 1); version <= V4_MIGRATION_VERSION; version += 1) {
       const file = migrationFiles[version];

@@ -10,6 +10,7 @@ import {
 import {
   PHASE2_FAMILY_BRIEFS,
   PHASE3_FAMILY_BRIEFS,
+  PHASE4_FAMILY_BRIEFS,
   generatePack,
   type GenerationBrief,
 } from '../packages/v4/content-author/index.js';
@@ -153,6 +154,7 @@ const briefs: Record<string, GenerationBrief> = {
   ...legacyBriefs,
   ...Object.fromEntries(PHASE2_FAMILY_BRIEFS.map((brief) => [brief.id, brief])),
   ...Object.fromEntries(PHASE3_FAMILY_BRIEFS.map((brief) => [brief.id, brief])),
+  ...Object.fromEntries(PHASE4_FAMILY_BRIEFS.map((brief) => [brief.id, brief])),
 };
 
 const family = process.argv[2];

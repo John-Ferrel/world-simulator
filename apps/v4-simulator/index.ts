@@ -6,7 +6,9 @@ import { VIENNA_FAMILY_RUNTIME_SCENES } from '../../packages/v4/content/vienna-f
 import { GENERATED_SCENES } from '../../packages/v4/content/generated/index.js';
 import { defaultMacroState } from '../../packages/v4/macro.js';
 import { enqueueV4MacroProposal } from '../../packages/v4/macro-store.js';
+import { loadPublishedV4Scenes } from '../../packages/v4/content-runtime-store.js';
 import { VIENNA_LIFE_SCENES } from '../../packages/v4/content/vienna-life.js';
+import { VIENNA_DEVELOPMENT_SCENES } from '../../packages/v4/content/vienna-developments.js';
 import {
   activeV4WorldMeta,
   enqueueMissingV4BirthContracts,
@@ -122,13 +124,16 @@ while (!stopped) {
     }
     const elapsed = Date.now() - meta.lastTickAt;
     if (elapsed >= meta.secondsPerYear * 1000) {
+      const runtimeScenes = await loadPublishedV4Scenes().catch(() => []);
       const result = advanceV4Year(
         world,
         [
           ...VIENNA_1912_SCENES,
           ...VIENNA_LIFE_SCENES,
+          ...VIENNA_DEVELOPMENT_SCENES,
           ...VIENNA_FAMILY_RUNTIME_SCENES,
           ...GENERATED_SCENES,
+          ...runtimeScenes,
         ],
         {
           economy: { enabled: economyEnabled },

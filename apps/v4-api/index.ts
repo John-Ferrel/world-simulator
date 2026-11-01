@@ -38,6 +38,7 @@ import {
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../../packages/v4/content/vienna-family.js';
 import { GENERATED_SCENES } from '../../packages/v4/content/generated/index.js';
 import { VIENNA_LIFE_SCENES } from '../../packages/v4/content/vienna-life.js';
+import { VIENNA_DEVELOPMENT_SCENES } from '../../packages/v4/content/vienna-developments.js';
 
 const sha = (value: string) => createHash('sha256').update(value).digest('hex');
 const Credentials = z
@@ -478,6 +479,7 @@ const sceneTitles = new Map(
   [
     ...VIENNA_1912_SCENES,
     ...VIENNA_LIFE_SCENES,
+    ...VIENNA_DEVELOPMENT_SCENES,
     ...VIENNA_FAMILY_RUNTIME_SCENES,
     ...GENERATED_SCENES,
   ].map((scene) => [scene.id, scene.title]),

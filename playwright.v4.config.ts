@@ -29,6 +29,7 @@ export default defineConfig({
       API_PROXY_URL: 'http://localhost:3011',
       V4_ECONOMY: '0',
       V4_DIRECTOR: '0',
+      V4_CONTENT_WORKER: '0',
     },
   },
 });

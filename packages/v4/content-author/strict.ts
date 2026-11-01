@@ -91,6 +91,7 @@ const VALID_EFFECTS = new Set<EventEffect['type']>([
   'relation',
   'relation_end',
   'role',
+  'organization_membership',
   'move',
   'household',
   'residence',
@@ -113,6 +114,9 @@ const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
   'notHasRole',
   'hasRelation',
   'notHasRelation',
+  'development',
+  'developmentType',
+  'capability',
   'worldYear',
   'pressure',
 ]);
@@ -143,12 +147,7 @@ function checkToken(
   if (!builtins.has(key)) errors.push(`${where}: unknown token {${key}}`);
 }
 
-function checkEffectRef(
-  where: string,
-  key: string,
-  roleKeys: Set<string>,
-  errors: string[],
-) {
+function checkEffectRef(where: string, key: string, roleKeys: Set<string>, errors: string[]) {
   checkToken(where, key, roleKeys, errors, true);
 }
 
@@ -163,7 +162,10 @@ function checkCondition(where: string, condition: SceneCondition, errors: string
   }
   if (condition.kind === 'hasRelation' || condition.kind === 'notHasRelation') {
     const relationKind = (condition as { relationKind?: unknown }).relationKind;
-    if (typeof relationKind !== 'string' || !VALID_RELATION_KINDS.has(relationKind as Relation['kind'])) {
+    if (
+      typeof relationKind !== 'string' ||
+      !VALID_RELATION_KINDS.has(relationKind as Relation['kind'])
+    ) {
       errors.push(`${where}: ${condition.kind} needs a valid relationKind`);
     }
   }
@@ -209,28 +211,35 @@ function checkEffect(
     case 'cash':
     case 'food': {
       if (!finite(effect.amount) || effect.amount === 0) errors.push(`${where}: bad amount`);
-      if (effect.type === 'cash' && Math.abs(effect.amount) > 100) errors.push(`${where}: cash out of range`);
-      if (effect.type === 'food' && Math.abs(effect.amount) > 10) errors.push(`${where}: food out of range`);
+      if (effect.type === 'cash' && Math.abs(effect.amount) > 100)
+        errors.push(`${where}: cash out of range`);
+      if (effect.type === 'food' && Math.abs(effect.amount) > 10)
+        errors.push(`${where}: food out of range`);
       if (effect.householdId !== '$household') errors.push(`${where}: must target $household`);
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     }
     case 'health':
-      if (!finite(effect.amount) || Math.abs(effect.amount) > 0.25) errors.push(`${where}: health out of range`);
+      if (!finite(effect.amount) || Math.abs(effect.amount) > 0.25)
+        errors.push(`${where}: health out of range`);
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     case 'mood':
     case 'reputation':
-      if (!finite(effect.amount) || Math.abs(effect.amount) > 0.4) errors.push(`${where}: mood/reputation out of range`);
+      if (!finite(effect.amount) || Math.abs(effect.amount) > 0.4)
+        errors.push(`${where}: mood/reputation out of range`);
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     case 'skill':
-      if (!VALID_SKILLS.has(effect.skill)) errors.push(`${where}: invalid skill ${String(effect.skill)}`);
-      if (!finite(effect.amount) || Math.abs(effect.amount) > 0.15) errors.push(`${where}: skill out of range`);
+      if (!VALID_SKILLS.has(effect.skill))
+        errors.push(`${where}: invalid skill ${String(effect.skill)}`);
+      if (!finite(effect.amount) || Math.abs(effect.amount) > 0.15)
+        errors.push(`${where}: skill out of range`);
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     case 'condition':
-      if (!effect.condition || typeof effect.condition !== 'string') errors.push(`${where}: missing condition`);
+      if (!effect.condition || typeof effect.condition !== 'string')
+        errors.push(`${where}: missing condition`);
       if (typeof effect.add !== 'boolean') errors.push(`${where}: condition add missing`);
       if (!reason) errors.push(`${where}: missing reason`);
       break;
@@ -241,14 +250,19 @@ function checkEffect(
       break;
     case 'education':
       if (!VALID_EDUCATION.has(effect.status)) errors.push(`${where}: invalid education status`);
-      if (effect.level !== undefined && (!finite(effect.level) || effect.level < 0 || effect.level > 10)) {
+      if (
+        effect.level !== undefined &&
+        (!finite(effect.level) || effect.level < 0 || effect.level > 10)
+      ) {
         errors.push(`${where}: education level out of range`);
       }
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     case 'employment':
-      if (!effect.occupation || typeof effect.occupation !== 'string') errors.push(`${where}: missing occupation`);
-      if (!finite(effect.wage) || effect.wage < 0 || effect.wage > 100) errors.push(`${where}: wage out of range`);
+      if (!effect.occupation || typeof effect.occupation !== 'string')
+        errors.push(`${where}: missing occupation`);
+      if (!finite(effect.wage) || effect.wage < 0 || effect.wage > 100)
+        errors.push(`${where}: wage out of range`);
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     case 'unemployment':
@@ -256,7 +270,8 @@ function checkEffect(
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     case 'relation':
-      if (!VALID_RELATION_KINDS.has(effect.kind)) errors.push(`${where}: invalid relation kind ${effect.kind}`);
+      if (!VALID_RELATION_KINDS.has(effect.kind))
+        errors.push(`${where}: invalid relation kind ${effect.kind}`);
       for (const key of ['trust', 'affection', 'obligation', 'fear', 'respect'] as const) {
         const value = effect[key];
         if (value !== undefined && (!finite(value) || Math.abs(value) > 0.5)) {
@@ -266,7 +281,8 @@ function checkEffect(
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     case 'relation_end':
-      if (!VALID_RELATION_KINDS.has(effect.kind)) errors.push(`${where}: invalid relation kind ${effect.kind}`);
+      if (!VALID_RELATION_KINDS.has(effect.kind))
+        errors.push(`${where}: invalid relation kind ${effect.kind}`);
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     case 'move':
@@ -298,15 +314,18 @@ function checkEffect(
       if (!Array.isArray(effect.parentIds) || effect.parentIds.length === 0) {
         errors.push(`${where}: birth needs parents`);
       }
-      if (!['female', 'male', 'intersex'].includes(effect.childSex)) errors.push(`${where}: invalid child sex`);
+      if (!['female', 'male', 'intersex'].includes(effect.childSex))
+        errors.push(`${where}: invalid child sex`);
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     case 'death':
-      if (!effect.cause || typeof effect.cause !== 'string') errors.push(`${where}: death cause missing`);
+      if (!effect.cause || typeof effect.cause !== 'string')
+        errors.push(`${where}: death cause missing`);
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     case 'estate':
-      if (!finite(effect.amount) || effect.amount <= 0) errors.push(`${where}: estate amount invalid`);
+      if (!finite(effect.amount) || effect.amount <= 0)
+        errors.push(`${where}: estate amount invalid`);
       if (!reason) errors.push(`${where}: missing reason`);
       break;
     default:
@@ -348,7 +367,8 @@ export function validateAuthoredPack(
     const roleKeys = new Set<string>();
     let subjectRoles = 0;
     for (const role of node.roles ?? []) {
-      if (!VALID_ROLE_KINDS.has(role.kind)) errors.push(`${nodeLabel}: invalid role kind ${role.kind}`);
+      if (!VALID_ROLE_KINDS.has(role.kind))
+        errors.push(`${nodeLabel}: invalid role kind ${role.kind}`);
       if (roleKeys.has(role.key)) errors.push(`${nodeLabel}: duplicate role key ${role.key}`);
       roleKeys.add(role.key);
       if (role.kind === 'subject') subjectRoles += 1;
@@ -358,11 +378,7 @@ export function validateAuthoredPack(
       ) {
         errors.push(`${nodeLabel}: invalid organizationKind ${role.organizationKind}`);
       }
-      if (
-        role.minAge !== undefined &&
-        role.maxAge !== undefined &&
-        role.minAge > role.maxAge
-      ) {
+      if (role.minAge !== undefined && role.maxAge !== undefined && role.minAge > role.maxAge) {
         errors.push(`${nodeLabel}: role ${role.key} age window inverted`);
       }
     }

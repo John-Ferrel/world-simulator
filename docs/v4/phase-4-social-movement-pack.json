@@ -1,0 +1,822 @@
+{
+  "id": "vienna-social-movement",
+  "title": "传单、后屋与名单",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 60
+  },
+  "tags": [
+    "development",
+    "social_movement",
+    "organization",
+    "politics"
+  ],
+  "baseRate": 0.18,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 60
+    },
+    {
+      "kind": "developmentType",
+      "type": "social_change"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-social-movement.leaflet",
+      "title": "楼梯下的一张传单",
+      "weight": 1,
+      "rate": 0.045,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "developmentType",
+          "type": "social_change"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "organization",
+          "kind": "organization",
+          "required": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "vienna-social-movement.leaflet.join",
+          "weight": 1,
+          "text": "{subject}在楼梯下捡起传单，墨迹蹭在食指上。对门{neighbor}探出头，压低声音说地址在五区一家鞋匠铺后头。当晚{subject}去了，交出两克朗会费，在{organization}的名册上写下姓名和住处。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "加入组织的会费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.02,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "邻居指路后被引为同志"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "organization_member",
+              "organizationId": "$organization",
+              "reason": "在名册上登记成为成员"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.leaflet.join",
+              "text": "鞋匠铺后屋只点一盏煤油灯，墙上挂着停战请愿的草稿。{subject}把湿传单摊在桌角，听人念完最后一句，才从裤袋里摸出两克朗。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.leaflet.join",
+              "text": "回家路上{neighbor}塞来半块黑面包，说以后每周三在五区碰头。{subject}把面包掰成两半，一半当场吃掉，指头上的墨印碰到面包皮，留下淡黑的痕。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vienna-social-movement.leaflet.hide",
+          "weight": 1,
+          "text": "{subject}把传单折成四折，塞进灶台边松动的砖缝里。门外有人提着水桶上楼，脚步在三楼停住。{neighbor}敲门问见没见到纸片，{subject}说没有，等脚步声远了才把砖缝按回去，掌心出了汗。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "隐瞒传单后的不安"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0.02,
+              "respect": 0,
+              "reason": "对邻居说了谎"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "keeping_leaflet",
+              "add": true,
+              "reason": "传单仍藏在灶台砖缝中"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.leaflet.hide",
+              "text": "砖缝里原来塞过火柴盒，{subject}把传单卷得比火柴盒更细。灶上煮着土豆皮汤，蒸汽把纸边又打湿了一点，他伸手把砖推回原位。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.leaflet.hide",
+              "text": "{neighbor}走后，{subject}蹲在灶前拨弄煤渣，心跳还没平。那张纸的墨味混着煤烟，他连咳两声，把汤锅从火上端开，没再往砖缝那边看。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vienna-social-movement.leaflet.report",
+          "weight": 1,
+          "text": "{subject}把传单交给门房老霍费尔，老人捏着纸角翻了翻，说该送到区警察署。第二天穿制服的来问了几句话，记下{subject}的姓名和住址，给了一张登记回条，背面印着邮局广告。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "向门房和警察报告传单"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "affection": -0.04,
+              "obligation": 0,
+              "fear": 0.06,
+              "respect": 0,
+              "reason": "邻居得知传单被交了出去"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "觉得做了本分事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.leaflet.report",
+              "text": "门房桌上摊着《新维也纳日报》，老霍费尔用传单压住报纸角，说这事他经手过不止一回。制服警察来的时候，{subject}站在过道里，闻到制服上的樟脑味。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.leaflet.report",
+              "text": "登记回条被{subject}夹进橱柜的盐罐底下。当晚{neighbor}没来借火柴，往常他每晚都来。楼梯间只听见别家孩子的哭声，{subject}把盐罐挪了挪，又放回原处。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-social-movement.meeting",
+      "title": "后屋会议",
+      "weight": 1,
+      "rate": 0.054,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "developmentType",
+          "type": "social_change"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "organization",
+          "kind": "organization",
+          "required": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "vienna-social-movement.meeting.speak",
+          "weight": 1,
+          "text": "{subject}在后屋站起来说，本区面包房把黑面包从每公斤三十四赫勒涨到四十赫勒，该印成单页贴到厂门口。{neighbor}把账本推过来让记下会费，大家凑了四克朗买纸和油墨。散会时{subject}被派去联络十区两家纱厂。",
+          "effects": [
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "district_liaison",
+              "organizationId": "$organization",
+              "reason": "被派去联络纱厂工人"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.05,
+              "reason": "在会议上发言并承担联络"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "分摊纸墨钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "colleague",
+              "trust": 0.1,
+              "affection": 0.03,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.08,
+              "reason": "共同承担组织工作"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.meeting.speak",
+              "text": "桌上的啤酒瓶只剩个底，有人用手指蘸着在报纸边写面包价。{subject}说话时窗外正有巡夜的经过，皮鞋跟敲在石板路上，屋里静了片刻才接着记账。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.meeting.speak",
+              "text": "{neighbor}数出四十赫勒的铜币推给{subject}，说油印纸他去弄。{subject}把铜币收进内衣口袋，衣料薄，钱贴着肋骨，凉了一小会儿才焐热。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vienna-social-movement.meeting.silent",
+          "weight": 1,
+          "text": "{subject}坐在角落的啤酒箱上，只把二十赫勒会费放在桌边，没接印刷的事。{neighbor}点名问谁会写字，{subject}低头看自己的鞋尖。散会时账本合上，有人拍了拍他的肩，什么也没说。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.2,
+              "reason": "交二十赫勒会费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "避免出头后的轻松"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "affection": 0,
+              "obligation": 0.01,
+              "fear": 0,
+              "respect": -0.02,
+              "reason": "没有承担组织工作"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.meeting.silent",
+              "text": "后屋墙角堆着旧报纸，{subject}抽了一张垫在箱子上坐。有人提到房租涨了八克朗，满屋人低声骂，他只跟着点头，手里攥着那枚二十赫勒硬币。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.meeting.silent",
+              "text": "散会时楼梯口有人分发剩下的半瓶啤酒，{subject}没接，先下了楼。巷子里面包房已经上板，橱窗里剩的两条黑面包标价四十赫勒，他看了一眼就往回走。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vienna-social-movement.meeting.raid",
+          "weight": 1,
+          "text": "后半截会正说到厂里招工，前门忽然有人拍门。{official}带人进来，把账本和油印纸一并收走，记下在场人的姓名。{subject}从后窗翻进院子，膝盖磕在煤棚边上，回家才发现裤腿撕了口子。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "翻窗时磕伤膝盖"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "会议被查抄"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "rival",
+              "trust": -0.1,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0.08,
+              "respect": 0,
+              "reason": "被警察记下姓名"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "meeting_raided",
+              "add": true,
+              "reason": "亲历后屋会议被查抄"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.meeting.raid",
+              "text": "煤棚的木板蹭着{subject}的手掌，窗台上还晾着别人的袜子。他翻过去时听见后屋有人提高声音争辩，接着是椅子倒地的响。巷口路灯照着一摊煤渣，他一脚踩滑。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.meeting.raid",
+              "text": "{neighbor}留在屋里没跑，第二天托人捎话，说账本被拿走了，好在名单是记在心里的。{subject}坐在床沿拿盐水擦膝盖，粗布裤腿上的口子用别针别了两处。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-social-movement.raid",
+      "title": "门被敲响的夜晚",
+      "weight": 1,
+      "rate": 0.045,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "developmentType",
+          "type": "social_change"
+        },
+        {
+          "kind": "worldYear",
+          "min": 1914,
+          "max": 1938
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "organization",
+          "kind": "organization",
+          "required": true
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "vienna-social-movement.raid.hide_list",
+          "weight": 1,
+          "text": "{subject}把油印名单卷成细条，塞进炉子后面松动的灰泥缝，用指甲把湿泥抹平。敲门声又响了两下，外面的人报出区警察署的名号。{subject}去开门，只说自己刚搬来，屋里一股冷灶味。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hid_member_list",
+              "add": true,
+              "reason": "把名单藏进灰泥缝"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "独自应对查问"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0.05,
+              "respect": 0,
+              "reason": "对警察隐瞒了名单"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.raid.hide_list",
+              "text": "楼道灯坏了，门缝底下透进一点电筒的黄光。{subject}的指甲缝里嵌着白灰，开门时把手背到身后，听见自己喉咙里的气声比平时粗。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.raid.hide_list",
+              "text": "来人翻了翻桌上的报纸和一只空面口袋，拿电筒往床下照了照。{neighbor}在隔壁只把门开了一条缝，又轻轻合上。{subject}站在炉边，炉腔里的冷灰还留着纸角。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vienna-social-movement.raid.hand_over",
+          "weight": 1,
+          "text": "{subject}从抽屉里取出名单，纸还是潮的，油墨蹭在指腹上。{official}接过去数了数名字，收进皮包，临走说这一晚就算过去了。{neighbor}在楼梯口看见这一幕，第二天借煤时只站在门槛外。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.12,
+              "affection": -0.05,
+              "obligation": 0,
+              "fear": 0.05,
+              "respect": -0.06,
+              "reason": "邻居看见名单被交出"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "邻里私下议论交出名单的事"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "暂时免于被带走"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.raid.hand_over",
+              "text": "名单上二十几个名字有的写得潦草，有的只记了姓。{subject}把纸递过去时，{official}的手指在某个名字上停了一下，问这人住哪条街，{subject}说只认得他在纱厂做工。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.raid.hand_over",
+              "text": "皮包扣上的声音很轻，却让{subject}后背一紧。来人走后他把窗推开透气，楼下有人提着桶去接水，木板楼梯吱呀响。{neighbor}的房门一直没再开。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vienna-social-movement.raid.flee",
+          "weight": 1,
+          "text": "{subject}从厨房后门出去，踩着院子里的煤渣翻过矮墙，落进隔壁面包房的晾面架下。围裙上沾了面粉，他低头走过两条巷子，在火车东站的长椅上坐到天亮，兜里只剩六赫勒。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "夜里出逃不敢回家"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "露宿车站长椅受寒"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.06,
+              "reason": "出逃时只带出几枚零钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organization",
+              "kind": "acquaintance",
+              "trust": -0.06,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0.04,
+              "respect": 0,
+              "reason": "暂时脱离组织活动"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.raid.flee",
+              "text": "矮墙上嵌着碎玻璃，{subject}用手一撑，掌心被划了道浅口。面包房的伙计正在起夜，提着马灯从后门出来，他蹲在晾面架下没动，等灯晃进屋里才起身。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.raid.flee",
+              "text": "东站候车室里烧着铁炉，几个赶早车的工人缩在长椅上打盹。{subject}把外套裹紧，掌心的口子拿手帕按住，天亮时手帕上洇出铜钱大的一块红。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-social-movement.aftermath",
+      "title": "组织留下的名单",
+      "weight": 1,
+      "rate": 0.036,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "developmentType",
+          "type": "social_change"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "organization",
+          "kind": "organization",
+          "required": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "vienna-social-movement.aftermath.keep",
+          "weight": 1,
+          "text": "{subject}把旧账本夹在床板和褥子之间，周末仍去七区一家咖啡馆的后间。{neighbor}带来两个被纱厂开除的工人，说先记下名字，等风头过去。{subject}就着半支蜡烛把名字抄在账本末页。",
+          "effects": [
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "underground_contact",
+              "organizationId": "$organization",
+              "reason": "在暗处继续联络旧成员"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "colleague",
+              "trust": 0.1,
+              "affection": 0.04,
+              "obligation": 0.06,
+              "fear": 0.02,
+              "respect": 0.06,
+              "reason": "共同维持暗中的联络"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "背着名单活动的小心翼翼"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.aftermath.keep",
+              "text": "咖啡馆后间原来堆咖啡麻袋，现在腾出半张桌子。{subject}每次只坐靠墙那把椅子，账本摊开前先拿手巾擦桌面，走时把蜡油刮干净。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.aftermath.keep",
+              "text": "{neighbor}交来两枚二十赫勒硬币，说是新来的工人凑的会费。{subject}把硬币和账本一起压进床板，褥子铺平，又拍了拍，才吹灭灯。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vienna-social-movement.aftermath.burn",
+          "weight": 1,
+          "text": "{subject}在灶膛里烧掉名单，纸卷发黄卷曲，二十几个名字变成一团黑灰。{neighbor}来问下次碰头，{subject}说不知道，先把自家的房租和面包顾上。邻居站了一会儿，把门带上走了。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "affection": -0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": -0.04,
+              "reason": "烧掉名单并谢绝再联络"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "卸下名单后的轻松"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_movement",
+              "add": true,
+              "reason": "退出公开活动"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.aftermath.burn",
+              "text": "灶膛里的火苗舔着纸边，油墨味和煤烟混在一起。{subject}拿火钩拨了拨，让没烧透的纸角卷进去，灰烬落进炉底，和煤渣分不清了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.aftermath.burn",
+              "text": "{neighbor}站在门口没进来，手里还提着半袋土豆。{subject}说厂里查得紧，先不聚了。土豆搁在门槛上，邻居下楼时脚步比平时慢。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vienna-social-movement.aftermath.hand_over",
+          "weight": 1,
+          "text": "{subject}把账本包在旧报纸里送到区警察署，值班的人翻了翻，问他是谁介绍的。出来时天已擦黑，门口岗亭的煤气灯刚点上。回家路上他绕开平时走的那条街，没经过咖啡馆。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "名单交到警察署的事传开"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organization",
+              "kind": "rival",
+              "trust": -0.15,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0.06,
+              "respect": -0.1,
+              "reason": "把组织名单交给警方"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "交名单后心里发沉"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vienna-social-movement.aftermath.hand_over",
+              "text": "值班室里烧着暖气，值班的人把账本一页页翻过去，铅笔在某几个名字旁画了勾。{subject}看墙上的挂钟，指针走了七分钟，他觉得自己站了很久。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vienna-social-movement.aftermath.hand_over",
+              "text": "回家的路上经过那家咖啡馆，后间的灯暗着。{subject}在街对面站了站，把衣领竖起来，转头走了另一条巷子，脚底下踩着菜叶和纸屑。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

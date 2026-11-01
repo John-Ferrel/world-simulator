@@ -1,5 +1,6 @@
 import { performance } from 'node:perf_hooks';
 import { advanceV4Year } from '../packages/v4/engine.js';
+import { defaultMacroState } from '../packages/v4/macro.js';
 import type {
   Household,
   Person,
@@ -125,6 +126,7 @@ function scenes(): SceneDefinition[] {
 const count = Number(process.argv[2] ?? 1000);
 const years = Number(process.argv[3] ?? 5);
 const world = makeWorld(count);
+if (process.env.V4_BENCH_MACRO !== '0') world.macro = defaultMacroState(world);
 const definitions = scenes();
 const started = performance.now();
 let current = world;
@@ -143,6 +145,7 @@ console.log(
   JSON.stringify({
     persons: count,
     years,
+    macro: Boolean(world.macro),
     events,
     ms: Math.round(elapsed),
     msPerYear: Math.round(elapsed / years),

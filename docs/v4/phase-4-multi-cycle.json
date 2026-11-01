@@ -1,0 +1,144 @@
+{
+  "model": "deepseek-v4.1-flash",
+  "calls": [
+    {
+      "cycle": 1,
+      "tokens": 2538,
+      "proposal": {
+        "version": 1,
+        "regionId": "region-lower-austria",
+        "effectiveFrom": {
+          "year": 1917,
+          "month": 1
+        },
+        "durationMonths": 12,
+        "summary": "战时经济持续恶化：粮食供应趋紧、物价上涨，维也纳及下奥地利出现排队与家庭分离压力；结核病负担与过度拥挤住房使平民健康承压。维持现状的军事态势下，社会不满与劳工骚动缓慢积聚。",
+        "confidence": 0.7,
+        "maintainStatus": false,
+        "developments": [
+          {
+            "type": "social_change",
+            "description": "配给恶化与物价上涨促使维也纳工人区出现由妇女和青年工人主导的粮食抗议与互助网络，逐渐与工会诉求合流。",
+            "severity": 0.55,
+            "organization": {
+              "name": "Vienna Women's Food Protest Networks",
+              "kind": "other",
+              "placeId": "region-lower-austria"
+            },
+            "eventFamilyIds": [
+              "vienna-1916-food-queue",
+              "vienna-social-movement",
+              "vienna-1916-union-minor"
+            ]
+          }
+        ],
+        "parameterChanges": {
+          "foodSupply": -0.15,
+          "stability": -0.08,
+          "healthcare": -0.04,
+          "epidemicTuberculosis": 0.05,
+          "migrationPressure": 0.05,
+          "unemployment": 0.03
+        },
+        "eventPoolChanges": [
+          {
+            "familyId": "vienna-1916-food-queue",
+            "weightMultiplier": 1.5
+          },
+          {
+            "familyId": "vienna-life-food-queue-1916",
+            "weightMultiplier": 1.4
+          },
+          {
+            "familyId": "vienna-wartime-homefront",
+            "weightMultiplier": 1.3
+          },
+          {
+            "familyId": "vienna-1916-family-separation",
+            "weightMultiplier": 1.2
+          },
+          {
+            "familyId": "vienna-illness-household",
+            "weightMultiplier": 1.15
+          }
+        ]
+      }
+    },
+    {
+      "cycle": 2,
+      "tokens": 3026,
+      "proposal": {
+        "version": 1,
+        "regionId": "region-lower-austria",
+        "effectiveFrom": {
+          "year": 1918,
+          "month": 1
+        },
+        "durationMonths": 11,
+        "summary": "维也纳与下奥地利进入1918年：战时供应持续紧张，但战事本身未在本地区表现为直接军事暴露。粮食短缺、结核病高负担与冬季流感风险将成为主导条件；妇女与青年工人主导的粮食抗议网络可能继续扩散，并逐步与工会及反战诉求合流。由于当前参数无法直接表达后方物资囤积、黑市与妇女角色变化等机制，部分发展以组织与事件池表达。",
+        "confidence": 0.62,
+        "maintainStatus": false,
+        "developments": [
+          {
+            "type": "social_change",
+            "description": "粮食抗议与互助网络在工人区进一步扩散，妇女与青年工人开始与工会代表建立更固定的联系，形成针对配给与物价的地方性谈判渠道。",
+            "severity": 0.6,
+            "organization": {
+              "name": "维也纳工人区妇女互助委员会",
+              "kind": "other",
+              "placeId": "region-lower-austria"
+            },
+            "eventFamilyIds": [
+              "vienna-social-movement",
+              "vienna-1916-union-minor",
+              "vienna-wartime-homefront"
+            ]
+          }
+        ],
+        "parameterChanges": {
+          "foodSupply": -0.08,
+          "stability": -0.04,
+          "healthcare": -0.03,
+          "epidemicTuberculosis": 0.04,
+          "unemployment": 0.03,
+          "migrationPressure": 0.02
+        },
+        "eventPoolChanges": [
+          {
+            "familyId": "vienna-social-movement",
+            "weightMultiplier": 1.35
+          },
+          {
+            "familyId": "vienna-1916-union-minor",
+            "weightMultiplier": 1.25
+          },
+          {
+            "familyId": "vienna-wartime-homefront",
+            "weightMultiplier": 1.2
+          },
+          {
+            "familyId": "vienna-1916-food-queue",
+            "weightMultiplier": 1.15
+          },
+          {
+            "familyId": "vienna-illness-household",
+            "weightMultiplier": 1.1
+          },
+          {
+            "familyId": "vienna-1918-influenza",
+            "weightMultiplier": 1.2
+          }
+        ]
+      }
+    }
+  ],
+  "existingDevelopments": [
+    {
+      "id": "development:multi-1:0",
+      "type": "social_change",
+      "description": "配给恶化与物价上涨促使维也纳工人区出现由妇女和青年工人主导的粮食抗议与互助网络，逐渐与工会诉求合流。",
+      "organizationId": "org-development-development-multi-1-0"
+    }
+  ],
+  "secondCycleMentionsPrevious": true
+}

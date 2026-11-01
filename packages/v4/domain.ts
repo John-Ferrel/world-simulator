@@ -326,6 +326,13 @@ export type EventEffect =
     }
   | { type: 'relation_end'; a: Id; b: Id; kind: Relation['kind']; reason: string }
   | { type: 'role'; personId: Id; role: string; add: boolean; reason: string }
+  | {
+      type: 'organization_membership';
+      personId: Id;
+      organizationId: Id;
+      add: boolean;
+      reason: string;
+    }
   | { type: 'project'; project: Project }
   | { type: 'interaction'; interaction: Interaction }
   | { type: 'move'; personId: Id; locationId: Id; reason: string }
@@ -406,7 +413,7 @@ export type RoleRequirement = {
   required?: boolean;
   minAge?: number;
   maxAge?: number;
-  sex?: Sex;
+  sex?: Sex | 'opposite';
   sameHousehold?: boolean;
   samePlaceKind?: Place['kind'];
   occupation?: string;
@@ -425,6 +432,9 @@ export type SceneCondition =
   | { kind: 'placeKind'; in: Place['kind'][] }
   | { kind: 'hasRole'; role: string }
   | { kind: 'notHasRole'; role: string }
+  | { kind: 'development'; id: string }
+  | { kind: 'developmentType'; type: string }
+  | { kind: 'capability'; capability: string }
   | {
       kind: 'hasRelation';
       relationKind: Relation['kind'];
@@ -659,11 +669,12 @@ export function assertWorldV4(world: WorldState): void {
     if (!world.persons[relation.a] || !world.persons[relation.b])
       throw new Error(`v4: relation ${id} references an unknown person`);
   }
+  const eventIds = new Set(world.events.map((event) => event.id));
   for (const event of world.events) {
     if (!world.persons[event.subjectId]) throw new Error(`v4: event ${event.id} has no subject`);
     if (event.participants.some((p) => !world.persons[p.personId]))
       throw new Error(`v4: event ${event.id} has unknown participant`);
-    if (event.causes.some((cause) => !world.events.some((e) => e.id === cause)))
+    if (event.causes.some((cause) => !eventIds.has(cause)))
       throw new Error(`v4: event ${event.id} has unknown cause`);
   }
   if (world.macro) {
@@ -671,11 +682,19 @@ export function assertWorldV4(world: WorldState): void {
       throw new Error('v4: macro state has no region');
     for (const [id, population] of Object.entries(world.macro.population)) {
       if (population.regionId !== id) throw new Error(`v4: population ${id} has wrong region`);
-      if (
-        population.namedAlive < 0 ||
-        Object.values(population.unnamedByAgeBand).some((value) => value < 0)
-      )
-        throw new Error(`v4: population ${id} is negative`);
+      if (population.namedAlive < 0) throw new Error(`v4: population ${id} is negative`);
+      if (population.unnamedByAgeSex) {
+        for (const sex of ['female', 'male'] as const) {
+          const values = population.unnamedByAgeSex[sex];
+          if (!Array.isArray(values) || values.some((value) => value < 0))
+            throw new Error(`v4: population ${id} has invalid ${sex} cohorts`);
+        }
+      } else if (population.unnamedByAgeBand) {
+        if (Object.values(population.unnamedByAgeBand).some((value) => value < 0))
+          throw new Error(`v4: population ${id} is negative`);
+      } else {
+        throw new Error(`v4: population ${id} has no cohorts`);
+      }
     }
     for (const [familyId, policy] of Object.entries(world.macro.eventPool)) {
       if (policy.familyId !== familyId) throw new Error(`v4: event pool ${familyId} has wrong id`);

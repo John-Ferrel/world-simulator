@@ -2,13 +2,18 @@ import { describe, expect, it } from 'vitest';
 import type { Person, Place, WorldDate, WorldState } from '../packages/v4/domain.js';
 import {
   applyMacroProposal,
+  populationFromAgeBands,
   defaultMacroState,
   eventPoolMultiplier,
+  expireMacroEffects,
+  materializeDevelopments,
+  moveBackgroundCohorts,
   MACRO_DEFAULT_PARAMETERS,
   syncMacroPressures,
   validateMacroProposal,
   type MacroParameters,
   type MacroProposal,
+  type RegionalPopulation,
 } from '../packages/v4/macro.js';
 import {
   advanceAggregatePopulation,
@@ -17,6 +22,7 @@ import {
 } from '../packages/v4/statistics.js';
 import { advanceV4Year } from '../packages/v4/engine.js';
 import { VIENNA_1912_SEED } from '../packages/v4/content/vienna-1912.js';
+import { VIENNA_DEVELOPMENT_SCENES } from '../packages/v4/content/vienna-developments.js';
 
 const date: WorldDate = { year: 1912, month: 1 };
 
@@ -327,21 +333,12 @@ describe('v4 statistical engine', () => {
   });
 
   it('keeps named and unnamed population separate while aggregating births and deaths', () => {
-    const aggregate = {
-      regionId: 'region-lower-austria',
-      unnamedByAgeBand: {
-        '0-4': 12000,
-        '5-14': 18000,
-        '15-44': 45000,
-        '45-64': 20000,
-        '65+': 5000,
-      },
-      namedAlive: 26,
-      births: 0,
-      deaths: 0,
-      migrations: 0,
-      lastUpdated: date,
-    };
+    const aggregate = populationFromAgeBands(
+      'region-lower-austria',
+      { '0-4': 12000, '5-14': 18000, '15-44': 45000, '45-64': 20000, '65+': 5000 },
+      26,
+      date,
+    );
     const next = advanceAggregatePopulation(
       aggregate,
       { ...MACRO_DEFAULT_PARAMETERS },
@@ -351,7 +348,7 @@ describe('v4 statistical engine', () => {
     expect(next.namedAlive).toBe(25);
     expect(next.births).toBeGreaterThan(0);
     expect(next.deaths).toBeGreaterThan(0);
-    expect(Object.values(next.unnamedByAgeBand).reduce((a, b) => a + b, 0)).toBeGreaterThan(0);
+    expect(next.unnamedByAgeSex.female.reduce((a, b) => a + b, 0)).toBeGreaterThan(0);
   });
 
   it('produces concrete statistical death events without internal causes', () => {
@@ -385,5 +382,157 @@ describe('v4 statistical engine', () => {
     const ids = new Set<string>();
     for (const event of deaths) ids.add(event.subjectId);
     expect(ids.size).toBe(deaths.length);
+  });
+
+  it('materializes a background person into a stable named social contact', () => {
+    const w = world();
+    w.macro = defaultMacroState(w);
+    const before =
+      w.macro.population['region-lower-austria']!.unnamedByAgeSex!.female.reduce(
+        (a, b) => a + b,
+        0,
+      ) +
+      w.macro.population['region-lower-austria']!.unnamedByAgeSex!.male.reduce((a, b) => a + b, 0);
+    const scene = {
+      id: 'test-social-contact',
+      version: 1,
+      packId: 'test',
+      title: 'Neighbour',
+      stage: 'adulthood' as const,
+      ageWindow: { min: 18, max: 60 },
+      roles: [
+        { key: 'subject', kind: 'subject' as const, required: true, minAge: 18, maxAge: 60 },
+        { key: 'neighbor', kind: 'neighbor' as const, required: true, minAge: 18, maxAge: 60 },
+      ],
+      conditions: [{ kind: 'age' as const, min: 18, max: 60 }],
+      tags: ['social'],
+      rate: 1,
+      outcomes: [{ id: 'meet', weight: 1, immediateText: 'neighbour met', effects: [] }],
+    };
+    const first = advanceV4Year(w, [scene], {
+      eventRuntime: true,
+      economy: { enabled: false },
+      statisticalModel: false,
+      maxOrdinaryEventsPerPerson: 1,
+    });
+    expect(first.world.persons['person:test']).toBeDefined();
+    const materialized = Object.values(first.world.persons).find(
+      (person) => person.provenance.kind === 'materialized_population',
+    );
+    expect(materialized).toBeDefined();
+    expect(first.world.households[materialized!.householdId]!.memberIds).toContain(
+      materialized!.id,
+    );
+    expect(
+      Object.values(first.world.relations).some(
+        (relation) =>
+          (relation.a === 'person:test' && relation.b === materialized!.id) ||
+          (relation.b === 'person:test' && relation.a === materialized!.id),
+      ),
+    ).toBe(true);
+    const after = first.world.macro!.population['region-lower-austria']!;
+    const afterTotal =
+      after.unnamedByAgeSex!.female.reduce((a, b) => a + b, 0) +
+      after.unnamedByAgeSex!.male.reduce((a, b) => a + b, 0);
+    expect(before - afterTotal).toBeCloseTo(1, 5);
+    const second = advanceV4Year(first.world, [scene], {
+      eventRuntime: true,
+      economy: { enabled: false },
+      statisticalModel: false,
+      maxOrdinaryEventsPerPerson: 1,
+    });
+    expect(
+      Object.values(second.world.persons).filter(
+        (person) => person.provenance.kind === 'materialized_population',
+      ),
+    ).toHaveLength(1);
+  });
+
+  it('expires duration-bound macro effects instead of stacking forever', () => {
+    const w = world();
+    const state = defaultMacroState(w);
+    const validated = validateMacroProposal(proposal({ effectiveFrom: date, durationMonths: 1 }), {
+      world: w,
+      state,
+      knownFamilies: new Set(),
+    });
+    const applied = applyMacroProposal(state, validated, date, 'test-model', 'proposal:expiry');
+    expect(applied.regions['region-lower-austria']!.parameters.foodSupply).toBeCloseTo(0.8, 5);
+    const expired = expireMacroEffects(applied, { year: 1912, month: 3 });
+    expect(expired.regions['region-lower-austria']!.parameters.foodSupply).toBeCloseTo(0.9, 5);
+  });
+
+  it('turns a social-change proposal into an organization and a real event', () => {
+    const w = world();
+    w.macro = defaultMacroState(w);
+    const known = new Set(['vienna-social-movement']);
+    const organizationProposal = proposal({
+      developments: [
+        {
+          type: 'social_change',
+          description: 'a new anti-war group forms',
+          severity: 0.7,
+          organization: { name: 'Leopoldstadt Anti-War Group', kind: 'other' },
+          eventFamilyIds: ['vienna-social-movement'],
+        },
+      ],
+      parameterChanges: { stability: -0.05 },
+    });
+    const validated = validateMacroProposal(organizationProposal, {
+      world: w,
+      state: w.macro,
+      knownFamilies: known,
+    });
+    let state = applyMacroProposal(w.macro, validated, date, 'test-model', 'proposal:org');
+    state = materializeDevelopments(w, state, validated, 'proposal:org', date);
+    w.macro = state;
+    const development = Object.values(state.developments ?? {})[0];
+    expect(development?.organizationId).toBeDefined();
+    expect(w.organizations[development!.organizationId!]).toBeDefined();
+    const scene = {
+      ...VIENNA_DEVELOPMENT_SCENES[0]!,
+      rate: 1,
+      outcomes: [VIENNA_DEVELOPMENT_SCENES[0]!.outcomes![0]!],
+    };
+    const result = advanceV4Year(w, [scene], {
+      eventRuntime: true,
+      economy: { enabled: false },
+      statisticalModel: false,
+      maxOrdinaryEventsPerPerson: 1,
+    });
+    expect(
+      result.events.some((event) => event.action.startsWith('vienna-social-movement.recruitment')),
+    ).toBe(true);
+    expect(result.world.organizations[development!.organizationId!]!.memberIds).toContain(
+      'person:test',
+    );
+  });
+
+  it('moves single-year cohorts between regions without changing world population', () => {
+    const state = defaultMacroState(world());
+    state.regions['region-other'] = {
+      ...structuredClone(state.regions['region-lower-austria']!),
+      id: 'region-other',
+      name: 'Other',
+    };
+    state.population['region-other'] = populationFromAgeBands(
+      'region-other',
+      { '0-4': 100, '5-14': 100, '15-44': 100, '45-64': 100, '65+': 100 },
+      0,
+      date,
+    );
+    const total = (population: RegionalPopulation) =>
+      population.namedAlive +
+      population.unnamedByAgeSex.female.reduce((sum, value) => sum + value, 0) +
+      population.unnamedByAgeSex.male.reduce((sum, value) => sum + value, 0);
+    const before =
+      total(state.population['region-lower-austria']!) + total(state.population['region-other']!);
+    moveBackgroundCohorts(state, 'region-lower-austria', 'region-other', [
+      { age: 25, sex: 'female', count: 10 },
+    ]);
+    const after =
+      total(state.population['region-lower-austria']!) + total(state.population['region-other']!);
+    expect(after).toBeCloseTo(before, 5);
+    expect(state.population['region-other']!.migrations).toBeCloseTo(10, 5);
   });
 });

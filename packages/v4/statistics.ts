@@ -1,5 +1,8 @@
 import {
   MACRO_DEFAULT_PARAMETERS,
+  POPULATION_MAX_AGE,
+  moveBackgroundCohorts,
+  normalizeUnnamedCohorts,
   personAgeBand,
   populationTotal,
   type MacroParameters,
@@ -7,6 +10,7 @@ import {
   type MacroState,
   type PopulationAgeBand,
   type PopulationByAgeBand,
+  type PopulationSex,
   type RegionalPopulation,
 } from './macro.js';
 import { ageAt, type Person, type WorldDate, type WorldState } from './domain.js';
@@ -310,7 +314,10 @@ export function recoveryRisk(age: number, parameters: MacroParameters): number {
 function emptyPopulation(regionId: string, date: WorldDate): RegionalPopulation {
   return {
     regionId,
-    unnamedByAgeBand: { '0-4': 0, '5-14': 0, '15-44': 0, '45-64': 0, '65+': 0 },
+    unnamedByAgeSex: {
+      female: Array.from({ length: POPULATION_MAX_AGE + 1 }, () => 0),
+      male: Array.from({ length: POPULATION_MAX_AGE + 1 }, () => 0),
+    },
     namedAlive: 0,
     births: 0,
     deaths: 0,
@@ -319,9 +326,36 @@ function emptyPopulation(regionId: string, date: WorldDate): RegionalPopulation 
   };
 }
 
+function cohortRisk(
+  age: number,
+  sex: PopulationSex,
+  parameters: MacroParameters,
+  date: WorldDate,
+): number {
+  // The statistical risk function only reads age, roles and health. A minimal
+  // cohort person lets the aggregate population use exactly the same formula
+  // as named people without creating Person rows.
+  const person = {
+    born: { year: date.year - age, month: 1 },
+    roles: [],
+    health: { postpartumUntil: undefined },
+  } as unknown as Person;
+  return estimateAnnualRisks(person, date, {
+    id: 'cohort',
+    name: 'cohort',
+    scope: 'region',
+    effectiveFrom: date,
+    parameters,
+    source: 'aggregate',
+  }).total;
+}
+
 /**
- * Advance the unnamed aggregate population by one year. Named Persons are not
- * included in these cohorts; namedAlive is tracked separately on the ledger.
+ * Advance the unnamed aggregate population by one year.
+ *
+ * Single-year × sex cohorts age exactly one step. Births are added at age 0,
+ * deaths are removed from the exact age/sex cell, and no migration is silently
+ * invented here; cross-region moves go through `moveBackgroundCohorts`.
  */
 export function advanceAggregatePopulation(
   population: RegionalPopulation,
@@ -329,66 +363,46 @@ export function advanceAggregatePopulation(
   date: WorldDate,
   namedAlive: number,
 ): RegionalPopulation {
+  const cohorts = normalizeUnnamedCohorts(population);
+  const aged: RegionalPopulation['unnamedByAgeSex'] = {
+    female: Array.from({ length: POPULATION_MAX_AGE + 1 }, () => 0),
+    male: Array.from({ length: POPULATION_MAX_AGE + 1 }, () => 0),
+  };
+  for (const sex of ['female', 'male'] as const) {
+    for (let age = 0; age <= POPULATION_MAX_AGE; age += 1) {
+      const nextAge = Math.min(POPULATION_MAX_AGE, age + 1);
+      aged[sex][nextAge] += cohorts[sex][age] ?? 0;
+    }
+  }
   const next: RegionalPopulation = {
     ...structuredClone(population),
-    unnamedByAgeBand: { ...population.unnamedByAgeBand },
+    unnamedByAgeSex: aged,
     namedAlive,
     births: 0,
     deaths: 0,
     migrations: 0,
     lastUpdated: { ...date },
   };
-  // Age the aggregate cohorts forward. This is a five-band approximation, not
-  // a full demography model; it keeps total population and age structure
-  // internally consistent without creating unnamed Person rows.
-  const aging: PopulationByAgeBand = {
-    '0-4': 0,
-    '5-14': 0,
-    '15-44': 0,
-    '45-64': 0,
-    '65+': 0,
-  };
-  const move = (from: PopulationAgeBand, to: PopulationAgeBand, fraction: number) => {
-    const amount = next.unnamedByAgeBand[from] * fraction;
-    next.unnamedByAgeBand[from] -= amount;
-    aging[to] += amount;
-  };
-  move('0-4', '5-14', 0.2);
-  move('5-14', '15-44', 0.1);
-  move('15-44', '45-64', 0.02);
-  move('45-64', '65+', 0.04);
-  for (const band of AGE_BANDS) {
-    next.unnamedByAgeBand[band] += aging[band];
-  }
-  // Births among the unnamed population. The fertility rate is deliberately
-  // coarse and applies only to the 15-44 cohort.
-  const women = next.unnamedByAgeBand['15-44'] * 0.5;
-  const births = Math.round(women * 0.065);
-  next.unnamedByAgeBand['0-4'] += births;
-  next.births = births;
-  const food = clamp(parameters.foodSupply, 0, 1);
-  const sanitation = clamp(parameters.sanitation, 0, 1);
-  const care = clamp(parameters.healthcare, 0, 1);
-  const infection = 0.7 + (1 - sanitation) * 1.2;
-  const foodMod = 1 + (1 - food) * 1.8;
-  const careMod = 1.25 - care * 0.65;
-  for (const band of AGE_BANDS) {
-    const hazard =
-      ageBandBaselineHazard(band) *
-      infection *
-      (band === '0-4' ? foodMod : 1) *
-      (band === '65+' ? 1 : careMod);
-    const dead = Math.round(next.unnamedByAgeBand[band] * clamp(hazard, 0, 0.5));
-    next.unnamedByAgeBand[band] = Math.max(0, next.unnamedByAgeBand[band] - dead);
-    next.deaths += dead;
-  }
-  const outflow = Math.round(
-    (next.unnamedByAgeBand['15-44'] + next.unnamedByAgeBand['45-64']) *
-      0.003 *
-      clamp(parameters.migrationPressure, 0, 1),
+  delete next.unnamedByAgeBand;
+
+  const women = Array.from({ length: 30 }, (_, index) => index + 15).reduce(
+    (sum, age) => sum + (aged.female[age] ?? 0),
+    0,
   );
-  next.unnamedByAgeBand['15-44'] = Math.max(0, next.unnamedByAgeBand['15-44'] - outflow);
-  next.migrations = -outflow;
+  const births = women * 0.065;
+  aged.female[0] += births * 0.488;
+  aged.male[0] += births * 0.512;
+  next.births = births;
+
+  for (const sex of ['female', 'male'] as const) {
+    for (let age = 0; age <= POPULATION_MAX_AGE; age += 1) {
+      const count = aged[sex][age] ?? 0;
+      if (count <= 0) continue;
+      const dead = count * clamp(cohortRisk(age, sex, parameters, date), 0, 0.5);
+      aged[sex][age] = Math.max(0, count - dead);
+      next.deaths += dead;
+    }
+  }
   return next;
 }
 
@@ -414,6 +428,33 @@ export function updateMacroPopulation(
       date,
       namedAlive,
     );
+  }
+  // Migration pressure moves real cohort members between regions. The source
+  // and destination both change, so the world total is conserved.
+  const destinations = Object.values(next.regions).sort(
+    (a, b) =>
+      b.parameters.foodSupply +
+      b.parameters.stability -
+      (a.parameters.foodSupply + a.parameters.stability),
+  );
+  for (const source of Object.values(next.regions)) {
+    if (source.parameters.migrationPressure <= 0.01) continue;
+    const destination = destinations.find((candidate) => candidate.id !== source.id);
+    if (!destination) continue;
+    const sourcePopulation = next.population[source.id];
+    const destinationPopulation = next.population[destination.id];
+    if (!sourcePopulation || !destinationPopulation) continue;
+    const cohorts = normalizeUnnamedCohorts(sourcePopulation);
+    const moves: { age: number; sex: 'female' | 'male'; count: number }[] = [];
+    for (const sex of ['female', 'male'] as const) {
+      for (let age = 18; age <= 40; age += 1) {
+        const count = Math.floor(
+          (cohorts[sex][age] ?? 0) * 0.002 * source.parameters.migrationPressure,
+        );
+        if (count > 0) moves.push({ age, sex, count });
+      }
+    }
+    moveBackgroundCohorts(next, source.id, destination.id, moves);
   }
   return next;
 }
@@ -446,7 +487,9 @@ export function populationSummary(state: MacroState): {
   let unnamed = 0;
   for (const population of Object.values(state.population)) {
     named += population.namedAlive;
-    unnamed += Object.values(population.unnamedByAgeBand).reduce((sum, value) => sum + value, 0);
+    const cohorts = normalizeUnnamedCohorts(population);
+    unnamed += cohorts.female.reduce((sum, value) => sum + value, 0);
+    unnamed += cohorts.male.reduce((sum, value) => sum + value, 0);
   }
   return { named, unnamed, total: named + unnamed };
 }

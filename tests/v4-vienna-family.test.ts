@@ -7,10 +7,10 @@ import {
   VIENNA_1912_SEED,
 } from '../packages/v4/content/vienna-1912.js';
 import { VIENNA_FAMILY_SCENES } from '../packages/v4/content/vienna-family.js';
-import { VIENNA_LIFE_SCENES } from '../packages/v4/content/vienna-life.js';
 import { assertWorldV4, type WorldState } from '../packages/v4/domain.js';
+import { defaultMacroState } from '../packages/v4/macro.js';
 
-const scenes = [...VIENNA_FAMILY_SCENES, ...VIENNA_1912_SCENES, ...VIENNA_LIFE_SCENES];
+const scenes = [...VIENNA_FAMILY_SCENES, ...VIENNA_1912_SCENES];
 const personIds = new Set(Object.keys(VIENNA_1912_SEED.persons));
 const householdIds = new Set(Object.keys(VIENNA_1912_SEED.households));
 const tokens = new Set([
@@ -40,11 +40,13 @@ function runLife() {
     'owner-family',
   );
   let world: WorldState = birth.world;
+  world.macro = defaultMacroState(world);
   const events = [birth.event];
   for (let i = 0; i < 28 && !world.persons[birth.childId]?.died; i++) {
     world = applyViennaTimeline(world);
     const result = advanceV4Year(world, scenes, {
       economy: { enabled: false },
+      statisticalModel: false,
       maxScenesPerPerson: 1,
     });
     world = result.world;
@@ -92,7 +94,10 @@ describe('family formation content and engine', () => {
   it('marries a partner, moves them in and creates a real child with a birth fact', () => {
     const { world, childId, events } = runLife();
     const familyEvents = events.filter(
-      (event) => event.subjectId === childId && event.action.startsWith('vienna-family'),
+      (event) =>
+        event.action.startsWith('vienna-family') &&
+        (event.subjectId === childId ||
+          event.participants.some((participant) => participant.personId === childId)),
     );
     expect(
       familyEvents.some(

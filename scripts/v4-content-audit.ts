@@ -7,6 +7,7 @@ import { defaultMacroState, syncMacroPressures } from '../packages/v4/macro.js';
 import { applyScenarioToMacro, type MacroScenarioName } from '../packages/v4/macro-scenarios.js';
 import { populationSummary } from '../packages/v4/statistics.js';
 import { VIENNA_LIFE_SCENES } from '../packages/v4/content/vienna-life.js';
+import { VIENNA_DEVELOPMENT_SCENES } from '../packages/v4/content/vienna-developments.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
 import { GENERATED_PACKS, GENERATED_SCENES } from '../packages/v4/content/generated/index.js';
 import { validateGeneratedPack } from '../packages/v4/generated.js';
@@ -33,6 +34,7 @@ world = birth.world;
 const scenes = [
   ...VIENNA_1912_SCENES,
   ...VIENNA_LIFE_SCENES,
+  ...VIENNA_DEVELOPMENT_SCENES,
   ...VIENNA_FAMILY_RUNTIME_SCENES,
   ...GENERATED_SCENES,
 ];
@@ -41,6 +43,7 @@ const sceneInstances: SceneInstance[] = [];
 const warnings: { code: string; message: string; personId?: string; sceneId?: string }[] = [];
 const scenesByYear: number[] = [];
 for (let i = 0; i < years; i += 1) {
+  const yearStarted = Date.now();
   if (scenario) {
     world.macro = applyScenarioToMacro(world.macro!, scenario, world.date.year);
     syncMacroPressures(world, world.macro);
@@ -55,6 +58,18 @@ for (let i = 0; i < years; i += 1) {
   sceneInstances.push(...result.scenes);
   warnings.push(...result.diagnostics.warnings);
   scenesByYear.push(result.events.length);
+  if (process.env.V4_AUDIT_VERBOSE) {
+    console.error(
+      JSON.stringify({
+        year: world.date.year,
+        ms: Date.now() - yearStarted,
+        persons: Object.keys(world.persons).length,
+        alive: Object.values(world.persons).filter((person) => !person.died).length,
+        events: events.length,
+        heapMB: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+      }),
+    );
+  }
 }
 
 const sceneById = new Map(scenes.map((scene) => [scene.id, scene]));

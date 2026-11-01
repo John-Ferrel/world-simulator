@@ -1,5 +1,7 @@
 # v4 Phase 3 实现与验收报告：宏观世界、统计风险与 LLM Director
 
+> Phase 4 已继续实现单岁人口、背景人口具名化、WorldDevelopment/组织、运行时 Content Author 和具名反事实；最新验收见 [phase-4-report.md](phase-4-report.md)。本页 Phase 3 数据保留为历史阶段。
+
 日期：2026-11-01  
 范围：基于 v4 `c9fa220` / Phase 2 复盘 `caf356c` 之后的 Phase 3 实现。  
 原则：明确区分 **已实现**、**测试验证**、**仍是假设**、**尚未完成**。不以测试数量或字段数量代替游戏质量。

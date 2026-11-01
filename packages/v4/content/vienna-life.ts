@@ -2008,4 +2008,84 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
     historicalBasis:
       'Work injuries and wound infections were common in Vienna; treatment depended on household cash and access to a doctor.',
   },
+
+  {
+    id: 'vienna-life-literacy-gate',
+    version: 1,
+    packId: PACK,
+    title: '一张能读懂的纸',
+    stage: 'childhood',
+    ageWindow: { min: 6, max: 14 },
+    subjectProvenance: ['birth', 'initial'],
+    cooldownYears: 2,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 6, maxAge: 14 },
+      { key: 'neighbor', kind: 'neighbor', required: false, minAge: 18, maxAge: 70 },
+    ],
+    conditions: [
+      { kind: 'age', min: 6, max: 14 },
+      { kind: 'capability', capability: 'literacy' },
+    ],
+    tags: ['education', 'literacy', 'family'],
+    rate: 0.4,
+    outcomes: [
+      {
+        id: 'read-the-rent-notice',
+        weight: 0.55,
+        immediateText:
+          '{subject}把房东塞进门缝的通知读给家里人听。纸上写着下个月的房租和一行很小的附加费；母亲让{subject}再读一遍，确认自己没有听错。',
+        effects: [
+          {
+            type: 'skill',
+            personId: '$subject',
+            skill: 'literacy',
+            amount: 0.04,
+            reason: 'read a rent notice',
+          },
+          { type: 'mood', personId: '$subject', amount: 0.02, reason: 'useful reading' },
+        ],
+      },
+      {
+        id: 'teach-a-neighbor',
+        weight: 0.3,
+        immediateText:
+          '邻居拿来一张药房的说明，问{subject}上面写的是什么。{subject}一字一字念完，邻居把药名记在手心，临走时塞给{subject}一块糖。',
+        effects: [
+          {
+            type: 'skill',
+            personId: '$subject',
+            skill: 'social',
+            amount: 0.03,
+            reason: 'read for a neighbor',
+          },
+          {
+            type: 'relation',
+            a: '$subject',
+            b: '$neighbor',
+            kind: 'acquaintance',
+            trust: 0.03,
+            reason: 'read a medicine label',
+          },
+        ],
+      },
+      {
+        id: 'hide-the-letter',
+        weight: 0.15,
+        immediateText:
+          '{subject}把一封写给父亲的信藏进课本里。信上说工厂要缩短工时；{subject}读得懂，却不知道该不该在晚饭前说出来。',
+        effects: [
+          { type: 'mood', personId: '$subject', amount: -0.02, reason: 'a difficult letter' },
+          {
+            type: 'flag',
+            personId: '$subject',
+            flag: 'read_family_letter',
+            add: true,
+            reason: 'read a private letter',
+          },
+        ],
+      },
+    ],
+    sourceIds: ['source-oeaw-wiener-arbeiterhaushalte-1912'],
+    ...viennaBasis,
+  },
 ];

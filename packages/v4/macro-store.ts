@@ -2,11 +2,13 @@ import { pool } from '../storage/index.js';
 import {
   applyMacroProposal,
   defaultMacroState,
+  materializeDevelopments,
   validateMacroProposal,
   type MacroProposal,
   type MacroState,
 } from './macro.js';
 import { loadV4World, type V4WorldMeta } from './store.js';
+import { enqueueV4ContentJob } from './content-runtime-store.js';
 
 /**
  * Phase 3 Director queue and application.
@@ -132,13 +134,26 @@ export async function applyV4MacroProposal(
       state,
       knownFamilies,
     });
-    const next = applyMacroProposal(state, safe, currentDate, model, proposalId);
+    let next = applyMacroProposal(state, safe, currentDate, model, proposalId);
+    next = materializeDevelopments(currentWorld, next, safe, proposalId, currentDate);
     const revision = Number(row.revision) + 1;
     await client.query('UPDATE v4_worlds SET revision=$2,macro=$3 WHERE id=$1', [
       worldId,
       revision,
       JSON.stringify(next),
     ]);
+    // New development organizations are real entities, not just macro text.
+    for (const development of Object.values(next.developments ?? {})) {
+      if (!development.organizationId) continue;
+      const organization = currentWorld.organizations[development.organizationId];
+      if (!organization) continue;
+      await client.query(
+        `INSERT INTO v4_organizations(world_id,id,payload)
+         VALUES($1,$2,$3)
+         ON CONFLICT(world_id,id) DO NOTHING`,
+        [worldId, organization.id, JSON.stringify(organization)],
+      );
+    }
     await client.query(
       `UPDATE v4_macro_proposals
        SET status='applied', proposal=$3, model=$2, applied_revision=$4, updated_at=now()
@@ -146,6 +161,17 @@ export async function applyV4MacroProposal(
       [proposalId, model, JSON.stringify(safe), revision],
     );
     await client.query('COMMIT');
+    // A supported development can request new runtime content. The content
+    // worker generates/validates/publishes it outside this transaction; the
+    // simulator picks it up on the next tick.
+    for (const development of Object.values(safe.developments)) {
+      if (development.type !== 'social_change') continue;
+      await enqueueV4ContentJob(
+        worldId,
+        'vienna-social-movement',
+        development.description.slice(0, 300),
+      ).catch(() => undefined);
+    }
     return { revision, macro: next };
   } catch (error) {
     await client.query('ROLLBACK').catch(() => undefined);

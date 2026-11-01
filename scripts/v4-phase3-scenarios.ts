@@ -1,6 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { MACRO_SCENARIOS, type MacroScenarioName } from '../packages/v4/macro-scenarios.js';
 import { advanceAggregatePopulation, estimateAnnualRisks } from '../packages/v4/statistics.js';
+import { populationFromAgeBands } from '../packages/v4/macro.js';
 import { MACRO_DEFAULT_REGION } from '../packages/v4/macro.js';
 import type { MacroParameters, RegionalPopulation } from '../packages/v4/macro.js';
 import type { Person, WorldDate } from '../packages/v4/domain.js';
@@ -80,21 +81,12 @@ function underFive(params: MacroParameters): number {
 const results: any[] = [];
 for (const name of scenarios) {
   const profile = MACRO_SCENARIOS[name];
-  let population: RegionalPopulation = {
-    regionId: MACRO_DEFAULT_REGION,
-    unnamedByAgeBand: {
-      '0-4': 80000,
-      '5-14': 150000,
-      '15-44': 430000,
-      '45-64': 200000,
-      '65+': 70000,
-    },
-    namedAlive: 26,
-    births: 0,
-    deaths: 0,
-    migrations: 0,
-    lastUpdated: start,
-  };
+  let population: RegionalPopulation = populationFromAgeBands(
+    MACRO_DEFAULT_REGION,
+    { '0-4': 80000, '5-14': 150000, '15-44': 430000, '45-64': 200000, '65+': 70000 },
+    26,
+    start,
+  );
   const yearly: any[] = [];
   for (let year = 1912; year <= 1920; year += 1) {
     const params = profile.parametersForYear(year);
@@ -104,7 +96,8 @@ for (const name of scenarios) {
       births: population.births,
       deaths: population.deaths,
       total:
-        Object.values(population.unnamedByAgeBand).reduce((a, b) => a + b, 0) +
+        population.unnamedByAgeSex.female.reduce((a, b) => a + b, 0) +
+        population.unnamedByAgeSex.male.reduce((a, b) => a + b, 0) +
         population.namedAlive,
     });
   }

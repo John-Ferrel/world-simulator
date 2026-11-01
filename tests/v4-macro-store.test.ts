@@ -28,7 +28,15 @@ const proposal: MacroProposal = {
   summary: 'test food shortage',
   confidence: 0.7,
   maintainStatus: false,
-  developments: [{ type: 'food_shortage', description: 'test', severity: 0.6 }],
+  developments: [
+    {
+      type: 'social_change',
+      description: 'test organization',
+      severity: 0.6,
+      organization: { name: 'Test Movement', kind: 'other' },
+      eventFamilyIds: ['vienna-social-movement'],
+    },
+  ],
   parameterChanges: { foodSupply: -0.2, warIntensity: 0.1 },
   eventPoolChanges: [],
 };
@@ -41,6 +49,7 @@ describe.skipIf(!enabled)('v4 macro store integration', () => {
   afterAll(async () => {
     for (const table of [
       'v4_macro_proposals',
+      'v4_content_jobs',
       'v4_birth_contracts',
       'v4_events',
       'v4_scenes',
@@ -79,7 +88,7 @@ describe.skipIf(!enabled)('v4 macro store integration', () => {
       proposal,
       'test-model',
       claimed!.id,
-      new Set(['vienna-market-household']),
+      new Set(['vienna-market-household', 'vienna-social-movement']),
     );
     const after = await loadV4World(worldId);
     const latest = await v4WorldMeta(worldId);
@@ -89,5 +98,8 @@ describe.skipIf(!enabled)('v4 macro store integration', () => {
       5,
     );
     expect(latest?.macro?.history).toHaveLength(1);
+    const development = Object.values(after?.macro?.developments ?? {})[0];
+    expect(development?.organizationId).toBeDefined();
+    expect(after?.organizations[development!.organizationId!]?.name).toBe('Test Movement');
   });
 });

@@ -11,6 +11,7 @@ import { GENERATED_PACKS } from './content/generated/index.js';
 import { VIENNA_1912_SCENES } from './content/vienna-1912.js';
 import { VIENNA_LIFE_SCENES } from './content/vienna-life.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from './content/vienna-family.js';
+import { PHASE4_FAMILY_BRIEFS } from './content-author/phase4-briefs.js';
 
 /**
  * Known event families are derived from the compiled content, not invented by
@@ -19,6 +20,7 @@ import { VIENNA_FAMILY_RUNTIME_SCENES } from './content/vienna-family.js';
 export function knownMacroFamilyIds(): string[] {
   const ids = new Set<string>();
   for (const pack of GENERATED_PACKS) ids.add(pack.id);
+  for (const brief of PHASE4_FAMILY_BRIEFS) ids.add(brief.id);
   for (const scene of [
     ...VIENNA_1912_SCENES,
     ...VIENNA_LIFE_SCENES,
@@ -48,9 +50,11 @@ function schemaExample(): string {
       maintainStatus: false,
       developments: [
         {
-          type: 'food_shortage',
-          description: '铁路优先运送军需，维也纳的面包和土豆配给下降。',
+          type: 'social_change',
+          description: '一个由印刷工和女工组成的地下反战组织在利奥波德城出现。',
           severity: 0.7,
+          organization: { name: 'Leopoldstadt Anti-War Group', kind: 'other' },
+          eventFamilyIds: ['vienna-social-movement'],
         },
       ],
       parameterChanges: {
@@ -88,7 +92,8 @@ export function macroDirectorMessages(
 - 事件池只能引用 availableFamilies 中已有的 familyId；weightMultiplier 0..3。
 - 不要把出生时预期寿命、年死亡人数等最终统计直接写成参数。用战争、粮食、卫生、医疗、稳定度等条件表达。
 - 如果当前世界没有发生现实中的战争，不要凭空强制制造 1914 年战争伤亡；世界线可以偏离现实。
-- 如果历史发展无法由现有参数/事件池表达，写进 developments，并在 summary 中说明能力缺口；不要偷偷降级成一句 chronicle。
+- 如果历史发展是新的组织/社会运动，developments 中可带 organization（名称、类型、可选 placeId）和 eventFamilyIds；organization 会由 Engine 创建为真实 Organization，eventFamilyIds 只能引用 availableFamilies 中的内容族。
+- 如果历史发展无法由现有参数/事件池/组织表达，写进 developments，并在 summary 中说明能力缺口；不要偷偷降级成一句 chronicle。
 - 可以返回“维持现状”：parameterChanges 和 eventPoolChanges 都为空时必须让 developments 为空，并明确 summary 为维持现状。除此之外不要返回空提案。
 - 只输出 JSON，不要 Markdown。
 

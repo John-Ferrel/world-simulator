@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "regionId": "region-lower-austria",
+  "effectiveFrom": {
+    "year": 1917,
+    "month": 1
+  },
+  "durationMonths": 12,
+  "summary": "战时经济持续，维也纳和下奥地利出现粮食短缺、霍乱风险和社会动荡；克莱斯特新堡受波及较轻。",
+  "confidence": 0.7,
+  "maintainStatus": false,
+  "developments": [
+    {
+      "type": "social_change",
+      "description": "维也纳出现由妇女和青年工人组成的非正式反战网络，抗议粮食短缺和战争持续。",
+      "severity": 0.6,
+      "organization": {
+        "name": "Vienna Women's Anti-War Committee",
+        "kind": "other"
+      },
+      "eventFamilyIds": [
+        "vienna-social-movement",
+        "vienna-wartime-homefront"
+      ]
+    },
+    {
+      "type": "other",
+      "description": "霍乱在维也纳部分街区爆发，市政卫生部门加强供水消毒和隔离措施。",
+      "severity": 0.7,
+      "organization": {
+        "name": "Vienna Sanitary Commission",
+        "kind": "other"
+      },
+      "eventFamilyIds": [
+        "vienna-illness-household",
+        "vienna-medical-treatment"
+      ]
+    }
+  ],
+  "parameterChanges": {
+    "warIntensity": 0.1,
+    "militaryExposure": 0.05,
+    "civilianExposure": 0.1,
+    "foodSupply": -0.15,
+    "stability": -0.05,
+    "unemployment": 0.08,
+    "epidemicCholera": 0.15,
+    "epidemicTyphus": 0.05,
+    "sanitation": -0.1
+  },
+  "eventPoolChanges": [
+    {
+      "familyId": "vienna-wartime-homefront",
+      "weightMultiplier": 1.6
+    },
+    {
+      "familyId": "vienna-illness-household",
+      "weightMultiplier": 1.4
+    },
+    {
+      "familyId": "vienna-medical-treatment",
+      "weightMultiplier": 1.3
+    }
+  ]
+}
