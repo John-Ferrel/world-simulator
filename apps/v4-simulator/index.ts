@@ -34,8 +34,12 @@ if (!lock) {
 await migrateV4();
 await enqueueMissingV4BirthContracts();
 if (!(await activeV4WorldMeta())) {
-  await seedV4World(VIENNA_1912_SEED);
-  console.log('v4 simulator: seeded Vienna 1912');
+  // World ids are never reused: archived worlds keep their id, so a fresh
+  // automatic seed gets a new stable suffix instead of colliding with history.
+  const seed = structuredClone(VIENNA_1912_SEED);
+  seed.id = `${seed.id}-v${Date.now().toString(36)}`;
+  await seedV4World(seed);
+  console.log('v4 simulator: seeded Vienna 1912', seed.id);
 }
 
 let stopped = false;

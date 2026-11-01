@@ -249,19 +249,20 @@ async function writeEntities(client: any, world: WorldState) {
     ['v4_knowledge', world.knowledge],
   ];
   for (const [table, records] of tables) {
-    await client.query(`DELETE FROM ${table} WHERE world_id=$1`, [world.id]);
     const values = Object.values(records);
     if (values.length === 0) continue;
     await client.query(
       `INSERT INTO ${table}(world_id,id,payload)
-       SELECT $1, item->>'id', item FROM jsonb_array_elements($2::jsonb) AS item`,
+       SELECT $1, item->>'id', item FROM jsonb_array_elements($2::jsonb) AS item
+       ON CONFLICT(world_id,id) DO UPDATE SET payload=EXCLUDED.payload`,
       [world.id, JSON.stringify(values)],
     );
   }
-  await client.query('DELETE FROM v4_scenes WHERE world_id=$1', [world.id]);
   if (world.scenes.length)
     await client.query(
-      `INSERT INTO v4_scenes(world_id,id,payload) SELECT $1,item->>'id',item FROM jsonb_array_elements($2::jsonb) AS item`,
+      `INSERT INTO v4_scenes(world_id,id,payload)
+       SELECT $1,item->>'id',item FROM jsonb_array_elements($2::jsonb) AS item
+       ON CONFLICT(world_id,id) DO UPDATE SET payload=EXCLUDED.payload`,
       [world.id, JSON.stringify(world.scenes)],
     );
 }

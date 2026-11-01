@@ -1489,7 +1489,15 @@ function eventRate(
   }
   if (subject.ownerId) rate *= 2.5;
   const capability = subject.life?.flags.find((flag) => flag.startsWith('capability:'))?.slice(11);
-  if (capability && definition.tags.includes(capability)) rate *= 1.2;
+  const capabilityTags: Record<string, string[]> = {
+    literacy: ['education', 'school'],
+    numeracy: ['work', 'market'],
+    craft: ['work', 'apprentice'],
+    social: ['social', 'family'],
+    health: ['health', 'infancy'],
+  };
+  if (capability && capabilityTags[capability]?.some((tag) => definition.tags.includes(tag)))
+    rate *= 1.2;
   const mood = subject.life?.mood ?? 0;
   if (definition.tags.includes('social') || definition.tags.includes('family')) {
     rate *= mood >= 0.25 ? 1.15 : mood <= -0.35 ? 0.8 : 1;
@@ -1511,7 +1519,7 @@ function scheduleFollowups(
   if (depth >= 3) return;
   const queue = context.world.historyMeta.scheduledEvents ?? [];
   for (const sceneId of outcome.followupSceneIds ?? []) {
-    const due = addMonths(date, 12);
+    const due = { year: date.year + 1, month: 1 };
     const id = `queue:${event.id}:${sceneId}:${subject.id}`;
     if (queue.some((item) => item.id === id)) continue;
     queue.push({
@@ -1705,7 +1713,27 @@ function runEventYear(
         recordBlocked(context, chosen.definition, subject, cast.roles, 'no_eligible_outcome', date);
         continue;
       }
-      resolveScene(context, chosen.definition, subject, cast.roles, selection, date, 0);
+      const eventMonth =
+        1 +
+        (Math.floor(
+          seededRng(
+            context.world.seed,
+            'event-month',
+            chosen.definition.id,
+            subject.id,
+            date.year,
+          )() * 12,
+        ) %
+          12);
+      resolveScene(
+        context,
+        chosen.definition,
+        subject,
+        cast.roles,
+        selection,
+        { year: date.year, month: eventMonth },
+        0,
+      );
       ordinary += 1;
       resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
       subject = context.world.persons[personId];
@@ -2667,7 +2695,7 @@ function applyInteraction(
     interaction.created = { ...binding.date };
   }
   if (!interaction.due || !isWorldDate(interaction.due)) {
-    interaction.due = addMonths(binding.date, 12);
+    interaction.due = { year: binding.date.year + 1, month: 1 };
   }
   if (interaction.linkedProjectId && !context.world.projects[interaction.linkedProjectId]) {
     return undefined;

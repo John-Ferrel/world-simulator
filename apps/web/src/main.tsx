@@ -22,7 +22,12 @@ type PersonSummary = {
   householdId: string;
   roles: string[];
   education: { status: string; level: number; placeId?: string };
-  lifeContract?: { originalWish: string; mode: string; interpretation?: string };
+  lifeContract?: {
+    originalWish: string;
+    mode: string;
+    interpretation?: string;
+    privateGoal?: string;
+  };
   appearance: Appearance;
 };
 type LogEvent = {
@@ -824,6 +829,12 @@ function PersonPane({
             <div className="wish-note">
               <span>对这个愿望的读法</span>
               {person.lifeContract.interpretation}
+            </div>
+          )}
+          {person.lifeContract.privateGoal && (
+            <div className="wish-note">
+              <span>私人目标</span>
+              {person.lifeContract.privateGoal}
             </div>
           )}
         </div>
