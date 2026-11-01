@@ -6,12 +6,20 @@ import childhoodFriends from './vienna-childhood-friends.json';
 import earlyChildhood from './vienna-early-childhood.json';
 import infant from './vienna-infant-household.json';
 import church from './vienna-church-community.json';
+import courtshipCourtyard from './vienna-courtship-courtyard.json';
 import elder from './vienna-elder-care.json';
+import elderBereavement from './vienna-elder-bereavement.json';
+import housingMove from './vienna-housing-move.json';
 import illness from './vienna-illness-household.json';
 import market from './vienna-market-household.json';
+import marketDebt from './vienna-market-debt.json';
+import medicalTreatment from './vienna-medical-treatment.json';
+import parishAid from './vienna-parish-aid.json';
 import printshop from './vienna-printshop-daily.json';
 import school from './vienna-school-childhood.json';
 import tenement from './vienna-tenement-neighbors.json';
+import womenHousework from './vienna-women-housework.json';
+import youthThreshold from './vienna-youth-threshold.json';
 import {
   compileGeneratedPack,
   validateGeneratedPack,
@@ -37,6 +45,14 @@ export const GENERATED_PACKS = [
   childhoodFriends,
   adolescence,
   adultSocial,
+  youthThreshold,
+  courtshipCourtyard,
+  housingMove,
+  medicalTreatment,
+  parishAid,
+  marketDebt,
+  womenHousework,
+  elderBereavement,
 ] as unknown as GeneratedPack[];
 
 export const GENERATED_SCENES = GENERATED_PACKS.flatMap((pack) => compileGeneratedPack(pack));

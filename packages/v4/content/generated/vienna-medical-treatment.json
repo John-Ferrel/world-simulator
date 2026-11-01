@@ -1,0 +1,714 @@
+{
+  "id": "vienna-medical-treatment",
+  "title": "诊所、医院与药费",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 75
+  },
+  "tags": [
+    "health",
+    "medical",
+    "family",
+    "money"
+  ],
+  "baseRate": 0.3,
+  "conditions": [
+    {
+      "kind": "health",
+      "max": 0.92
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-medical-treatment.night-fever",
+      "title": "夜里的高烧",
+      "weight": 1,
+      "rate": 0.09,
+      "conditions": [
+        {
+          "kind": "health",
+          "max": 0.75
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hospital-night",
+          "weight": 1,
+          "text": "邻居玛尔塔帮{subject}披上外套，搀到电车总站。综合医院急诊先收两克朗押金，{subject}掏遍口袋才凑齐，躺上观察床时天已蒙蒙亮。护士往额上敷冰袋，说至少要留到退烧。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "医院急诊押金"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "急诊观察和冰敷退烧"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "深夜陪同去医院"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hospital-night",
+              "text": "电车在环城大道上哐当响，玛尔塔攥着{subject}的胳膊，怕人从座位上滑下去。急诊厅的煤气灯发黄，长椅上全是咳嗽声，押金窗口的铜盘递出两克朗，换来一张硬纸号牌。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hospital-night",
+              "text": "护士把冰袋按在{subject}额上，水顺着鬓角流进衣领。玛尔塔坐在床脚，数着窗外渐渐亮起的铺面门板，说回去给炉子添块煤。隔壁床的老头整夜在喊一个女人的名字。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "corner-doctor",
+          "weight": 1,
+          "text": "玛尔塔跑去敲街角医生施特劳斯的门。医生睡眼惺忪地提着皮包上楼，摸完脉留下几包白色药粉和一瓶止咳糖浆，收了四克朗出诊费，叮嘱{subject}至少卧床两天。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "医生出诊费和药费"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "药粉和糖浆缓解症状"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "reason": "帮忙请医生"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "corner-doctor",
+              "text": "施特劳斯医生用酒精棉擦手，把药粉倒进小纸袋，折口时指甲掐出印子。他说夜里别再喝醋水，那东西烧胃。玛尔塔把炉火拨旺，在灶上坐了一壶水，答应第二天替{subject}去铺子里告假。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "corner-doctor",
+              "text": "药粉含在嘴里发苦，{subject}就着糖浆咽下去，喉头一阵凉。医生拎包出门时，楼梯间的煤气灯刚好灭了，玛尔塔摸黑送他到拐角，回来时手里攥着找回的几枚赫勒。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sweat-it-out",
+          "weight": 1,
+          "text": "{subject}摇头不让玛尔塔再去请人，只把湿布重新浸了醋水叠在额上。后半夜烧得嘴唇起皮，人缩在褥子里抖，玛尔塔守在床沿换了七八回布，天亮时烧退下去一点，省下了诊费。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "高烧硬熬伤身"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "exhaustion",
+              "add": true,
+              "reason": "整夜高烧未眠"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.06,
+              "reason": "邻居整夜照料"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sweat-it-out",
+              "text": "醋水的酸味混着汗气，屋子小得转不开身。玛尔塔把布拧到不滴水，敷上去时{subject}打了个激灵。窗外送奶车吱呀碾过石板，她才想起自己家的炉子还灭着。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sweat-it-out",
+              "text": "{subject}说胡话时念着车间的排班表，玛尔塔一句句应着，拿小勺往嘴里送温水。床头那半瓶退烧药早见了底，她没舍得倒最后一滴，留着天亮再说。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-medical-treatment.toothache",
+      "title": "拔牙的价钱",
+      "weight": 1,
+      "rate": 0.075,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 75
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "dentist-pull",
+          "weight": 1,
+          "text": "邻居汉斯陪{subject}走进玛丽亚希尔夫大街的牙医诊所。医生掰开嘴看了一眼，说这颗保不住，连拔带药棉收三克朗。钳子一拧，{subject}咬住纱布，腮帮子半天合不拢。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "牙医拔牙费用"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "拔除病牙解除疼痛"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "拔牙后的疼痛和花钱的心疼"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "dentist-pull",
+              "text": "诊室在二楼，楼梯间飘着石炭酸味。医生把钳子举到灯下看了看，叫{subject}攥紧扶手。汉斯站在门边数墙上的价目表：拔牙两克朗五十赫勒，药棉五十赫勒，连消炎水另算。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "dentist-pull",
+              "text": "钳子夹住牙根时，{subject}听见自己太阳穴里咯的一声。医生往牙槽里塞了团浸药棉，叫咬住别松。下楼时汉斯扶着胳膊，说嘴里的血味比啤酒苦多了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "barber-pull",
+          "weight": 1,
+          "text": "汉斯说街角理发师弗朗茨专管这个，只要一克朗二十赫勒。弗朗茨让{subject}坐在剃头椅上，拿钳子晃了两下就往外拽，疼得人眼前发白，但省下的钱够买两天的面包和煤。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "理发师拔牙收费"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "病牙被拔除但手法粗糙"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "粗暴拔牙的惊惧"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "barber-pull",
+              "text": "理发铺里还坐着等刮脸的老主顾，肥皂味和烟味混在一起。弗朗茨把围布往{subject}胸前一系，说忍着点。钳子第一次滑脱，第二次才夹稳，牙出来时带着一小块肉，他用明矾水按住了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "barber-pull",
+              "text": "汉斯在门口替{subject}捏着帽子，听见里面一声闷哼。弗朗茨把牙扔进搪瓷盘，说瞧这牙根都黑了。收钱时他多要了二十赫勒，算明矾水的钱，说下次别再拖成这样。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "drops-and-endure",
+          "weight": 1,
+          "text": "{subject}舍不得动钳子，只去药房买了瓶牙痛药水，花了六十赫勒。药水滴在棉球上咬住，凉一阵麻一阵，夜里还是一跳一跳地疼，半边脸肿得把眼镜腿都撑歪了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "牙痛药水"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "牙病拖延未治"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "tooth_abscess",
+              "add": true,
+              "reason": "牙齿感染未拔除"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "drops-and-endure",
+              "text": "药房伙计从褐色瓶里倒出药水，叮嘱别咽。汉斯在柜台边说，这玩意儿治标不治本。{subject}把棉球塞进嘴里，腮帮子鼓出一块，走回巷子时拿手帕捂着脸，怕风吹。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "drops-and-endure",
+              "text": "夜里疼醒时，{subject}摸黑往棉球上又滴药水，手抖得洒在枕头上。汉斯第二天一早来敲门，看见肿脸就说别硬撑了，可{subject}只是摆摆手，说再熬一天也许就好了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-medical-treatment.work-injury",
+      "title": "冲床咬住手指",
+      "weight": 0.9,
+      "rate": 0.075,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 65
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hospital-and-claim",
+          "weight": 1,
+          "text": "工头黑着脸让{worker}送{subject}去厂医那里，再转到综合医院缝合。手指保住了，但厂里只肯出药费，误工的钱要月底再谈。{employer}在考勤簿上记了一笔，说下不为例。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "电车和挂号自付部分"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "伤口缝合处理"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "工友陪护就医"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hospital-and-claim",
+              "text": "厂医拿镊子翻看伤口，酒精浇上去时{subject}的膝盖磕在桌腿上。{worker}替人举着胳膊，一路扶上电车。急诊医生缝了四针，说指甲那块肉怕是长不平了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hospital-and-claim",
+              "text": "挂号窗口的人问工伤还是私伤，{worker}抢着说是机器压的。收费单递出来时，{subject}看见厂里出的那栏只填了药棉和纱布，自己还得补一克朗五十赫勒电车费。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rag-and-work",
+          "weight": 1,
+          "text": "工头撕了条干净棉纱，叫{subject}自己缠上，说机器停了整条线都得等。{subject}把布条勒紧，血渗出来又压回去，咬着牙回到冲床前，那天下午的产量记了整班。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "手指伤口未妥善处理"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "wound_infection",
+              "add": true,
+              "reason": "伤口暴露在车间"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.03,
+              "fear": 0.05,
+              "reason": "被要求带伤上工"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rag-and-work",
+              "text": "棉纱缠了三圈，橙色碎屑沾在布面上。{subject}用左手推料，右手悬着不敢使劲，每压一下冲床，指根就跳一下。工头走过来瞥了一眼，说这才像干活的样子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rag-and-work",
+              "text": "{worker}趁工头走开，塞过来一小截胶布，说别让油泥进伤口。{subject}嗯了一声，换班铃响时指头上的布已经黑了一半，指甲盖下透着紫。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "union-rep",
+          "weight": 1,
+          "text": "{worker}把{subject}领到工会代表面前，说护罩少了螺丝不是头一回。代表翻开小本记下机器编号，答应陪{subject}去医院，费用由工会垫付，但要{employer}在事故单上签字，工头磨蹭半天才落笔。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "工会垫付后自理的零头"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "及时就医处理伤口"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "工友引荐工会代表"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "union_contact",
+              "add": true,
+              "reason": "与工会代表建立联系"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "union-rep",
+              "text": "工会代表从内袋掏出铅笔头，舔一下笔尖才写。事故单摊在工具箱上，工头说机器本来就该换了，代表不接话，只把编号念了两遍。{subject}举着伤手站在旁边，听见远处另一台冲床还在响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "union-rep",
+              "text": "去医院路上，代表教{subject}记住，工钱照发是厂里的规矩，不是谁的恩典。急诊缝针时{worker}守在外头，把工会的垫付收据折成方块放进{subject}的工装口袋。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-medical-treatment.sanatorium",
+      "title": "疗养院的车票",
+      "weight": 0.7,
+      "rate": 0.06,
+      "conditions": [
+        {
+          "kind": "health",
+          "max": 0.65
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sanatorium-go",
+          "weight": 1,
+          "text": "邻居安娜帮{subject}把床单和汤锅收进柜子，又去车站买了一张去巴登附近的疗养院车票，连预付的住宿押金一共十二克朗。{subject}咳嗽着上车，回头看见安娜在月台挥手。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -12,
+              "reason": "疗养院车票和住宿押金"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.12,
+              "reason": "疗养院松林空气和正规休养"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.12,
+              "reason": "邻居帮忙照看屋子并送站"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sanatorium-go",
+              "text": "安娜把钥匙拴在门后的钉子上，又反过来压了压窗栓。车票是硬纸的，打孔时咔嗒一声。{subject}在车厢里把诊断书摊在膝盖上，窗外最后几排厂房退远了，松树的味道从窗缝钻进来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sanatorium-go",
+              "text": "疗养院的护士接过行李，把床号写在小黑板上。{subject}躺下时听见走廊尽头有人在放唱片，咳嗽没那么紧了。安娜的信第三天到，说花浇过了，房东没来催租。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "home-rest",
+          "weight": 1,
+          "text": "{subject}把车票钱省下，留在家里窗边那张床上。安娜每天中午送一锅热汤，晚上再来收碗，房东太太嫌药味大，说再这样要扣清洁费，{subject}只好把火炉封小。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在家休养但条件有限"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居送来的热汤"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "房东要求的清洁费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "reason": "邻居每日送饭照料"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "home-rest",
+              "text": "安娜的汤锅外面包着旧毛巾，端进来时还烫手。{subject}靠着枕头喝，喝一半咳一半。房东太太在走廊里故意大声说，肺病可不是闹着玩的，安娜探出头去，说医生讲了不传染。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "home-rest",
+              "text": "炉子封小了，屋里凉得快，{subject}把大衣盖在被子上。安娜收碗时看见窗台上一排药瓶，没说什么，第二天多带了半块黑面包。楼下的管道工敲了一下午铁皮，咳嗽声混在里面听不真切。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ignore-diagnosis",
+          "weight": 1,
+          "text": "{subject}把诊断书折了两折塞进抽屉底，第二天照常去上工。车间里棉絮飞，咳起来就得停下扶住机台，工友递来一杯温水，说你怎么脸色这么差，{subject}只说夜里没睡好。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "肺病未治继续劳累"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "chronic_cough",
+              "add": true,
+              "reason": "咳嗽拖延成慢性"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "隐瞒病情的压抑"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ignore-diagnosis",
+              "text": "抽屉一推就卡住，{subject}用膝盖顶了一下才合严。上工路上经过药房，橱窗里摆着润肺糖浆的广告画，她别过头去。车间主任点名时，她应声比平时慢了一拍。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "ignore-diagnosis",
+              "text": "下午的活是搬纱锭，{subject}蹲下去再站起来眼前发黑，扶墙站了一会儿。工友老约瑟夫把自己的水杯推过来，说去诊所开个假条吧，她摇头，说假条要扣钱。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

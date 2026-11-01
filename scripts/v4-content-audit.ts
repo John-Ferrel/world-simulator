@@ -1,6 +1,7 @@
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { advanceV4Year } from '../packages/v4/engine.js';
 import { createV4Birth } from '../packages/v4/birth.js';
+import type { EventFact, SceneInstance } from '../packages/v4/domain.js';
 import {
   applyViennaTimeline,
   VIENNA_1912_SEED,
@@ -8,7 +9,11 @@ import {
 } from '../packages/v4/content/vienna-1912.js';
 import { VIENNA_LIFE_SCENES } from '../packages/v4/content/vienna-life.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
-import { GENERATED_SCENES } from '../packages/v4/content/generated/index.js';
+import {
+  GENERATED_PACKS,
+  GENERATED_SCENES,
+} from '../packages/v4/content/generated/index.js';
+import { validateGeneratedPack } from '../packages/v4/generated.js';
 
 const years = Number(process.argv[2] ?? 80);
 let world = structuredClone(VIENNA_1912_SEED);
@@ -22,7 +27,7 @@ const birth = createV4Birth(
     lifeMode: 'ordinary',
     appearance: { skin: 1, hair: 0, clothes: 2, doll: { bodyType: 'female' } },
   },
-  `audit-${Date.now().toString(36)}`,
+  `audit-content-${years}`,
   'audit-owner',
 );
 world = birth.world;
@@ -32,9 +37,10 @@ const scenes = [
   ...VIENNA_FAMILY_RUNTIME_SCENES,
   ...GENERATED_SCENES,
 ];
-const events = [];
-const warnings = [];
-const scenesByYear = [];
+const events: EventFact[] = [];
+const sceneInstances: SceneInstance[] = [];
+const warnings: { code: string; message: string; personId?: string; sceneId?: string }[] = [];
+const scenesByYear: number[] = [];
 for (let i = 0; i < years; i += 1) {
   world = applyViennaTimeline(world);
   const result = advanceV4Year(world, scenes, {
@@ -44,13 +50,39 @@ for (let i = 0; i < years; i += 1) {
   });
   world = result.world;
   events.push(...result.events);
+  sceneInstances.push(...result.scenes);
   warnings.push(...result.diagnostics.warnings);
   scenesByYear.push(result.events.length);
 }
+
+const sceneById = new Map(scenes.map((scene) => [scene.id, scene]));
+const generatedFamilyIds = new Set(GENERATED_PACKS.map((pack) => pack.id));
+
+function eventScene(event: EventFact) {
+  const sceneId = event.action.split('/')[0]!;
+  return sceneById.get(sceneId);
+}
+
+function eventFamily(event: EventFact): string {
+  const definition = eventScene(event);
+  return definition?.familyId ?? definition?.id ?? event.action.split('/')[0]!;
+}
+
+function eventStage(event: EventFact): string {
+  return eventScene(event)?.stage ?? 'unknown';
+}
+
 const actionCounts = new Map<string, number>();
+const stageEventCounts = new Map<string, number>();
+const familyEventCounts = new Map<string, number>();
+const focalFamilyCounts = new Map<string, number>();
+const generatedStageCounts = new Map<string, number>();
 for (const event of events) {
   const key = event.action.split('/')[0]!;
   actionCounts.set(key, (actionCounts.get(key) ?? 0) + 1);
+  const family = eventFamily(event);
+  stageEventCounts.set(eventStage(event), (stageEventCounts.get(eventStage(event)) ?? 0) + 1);
+  familyEventCounts.set(family, (familyEventCounts.get(family) ?? 0) + 1);
 }
 const sorted = [...actionCounts.entries()].sort((a, b) => b[1] - a[1]);
 const top = sorted[0];
@@ -60,21 +92,76 @@ const focalEvents = events.filter(
     event.participants.some((participant) => participant.personId === birth.childId),
 );
 const focalYears = new Set(focalEvents.map((event) => event.date.year));
-const generated = events.filter((event) =>
-  [
-    'vienna-printshop-daily',
-    'vienna-school-childhood',
-    'vienna-tenement-neighbors',
-    'vienna-market-household',
-    'vienna-apprentice-printshop',
-    'vienna-illness-household',
-  ].some((prefix) => event.action.startsWith(prefix)),
+for (const event of focalEvents) {
+  const family = eventFamily(event);
+  focalFamilyCounts.set(family, (focalFamilyCounts.get(family) ?? 0) + 1);
+}
+const generated = events.filter((event) => generatedFamilyIds.has(eventFamily(event)));
+const generatedSet = new Set(generated);
+for (const event of generated) {
+  generatedStageCounts.set(
+    eventStage(event),
+    (generatedStageCounts.get(eventStage(event)) ?? 0) + 1,
+  );
+}
+const untriggeredFamilies = [...generatedFamilyIds].filter(
+  (family) => (familyEventCounts.get(family) ?? 0) === 0,
 );
+const triggeredGeneratedFamilies = [...generatedFamilyIds].filter(
+  (family) => (familyEventCounts.get(family) ?? 0) > 0,
+);
+
 const warningCounts = new Map<string, number>();
 for (const warning of warnings) {
-  const key = warning.code;
-  warningCounts.set(key, (warningCounts.get(key) ?? 0) + 1);
+  warningCounts.set(warning.code, (warningCounts.get(warning.code) ?? 0) + 1);
 }
+
+const blocked = sceneInstances.filter((scene) => scene.status === 'blocked');
+const blockedReasonCounts = new Map<string, number>();
+const blockedFamilyCounts = new Map<string, number>();
+const blockedSceneCounts = new Map<string, number>();
+for (const scene of blocked) {
+  const reason = scene.reason ?? 'unknown';
+  blockedReasonCounts.set(reason, (blockedReasonCounts.get(reason) ?? 0) + 1);
+  const definition = sceneById.get(scene.sceneId);
+  const family = definition?.familyId ?? scene.sceneId;
+  blockedFamilyCounts.set(family, (blockedFamilyCounts.get(family) ?? 0) + 1);
+  blockedSceneCounts.set(scene.sceneId, (blockedSceneCounts.get(scene.sceneId) ?? 0) + 1);
+}
+
+const textWarnings: { packId: string; warning: string }[] = [];
+for (const pack of GENERATED_PACKS) {
+  const validation = validateGeneratedPack(pack);
+  for (const warning of validation.warnings) {
+    if (warning.startsWith('duplicate text:') || warning.startsWith('near-duplicate text:')) {
+      textWarnings.push({ packId: pack.id, warning });
+    }
+  }
+}
+
+const generatedOutcomes = GENERATED_PACKS.flatMap((pack) =>
+  pack.nodes.flatMap((node) => node.outcomes),
+);
+const generatedNarrations = generatedOutcomes.reduce(
+  (sum, outcome) => sum + (outcome.narration?.length ?? 0),
+  0,
+);
+
+const familyCounts = [...familyEventCounts.entries()]
+  .map(([id, count]) => {
+    const definition = GENERATED_SCENES.find((scene) => scene.familyId === id);
+    return {
+      id,
+      title: definition?.title ?? id,
+      stage: definition?.stage ?? 'unknown',
+      generated: generatedFamilyIds.has(id),
+      events: count,
+      scenes: scenes.filter((scene) => scene.familyId === id).length,
+      focalEvents: focalFamilyCounts.get(id) ?? 0,
+    };
+  })
+  .sort((a, b) => b.events - a.events || a.id.localeCompare(b.id));
+
 const report = {
   years,
   date: world.date,
@@ -84,6 +171,9 @@ const report = {
   eventsPerYear: Number((events.length / years).toFixed(2)),
   focalEvents: focalEvents.length,
   focalEventYears: focalYears.size,
+  focalEventFamilyCounts: [...focalFamilyCounts.entries()]
+    .map(([id, count]) => ({ id, count }))
+    .sort((a, b) => b.count - a.count || a.id.localeCompare(b.id)),
   causalEvents: events.filter((event) => event.causes.length > 0).length,
   interactionResponses: events.filter((event) => event.action === 'interaction_response').length,
   births: events.filter((event) => event.action === 'birth').length,
@@ -91,8 +181,67 @@ const report = {
     (event) => event.action === 'death' || event.effects.some((effect) => effect.type === 'death'),
   ).length,
   zeroEventYears: scenesByYear.filter((count) => count === 0).length,
+  generated: {
+    packs: GENERATED_PACKS.length,
+    scenes: GENERATED_SCENES.length,
+    outcomes: generatedOutcomes.length,
+    narrations: generatedNarrations,
+    familiesTriggered: triggeredGeneratedFamilies.length,
+    familiesTotal: generatedFamilyIds.size,
+    events: generated.length,
+    shareOfEvents: Number((generated.length / Math.max(1, events.length)).toFixed(3)),
+    stageEventCounts: [...generatedStageCounts.entries()]
+      .map(([stage, count]) => ({ stage, count }))
+      .sort((a, b) => b.count - a.count || a.stage.localeCompare(b.stage)),
+    untriggeredFamilies,
+  },
   generatedEvents: generated.length,
   generatedShare: Number((generated.length / Math.max(1, events.length)).toFixed(3)),
+  unresolvedTextEvents: events.filter((event) => /\{[a-zA-Z_][a-zA-Z0-9_]*\}/.test(event.immediateText))
+    .length,
+  unresolvedTextSamples: events
+    .filter((event) => /\{[a-zA-Z_][a-zA-Z0-9_]*\}/.test(event.immediateText))
+    .slice(0, 10)
+    .map((event) => ({
+      year: event.date.year,
+      action: event.action,
+      text: event.immediateText,
+    })),
+  unknownEffectWarnings: warningCounts.get('unknown_effect') ?? 0,
+  coverage: {
+    eventStageCounts: [...stageEventCounts.entries()]
+      .map(([stage, count]) => ({ stage, count }))
+      .sort((a, b) => b.count - a.count || a.stage.localeCompare(b.stage)),
+    familyCounts,
+    familiesWithoutEvents: [...generatedFamilyIds].filter(
+      (family) => (familyEventCounts.get(family) ?? 0) === 0,
+    ),
+    generatedFamilyEvents: [...generatedFamilyIds]
+      .map((id) => ({
+        id,
+        events: familyEventCounts.get(id) ?? 0,
+        focalEvents: focalFamilyCounts.get(id) ?? 0,
+      }))
+      .sort((a, b) => b.events - a.events || a.id.localeCompare(b.id)),
+  },
+  sceneBlocked: {
+    total: blocked.length,
+    reasons: [...blockedReasonCounts.entries()]
+      .map(([reason, count]) => ({ reason, count }))
+      .sort((a, b) => b.count - a.count || a.reason.localeCompare(b.reason)),
+    families: [...blockedFamilyCounts.entries()]
+      .map(([id, count]) => ({ id, count }))
+      .sort((a, b) => b.count - a.count || a.id.localeCompare(b.id)),
+    scenes: [...blockedSceneCounts.entries()]
+      .map(([sceneId, count]) => ({ sceneId, count }))
+      .sort((a, b) => b.count - a.count || a.sceneId.localeCompare(b.sceneId))
+      .slice(0, 30),
+  },
+  sceneBlockedReasons: [...blockedReasonCounts.entries()]
+    .map(([reason, count]) => ({ reason, count }))
+    .sort((a, b) => b.count - a.count || a.reason.localeCompare(b.reason)),
+  textWarnings,
+  generatedTextWarnings: textWarnings.length,
   narrationVariants: scenes.reduce((sum, scene) => sum + (scene.narration?.length ?? 0), 0),
   topScene: top
     ? { action: top[0], count: top[1], share: Number((top[1] / events.length).toFixed(3)) }
@@ -104,7 +253,9 @@ const report = {
     title: event.title,
     text: event.immediateText,
     action: event.action,
+    generated: generatedSet.has(event),
   })),
 };
+mkdirSync('docs/v4', { recursive: true });
 writeFileSync('docs/v4/content-audit.json', JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify(report, null, 2));

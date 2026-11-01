@@ -62,12 +62,9 @@
               "reason": "预支工资，先拿到现金"
             },
             {
-              "type": "relation",
-              "a": "$subject",
-              "b": "$employer",
-              "kind": "employer",
-              "trust": 0.05,
-              "obligation": 0.1,
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
               "reason": "预支工资后欠下一份人情和一笔账"
             }
           ],
@@ -102,12 +99,9 @@
               "reason": "预支被拒，家里的窟窿还在"
             },
             {
-              "type": "relation",
-              "a": "$subject",
-              "b": "$employer",
-              "kind": "employer",
-              "trust": -0.05,
-              "fear": 0.03,
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
               "reason": "开口借钱被拒，觉得在厂里矮了一截"
             }
           ],

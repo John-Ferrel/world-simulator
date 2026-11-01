@@ -1,0 +1,696 @@
+{
+  "id": "vienna-market-debt",
+  "title": "赊账、当铺与债主",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 70
+  },
+  "tags": [
+    "market",
+    "debt",
+    "money",
+    "home",
+    "shop"
+  ],
+  "baseRate": 0.26,
+  "conditions": [
+    {
+      "kind": "cash",
+      "max": 35
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-market-debt.pawn-watch",
+      "title": "当掉父亲的表",
+      "weight": 1,
+      "rate": 0.078,
+      "conditions": [
+        {
+          "kind": "cash",
+          "max": 30
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "pawn-whole-watch",
+          "weight": 1,
+          "text": "你把银壳怀表推到绒布托盘上，当铺掌柜用放大镜扫了一眼机芯，报出八克朗。你盯着那张窄票上模糊的赎当日期，想起父亲在第十区工棚里上弦的样子。邻居在门外咳嗽，你捏着票和钱走出来，先拐去房东那里付了半个月的欠租。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "典当银壳怀表所得"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "当掉父亲遗物后的失落"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "watch_pawned",
+              "add": true,
+              "reason": "怀表已入当铺"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pawn-whole-watch",
+              "text": "当铺里一股旧铜和樟脑丸的味儿。掌柜把表翻过来看后盖的刻字，说银壳不厚，只能算八克朗。你把票折成四折塞进内袋，那点纸比表还轻。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pawn-whole-watch",
+              "text": "邻居在门外等你，见你出来只问了一句“当了？”你挥了挥那张窄票。八克朗在手里发潮，你数出五克朗给房东，剩下的买了两天面包和一小筐煤。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pawn-chain-only",
+          "weight": 1,
+          "text": "你解开表链，把银链子搁在秤盘上，说表壳是家里的，不能出手。掌柜用指甲掐了掐链节，给了两克朗四十赫勒。你把表放回内袋，贴着胸口还能听见它走，链子却留在了柜台后面的小抽屉里，换来的钱够付这个礼拜的煤钱。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2.4,
+              "reason": "典当银表链所得"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "保住了表壳却失去表链"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "邻居觉得你办事留有余地"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pawn-chain-only",
+              "text": "链子从你指缝里滑下去，落在绒布上几乎没有声音。掌柜说两克朗四十赫勒，你点了点头。出门时你把表掏出来上了几圈弦，它还在走，只是再没法挂在马甲上了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pawn-chain-only",
+              "text": "邻居凑过来看那张票，说两克朗四十赫勒够买半筐煤了。你没接话，把票和表分开放，怕哪天连票也丢了。路过煤店时你停下来问了价，又往前走。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "keep-watch-borrow-elsewhere",
+          "weight": 1,
+          "text": "你把表重新扣回内袋，跟掌柜说了声“再想想”，转身推开门。邻居跟上来，你问他能不能先借三克朗，下个发薪日还。他迟疑了一下，从马甲内袋里摸出两克朗和几枚赫勒，说就这么多。你接过钱，表还在胸口走，债却多了一笔。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2.3,
+              "reason": "向邻居借来的现钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.08,
+              "reason": "邻居借出积蓄给你应急"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "欠下人情心里发紧"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "keep-watch-borrow-elsewhere",
+              "text": "当铺的门在身后合上，街上马车碾过湿石板的声响盖过了表的滴答。邻居数钱很慢，一个赫勒一个赫勒地排在你手心。你把钱攥热了，说下个发薪日一定还。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "keep-watch-borrow-elsewhere",
+              "text": "你们站在当铺招牌下面，风从巷口灌进来。邻居说他婆娘这个月也要买煤，但两克朗还能匀出来。你把表给他看了一眼，说这表不能当，是爹留下的。他点点头，没再问。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-market-debt.coal-credit",
+      "title": "煤店的赊账本",
+      "weight": 1,
+      "rate": 0.065,
+      "conditions": [
+        {
+          "kind": "cash",
+          "max": 25
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "coal-credit-full",
+          "weight": 1,
+          "text": "老板把账本翻到新的一页，用铅笔头写下你的门牌号，说半筐煤一克朗二十赫勒，发薪日连本带利还一克朗五十。你看着他在数字下面画了道线，邻居在门口搓手。煤筐搁在厨房角落，这个晚上炉子总算没灭。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "赊煤到期还款含利息"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "有煤可烧热水和煮土豆"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "coal_credit_debt",
+              "add": true,
+              "reason": "煤店账本上记着欠款"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coal-credit-full",
+              "text": "煤店角落堆着碎煤和煤球，空气里全是粉尘。老板边写边念你的门牌，铅笔尖在纸上沙沙响。你按了手印，他合上本子说月底见。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coal-credit-full",
+              "text": "邻居帮你把半筐煤抬上楼，楼梯窄，煤块滚了两级。你蹲下去捡，指甲缝里立刻嵌了黑泥。炉子生起来后，屋里那股潮冷气慢慢退了，你才想起晚饭还没着落。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coal-part-cash-part-furniture",
+          "weight": 1,
+          "text": "你数出四十赫勒搁在秤盘上，说剩下的一克朗用那张旧折叠桌抵。老板撇了撇嘴，让伙计跟你上楼搬桌子。桌子腿有点晃，但木料还结实。邻居在楼道里搭了把手，账本上这一页只写了一行，没写利息。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "买煤付的部分现钱"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1.5,
+              "reason": "半筐煤换来的取暖和热水"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "邻居帮忙搬桌子抵煤账"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coal-part-cash-part-furniture",
+              "text": "伙计扛着桌板下楼，桌角在墙上磕掉一块灰皮。老板用粉笔在账本边角记了个“桌”，说两清。你摸着空出来的墙角，觉得屋子大了些，也冷了些。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coal-part-cash-part-furniture",
+              "text": "煤筐抬进厨房时，邻居说这张桌子他记得，去年你还在上面擀面。你没接话，只是把炉门打开。半筐煤不多，省着烧能撑四五天。伙计走时顺手带上了门。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coal-scavenge-station",
+          "weight": 1,
+          "text": "你把已经掏出来的赫勒又放回口袋，说不赊了。老板哼了一声，把账本往柜台上一合。你拎着空筐跟邻居往火车站方向走，在货运站边的煤渣堆里捡了半袋碎煤和焦炭。手指冻得发僵，指甲缝里全是黑灰。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "捡来的煤渣勉强烧一顿热食"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在煤渣堆里受冻咳嗽"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "捡煤渣的屈辱感"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coal-scavenge-station",
+              "text": "货运站的煤渣堆冒着白气，几个孩子已经在那里扒拉。你和邻居找了根铁钩，在湿灰里翻出些没烧透的煤核。风从铁轨那头吹过来，手背很快就麻了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coal-scavenge-station",
+              "text": "邻居把袋子系在腰上，说这活他干过好几回。你们蹲在煤渣堆背风的一面，拣出小半袋。回来的路上经过煤店，老板隔着玻璃看了一眼，没招手。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-market-debt.rent-arrears",
+      "title": "房东的最后一张纸条",
+      "weight": 0.9,
+      "rate": 0.065,
+      "conditions": [
+        {
+          "kind": "cash",
+          "max": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "rent-borrow-from-neighbor",
+          "weight": 1,
+          "text": "你敲开邻居的门，说欠租两周，月底前不清房东就要换锁。他转身从五斗柜最上层摸出四克朗，说这是给孩子攒的鞋钱，下个月十号前得还。你把钱和纸条一起攥着，去房东那里补上了欠款，看门人把垃圾桶挪回了原处。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "向邻居借来补交欠租"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.1,
+              "reason": "邻居拿出积蓄替你垫租"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "暂时保住住处松了口气"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-borrow-from-neighbor",
+              "text": "邻居家的桌上摊着一双没纳完的鞋底。他把钱数了两遍才递过来，说十号发薪，别让他婆娘知道。你把钱压在合同纸上，去房东屋时脚步比来时稳。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-borrow-from-neighbor",
+              "text": "看门人正把垃圾桶往院角推，见你回来，眼神在你和门牌之间转了一圈。房东收下四克朗，在账本上划掉一行，没提换锁的事。你上楼时腿有点发软，楼梯扶手凉得扎手。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rent-negotiate-installments",
+          "weight": 1,
+          "text": "你没去借钱，直接下楼找房东，说月底前先付两克朗，剩下两克朗分两个星期补齐。房东叼着雪茄，拿铅笔在你的纸条背面写了个日期，说再拖一天就换锁。邻居在楼道口听见了，冲你摇了摇头，但没说什么。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "按分期付掉的第一笔欠租"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "邻居觉得你冒险但还算有担当"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rent_installment_plan",
+              "add": true,
+              "reason": "与房东约定分期还欠租"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-negotiate-installments",
+              "text": "房东屋里一股雪茄和旧地毯的味儿。他写字时笔尖压得很重，纸条背面留下深深的划痕。你接过那张条子，数出两克朗放在桌上，硬币滚了一下才停。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-negotiate-installments",
+              "text": "邻居在楼梯口拦住你，说房东的话不能全信。你把纸条给他看，他读了两遍，说日期写得还算明白。你们各自上楼，看门人在下面把垃圾桶挪回墙边。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rent-sell-furniture-move",
+          "weight": 1,
+          "text": "你把五斗柜和一把椅子卖给收旧货的，换了两克朗八十赫勒。收旧货的人说这柜子料不坏，就是抽屉底板松了。你拿这笔钱付了部分欠租，同时跟房东说月底搬走。邻居帮你把剩下的家什捆成一卷，堆在门边。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2.8,
+              "reason": "卖旧家具所得"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "卖掉家什准备搬走的沮丧"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "邻居帮忙捆扎剩余家什"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-sell-furniture-move",
+              "text": "收旧货的人把五斗柜扛上肩，抽屉底板晃了一下。你数着手里的零钱，发现五斗柜原来这么轻。房东收了钱，在纸条边上写了个“月底”，没再多说。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-sell-furniture-move",
+              "text": "邻居用麻绳把锅和铺盖捆在一起，打了个死结。他说城南有更便宜的屋子，但离厂远。你蹲在地上把最后几件衣服塞进布袋，听见看门人在楼下把垃圾桶挪来挪去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-market-debt.wage-garnishment",
+      "title": "工资袋里的扣款",
+      "weight": 0.8,
+      "rate": 0.052,
+      "conditions": [
+        {
+          "kind": "cash",
+          "max": 30
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "accept-garnishment",
+          "weight": 1,
+          "text": "工头从你工资袋里抽出两克朗，说债主拿着字据来过厂办。你数了数剩下的钱，不够付房租，也不够买煤。旁边的工友低声说，他上个月也被扣过。你把工资袋折好揣进内袋，什么也没说，回到车床前继续干活。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "工资被扣去还债"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被扣工资后的憋闷"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.05,
+              "reason": "工友私下透露也曾被扣款"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "accept-garnishment",
+              "text": "工资袋是牛皮纸的，边角已经磨毛。工头手指粗，抽钱时把纸袋撕了个口子。你看见那两克朗落进他掌心，很快被塞进一个旧信封，信封上写着厂办的字样。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "accept-garnishment",
+              "text": "车间里机油味混着铁屑味。你回到车床前，摇把攥在手里发滑。工友凑过来低声说他婆娘上个月只好去当铺当了一对耳环。你没抬头，只是把卡盘又紧了一圈。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "renegotiate-with-creditor",
+          "weight": 1,
+          "text": "你跟工头说扣款认了，但得知道债主是谁。下午你找到债主，一个在第八区开小杂货铺的，说两克朗一次扣下去家里就断炊了，能不能改成每星期扣四十赫勒。他翻着眼子算了半天，让你重新写了一张欠条，按了手印。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "按新欠条每星期扣的四十赫勒"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "谈成小额分期后略感喘息"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "debt_installment_renegotiated",
+              "add": true,
+              "reason": "与债主重写了分期欠条"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "renegotiate-with-creditor",
+              "text": "杂货铺柜台后面堆着盐袋和蜡烛。债主用沾着面粉的手指拿过你的旧欠条，在背面写了几行，又让你签名。你签完才注意到他柜台玻璃下面压着好几个人的欠条，字迹都不一样。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "renegotiate-with-creditor",
+              "text": "你从杂货铺出来时天已经擦黑，街灯刚点上。四十赫勒一星期听着不多，但算到月底也够买几斤土豆。你摸了摸内袋里剩下的工资，决定今晚先去煤店问问赊账的事。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "union-representative",
+          "weight": 1,
+          "text": "你和工友在午休时去找工会代表。代表是个瘦高个，听完把搪瓷杯往桌上一搁，说厂里扣款得先出书面通知，不能工头随手一抽。他答应第二天去厂办问，但提醒你们别把事闹大，工作先得保住。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "一起去找工会代表"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "有人替工人说话稍觉宽慰"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "union_grievance_filed",
+              "add": true,
+              "reason": "向工会代表反映工资扣款"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "union-representative",
+              "text": "工会代表的小屋在厂区边上，窗户上糊着报纸。他听你说话时一直用指节敲桌面，敲到第三遍才停下来，从抽屉里翻出一本卷了边的小册子，说扣款得有凭据。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "union-representative",
+              "text": "午休的汽笛响过第二遍，工友在门外等你，手里攥着半个冷土豆。你们穿过堆满铁皮的院子，代表正在炉子上热咖啡。他听完没马上答话，先给你们一人倒了半杯。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

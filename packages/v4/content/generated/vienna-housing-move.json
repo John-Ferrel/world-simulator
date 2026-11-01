@@ -1,0 +1,713 @@
+{
+  "id": "vienna-housing-move",
+  "title": "涨租、看房与搬家",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 70
+  },
+  "tags": [
+    "housing",
+    "home",
+    "rent",
+    "family",
+    "money"
+  ],
+  "baseRate": 0.28,
+  "conditions": [
+    {
+      "kind": "placeKind",
+      "in": [
+        "home"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-housing-move.rent-notice",
+      "title": "门缝里的涨租通知",
+      "weight": 1,
+      "rate": 0.084,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "rent-notice-pay",
+          "weight": 2,
+          "text": "{subject}蹲在灶前把那张折纸摊平，二号修窗户的工钱摊到每户头上，每月多出两克朗。{neighbor}从对面门口探过头，说这价钱够买四升牛奶。{subject}把纸压在煤箱底下，当晚数出克朗和赫勒，决定先按月付，熬过这个冬天再说。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "按月多付两克朗房租"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "为了补房租少买一份面包和牛奶"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "平白多出开销心里发闷"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-notice-pay",
+              "text": "{subject}把通知念给{neighbor}听，{neighbor}摇头说是楼梯间那几块新玻璃的账。{subject}去楼下杂货铺换开一张五克朗的纸币，回屋一枚一枚摆开数，煤箱底多留了二十赫勒。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-notice-pay",
+              "text": "纸上的字是看门人代写的，墨水还没干透。{subject}把裁好的旧报纸摞好，腾出钱来先付房租，自己那份晚饭由土豆改成稀汤。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rent-notice-demand-repair",
+          "weight": 2,
+          "text": "{subject}没有立刻答话，先去敲{neighbor}的门。两人一起数落墙上的水渍和门框里灌进来的风，楼梯间的窗户修好了，自家墙皮还在剥落。{neighbor}提议一起把话带给看门人：先修好漏水的墙角，涨租的事再谈。{subject}把纸重新折好，请他把话带到门外。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "一起商量涨租的事"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "没有立刻服软，心里踏实些"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rent_dispute",
+              "add": true,
+              "reason": "向房东提出先修墙再涨租"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-notice-demand-repair",
+              "text": "{subject}领{neighbor}绕墙角走了一圈，手指按在潮软发黑的墙纸上。看门人低着头说楼梯间的窗是房东亲自吩咐的，{subject}便把话原样托他带上去，纸仍压在煤箱上没动。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-notice-demand-repair",
+              "text": "楼道里正晾着几家洗过的衣服，{subject}和{neighbor}站在水滴下面说话，声音压得低。{neighbor}说这栋楼里的住户不是头一回被这样要钱，先凑个口信比一个人硬顶强。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rent-notice-neighbors-together",
+          "weight": 1,
+          "text": "{subject}把{neighbor}和楼里另两户人家叫到楼道，把那张纸摆在窗台上传看。看门人在楼梯拐角听着，说房东礼拜三来收钱。几家人合计好，到那天一起等在门厅，先把克朗递过去，再把修补的事一件件摆出来。{subject}把纸折进围裙口袋，觉得人凑齐了话也硬气些。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.04,
+              "reason": "与同楼住户结伴同房东交涉"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "楼里人站在一处，有了些底气"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "tenant_collective",
+              "add": true,
+              "reason": "和邻居约定一起应付涨租"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-notice-neighbors-together",
+              "text": "窗口的纸传回{subject}手里时边角已经卷了。{neighbor}把礼拜三的字样描粗，另外两家各报出自家漏风的门缝。看门人拎着煤铲路过，只说了句别把事闹大。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-notice-neighbors-together",
+              "text": "{subject}借着窗外的光把克朗一枚枚点清，{neighbor}在旁边记人情名单，谁家先垫、谁家月底还，都用炭笔写在一张包糖纸上。楼道深处传来别家的关门声，事情算是说定了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-housing-move.flat-viewing",
+      "title": "看一间更小的房",
+      "weight": 1,
+      "rate": 0.084,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        },
+        {
+          "kind": "householdSize",
+          "min": 4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "flat-viewing-deposit",
+          "weight": 2,
+          "text": "看门人打开两道锁，潮气从通风井那头压过来。{subject}蹲下摸墙根，潮得指尖发凉，可租金比现在少三克朗。{neighbor}在门口轻声说这价钱在这片区不好找。{subject}数出定金交给看门人，想着月底前把家什挪进这间朝北的单间。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "当场付下定金和钥匙钱"
+            },
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-wien-leopoldstadt-tenement",
+              "reason": "租下租金更低的小间"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在新屋里待久了关节发凉"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "flat-viewing-deposit",
+              "text": "窗子推开只有一线天光，墙纸边角翘起，{subject}用指甲一刮便掉下一层湿粉。看门人揣好定金，说这间是朝北的，冬天火炉要添得勤些。{neighbor}站在楼梯口没进屋，只替{subject}看着箱子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "flat-viewing-deposit",
+              "text": "{subject}把定金摊在窗台上数清，赫勒没有被克朗盖住。通风井里孩子的哭声混着洗衣水声落下来，倒像是寻常日子。租低了三克朗，加上原来的煤钱勉强能接上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "flat-viewing-too-damp",
+          "weight": 2,
+          "text": "{subject}在单间里站了一刻钟，脚底发潮，墙纸底下透出一股霉味。看门人说刷一层石灰就好，{neighbor}却在门口轻轻咳了一声，提醒这背面没有阳光。{subject}把定金收回口袋，谢过看门人，宁可多付三克朗，也不愿把湿气带进夜里。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "看过潮湿房间心里不舒服"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "听从邻居提醒没有急着搬"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "still_looking_for_room",
+              "add": true,
+              "reason": "放弃潮气重的房间继续找住处"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "flat-viewing-too-damp",
+              "text": "看门人又打开一道锁，门轴响得刺耳。{subject}走到窗边，见分明是通风井的砖墙，几乎没有天。{neighbor}在走廊尽头等着，只说了一句这屋子晒不着太阳。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "flat-viewing-too-damp",
+              "text": "看门人拍着胸口保证冬天不漏水，{subject}却忽然觉得喉咙发紧。定金在衣袋里捏了又放下。出了门，楼下的面包还热着，租省下的钱也换不回一个干爽的铺位。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "flat-viewing-bed-only",
+          "weight": 1,
+          "text": "看门人把价钱说成一张床位的月租，厨房和门厅几家合用。{subject}想到家里几口人挤在一处，先租下一张床位，把家人留在老住处，等这边安顿好再作打算。{neighbor}提醒合用钥匙的人多，夜里的门要早些关。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "先付一张床位的月租"
+            },
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-wien-leopoldstadt-tenement",
+              "reason": "先租下合租房中的床位落脚"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "受了邻居关于合住钥匙的提醒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "flat-viewing-bed-only",
+              "text": "顶楼那间屋里有三张床，靠墙一张空着，床板上留着上一个住客的煤灰印。{subject}把铺盖卷放下，试了试窗上的插销，外面是通风井。{neighbor}帮着把一只小箱子搁在床头，说这地方不要指望晒到太阳。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "flat-viewing-bed-only",
+              "text": "看门人收下三克朗，把一把磨得发亮的钥匙交到{subject}手里。厨房角落的炉子上还坐着别人的锅，水汽混着霉味。{subject}把钥匙挂在脖子上，打算明日一早再回旧处取剩下的东西。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-housing-move.moving-day",
+      "title": "搬家那天的箱子",
+      "weight": 0.9,
+      "rate": 0.056,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "moving-day-cart",
+          "weight": 2,
+          "text": "月初清早，{subject}在街口雇了一辆有篷的马车，讲好六克朗跑一趟。{neighbor}帮着把床架、煤箱和盛照片的铁盒搬上车厢，车轮压过石子路噹噹响。一趟拉到新住处，省了来回的力气，可六克朗也让钱袋轻了一截。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "雇马车搬家具一趟的工钱"
+            },
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-wien-leopoldstadt-tenement",
+              "reason": "雇车一趟把家搬进新住处"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "邻居帮着搬箱子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "moving-day-cart",
+              "text": "{subject}把铁盒抱在怀里，其余东西都交给{neighbor}和车夫。楼道里挡路的自行车被挪到墙边，锅沿碰上车挡板，咣的一声。新住处门前没有台阶，省得再抬。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "moving-day-cart",
+              "text": "车夫把价钱咬得很死，{subject}还到五克朗又添了二十赫勒，才说定跑一趟。{neighbor}扶着床架，车过路口时煤箱歪了一下，细灰撒在路面上。到了地方，东西卸在门厅，天已经大亮。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "moving-day-handcart",
+          "weight": 2,
+          "text": "{subject}借来一辆吱呀作响的手推车，和{neighbor}约好搬三趟。床架绑在最上面，锅和铁盒夹在中间，楼道里的自行车一辆辆让开。三趟下来省下雇车的六克朗，肩膀却勒出两道红印，{subject}把车还给杂货铺时手还在抖。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "借手推车买烟熨谢邻居的小开销"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "三趟推车扛家具累得肩臂酸痛"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "邻居陪着推了三趟手推车"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "moving-day-handcart",
+              "text": "第一趟过街口时车上的煤箱差点翻下来，{neighbor}用膝盖顶住，{subject}把绳子又收了一道。第三趟回来，两人靠在门框上喘气，鞋底都是灰，省下的钱还揣在围裙里。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "moving-day-handcart",
+              "text": "手推车每走十几步就要停一下，楼道里的门半开着，有人探头看热闹。{subject}把照片铁盒交给{neighbor}抱着，自己低头把最后一箱锅具拖上楼。天擦黑时，新屋里才勉强归置出下脚的地方。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "moving-day-sell-up",
+          "weight": 1,
+          "text": "{subject}把旧床架和一张缺腿的桌子卖给沿街收破烂的，讲好两克朗。那人用地排车拉走时，床架磕在门框上掉了一块漆。{neighbor}看着空下来的屋子，说只带箱子走倒也轻省。{subject}拎铁盒和铺盖，剩下零碎分两回搬去新住处。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "卖掉旧床架和桌子收进的钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "卖掉了住了多年的旧家具心里空落"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "邻居看着旧家具被拉走"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "moving-day-sell-up",
+              "text": "收破烂的把两克朗数在门槛上，顺手敲了敲桌板看木料。{subject}把铁盒扣好，那里面只有照片和几封旧信。{neighbor}替{subject}扶着门，说旧床架值不了几个钱，能脱手就不亏。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "moving-day-sell-up",
+              "text": "床架从楼梯上拖下来时油漆蹭掉了好几块，{subject}站在旁边没作声。收破烂的走后，屋里空得回声都变大了，{subject}抱着铁盒出门，只把门锁好，钥匙从看门人手里交出去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-housing-move.sublet-room",
+      "title": "把空床租出去",
+      "weight": 1,
+      "rate": 0.056,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        },
+        {
+          "kind": "overcrowded",
+          "value": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sublet-full",
+          "weight": 2,
+          "text": "{subject}和{worker}讲好一张床按月四克朗，晚饭另算，钥匙只一把。{worker}把铺盖卷搬进来，靠在墙边，第一天就把厨房的碗顺手洗了。{neighbor}过来看了一圈，低声说夜里门要栓好，{subject}点头，把每月四克朗记在包糖纸上。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "出租空床收进的月租"
+            },
+            {
+              "type": "household",
+              "personId": "$worker",
+              "householdId": "$household",
+              "reason": "学徒搬进家中合住"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "邻居提醒夜里要栓门"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sublet-full",
+              "text": "{subject}把床上的旧褥子重新铺平，{worker}放下自己的铺盖卷，从怀里掏出一把钥匙看了看。厨房里多了一口人的碗，灶边的煤省着烧也够。{neighbor}在门口看了一眼，没多话。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sublet-full",
+              "text": "{worker}先付了四克朗，{subject}收好钱，又把作息讲清楚：早班时锅归谁先使，夜里的门几时落栓。{neighbor}笑说这屋里像多了个自家人，随即又提醒名声要紧。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sublet-daylight-only",
+          "weight": 2,
+          "text": "{subject}和{worker}谈妥只出租白天，夜里不留宿，收两克朗。床仍归{subject}家，钥匙只在白天给。{worker}说不碍事，他住的工棚不许带人，白天有个落脚的地方就够。{neighbor}听了点头，说这样少些闲话；到了傍晚，{subject}把床铺重新收好，屋里照旧几口人。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "白天出租床位的钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "讲明白天用床的规矩"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "多进两克朗又少些闲话"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sublet-daylight-only",
+              "text": "{worker}午间回来时，{subject}把床铺理好留给他，傍晚再把褥子收回柜里。两克朗按月压在烛台底下。{neighbor}从自家门口经过，看了一眼床的位置，什么也没说。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sublet-daylight-only",
+              "text": "白天屋里多一个人，厨房的水烧得更勤。{subject}把下午要用的家伙都摆在床尾，{worker}午睡起来便走。到了夜里，门照样上栓，几口人还是挤在原来的铺位上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sublet-declined",
+          "weight": 1,
+          "text": "{subject}正要把空床许给{worker}，{neighbor}却在楼梯上拦住了，说这条街上去年有人招了生人合住，失过钥匙，惹出些麻烦。{subject}回家把铺盖重新叠好，回绝了{worker}，只让他白天来喝口热水。空床仍空着，房租还是从自己的工钱里补。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "回绝了租床心里犯嘀咕"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "听进邻居的提醒没有招人合住"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "回绝了床位让工人另找地方"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sublet-declined",
+              "text": "{neighbor}说得很慢，提到失钥匙那家最后连门锁都换了。{subject}把烛台上的几枚克朗又数了一遍，{worker}站在门口，听见了多半，拎起铺盖卷说另想办法。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sublet-declined",
+              "text": "晚饭的锅还冒着气，{subject}却把留给{worker}的那一份倒回锅里。楼道的灯要省着点，只剩门框里一线亮。{neighbor}点头，说空一张床总比夜里不踏实强。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

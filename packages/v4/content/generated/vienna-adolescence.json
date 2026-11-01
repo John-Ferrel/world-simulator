@@ -48,7 +48,7 @@
           "required": true,
           "minAge": 30,
           "maxAge": 70,
-          "organizationKind": "workshop"
+          "organizationKind": "factory"
         },
         {
           "key": "mother",
@@ -73,16 +73,13 @@
             {
               "type": "education",
               "personId": "$subject",
-              "amount": 0.02,
-              "reason": "在木工作坊学到推刨和量尺"
+              "reason": "在木工作坊学到推刨和量尺",
+              "status": "apprenticeship"
             },
             {
-              "type": "relation",
-              "a": "$subject",
-              "b": "$employer",
-              "kind": "employer",
-              "trust": 0.1,
-              "fear": 0.05,
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.1,
               "reason": "{employer}当场收徒并交代规矩"
             },
             {
@@ -126,11 +123,9 @@
               "reason": "被作坊拒绝当学徒"
             },
             {
-              "type": "relation",
-              "a": "$subject",
-              "b": "$employer",
-              "kind": "acquaintance",
-              "trust": -0.05,
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
               "reason": "{employer}当面拒绝收徒"
             },
             {
@@ -206,7 +201,8 @@
               "type": "skill",
               "personId": "$subject",
               "amount": 0.04,
-              "reason": "自己缝补外套裂口"
+              "reason": "自己缝补外套裂口",
+              "skill": "craft"
             },
             {
               "type": "food",
@@ -335,8 +331,8 @@
             {
               "type": "education",
               "personId": "$subject",
-              "amount": 0.08,
-              "reason": "继续上学并准备商业学校考试"
+              "reason": "继续上学并准备商业学校考试",
+              "status": "secondary"
             },
             {
               "type": "relation",
@@ -401,9 +397,9 @@
             {
               "type": "flag",
               "personId": "$subject",
-              "key": "has-evening-school-address",
-              "value": true,
-              "reason": "{teacher}给了夜校地址纸条"
+              "reason": "{teacher}给了夜校地址纸条",
+              "flag": "has-evening-school-address",
+              "add": true
             },
             {
               "type": "relation",

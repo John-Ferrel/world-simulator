@@ -154,6 +154,8 @@ type EngineContext = {
   nextSceneOrdinal: number;
   /** sceneId + NUL + personId -> last resolved month index. Blocked scenes do not count. */
   sceneHistory: Map<string, number>;
+  definitions: SceneDefinition[];
+  triggerIndex: Map<string, SceneDefinition[]>;
 };
 
 type EffectBinding = {
@@ -185,6 +187,7 @@ type EventDraft = {
   sceneId?: Id;
   choices?: EventFact['choices'];
   provenance: EventFact['provenance'];
+  triggerDepth?: number;
 };
 
 type CastResult = {
@@ -315,9 +318,19 @@ export function advanceV4Year(
     newScenes: [],
     nextSceneOrdinal: nextFreeSceneOrdinal(draft),
     sceneHistory: resolvedSceneHistory(draft),
+    definitions: [],
+    triggerIndex: new Map(),
   };
 
   const definitions = usableDefinitions(scenes, diagnostics);
+  context.definitions = definitions;
+  for (const definition of definitions) {
+    for (const tag of definition.triggerTags ?? []) {
+      const list = context.triggerIndex.get(tag) ?? [];
+      list.push(definition);
+      context.triggerIndex.set(tag, list);
+    }
+  }
   const resolvedCounts = new Map<Id, number>();
 
   // Year-start scenes catch age-window edges (birth, a child turning 14 at the
@@ -650,6 +663,10 @@ function conditionPasses(
         if (relation.kind !== condition.relationKind) return false;
         if (relation.a !== subject.id && relation.b !== subject.id) return false;
         if (relation.end !== undefined) return false;
+        if (condition.sameHousehold) {
+          const otherId = relation.a === subject.id ? relation.b : relation.a;
+          if (world.persons[otherId]?.householdId !== subject.householdId) return false;
+        }
         if (typeof condition.minTrust !== 'number') return true;
         return relation.trust >= condition.minTrust;
       });
@@ -657,7 +674,12 @@ function conditionPasses(
       return !Object.values(world.relations).some((relation) => {
         if (relation.kind !== condition.relationKind) return false;
         if (relation.a !== subject.id && relation.b !== subject.id) return false;
-        return relation.end === undefined;
+        if (relation.end !== undefined) return false;
+        if (condition.sameHousehold) {
+          const otherId = relation.a === subject.id ? relation.b : relation.a;
+          return world.persons[otherId]?.householdId === subject.householdId;
+        }
+        return true;
       });
     case 'worldYear':
       if (typeof condition.min === 'number' && date.year < condition.min) return false;
@@ -1468,11 +1490,75 @@ function runScenes(
   }
 }
 
-function eventRate(
-  context: EngineContext,
+function birthContractCostEffects(
+  subject: Person,
+  definition: SceneDefinition,
+  date: WorldDate,
+): EventEffect[] {
+  const contract = subject.lifeContract;
+  if (!contract?.costs?.length || !contract.capability || contract.capability === 'none') return [];
+  const capabilityTags: Record<string, string[]> = {
+    literacy: ['education', 'school'],
+    numeracy: ['work', 'market'],
+    social_insight: ['social', 'family'],
+    craft_affinity: ['craft', 'work', 'apprentice'],
+    frail_body: ['health', 'infancy', 'care'],
+    craft: ['work', 'apprentice'],
+    social: ['social', 'family'],
+    health: ['health', 'infancy'],
+  };
+  const relevant = capabilityTags[contract.capability] ?? [];
+  if (!relevant.some((tag) => definition.tags.includes(tag))) return [];
+  const yearFlag = `birth_cost:${date.year}`;
+  if (subject.life?.flags.includes(yearFlag)) return [];
+  const effects: EventEffect[] = [];
+  for (const cost of contract.costs) {
+    if (!cost.tags.some((tag) => relevant.includes(tag))) continue;
+    if (cost.kind === 'vitality_cost') {
+      effects.push({
+        type: 'health',
+        personId: subject.id,
+        amount: -Math.min(0.08, cost.maxEffect * 0.25),
+        reason: 'birth contract vitality cost',
+      });
+    } else if (cost.kind === 'attention_cost' || cost.kind === 'opportunity_cost') {
+      effects.push({
+        type: 'mood',
+        personId: subject.id,
+        amount: -Math.min(0.06, cost.maxEffect * 0.2),
+        reason: 'birth contract attention cost',
+      });
+    } else if (cost.kind === 'care_duty') {
+      effects.push({
+        type: 'condition',
+        personId: subject.id,
+        condition: 'care duty',
+        add: true,
+        reason: 'birth contract care duty',
+      });
+    }
+  }
+  if (effects.length > 0)
+    effects.push({
+      type: 'flag',
+      personId: subject.id,
+      flag: yearFlag,
+      add: true,
+      reason: 'birth contract cost paid for this year',
+    });
+  return effects;
+}
+
+/**
+ * Effective per-person rate for an ordinary scene. Exported for content audits
+ * and tests so capability/contract weighting is inspectable rather than hidden
+ * inside the scheduler. It does not mutate state.
+ */
+export function v4EventRate(
+  _context: EngineContext | null,
   definition: SceneDefinition,
   subject: Person,
-  date: WorldDate,
+  _date: WorldDate,
 ): number {
   const explicit = definition.rate;
   const base =
@@ -1484,21 +1570,48 @@ function eventRate(
           ? 1
           : 0.12;
   let rate = clamp(base, 0, 1);
-  const focus = subject.lifeContract?.focus;
+  // Contract-driven advantage is computed separately so `limits` can bound the
+  // total tilt instead of just one clause. Owned/focal and ambient modifiers
+  // stay outside this ceiling.
+  let contractMultiplier = 1;
+  const contract = subject.lifeContract;
+  const focus = contract?.focus;
   if (focus && focus !== 'none') {
-    if (definition.tags.includes(focus) || definition.familyId?.includes(focus)) rate *= 1.5;
+    if (definition.tags.includes(focus) || definition.familyId?.includes(focus))
+      contractMultiplier *= 1.5;
   }
-  if (subject.ownerId) rate *= 2.5;
+  const contractConditions = contract?.conditions ?? [];
+  const matchingConditions = contractConditions.filter((condition) =>
+    condition.tags.some((tag) => definition.tags.includes(tag)),
+  );
+  if (matchingConditions.length > 0) {
+    contractMultiplier *= Math.min(
+      1.5,
+      1 + matchingConditions.reduce((sum, condition) => sum + condition.maxEffect, 0) * 0.6,
+    );
+  }
   const capability = subject.life?.flags.find((flag) => flag.startsWith('capability:'))?.slice(11);
   const capabilityTags: Record<string, string[]> = {
     literacy: ['education', 'school'],
     numeracy: ['work', 'market'],
+    social_insight: ['social', 'family'],
+    craft_affinity: ['craft', 'work', 'apprentice'],
+    frail_body: ['health', 'infancy', 'care'],
     craft: ['work', 'apprentice'],
     social: ['social', 'family'],
     health: ['health', 'infancy'],
   };
   if (capability && capabilityTags[capability]?.some((tag) => definition.tags.includes(tag)))
-    rate *= 1.2;
+    contractMultiplier *= 1.2;
+  const matchingLimits = (contract?.limits ?? []).filter((limit) =>
+    limit.tags.some((tag) => definition.tags.includes(tag)),
+  );
+  if (matchingLimits.length > 0) {
+    const ceiling = 1 + matchingLimits.reduce((sum, limit) => sum + limit.maxEffect, 0);
+    contractMultiplier = Math.min(contractMultiplier, ceiling);
+  }
+  rate = clamp(rate * contractMultiplier, 0, 1);
+  if (subject.ownerId) rate *= 2.5;
   const mood = subject.life?.mood ?? 0;
   if (definition.tags.includes('social') || definition.tags.includes('family')) {
     rate *= mood >= 0.25 ? 1.15 : mood <= -0.35 ? 0.8 : 1;
@@ -1506,6 +1619,77 @@ function eventRate(
   if (subject.health.vitality < 0.4 && definition.tags.includes('health')) rate *= 1.25;
   if (definition.tags.includes('work') && subject.employment) rate *= 1.1;
   return clamp(rate, 0, 1);
+}
+
+function eventTags(event: EventFact): string[] {
+  const tags = new Set<string>();
+  if (event.action === 'death') tags.add('death');
+  if (event.action === 'birth') tags.add('birth');
+  for (const effect of event.effects) {
+    switch (effect.type) {
+      case 'death':
+        tags.add('death');
+        break;
+      case 'unemployment':
+        tags.add('unemployment');
+        break;
+      case 'employment':
+        tags.add('employment');
+        break;
+      case 'relation':
+        if (effect.kind === 'partner') tags.add('partnership');
+        break;
+      case 'relation_end':
+        if (effect.kind === 'partner') tags.add('separation');
+        break;
+      case 'household':
+      case 'residence':
+        tags.add('household');
+        break;
+      case 'move':
+        tags.add('migration');
+        break;
+      case 'birth':
+        tags.add('birth');
+        break;
+      case 'health':
+        if (effect.amount < 0) tags.add('injury');
+        break;
+      default:
+        break;
+    }
+  }
+  return [...tags];
+}
+
+function scheduleFactTriggers(context: EngineContext, event: EventFact, depth: number): void {
+  if (depth >= 3) return;
+  const tags = eventTags(event);
+  if (tags.length === 0) return;
+  const queue = context.world.historyMeta.scheduledEvents ?? [];
+  if (queue.length > 250) return;
+  const subscribed = new Set<SceneDefinition>();
+  for (const tag of tags) {
+    for (const definition of context.triggerIndex.get(tag) ?? []) subscribed.add(definition);
+  }
+  for (const definition of subscribed) {
+    const subject = context.world.persons[event.subjectId];
+    if (!subject || subject.died) continue;
+    const due = { year: event.date.year + 1, month: 1 };
+    if (!sceneEligible(context, definition, subject, due)) continue;
+    const id = `queue:fact:${event.id}:${definition.id}:${subject.id}`;
+    if (queue.some((item) => item.id === id)) continue;
+    queue.push({
+      id,
+      sceneId: definition.id,
+      subjectId: subject.id,
+      due,
+      causeEventId: event.id,
+      depth: depth + 1,
+      source: 'fact',
+    });
+  }
+  context.world.historyMeta.scheduledEvents = queue;
 }
 
 function scheduleFollowups(
@@ -1681,6 +1865,68 @@ function runEventYear(
       subject = context.world.persons[personId];
       break;
     }
+    // Lifecycle scenes (courtship, childbirth, separation) get one dedicated
+    // attempt per person-year. A pack with dozens of ordinary neighbourhood
+    // scenes must not crowd out the events that create the next generation.
+    if (subject && !subject.died && ordinary < ordinaryCap) {
+      const lifecycleDefinitions = (byStage.get(stageForAge(ageAt(subject, date))) ?? []).filter(
+        (definition) => definition.tags.includes('lifecycle') && !used.has(definition.id),
+      );
+      const lifecycleCandidates: { definition: SceneDefinition; weight: number }[] = [];
+      for (const definition of lifecycleDefinitions) {
+        if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
+        if (!sceneEligible(context, definition, subject, date)) continue;
+        const rate = v4EventRate(context, definition, subject, date);
+        const rng = seededRng(
+          context.world.seed,
+          'lifecycle-rate',
+          definition.id,
+          subject.id,
+          date.year,
+          date.month,
+        );
+        if (rng() >= rate) continue;
+        lifecycleCandidates.push({
+          definition,
+          weight: Math.max(0, definition.weight ?? 1),
+        });
+      }
+      const chosen = weightedPick(
+        lifecycleCandidates,
+        seededRng(context.world.seed, 'lifecycle-choice', subject.id, date.year),
+      );
+      if (chosen) {
+        used.add(chosen.definition.id);
+        const cast = castSceneRoles(context, chosen.definition, subject, date);
+        if (cast.missing.length > 0) {
+          recordBlocked(
+            context,
+            chosen.definition,
+            subject,
+            cast.roles,
+            `missing_role:${cast.missing.join(',')}`,
+            date,
+          );
+        } else {
+          const selection = selectOutcome(context, chosen.definition, subject, cast.roles, date);
+          if (!selection) {
+            recordBlocked(
+              context,
+              chosen.definition,
+              subject,
+              cast.roles,
+              'no_eligible_outcome',
+              date,
+            );
+          } else {
+            resolveScene(context, chosen.definition, subject, cast.roles, selection, date, 0);
+            ordinary += 1;
+            resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
+            subject = context.world.persons[personId];
+          }
+        }
+      }
+    }
     while (ordinary < ordinaryCap) {
       if (!subject || subject.died) break;
       const candidates: { definition: SceneDefinition; weight: number }[] = [];
@@ -1689,7 +1935,7 @@ function runEventYear(
         if (used.has(definition.id)) continue;
         if (!sceneEligible(context, definition, subject, date)) continue;
         if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
-        const rate = eventRate(context, definition, subject, date);
+        const rate = v4EventRate(context, definition, subject, date);
         const rng = seededRng(
           context.world.seed,
           'rate',
@@ -1802,7 +2048,7 @@ function resolveScene(
     action: `${definition.id}/${outcome.id}`,
     title: definition.title,
     causes: causeEventId ? [causeEventId] : [],
-    effects: outcome.effects,
+    effects: [...outcome.effects, ...birthContractCostEffects(subject, definition, date)],
     immediateText: selectNarration(context, definition, outcome, subject, roles, date),
     significance:
       typeof outcome.significance === 'number' && Number.isFinite(outcome.significance)
@@ -1814,6 +2060,7 @@ function resolveScene(
       ? [{ actorId: choiceActorId, choiceId: selection.choice.id, reason: selection.reason }]
       : undefined,
     provenance: { kind: 'scene', sourceId: definition.id },
+    triggerDepth: depth,
   };
   const event = commitEvent(
     context,
@@ -1961,6 +2208,7 @@ function commitEvent(
     provenance: draft.provenance,
   };
   context.world.events.push(event);
+  scheduleFactTriggers(context, event, draft.triggerDepth ?? 0);
   context.world.historyMeta.sequence = identity.sequence;
   context.world.historyMeta.lastEventId = event.id;
   context.newEvents.push(event);
@@ -1974,9 +2222,7 @@ function commitEvent(
  * Resolution happens at commit time, so a scene can target a player-born child
  * without knowing the child's id when it was authored.
  */
-function resolveEffectRef(value: unknown, binding: EffectBinding, world: WorldState): unknown {
-  if (typeof value !== 'string' || !value.startsWith('$')) return value;
-  const key = value.slice(1);
+function resolveRefKey(key: string, binding: EffectBinding, world: WorldState): unknown {
   const subject = world.persons[binding.subjectId];
   switch (key) {
     case 'subject':
@@ -2004,6 +2250,19 @@ function resolveEffectRef(value: unknown, binding: EffectBinding, world: WorldSt
     default:
       return binding.roleIds[key];
   }
+}
+
+function resolveEffectRef(value: unknown, binding: EffectBinding, world: WorldState): unknown {
+  if (typeof value !== 'string' || !value.includes('$')) return value;
+  // A whole-string ref may legitimately resolve to a non-string (or undefined);
+  // an embedded ref (e.g. `courtship:$eventId`) must stay a string and remain
+  // unique per event. Failing to expand embedded refs collapsed every courtship
+  // interaction onto one id and silently dropped later proposals.
+  if (/^\$[A-Za-z0-9_]+$/.test(value)) return resolveRefKey(value.slice(1), binding, world);
+  return value.replace(/\$([A-Za-z0-9_]+)/g, (match, key: string) => {
+    const resolved = resolveRefKey(key, binding, world);
+    return typeof resolved === 'string' && resolved.length > 0 ? resolved : match;
+  });
 }
 
 function resolveEffectRefs(

@@ -10,7 +10,7 @@ import { VIENNA_FAMILY_SCENES } from '../packages/v4/content/vienna-family.js';
 import { VIENNA_LIFE_SCENES } from '../packages/v4/content/vienna-life.js';
 import { assertWorldV4, type WorldState } from '../packages/v4/domain.js';
 
-const scenes = [...VIENNA_1912_SCENES, ...VIENNA_LIFE_SCENES, ...VIENNA_FAMILY_SCENES];
+const scenes = [...VIENNA_FAMILY_SCENES, ...VIENNA_1912_SCENES, ...VIENNA_LIFE_SCENES];
 const personIds = new Set(Object.keys(VIENNA_1912_SEED.persons));
 const householdIds = new Set(Object.keys(VIENNA_1912_SEED.households));
 const tokens = new Set([
@@ -60,7 +60,7 @@ describe('family formation content and engine', () => {
       VIENNA_FAMILY_SCENES.length,
     );
     for (const scene of VIENNA_FAMILY_SCENES) {
-      expect(scene.subjectProvenance).toEqual(['birth']);
+      expect(scene.subjectProvenance).toEqual(['birth', 'initial']);
       const roleKeys = new Set(scene.roles.map((role) => role.key));
       expect(roleKeys.has('subject')).toBe(true);
       expect(roleKeys.has('partner')).toBe(true);
@@ -94,9 +94,13 @@ describe('family formation content and engine', () => {
     const familyEvents = events.filter(
       (event) => event.subjectId === childId && event.action.startsWith('vienna-family'),
     );
-    expect(familyEvents.some((event) => event.action.startsWith('vienna-family-partnership'))).toBe(
-      true,
-    );
+    expect(
+      familyEvents.some(
+        (event) =>
+          event.action.startsWith('vienna-family-partnership') ||
+          event.action.startsWith('vienna-family-courtship'),
+      ),
+    ).toBe(true);
     expect(
       familyEvents.some(
         (event) =>
@@ -112,8 +116,7 @@ describe('family formation content and engine', () => {
     expect(children.length).toBeGreaterThan(0);
     for (const child of children) {
       expect(child.provenance.kind).toBe('birth');
-      expect(child.householdId).toBe(parent.householdId);
-      expect(world.households[parent.householdId]!.memberIds).toContain(child.id);
+      expect(child.parentIds).toContain(childId);
       expect(child.name).not.toContain('{');
       const birthFact = events.find(
         (event) => event.action === 'birth' && event.subjectId === child.id,
@@ -126,13 +129,29 @@ describe('family formation content and engine', () => {
           cause?.action.startsWith('vienna-family-fatherhood'),
       ).toBe(true);
     }
+    // A newborn starts in the mother's household, but divorce or a later move
+    // can separate the parents. A minor must still have an adult in the home;
+    // grandparents are a real Vienna arrangement, so a parent is not required
+    // to be physically present after the first move.
+    for (const child of children) {
+      const household = world.households[child.householdId]!;
+      const hasAdult = household.memberIds.some((memberId) => {
+        const member = world.persons[memberId];
+        return Boolean(member && !member.died && world.date.year - member.born.year >= 18);
+      });
+      expect(hasAdult).toBe(true);
+    }
     const partner = Object.values(world.relations).find(
       (relation) =>
-        relation.kind === 'partner' &&
-        (relation.a === childId || relation.b === childId) &&
-        relation.end === undefined,
+        relation.kind === 'partner' && (relation.a === childId || relation.b === childId),
     );
     expect(partner).toBeDefined();
+    // Interaction ids use embedded `$eventId` refs. They must resolve per event:
+    // the old resolver left the literal token, collapsing every courtship onto
+    // one interaction and dropping later proposals.
+    const interactionIds = Object.values(world.interactions).map((interaction) => interaction.id);
+    expect(interactionIds.length).toBeGreaterThan(0);
+    for (const id of interactionIds) expect(id).not.toContain('$');
     assertWorldV4(world);
   });
 

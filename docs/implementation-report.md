@@ -1,6 +1,6 @@
 # 实现与验收报告
 
-> **2026-11-01 v4 断代更新**：本文件以下内容是 v1–v3 旧架构的历史报告，不再是当前可玩实现的验收依据。当前 v4 只实现 Vienna 1912 垂直切片；入口、状态、测试证据与未完成项见 [v4 实现报告](v4/implementation-report.md)。`pnpm dev` 不再启动旧 API/模拟器，旧世界已归档。
+> **2026-11-01 v4 断代更新**：本文件以下内容是 v1–v3 旧架构的历史报告，不再是当前可玩实现的验收依据。当前 v4 只实现 Vienna 1912 垂直切片；Phase 2 最新验收见 [phase-2-report.md](v4/phase-2-report.md)，状态/证据/未完成项见 [v4 实现报告](v4/implementation-report.md)。`pnpm dev` 不再启动旧 API/模拟器，旧世界已归档。
 
 更新：2026-10-31。本地可运行版本已完成本轮开发与验收。入口 http://localhost:5173；安装依赖后 `pnpm db:local && pnpm dev`。Compose 配置提供但本机未验证，未进行公网部署。
 

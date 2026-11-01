@@ -1,0 +1,733 @@
+{
+  "id": "vienna-women-housework",
+  "title": "洗衣、炉子与计件活",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 70
+  },
+  "tags": [
+    "gender",
+    "housework",
+    "home",
+    "labour",
+    "family"
+  ],
+  "baseRate": 0.3,
+  "conditions": [
+    {
+      "kind": "placeKind",
+      "in": [
+        "home"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-women-housework.wash-day",
+      "title": "公共水龙头前的洗衣日",
+      "weight": 1,
+      "rate": 0.09,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70,
+          "sex": "female"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75,
+          "sex": "female"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "wash-day.rush",
+          "weight": 1,
+          "text": "{subject}把床单按在搓衣板上，碱水顺着指缝流进裂口，火辣辣地疼。她赶在中午前把最后一件衬衣拧干，搭在院子里的绳上，{neighbor}经过时点了点头。手指上的血口子让她下午揉面时直皱眉。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "长时间浸在碱水里，手部皮肤开裂"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "邻里间日常照面与认可"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wash-day.rush",
+              "text": "木盆边的水渍映着天光，{subject}跪在石阶上揉搓床单，肘弯发酸。晾绳上的湿布滴答作响，{neighbor}探身把自家被单也挂上去，两人没多说话。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wash-day.rush",
+              "text": "肥皂沫顺着手腕淌下，{subject}把拧成麻花的工服抖开，搭上绳子时听到布料啪的一声。她搓了搓发僵的指节，指望下午手还能拿起针线。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wash-day.send-out",
+          "weight": 1,
+          "text": "{subject}把男人那件沾满煤灰的工服卷进旧报纸，塞给楼下的洗衣妇，讲好五十赫勒洗一件。{neighbor}在楼梯口瞧见了，说价太贵。{subject}算了算，省下的半天能多缝两件领子，到底没去把工服要回来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "请洗衣妇代洗工服"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "省下半天洗衣时间，紧绷感略松"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "对洗衣开销的看法不同"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wash-day.send-out",
+              "text": "洗衣妇把工服从报纸里抖出来，翻开领口看了看油垢，点头收下。{subject}转身回屋，铜板在围裙口袋里磕出轻响。{neighbor}还在楼梯上嘟囔，说这钱不如买半斤猪油。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wash-day.send-out",
+              "text": "楼下的院墙根送出一阵洗衣妇捶打衣物的闷响。{subject}把自己那盆清水省着用，指头没再往碱水里泡。她盘算着下午缝领子的针脚能不能再快些。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wash-day.quarrel",
+          "weight": 1,
+          "text": "水龙头只有一股细流，{subject}刚接满半桶，{neighbor}提着桶挤过来，说自家先排的队。两人争了几句，水溅到石板上。{subject}最终让了半步，却把洗净的衬衣晾到墙边，挡住邻家的晒绳，一下午没再搭腔。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "与邻居为用水顺序争吵，憋着气"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "affection": -0.04,
+              "reason": "争夺公共水龙头引发口角"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "在院里为水争执，被旁人看在眼里"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wash-day.quarrel",
+              "text": "铁桶磕在石沿上，水晃出来打湿了{subject}的裙角。{neighbor}的声音拔高，说轮到她就是轮到她。{subject}咬着嘴没再喊，把盆往自己门前拖，湿石板上一道水痕。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wash-day.quarrel",
+              "text": "水龙头滴滴答答地漏，两人都伸手去扶桶沿。{subject}看见自家未洗的床单还堆着，胸口发闷，把桶让了半掌宽。晾绳上她的衬衣角被风掀起，正挡着邻家的窗户。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-women-housework.coal-stove",
+      "title": "炉子灭了",
+      "weight": 1,
+      "rate": 0.075,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70,
+          "sex": "female"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "coal-stove.buy-coal",
+          "weight": 1,
+          "text": "{subject}拎着空煤筐下楼，去街角煤店买了一小筐碎煤，花了六赫勒。回屋把受潮的火柴摊在窗台上晾，用旧报纸引火，烟呛得她直咳。炉子终于红了，{neighbor}探头说早上她家也灭了一回。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "购买一小筐碎煤"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "生火时被烟呛到"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "炉子生起来，能烧热水热饭"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coal-stove.buy-coal",
+              "text": "煤店老板用铁铲往筐里添了两铲碎煤，煤屑沾在{subject}的袖口。她拎回来时筐底漏出几粒黑渣，落在楼梯上。火柴在窗台晾了一会儿，终于擦出一道火星。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coal-stove.buy-coal",
+              "text": "炉门一开，黑烟先扑出来，{subject}眯着眼把纸团往里塞。火苗舔着碎煤慢慢亮起来，{neighbor}隔着门喊当心一氧化碳。水壶开始咕噜作响，屋里才有点热乎气。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coal-stove.borrow-fire",
+          "weight": 1,
+          "text": "{subject}端着一只旧锅去敲{neighbor}的门，想借几块烧红的炭。{neighbor}让她从自家炉膛里夹了一块，又抓了一小把引火的木片。{subject}连声道谢，回来把炭放进炉栅，火是有了，屋里却还是冷得能呵出白气。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "obligation": 0.04,
+              "reason": "借火借炭，欠下一份小人情"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "借来的火勉强热了一壶水"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "邻居肯帮忙，心里稍暖"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coal-stove.borrow-fire",
+              "text": "旧锅底还沾着昨天的面糊，{subject}拿它盛炭时有点不好意思。{neighbor}没说什么，只把火钳递过来，让她自己夹。炭在锅里红得发暗，一路端回屋没灭。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coal-stove.borrow-fire",
+              "text": "走廊里风大，炭火在锅里忽明忽暗。{subject}一只手护着锅沿，一只手敲门。{neighbor}开门时正围着围裙，回头指了指自家通红的炉膛，让她快夹。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coal-stove.cold-day",
+          "weight": 1,
+          "text": "{subject}把旧报纸撕成长条，叠上几块干木片，在炉里点了几次也没烧旺。煤筐底只刮出半捧煤末，她舍不得一次用完。{neighbor}中午来借盐，见她裹着披肩坐在冷灶边，说自家还有两块煤可以匀一块。{subject}道了谢，却没去拿。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "屋里整天没生旺火，受冻"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "冷灶冷屋，心里发沉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "邻家主动提出匀煤，虽未接受"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coal-stove.cold-day",
+              "text": "窗玻璃上结着水汽，{subject}用指头划开一道缝往外看。炉膛里报纸烧成黑灰，木片只冒烟不起火。她把披肩裹紧，听见{neighbor}在门外问要不要匀一块煤。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coal-stove.cold-day",
+              "text": "孩子放学回来搓着手说冷，{subject}把仅有的半捧煤末压进炉底，火苗细得像灯芯。她没接{neighbor}递来的煤块，只说等明天煤店开门。屋里哈气成雾，晚饭的土豆是凉的。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-women-housework.piecework-bundle",
+      "title": "一捆衬衫领子",
+      "weight": 1,
+      "rate": 0.075,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70,
+          "sex": "female"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "piecework.overnight",
+          "weight": 1,
+          "text": "{subject}点着煤油灯缝到后半夜，把一捆领子全做完了。针脚密是密，可天亮时她看东西重影，手指被针扎了三回。星期六交活，{worker}量了量尺寸，收下整捆，数出七十五赫勒推过桌面。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.75,
+              "reason": "交了一整捆衬衫领子的计件工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "通宵缝纫，眼睛疲劳，手指扎伤"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "赶在交活期限前完成，松了口气"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "piecework.overnight",
+              "text": "煤油灯芯结了黑花，{subject}用针尖挑掉，继续缝。窗外街上有马车经过，马蹄声远了又近。领子叠成一摞，她拿尺子自己量了一遍才睡。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "piecework.overnight",
+              "text": "凌晨的墙缝透进凉风，{subject}把线头咬断，发现指尖又渗出一颗血珠。她把做好的领子一张张码齐，用布包好压在枕头边，怕孩子翻身压皱。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "piecework.dispute-rate",
+          "weight": 1,
+          "text": "{worker}来收活时，指着两件领子说针脚歪了，要扣钱。{subject}把做好的活摊在桌上，一件件比给{neighbor}看，说工价本来就压得低，不能这么算。{worker}最后甩下六十赫勒拿去活，说下回不送她家了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.6,
+              "reason": "争执后按降低的工价结算"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在邻居面前据理力争，被认为手巧敢说话"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.06,
+              "respect": 0.02,
+              "reason": "为工价和针脚标准发生争执"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "工钱被扣，心里不痛快"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "piecework.dispute-rate",
+              "text": "{worker}用拇指甲刮着一件领子的边线，说这儿跳了针。{subject}把煤油灯往前推了推，让他凑近看，说线是细了点，活没少做。{neighbor}倚在门框上没走，屋里一时只有尺子碰桌面的响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "piecework.dispute-rate",
+              "text": "铜板一枚枚落在桌面上，比说好的少了十五赫勒。{subject}没去捡，先问{worker}下捆还送不送。{worker}含糊应了一声，拎起布包就走。{neighbor}这才进来，说下回得先讲好价。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "piecework.hide-defects",
+          "weight": 1,
+          "text": "{subject}把两件领口缝歪的领子卷起来塞进篮底，上面压上好的那几件。{worker}照例抽量，没翻到底，数了钱拿走。{neighbor}事后问起，{subject}只说线不够用。夜里她躺在床上，听见楼下有人喊收活，翻了个身没应。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.7,
+              "reason": "交活所得，含未返工的两件"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "藏着做坏的活交上去，心里不踏实"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "交活含糊，怕被中间人记住"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "piecework.hide-defects",
+              "text": "篮底那两件领子卷得很紧，{subject}用围裙角把篮沿擦了擦。{worker}翻了翻面上几件，拿尺子比了比，没再往下。{neighbor}在走廊里问交了多少，{subject}含混说了句够买面包。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "piecework.hide-defects",
+              "text": "交完活回来，{subject}把空篮挂在门后，盯着篮底看了一会儿。{neighbor}端来一碗豆子，说自家孩子吃不完。{subject}接过来，没说那两件歪领子的事。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-women-housework.care-old-parent",
+      "title": "床边的一碗汤",
+      "weight": 0.8,
+      "rate": 0.06,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70,
+          "sex": "female"
+        },
+        {
+          "key": "mother",
+          "kind": "parent",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 90,
+          "sex": "female"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "care.self-tend",
+          "weight": 1,
+          "text": "{subject}把计件活减了一捆，白天守着{mother}，夜里起来扶她上厕所。汤要炖得烂，药要按时喂，炉子和洗衣都靠边站。半个月下来，家里的钱薄了一层，{neighbor}偶尔端来一碗自家煮的粥。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "少接计件活，收入减少"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "日夜照料老人，睡眠不足"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "trust": 0.08,
+              "obligation": 0.06,
+              "reason": "亲自照料母亲日常起居"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居偶尔送粥接济"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "care.self-tend",
+              "text": "{mother}夜里喊人，{subject}从窄床上坐起，摸黑去扶。炉子上煨着一小锅汤，汤面结了薄皮。{neighbor}上午来敲门，把一碗稠粥放在灶沿，没多留。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "care.self-tend",
+              "text": "药包用纸折着，{subject}把它压在枕头边，夜里起来两回。手工篮里的领子只做了几件，线搁在窗台上受潮。{mother}说汤淡了，{subject}又去添了一撮盐。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "care.hire-neighbor",
+          "weight": 1,
+          "text": "{subject}和{neighbor}讲好，每天上午来两个钟头，帮着扶{mother}起身、热汤、洗换下的布巾，一天给二十赫勒。{subject}腾出手来继续缝领子，只是傍晚收工回来还得自己守夜，眼下的钱和力气都紧。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2.4,
+              "reason": "付给邻居半个月的搭手钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "obligation": 0.05,
+              "reason": "雇请邻居白天搭手照看母亲"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "白天有人分担，能喘口气"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "夜里仍需起身照料，疲劳未消"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "care.hire-neighbor",
+              "text": "{neighbor}把围裙系紧，先去看{mother}的汤碗空没空。{subject}坐到窗边的小桌旁，把领子铺开，针在布里进出。二十赫勒一天，她在心里算着，手底下没停。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "care.hire-neighbor",
+              "text": "上午的日头照进走廊，{neighbor}扶着{mother}慢慢挪到椅子上。{subject}听着隔壁的动静，低头缝完一整排扣眼，抬头时发现汤锅已经坐在炉上，火不旺不弱。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "care.institution",
+          "weight": 1,
+          "text": "{subject}跑了两趟区公所和医院，问清住院的费用，把家里存着的八克朗取出来又借了四克朗，才把{mother}送进病房。回来时屋子空了一半，她站在灶前，第一次不知道该先做什么。{neighbor}说这样也好，至少夜里能睡整觉。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "支付母亲住院的押金与费用"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "夜间不再需要频繁起身，睡眠好转"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "把母亲送走，心里空落不安"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "trust": -0.02,
+              "obligation": 0.04,
+              "reason": "送母亲入院，仍觉有照料之责"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "care.institution",
+              "text": "医院走廊里一股石炭酸味，{subject}把包袱交给护士，里面是两件换洗衣裳。{mother}拉着她的手说了几句，听不清。回来路过教堂，她没进去，只在台阶上坐了一会儿。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "care.institution",
+              "text": "存钱的铁盒打开时，{subject}数了两遍，八克朗加十二赫勒。凑上借来的四克朗，窗口里的办事员盖了章。{neighbor}帮她把空床铺好，说屋子里一下子静得吓人。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

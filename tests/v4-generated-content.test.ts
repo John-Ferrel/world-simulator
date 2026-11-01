@@ -15,19 +15,49 @@ import {
   validateGeneratedPack,
   type GeneratedPack,
 } from '../packages/v4/generated.js';
+import { validateAuthoredPack } from '../packages/v4/content-author/strict.js';
+
+const PHASE2_PACK_IDS = new Set([
+  'vienna-youth-threshold',
+  'vienna-courtship-courtyard',
+  'vienna-housing-move',
+  'vienna-medical-treatment',
+  'vienna-parish-aid',
+  'vienna-market-debt',
+  'vienna-women-housework',
+  'vienna-elder-bereavement',
+]);
 
 describe('generated content factory packs', () => {
   it('compiles strict JSON packs with narration variants', () => {
-    expect(GENERATED_PACKS.length).toBe(14);
-    expect(GENERATED_SCENES.length).toBe(56);
+    expect(GENERATED_PACKS.length).toBe(22);
+    expect(GENERATED_SCENES.length).toBe(88);
     expect(generatedPackErrors()).toEqual([]);
     expect(GENERATED_SCENES.reduce((sum, scene) => sum + (scene.narration?.length ?? 0), 0)).toBe(
-      230,
+      423,
     );
     expect(new Set(GENERATED_SCENES.map((scene) => scene.id)).size).toBe(GENERATED_SCENES.length);
     for (const pack of GENERATED_PACKS) {
       expect(validateGeneratedPack(pack).errors).toEqual([]);
       expect(pack.nodes.length).toBeGreaterThanOrEqual(4);
+    }
+  });
+
+  it('keeps every Phase-2 family at four nodes with two or three outcomes and two narrations', () => {
+    const phase2 = GENERATED_PACKS.filter((pack) => PHASE2_PACK_IDS.has(pack.id));
+    expect(phase2.length).toBe(8);
+    for (const pack of phase2) {
+      expect(pack.nodes.length).toBe(4);
+      const outcomeIds = new Set<string>();
+      for (const node of pack.nodes) {
+        expect(node.outcomes.length).toBeGreaterThanOrEqual(2);
+        expect(node.outcomes.length).toBeLessThanOrEqual(3);
+        for (const outcome of node.outcomes) {
+          expect(outcomeIds.has(outcome.id)).toBe(false);
+          outcomeIds.add(outcome.id);
+          expect(outcome.narration?.length ?? 0).toBeGreaterThanOrEqual(2);
+        }
+      }
     }
   });
 
@@ -44,22 +74,7 @@ describe('generated content factory packs', () => {
       });
       world = result.world;
       for (const event of result.events) {
-        if (
-          event.action.startsWith('vienna-printshop-daily') ||
-          event.action.startsWith('vienna-school-childhood') ||
-          event.action.startsWith('vienna-tenement-neighbors') ||
-          event.action.startsWith('vienna-market-household') ||
-          event.action.startsWith('vienna-apprentice-printshop') ||
-          event.action.startsWith('vienna-illness-household') ||
-          event.action.startsWith('vienna-church-community') ||
-          event.action.startsWith('vienna-childhood-street') ||
-          event.action.startsWith('vienna-elder-care') ||
-          event.action.startsWith('vienna-infant-household') ||
-          event.action.startsWith('vienna-early-childhood') ||
-          event.action.startsWith('vienna-childhood-friends') ||
-          event.action.startsWith('vienna-adolescence') ||
-          event.action.startsWith('vienna-adult-social')
-        ) {
+        if (GENERATED_PACKS.some((pack) => event.action.startsWith(pack.id))) {
           generatedCount += 1;
           generatedActions.add(event.action.split('/')[0]!);
           expect(event.immediateText).not.toContain('{');
@@ -91,5 +106,21 @@ describe('generated content factory packs', () => {
     const before = compileGeneratedPack(base).reduce((sum, scene) => sum + (scene.rate ?? 0), 0);
     const after = compileGeneratedPack(expanded).reduce((sum, scene) => sum + (scene.rate ?? 0), 0);
     expect(after).toBeCloseTo(before, 6);
+  });
+
+  it('keeps every family rate equal to its declared base rate', () => {
+    for (const pack of GENERATED_PACKS) {
+      const total = compileGeneratedPack(pack).reduce((sum, scene) => sum + (scene.rate ?? 0), 0);
+      expect(total, pack.id).toBeCloseTo(pack.baseRate, 6);
+    }
+  });
+
+  it('publishes no unresolved tokens, duplicate outcome text, or invalid effect references', () => {
+    for (const pack of GENERATED_PACKS) {
+      const validation = validateAuthoredPack(pack, {
+        phase2: PHASE2_PACK_IDS.has(pack.id),
+      });
+      expect(validation.errors, pack.id).toEqual([]);
+    }
   });
 });

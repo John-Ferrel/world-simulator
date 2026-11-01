@@ -230,4 +230,13 @@ describe('universal Vienna life content', () => {
     const authored = new Set(VIENNA_1912_SEED.scenes.map((scene) => scene.sceneId));
     for (const scene of scenes) expect(authored.has(scene.id)).toBe(false);
   });
+
+  it('keeps old age a recurring risk instead of a one-time survival badge', () => {
+    const death = scenes.find((scene) => scene.id === 'vienna-life-death-old-age');
+    expect(death).toBeDefined();
+    expect(death!.oncePerPerson).not.toBe(true);
+    expect(death!.rate ?? 0).toBeGreaterThan(0);
+    expect(death!.ageWindow.max).toBeGreaterThanOrEqual(110);
+    expect(death!.conditions?.some((condition) => condition.kind === 'health')).not.toBe(true);
+  });
 });

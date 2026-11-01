@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advanceV4Year, type V4AdvanceOptions } from '../packages/v4/engine.js';
+import { advanceV4Year, v4EventRate, type V4AdvanceOptions } from '../packages/v4/engine.js';
 import {
   assertWorldV4,
   type Interaction,
@@ -1500,5 +1500,174 @@ describe('v4 annual engine', () => {
     expect(response?.causes).toEqual([
       first.events.find((event) => event.action.startsWith('test:explicit-followup-source/'))?.id,
     ]);
+  });
+
+  it('subscribes a scene to fact tags and schedules it with a cause', () => {
+    const world = vienna();
+    const source = scene({
+      id: 'test:injury-source',
+      stage: 'childhood',
+      ageWindow: { min: 11, max: 11 },
+      rate: 1,
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 11, maxAge: 11 }],
+      conditions: [{ kind: 'age', min: 11, max: 11 }],
+      outcomes: [
+        {
+          id: 'hurt',
+          weight: 1,
+          immediateText: 'An injury happened.',
+          effects: [{ type: 'health', personId: '$subject', amount: -0.1, reason: 'test injury' }],
+        },
+      ],
+    });
+    const trigger = scene({
+      id: 'test:injury-trigger',
+      stage: 'adolescence',
+      ageWindow: { min: 12, max: 12 },
+      rate: 0,
+      triggerTags: ['injury'],
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 12, maxAge: 12 }],
+      conditions: [{ kind: 'age', min: 12, max: 12 }],
+      outcomes: [
+        {
+          id: 'aftermath',
+          weight: 1,
+          immediateText: 'The injury was treated the next year.',
+          effects: [],
+        },
+      ],
+    });
+    const first = advanceV4Year(world, [source, trigger], {
+      economy: { enabled: false },
+      eventRuntime: true,
+      maxOrdinaryEventsPerPerson: 2,
+    });
+    expect(first.world.historyMeta.scheduledEvents?.[0]?.source).toBe('fact');
+    const second = advanceV4Year(first.world, [source, trigger], {
+      economy: { enabled: false },
+      eventRuntime: true,
+      maxOrdinaryEventsPerPerson: 2,
+    });
+    const event = second.events.find((item) => item.action.startsWith('test:injury-trigger/'));
+    expect(event).toBeDefined();
+    expect(event!.causes).toEqual([
+      first.events.find((item) => item.action.startsWith('test:injury-source/'))?.id,
+    ]);
+  });
+
+  it('charges a bounded birth-contract cost once per year on matching events', () => {
+    const world = vienna();
+    world.persons['person:anna']!.lifeContract = {
+      originalWish: 'learn to read',
+      mode: 'ordinary',
+      interpretation: 'A reading life.',
+      createdAt: { year: 1912, month: 1 },
+      capability: 'literacy',
+      conditions: [{ kind: 'weight', text: 'school matters', tags: ['education'], maxEffect: 0.1 }],
+      costs: [{ kind: 'vitality_cost', text: 'late nights', tags: ['education'], maxEffect: 0.2 }],
+      limits: [{ kind: 'ceiling', text: 'bounded', tags: ['education'], maxEffect: 0.1 }],
+    };
+    const school = scene({
+      id: 'test:birth-contract-school',
+      stage: 'childhood',
+      ageWindow: { min: 11, max: 11 },
+      rate: 1,
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 11, maxAge: 11 }],
+      conditions: [{ kind: 'age', min: 11, max: 11 }],
+      tags: ['education', 'school'],
+      outcomes: [
+        {
+          id: 'lesson',
+          weight: 1,
+          immediateText: 'A lesson happened.',
+          effects: [],
+        },
+      ],
+    });
+    const before = world.persons['person:anna']!.health.vitality;
+    const first = advanceV4Year(world, [school], {
+      economy: { enabled: false },
+      eventRuntime: true,
+      maxOrdinaryEventsPerPerson: 2,
+    });
+    expect(first.world.persons['person:anna']!.health.vitality).toBeLessThan(before);
+    expect(first.world.persons['person:anna']!.life?.flags).toContain('birth_cost:1913');
+    const vitalityAfterFirst = first.world.persons['person:anna']!.health.vitality;
+    const second = advanceV4Year(first.world, [school], {
+      economy: { enabled: false },
+      eventRuntime: true,
+      maxOrdinaryEventsPerPerson: 2,
+    });
+    expect(second.world.persons['person:anna']!.health.vitality).toBe(vitalityAfterFirst);
+  });
+
+  it('uses a birth-contract capability to weight matching scenes, not unrelated ones', () => {
+    const world = vienna();
+    const person = world.persons['person:anna']!;
+    const baseDefinition: SceneDefinition = {
+      id: 'test:capability-school',
+      version: 1,
+      packId: 'test',
+      title: 'School',
+      stage: 'childhood',
+      ageWindow: { min: 6, max: 14 },
+      roles: [{ key: 'subject', kind: 'subject', required: true }],
+      conditions: [],
+      tags: ['education', 'school'],
+      rate: 0.5,
+      outcomes: [{ id: 'ok', weight: 1, immediateText: 'ok', effects: [] }],
+    };
+    expect(v4EventRate(null, baseDefinition, person, world.date)).toBeCloseTo(0.5, 5);
+    person.life = {
+      mood: 0,
+      reputation: 0,
+      skills: { literacy: 0, numeracy: 0, craft: 0, social: 0 },
+      flags: ['capability:literacy'],
+    };
+    expect(v4EventRate(null, baseDefinition, person, world.date)).toBeCloseTo(0.6, 5);
+    expect(
+      v4EventRate(null, { ...baseDefinition, tags: ['market', 'work'] }, person, world.date),
+    ).toBeCloseTo(0.5, 5); // literacy must not boost unrelated tags
+  });
+
+  it('weights scenes through bounded birth-contract conditions', () => {
+    const world = vienna();
+    const person = world.persons['person:anna']!;
+    const definition: SceneDefinition = {
+      id: 'test:contract-condition',
+      version: 1,
+      packId: 'test',
+      title: 'School',
+      stage: 'childhood',
+      ageWindow: { min: 6, max: 14 },
+      roles: [{ key: 'subject', kind: 'subject', required: true }],
+      conditions: [],
+      tags: ['education', 'school'],
+      rate: 0.4,
+      outcomes: [{ id: 'ok', weight: 1, immediateText: 'ok', effects: [] }],
+    };
+    person.lifeContract = {
+      originalWish: 'read',
+      mode: 'ordinary',
+      createdAt: { year: 1912, month: 1 },
+      conditions: [
+        { kind: 'weight', text: 'school matters', tags: ['education'], maxEffect: 0.2 },
+        { kind: 'weight', text: 'market only', tags: ['market'], maxEffect: 0.5 },
+      ],
+    };
+    expect(v4EventRate(null, definition, person, world.date)).toBeCloseTo(0.448, 5);
+    // A ceiling clause caps the total contract advantage, not just one clause.
+    person.lifeContract.limits = [
+      { kind: 'ceiling', text: 'no more than 12%', tags: ['education'], maxEffect: 0.12 },
+    ];
+    expect(v4EventRate(null, definition, person, world.date)).toBeCloseTo(0.448, 5);
+    expect(
+      v4EventRate(
+        null,
+        { ...definition, rate: 0.5, tags: ['education'], familyId: 'education' },
+        { ...person, lifeContract: { ...person.lifeContract, focus: 'education' } },
+        world.date,
+      ),
+    ).toBeCloseTo(0.56, 5);
   });
 });

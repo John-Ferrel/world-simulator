@@ -1,8 +1,8 @@
 import '../../packages/model/config.js';
 import { ageAt, type Person } from '../../packages/v4/domain.js';
-import { compileBirthWish } from '../../packages/v4/wish.js';
+import { compileBirthContract } from '../../packages/v4/wish.js';
+import { applyV4BirthContract } from '../../packages/v4/birth-contract-store.js';
 import {
-  applyV4WishReading,
   claimV4BirthContract,
   finishV4BirthContract,
   loadV4World,
@@ -59,7 +59,7 @@ while (!stopped) {
                   ? '子女'
                   : '同住',
       }));
-    const compiled = await compileBirthWish({
+    const compiled = await compileBirthContract({
       name: person.name,
       sex: person.sex,
       health: person.health.vitality,
@@ -70,12 +70,7 @@ while (!stopped) {
       placeName: place?.name,
       household: { members },
     });
-    await applyV4WishReading(
-      job.world_id,
-      job.person_id,
-      { ...compiled.reading, taboo: compiled.reading.taboo ?? undefined },
-      compiled.model,
-    );
+    await applyV4BirthContract(job.world_id, job.person_id, compiled.contract, compiled.model);
     await finishV4BirthContract(job.id, 'done', { model: compiled.model });
     console.log(
       JSON.stringify({
@@ -83,7 +78,7 @@ while (!stopped) {
         person: job.person_id,
         model: compiled.model,
         tokens: compiled.tokens,
-        focus: compiled.reading.focus,
+        focus: compiled.contract.focus,
       }),
     );
   } catch (error) {

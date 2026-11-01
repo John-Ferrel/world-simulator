@@ -1759,13 +1759,16 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
     id: 'vienna-life-death-old-age',
     version: 1,
     packId: PACK,
-    title: '最后一个冬天',
+    title: '老年的冬天',
     stage: 'elderhood',
-    ageWindow: { min: 72, max: 98 },
+    ageWindow: { min: 72, max: 118 },
     subjectProvenance: ['birth', 'initial'],
-    oncePerPerson: true,
+    // Old age is a recurring risk, not a one-off milestone: surviving one hard
+    // winter must not make a person immortal for the rest of the run.
+    rate: 0.16,
+    cooldownYears: 1,
     roles: [
-      { key: 'subject', kind: 'subject', required: true, minAge: 72, maxAge: 98 },
+      { key: 'subject', kind: 'subject', required: true, minAge: 72, maxAge: 118 },
       {
         key: 'neighbor',
         kind: 'neighbor',
@@ -1775,9 +1778,8 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
       },
     ],
     conditions: [
-      { kind: 'age', min: 72, max: 98 },
+      { kind: 'age', min: 72, max: 118 },
       { kind: 'stage', in: ['elderhood'] },
-      { kind: 'health', max: 0.45 },
     ],
     outcomes: [
       {
@@ -1820,7 +1822,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
       },
       {
         id: 'survives-another-year',
-        weight: 0.15,
+        weight: 0.3,
         immediateText:
           '{subject}在医院住了两周又回到家，走路更慢了。邻居把药按早中晚分在小盒里，放在床头。',
         effects: [
@@ -1920,5 +1922,90 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
     sourceIds: ['source-push-wiener-wohnverhaeltnisse', 'source-wien-geschichte-wohnbaupolitik'],
     historicalBasis:
       'Viennese working-class flats were severely overcrowded; municipal housing and rent regulation changed access over the period.',
+  },
+
+  {
+    id: 'vienna-life-injury-recovery',
+    version: 1,
+    packId: PACK,
+    title: '伤后的几天',
+    stage: 'adulthood',
+    ageWindow: { min: 18, max: 60 },
+    subjectProvenance: ['birth', 'initial'],
+    triggerTags: ['injury'],
+    rate: 0,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 60 },
+      {
+        key: 'doctor',
+        kind: 'worker',
+        required: false,
+        minAge: 25,
+        maxAge: 75,
+        occupation: 'Arzt',
+      },
+    ],
+    conditions: [
+      { kind: 'age', min: 18, max: 60 },
+      { kind: 'stage', in: ['adulthood'] },
+      { kind: 'health', max: 0.9 },
+    ],
+    outcomes: [
+      {
+        id: 'clinic-treatment',
+        weight: 0.5,
+        immediateText:
+          '{subject}在受伤后的第三天去了诊所。医生清洗伤口、换药，收下诊费，嘱咐不要急着回机器旁。{subject}把药方折好，回家路上买了纱布。',
+        effects: [
+          { type: 'health', personId: '$subject', amount: 0.05, reason: 'wound treatment' },
+          { type: 'cash', householdId: '$household', amount: -8, reason: 'clinic and bandages' },
+          {
+            type: 'condition',
+            personId: '$subject',
+            condition: 'bandaged wound',
+            add: true,
+            reason: 'treated injury',
+          },
+        ],
+      },
+      {
+        id: 'home-care',
+        weight: 0.3,
+        immediateText:
+          '{subject}没有去诊所，只用热水和旧布洗了伤口。第二天伤口周围发红，家里人把仅剩的干净床单撕成条。',
+        effects: [
+          { type: 'health', personId: '$subject', amount: -0.03, reason: 'untreated wound' },
+          { type: 'cash', householdId: '$household', amount: -2, reason: 'clean cloth' },
+          {
+            type: 'condition',
+            personId: '$subject',
+            condition: 'inflamed wound',
+            add: true,
+            reason: 'home care',
+          },
+        ],
+      },
+      {
+        id: 'wound-infection',
+        weight: 0.2,
+        immediateText:
+          '{subject}的伤口在几天后肿起来，手腕发热。医生说要切开引流，费用比上次更高；{subject}看着账单，先问能不能分两次付。',
+        effects: [
+          { type: 'health', personId: '$subject', amount: -0.12, reason: 'wound infection' },
+          { type: 'cash', householdId: '$household', amount: -14, reason: 'drainage and medicine' },
+          {
+            type: 'condition',
+            personId: '$subject',
+            condition: 'infected wound',
+            add: true,
+            reason: 'wound infection',
+          },
+        ],
+      },
+    ],
+    tags: ['health', 'work', 'family'],
+    sourceIds: ['source-wien-geschichte-arbeitsschutz', 'source-wien-geschichte-tuberkulose'],
+    historicalBasis:
+      'Work injuries and wound infections were common in Vienna; treatment depended on household cash and access to a doctor.',
   },
 ];

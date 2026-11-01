@@ -1,0 +1,804 @@
+{
+  "id": "vienna-courtship-courtyard",
+  "title": "院子里的恋爱与分手",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 45
+  },
+  "tags": [
+    "adulthood",
+    "courtship",
+    "partner",
+    "social",
+    "family"
+  ],
+  "baseRate": 0.24,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 45
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-courtship-courtyard.sunday-walk",
+      "title": "星期天的散步",
+      "weight": 1,
+      "rate": 0.072,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 45
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "second-bridge-promise",
+          "weight": 1,
+          "text": "在第二个桥洞下，{partner}先停下来，用鞋尖碾一颗烤栗子壳，说下星期天还是这个时候、还是这座桥。{subject}点头，掏出四赫勒买了两小袋栗子，两人分着剥，手上都是糖渍。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.08,
+              "affection": 0.1,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "在桥边约定了下一次见面"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.04,
+              "reason": "两小袋烤栗子"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "有人愿意再约下一次"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "second-bridge-promise",
+              "text": "运河水面浮着一层煤灰，卖栗子的老头把铁勺敲在锅沿上。{partner}说话时没看{subject}，只看着桥洞上渗水的砖缝，说完才抬头看了一眼。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "second-bridge-promise",
+              "text": "成衣店的卷帘门拉到底，橱窗里只剩一个没头的木模特。{subject}把栗子袋攥在手心暖和着，听见自己答应得太快，又补了一句“要是不下雨”。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "separate-coffee",
+          "weight": 1,
+          "text": "两人拐进街角的咖啡馆，站到锌皮柜台前。{partner}点了牛奶咖啡，{subject}要了黑咖啡，十二赫勒一杯。侍者把两杯推过来时，两人几乎是同时把钱币按在柜台上，各付各的，谁也没说什么。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.12,
+              "reason": "自己那杯黑咖啡"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "affection": 0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "各付各的一杯咖啡，关系停在客气上"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "付钱的动作把话说得太清楚"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "separate-coffee",
+              "text": "柜台上摊着前一天的报纸，被咖啡杯压出圆印。{partner}搅了三下勺子就放下，说家里还等着她回去削土豆。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "separate-coffee",
+              "text": "穿黑围裙的侍者收走空杯，抹布在台面上画了个圈。{subject}数着找回的铜币，听见门外有轨电车驶过，玻璃跟着抖了一下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "part-at-arch",
+          "weight": 1,
+          "text": "走到桥洞前，{partner}说该往回走了，家里炉子还没生。{subject}站在原地看着她拐上台阶，围巾的一角被风掀起来；下周的事谁也没有提，两人就此分开。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "分开时没有说定下一次"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "affection": 0.01,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "只走到桥洞前就各自回去"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "uncertain_courtship",
+              "add": true,
+              "reason": "散步没有结果"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "part-at-arch",
+              "text": "桥洞里的风比外面凉，带着河水和湿石头的气味。{subject}把手插进外套口袋，摸到一颗剩下的栗子，凉了，壳也软了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "part-at-arch",
+              "text": "台阶上方有个报童在喊星期天晚报，声音一阵一阵。{partner}走到一半回头摆了摆手，动作很快，像在赶一只苍蝇。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-courtship-courtyard.letter-answer",
+      "title": "没有回音的信",
+      "weight": 1,
+      "rate": 0.06,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 45
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "reply-at-bakery",
+          "weight": 1,
+          "text": "第四天，{partner}的回信从门缝底下塞进来，纸边被门槛磨毛了。她约{subject}星期六早上在街角面包店门口见，说想买一个两赫勒的小圆面包，两个人分。{neighbor}在楼道里撞见{subject}读信，笑着问是不是好消息。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.07,
+              "affection": 0.09,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "回信约在面包店门口见"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "affection": 0.01,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "邻居撞见读信并打了招呼"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "等到了回音"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "reply-at-bakery",
+              "text": "信纸是从练习本上撕下来的，背面还留着半行算术。{subject}在楼梯拐角读了两遍，把纸折回四折，塞进内袋贴着胸口。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "reply-at-bakery",
+              "text": "面包店六点开炉，那时整条街都是热面团的味道。{partner}的字写得小，最后一行挤在纸边，说“别迟到”。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mother-opened-letter",
+          "weight": 1,
+          "text": "信没有到{subject}手里。{partner}的母亲先拆了它，下午就在洗衣房里跟人念叨，说有人写字来缠她女儿。话传到院子里时已经添了油，{neighbor}隔着栏杆把原话学了一遍，说得很难听。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "信被对方母亲拆开并传了闲话"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "私信被拆、话被传歪"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "affection": -0.02,
+              "obligation": 0,
+              "fear": 0.03,
+              "respect": 0,
+              "reason": "家里的阻拦让两人都难做"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "mother-opened-letter",
+              "text": "洗衣房的碱水味顺着楼梯上来。{neighbor}说的时候压低了声音，眼睛却往{subject}身后的门看，像在确认还有谁在听。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "mother-opened-letter",
+              "text": "{subject}站在院子里没动，手里还攥着刚从水龙头接的半桶水。桶沿滴水，在石板上一滴一滴砸出小坑。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "burn-the-letter",
+          "weight": 1,
+          "text": "等到第九天，{subject}把没寄出的草稿和那封写了一半的信一起塞进炉子。纸卷起来，火苗发蓝，屋里一股焦味。{subject}拿火钩把灰捅散，决定不再去问信的下落。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "把信烧掉，不再等"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "gave_up_on_letter",
+              "add": true,
+              "reason": "主动结束等待"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "affection": -0.04,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "没有回音，也就不再追问"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "burn-the-letter",
+              "text": "炉门上的铁片烫手，{subject}用围裙垫着拉开。纸灰从炉口飘出来，落在擦过的地板上，还得再扫一遍。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "burn-the-letter",
+              "text": "窗外有人在敲地毯，嘭、嘭，闷响一下一下。{subject}看着最后一角纸变黑，上面那个“亲”字先没了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-courtship-courtyard.family-table",
+      "title": "见家长的一顿饭",
+      "weight": 0.9,
+      "rate": 0.06,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 45
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "nod-and-pots",
+          "weight": 1,
+          "text": "汤喝到一半，{parent}放下勺子点了头，但说得很清楚：先攒出一套锅碗、一只挂钟，再把话往下说。{partner}在桌下用膝盖碰了碰{subject}，母亲把最后一块煮牛肉推过来，饭桌上的空气总算松了。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.08,
+              "affection": 0.07,
+              "obligation": 0.06,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "长辈有条件地认可"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": 0.03,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "饭桌上被认可"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "在对方家里吃了一顿正式的午饭"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "nod-and-pots",
+              "text": "芥末盛在小瓷碟里，边上沾着一圈。{parent}说话时拿刀背把盘沿的汤汁刮干净，动作很慢，像在称量每个字。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "nod-and-pots",
+              "text": "窗台上晾着洗过的啤酒杯，倒扣在布上。{partner}起身去添汤，回来时手在{subject}肩上按了一下，很轻，随即拿开。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wage-question-silence",
+          "weight": 1,
+          "text": "{parent}问起工钱和房租，{subject}报了个数，又补了一句冬天活少。桌上一时只剩刀叉声。{partner}低着头把面包掰成小块，母亲往汤里又加了一勺盐，谁都没再开口。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "被问住，饭桌冷下来"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.01,
+              "affection": -0.02,
+              "obligation": 0.02,
+              "fear": 0.03,
+              "respect": -0.02,
+              "reason": "长辈对收入不放心"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.03,
+              "affection": 0.02,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0,
+              "reason": "两人一起熬过一顿难挨的饭"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wage-question-silence",
+              "text": "煮牛肉的汤面上浮着几点油花，慢慢并成一片。{subject}听见自己吞口水的声音，比说话的声音还大。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wage-question-silence",
+              "text": "楼上的孩子拖着椅子在地板上走，吱的一声。{parent}把餐巾叠好压在盘子底下，那个动作等于把话题收了起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "leave-before-dessert",
+          "weight": 1,
+          "text": "问到后来，{parent}提起别家有个更稳当的差事。{partner}把餐巾往桌上一放，说吃好了，先走。两人在楼梯间站住，{partner}说不是{subject}的错，可下次再来还得一样坐这张桌子。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.06,
+              "affection": 0.05,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "一起从饭桌上退下来"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.03,
+              "affection": -0.04,
+              "obligation": 0,
+              "fear": 0.02,
+              "respect": -0.03,
+              "reason": "饭没吃完就离席"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "至少她站在了这边"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leave-before-dessert",
+              "text": "楼梯间的墙刷到齐腰高，上半截是灰的，散着旧石灰味。{partner}靠在铁扶手上，手指敲了两下，才把话说出口。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leave-before-dessert",
+              "text": "门在身后合上，屋里传来盘子摞起来的声响。{subject}数着台阶往下走，鞋跟磕在铁皮包边上，一声比一声空。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-courtship-courtyard.breakup",
+      "title": "院子里的分手",
+      "weight": 0.7,
+      "rate": 0.048,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 45
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "keys-and-photo-returned",
+          "weight": 1,
+          "text": "院子里晾着三条床单，风一过就拍到人脸上。{subject}把备用钥匙和一张照相馆拍的合影交还，{partner}把那件借来的外套叠好递回。两人说清各自搬回自己的住处，谁都没有提高声音。",
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "reason": "双方把钥匙和旧物还清"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "把关系正式结束"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "courtship_ended_cleanly",
+              "add": true,
+              "reason": "分手时没有闹开"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "keys-and-photo-returned",
+              "text": "合影背面写着日期和照相馆的名字，在第五区。{partner}看了一眼就翻过去扣在掌心，没有撕，也没有还回来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "keys-and-photo-returned",
+              "text": "钥匙从一只手传到另一只手，铁碰铁响了一声。床单后面有人在抖灰，灰落下来，落在两人的鞋面上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stay-for-the-rent",
+          "weight": 1,
+          "text": "东西还到一半，两人算了算房租、煤钱和两个人的工钱凑在一起才够。最后钥匙没收回去，外套也留下。话说到“以后”两个字就断了，谁都不往下接。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "留下来却不再谈以后"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": -0.04,
+              "affection": -0.03,
+              "obligation": 0.08,
+              "fear": 0.02,
+              "respect": 0,
+              "reason": "因房租和习惯继续同住"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "合租省下一份房租"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stay-for-the-rent",
+              "text": "两人蹲在楼梯口用粉笔在纸上算账，房租十四克朗一个月，煤一筐九十赫勒。算完纸被揉成一团，塞进煤箱边上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stay-for-the-rent",
+              "text": "楼上有人把窗户推开又关上，插销响了一声。{partner}抬头看了看，说天要冷了，炉子今晚还是得两个人一起生。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "courtyard-quarrel",
+          "weight": 1,
+          "text": "话没说完就变成了争。{partner}把外套扔在晾衣杆下，{subject}说了一句不中听的，声音大得整院都听见。{neighbor}在三楼把窗开了一条缝，看完了全程，第二天院子里人人都知道。",
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "reason": "在院子里吵开后断绝"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "争吵被整院邻居听见"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "affection": -0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": -0.02,
+              "reason": "邻居目睹了争吵"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "当着众人把话说破了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "courtyard-quarrel",
+              "text": "晾衣绳上的木夹子掉了一个，床单一角垂到地上。{subject}弯腰去捡，直起身时院子里已经没人应声，只有水龙头还在漏。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "courtyard-quarrel",
+              "text": "三楼的窗缝里透出灯光，随即灭了。{partner}把门摔上，门框上的灰簌簌落下来，落在{subject}的袖口上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -4,31 +4,33 @@
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
 
-> 2026-11-01 后续更新：已实现多事件年度运行时、事件队列、人物请求/回应、住房/离婚/同性关系/继承第一版、LLM 内容工厂与 56 个生成场景；最新数字见 [content-runtime-report.md](content-runtime-report.md)。本页下方部分旧数字（42 场景、45 项测试）保留为上一阶段快照。
+> 2026-11-01 Phase 2 更新：内容工厂扩展到 22 族 / 88 场景 / 423 叙事变体；Birth Contract 2.0 已持久化并由 engine 消费；观察 API 改为分页投影；全量 353 项通过、构建和浏览器通过。最新验收见 [phase-2-report.md](phase-2-report.md)，Phase 1 证据见 [content-runtime-report.md](content-runtime-report.md)。本页下方旧数字（45 项测试、14 族）只在明确标注处保留为历史快照。
 
 ## 状态总表
 
 | 项目                 | 状态             | 证据 / 边界                                                                                                                                                                  |
 | -------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | v4 领域契约          | 完成             | `packages/v4/domain.ts`；Person/Household/Place/Organization/Position/Project/Interaction/Relation/Knowledge/EventFact/SceneDefinition/SceneInstance；`assertWorldV4` 不变量 |
-| 多事件年度运行时     | 完成（第一版）   | rate/weight、每年多事件、followup 队列、请求/回应、24 项 engine 测试                                                                                                         |
+| 多事件年度运行时     | 完成             | rate/weight、每年多事件、followup 队列、请求/回应、fact-tag 订阅、lifecycle 优先；29 项 engine 测试                                                                          |
 | Vienna 作者场景包    | 完成             | 19 个场景、10 家庭、26 人、23 地点、6 组织、20 来源；10 项测试通过                                                                                                           |
 | 通用人生场景包       | 完成（切片级）   | 19 个场景；5 项内容测试 + 3 项玩家人生集成测试通过                                                                                                                           |
 | 家庭/生育场景包      | 完成（自动场景） | 8 个场景；3 项测试通过；新生儿是真实 Person，含父母/监护人/家庭/出生事件                                                                                                     |
 | 1912–1918 作者人生链 | 完成             | 2 项 slice 测试通过；Anna/Josef 工伤、房租、学校、动员、流感                                                                                                                 |
 | v4 PostgreSQL 存储   | 完成             | `v4_*` 实体/事件表、出生请求、出生契约队列；`saveV4World` revision 检查                                                                                                      |
-| v4 API/认证/SSE      | 完成             | Fastify、scrypt 密码、cookie session、公开事件过滤、人物日志权限                                                                                                             |
+| v4 API/认证/SSE      | 完成             | Fastify、scrypt 密码、cookie session、公开事件过滤、人物日志权限；world 分页、person/event detail、search、坏 cursor 400                                                     |
 | v4 模拟器            | 完成             | 出生落地、愿望入队、年度推进、经济、2000 年明确终点                                                                                                                          |
-| v4 出生愿望 LLM      | 完成（有界读法） | 真实 `deepseek-v4.1-flash` 调用成功；严格 JSON 校验；异步重试 3 次                                                                                                           |
+| v4 出生契约 LLM      | 完成（2.0）      | Birth Contract：privateGoal/focus/capability/conditions/limits/costs；服务端复核；8 项 contract 测试；真实模型调用约 1,343 tokens                                            |
 | 三栏观察器           | 完成             | 人物/家庭、个人日志、维也纳地图、时代/公开事件、出生页、等待页                                                                                                               |
 | 年份推进与恢复       | 完成（小规模）   | 开发世界实际 1912→1913→… 连续推进；刷新从 PostgreSQL 读取                                                                                                                    |
 | 完整人生经济         | 部分             | 工资/租金/食物/债务 + 显式月度外部营收/收入；无市场、税收、驱逐                                                                                                              |
-| 婚姻/生育/代际       | 部分完成         | 玩家出生人物可自动求婚/同居/生育，后代继续走通用场景；无玩家选择、离婚、再婚、同性路径、完整继承                                                                             |
+| 婚姻/生育/代际       | 部分完成         | 玩家后代和初始人口可求偶/同居/生育；离婚、同性关系、家庭灭绝现金继承第一版；无玩家选择、再婚链、遗嘱/债务分配                                                                |
 | 玩家间持久互动       | 未完成           | Relation/Interaction 可存储，但没有跨玩家场景或请求-答复 UI                                                                                                                  |
 | LLM 场景/选择决策    | 未完成           | 引擎保留同步 policy 接口；默认确定性权重                                                                                                                                     |
 | History Director     | 未完成           | 只有内容包中的公开时代记录和 pressures                                                                                                                                       |
-| 内容工厂             | 未完成           | 无自动内容编译入库                                                                                                                                                           |
-| 10k/万人规模         | 未完成           | 未跑 v4 负载；不能引用旧 v3 的 12k 数字                                                                                                                                      |
+| 内容工厂             | 完成（离线）     | 22 族 / 88 场景 / 239 outcome / 423 narration；8 个新族真实模型生成；验证后落盘；22/22 族审计触发                                                                            |
+| 读取路径与规模       | 部分完成         | 世界摘要/人物 keyset 分页/单人详情/搜索；1k/5k PostgreSQL 实测；未做 20k 或并发 API 压测                                                                                     |
+| 内容覆盖审计         | 完成             | 80 年：3,657 事件、279 focal、358 causal、75 出生；零事件年份 0；未解析 token 0；顶层场景占比 7.9%                                                                           |
+| Birth Contract 写入  | 完成             | `birth-contract-store.ts` 事务锁 + revision；`compiledAt` 防止重复应用；worker 已切到完整 contract                                                                           |
 | 生产部署             | 未完成           | 仅本地 `pnpm dev`；Compose 未在 v4 实测                                                                                                                                      |
 
 ## 实际执行的命令与结果

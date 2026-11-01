@@ -1,0 +1,729 @@
+{
+  "id": "vienna-parish-aid",
+  "title": "教区、互助会与最后一篮煤",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 80
+  },
+  "tags": [
+    "faith",
+    "parish",
+    "mutual_aid",
+    "poverty",
+    "family"
+  ],
+  "baseRate": 0.22,
+  "conditions": [
+    {
+      "kind": "placeKind",
+      "in": [
+        "home",
+        "church"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-parish-aid.rent-box",
+      "title": "圣文森特会的门铃",
+      "weight": 1,
+      "rate": 0.066,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "rent-box.accept-all",
+          "weight": 1,
+          "text": "{subject}让{neighbor}把篮子放在灶台边，数出面包、两把豆子和一小袋煤。访客翻开硬壳册子，问清家里几口人、房租还差多少克朗，{subject}在指头上蘸了印泥，在名字旁按下手印。她们说明天会送一捆柴来，也把这户记进复活节的名单。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "互助会补上本月房租差额"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "面包、豆子与一小袋煤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.04,
+              "reason": "在册子上按了手印，领了教区救济"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parish_registered",
+              "add": true,
+              "reason": "被记入圣文森特会的救济名册"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-box.accept-all",
+              "text": "门铃是根铁丝拉的，响得发闷。{neighbor}提篮进门先看水槽里泡着的碗，再看墙角的煤箱，说价钱她心里有数。{subject}把印泥盒推到桌边，按下去时指尖凉了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-box.accept-all",
+              "text": "煤袋落在台阶上，扬起细细一层黑末。{neighbor}用铅笔头在蓝格册上写门牌号，问房东姓什么，又叮嘱别把面包票弄丢。灶上水壶开始叫，{subject}才想起屋里连只干净的杯子都没有。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rent-box.food-only",
+          "weight": 1,
+          "text": "{subject}只收下篮里的面包和豆子，把煤袋推回{neighbor}手里，说房租自己再想办法，请她们给介绍点零工。{neighbor}把煤放在走廊窗台，说礼拜四后院有人要拆旧木箱，一赫勒一捆，工钱不多但现结。{subject}记下门牌，答应一早过去。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "收下面包与豆子，煤退回"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "请互助会介绍零工"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "客气地领了食物并托她找活计"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-box.food-only",
+              "text": "面包还带着烤炉的温气，{subject}把它抱在围裙里。{neighbor}没有争，只说煤她先记着，谁家要用再匀。楼梯间有孩子在数台阶，数到十四就跳过去一级。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-box.food-only",
+              "text": "煤袋搁在窗台上，黑印子蹭了半道墙。{neighbor}说得快，把礼拜四、后院、一赫勒一捆说得清清楚楚，然后合上册子，问{subject}家还有没有能干活的人手。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rent-box.refuse",
+          "weight": 1,
+          "text": "{subject}说这个月还能撑，房租差的那几克朗打算替人洗衣补上，请{neighbor}把篮子提回去给更困难的人家。{neighbor}在门口停了一会儿，把一小块肥皂留在窗台上，说不是救济，是教区多出来的。门关上后，屋里只剩煤箱底刮出的响声。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "推回救济后心里发紧"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "respect": 0.06,
+              "reason": "婉拒救济，访客留下肥皂"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parish_refused_aid",
+              "add": true,
+              "reason": "当面推回了圣文森特会的篮子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-box.refuse",
+              "text": "{neighbor}把篮子换个手提着，没再多劝，只说名字她先空着，什么时候想上名册就让楼下门房捎句话。肥皂一角有点软，放在窗台上慢慢塌下去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-box.refuse",
+              "text": "楼梯上的谈话声远了，{subject}才去看煤箱，用火钩刮了半天，刮出的碎末只够烧一壶水。肥皂的气味很淡，却把整个厨房压住了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-parish-aid.funeral-society",
+      "title": "丧葬互助会的会费",
+      "weight": 1,
+      "rate": 0.055,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home",
+            "church"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "funeral-society.pay",
+          "weight": 1,
+          "text": "{subject}数出八赫勒交给{neighbor}，看她在蓝皮本上找到自家门牌，把这一周的格子划掉。{neighbor}说上个月隔壁巷子的人走了，公账出了棺材和一场小弥撒，剩下的钱记在册尾。楼梯口的灯很暗，{subject}盯着自己的名字看了两遍才转身。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "一周丧葬互助会会费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "按时交了会费，名字留在蓝皮本上"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "funeral_society_member",
+              "add": true,
+              "reason": "成为丧葬互助会在册会员"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "funeral-society.pay",
+              "text": "八个赫勒在手心里被汗捂热，{neighbor}一枚枚点过，才从怀里掏出蓝皮本。纸角卷了，铅笔写的名字挤成一片，她翻到中间一页，用指甲在门牌号上按了按。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "funeral-society.pay",
+              "text": "楼梯口的灯罩缺了一块，光斜着落在本子上。{neighbor}说本子不能丢，丢了谁家出事就没凭据。{subject}把找回来的两枚铜币放进围裙口袋，铜碰铜响了一声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "funeral-society.defer",
+          "weight": 1,
+          "text": "{subject}说这个月先欠着，等发工钱补上。{neighbor}在名字旁画了个小圈，写明欠两周，叮嘱别拖过月底，否则要重新排进新会员的等待期。她走时把楼道的门带严，说冷风灌进来煤烧得快。{subject}回头数了数抽屉里的零钱，还差三个赫勒。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "会费欠着，心里不踏实"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "obligation": 0.04,
+              "reason": "被通融宽限两周会费"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "funeral-society.defer",
+              "text": "蓝皮本翻到{subject}家那一行，{neighbor}用铅笔打了个小圈，说月底再来。她顺手把门边的煤灰踢进门里，说别浪费。楼上有扇窗没关严，风把本子的薄页吹得翻动。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "funeral-society.defer",
+              "text": "{subject}把抽屉拉开又推上，铜币在木板上滚了半圈。{neighbor}合上本子说，拖欠的人不少，可规矩就是规矩。她走下两级台阶又回头提醒，发工钱那天她会在教堂侧门等着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "funeral-society.quit",
+          "weight": 1,
+          "text": "{subject}说互助会先退了，这笔钱要留给煤和面包。{neighbor}没争辩，在蓝皮本上把名字划了一道，问清楚是不是全家都退，然后把划掉的那行折进本子夹缝。她说以后想再进，要重新排三个月。门关上，{subject}听见铅笔在楼梯上轻轻敲了两下栏杆。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.4,
+              "reason": "省下本周会费留作煤钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "退出互助会，被从蓝皮本上划去"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "funeral_society_left",
+              "add": true,
+              "reason": "退出丧葬互助会"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "funeral-society.quit",
+              "text": "铅笔划过纸面发出干涩的响声，划痕正好压在名字中间。{neighbor}把本子合上，说三个月，不多不少，然后低头把大衣扣子一颗颗扣好。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "funeral-society.quit",
+              "text": "省下的八赫勒被{subject}放进装盐的小罐，罐口太窄，硬币卡了一下才落进去。楼梯上传来{neighbor}的脚步声，一级一级，很均匀，到楼下停住，像是回头看了一眼门牌。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-parish-aid.soup-kitchen",
+      "title": "汤厨房的长队",
+      "weight": 1,
+      "rate": 0.055,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home",
+            "church"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "soup-kitchen.take-and-carry",
+          "weight": 1,
+          "text": "十一点整侧门开了，{subject}跟着{neighbor}沿墙根往前挪。修女舀汤时问家里几口人，{subject}说五个，碗里就多添了半勺土豆。喝完一碗，{subject}把带来的铁罐递过去，修女犹豫一下，还是舀满，说下不为例，罐子要还。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "汤厨房一碗汤加一罐带回家"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "一起排队领汤，替彼此占位"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "热汤下肚，人缓过来"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "soup-kitchen.take-and-carry",
+              "text": "汤是豆子熬的，表面浮着几粒油星，气味把整条巷子都占了。{neighbor}排在前面，回头替{subject}看着位置，嘴里数着还剩几个人。铁罐递过去时烫手，{subject}用围裙角垫着。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "soup-kitchen.take-and-carry",
+              "text": "修女袖口别着别针，勺子在锅底刮出声音。{subject}低头喝，热气扑在脸上，手指才慢慢有知觉。罐子盖不严，往回走时得用手扶着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "soup-kitchen.help-wash",
+          "weight": 1,
+          "text": "{subject}喝完汤没走，留下来帮修女把大锅刷净，又把木碗按大小摞好。厨房后头有半块面包和一碗剩汤，修女说是帮忙人的午饭。{neighbor}在门口等着一起回去，说下回还来，洗锅的活总有人要干。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "帮工换得半块面包和剩汤"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.04,
+              "reason": "在汤厨房帮忙，学会与修女和排队的人打交道"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "一起留下帮工，被修女记住"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "干了活换来一顿饭，心里踏实些"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "soup-kitchen.help-wash",
+              "text": "热水里撒了碱，手背泡得发红。修女把抹布搭在灶沿，说锅底别刮太狠，这锅比她还老。{subject}蹲下去刷，听见门外队伍渐渐散了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "soup-kitchen.help-wash",
+              "text": "木碗一只只倒扣在长桌上，水珠顺着桌沿滴到石板地。修女从柜子里拿出半块面包，切面已经干了，她用手掰成两半，大的那半给了{subject}。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "soup-kitchen.leave",
+          "weight": 1,
+          "text": "{subject}看见熟人排在前面，帽檐压得低低的，便转身拐进旁边的小巷。{neighbor}追出来问怎么不领了，{subject}说人太多，改天再来。回到屋里，灶是冷的，早上剩的半个土豆还在盘子里。{subject}把它切成片，就着水咽下去。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "为了避开熟人，空着肚子回家"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "被邻居看见在队伍前转身离开"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "回家把剩下的土豆切片充饥"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "soup-kitchen.leave",
+              "text": "巷子里有股湿石灰味，{subject}靠墙站了一会儿，听见队伍那头碗碰碗的声响。帽子压得低的那个人正低头喝汤，袖口磨得发亮。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "soup-kitchen.leave",
+              "text": "{neighbor}在巷口喊了一声，{subject}摆摆手没回头。屋里的盘子边沿有一圈干了的淀粉印子，刀切下去，土豆片贴在刀面上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-parish-aid.sick-call",
+      "title": "给病人送药",
+      "weight": 0.8,
+      "rate": 0.044,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home",
+            "church"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sick-call.help-in",
+          "weight": 1,
+          "text": "{subject}和{neighbor}一起上楼，门没锁，屋里一股酸味。病人裹着毯子坐在床沿咳嗽，炉子只剩灰。{subject}去楼下讨了几块煤核，蹲着把火生起来，又用带来的面粉搅了一小锅稀粥。药粉冲开，碗底沉着白渣，{subject}先垫了药钱，说以后再说。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "匀出面粉给病人煮粥"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "替病人垫上药粉钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "在病人屋里待久了，嗓子发干"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.04,
+              "reason": "一起上门照顾病人、生火煮粥"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parish_sick_visitor",
+              "add": true,
+              "reason": "替教区上门探视病人"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sick-call.help-in",
+              "text": "火柴划了三根才点着，煤核太潮，烟往屋里钻。病人咳得床板发响，{neighbor}把窗子推开一条缝，又把毯子往上拉了拉。粥在锅里冒泡，气味盖住了酸味。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sick-call.help-in",
+              "text": "药包是纸折的，边角被{subject}一路捏软了。碗是病人自带的搪瓷碗，缺口在唇边那一边。{neighbor}蹲在炉前吹火，脸被熏得发黑。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sick-call.door-only",
+          "weight": 1,
+          "text": "{subject}把药包和半块肥皂交给开门的孩子，嘱咐用水冲开、一天两次，就下了楼。楼梯间里孩子一直站在门口看着，手里攥着纸包，没关门。{subject}走到二层又折回去，帮他把门带上，说自己家里也等着火。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "没有久留，避开了病人的屋子"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "只把药送到门口就离开"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "下楼时觉得心里不落忍"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sick-call.door-only",
+              "text": "孩子在门缝里露出半张脸，手指甲缝里全是灰。{subject}把纸包放在他手心里，那手比纸包还凉。楼梯的扶手粘手，不知是谁撒了汤。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sick-call.door-only",
+              "text": "门里的咳嗽声一阵一阵，隔着门板闷闷的。{subject}交代完就往下走，走到拐角听见门还没关，又回去推了一下，木门合上时弹了弹。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sick-call.with-priest",
+          "weight": 1,
+          "text": "{subject}觉得一个人去不合适，绕到教堂请了修女一同上楼。修女看过病人，留下药包和一小瓶圣水，说会从教区账上出钱请医生来看一趟。{neighbor}在楼下等着，说这样妥当，病人家里没男人，多个见证人心里安稳。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "听从邻居建议，请修女一同上门"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "事情托付妥当，心里松了"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parish_sick_visitor",
+              "add": true,
+              "reason": "随修女上门探视病人"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sick-call.with-priest",
+              "text": "修女的鞋跟敲在石阶上，声音很稳。她在床前站定，先看病人的嘴唇，再看炉子，然后回头跟{subject}说，医生星期四来，药要按时。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sick-call.with-priest",
+              "text": "小瓶圣水搁在窗台上，玻璃上映着对面的屋顶。{neighbor}在楼下没上来，只托人捎话，说这种事有教区出面，比邻居自己跑强。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

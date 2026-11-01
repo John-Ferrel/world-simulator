@@ -35,6 +35,7 @@ export type GeneratedNode = {
   roles: RoleRequirement[];
   outcomes: GeneratedOutcome[];
   tags?: string[];
+  triggerTags?: string[];
 };
 
 export type GeneratedOutcome = {
@@ -49,6 +50,15 @@ export type GeneratedOutcome = {
   conditions?: SceneCondition[];
 };
 
+const VALID_SKILLS = new Set(['literacy', 'numeracy', 'craft', 'social']);
+const VALID_EDUCATION = new Set([
+  'none',
+  'home',
+  'primary',
+  'secondary',
+  'apprenticeship',
+  'higher',
+]);
 const VALID_STAGES = new Set<SceneStage>([
   'infancy',
   'childhood',
@@ -243,9 +253,12 @@ function validateEffect(nodeId: string, outcomeId: string, effect: EventEffect, 
     case 'role':
     case 'mood':
     case 'reputation':
-    case 'skill':
     case 'flag':
       if (!ref(effect.personId)) errors.push(`${label}: bad person`);
+      break;
+    case 'skill':
+      if (!ref(effect.personId)) errors.push(`${label}: bad person`);
+      if (!VALID_SKILLS.has(effect.skill)) errors.push(`${label}: bad skill ${effect.skill}`);
       break;
     case 'death':
       if (!ref(effect.personId) || !effect.cause) errors.push(`${label}: bad death`);
@@ -256,6 +269,8 @@ function validateEffect(nodeId: string, outcomeId: string, effect: EventEffect, 
       break;
     case 'education':
       if (!ref(effect.personId)) errors.push(`${label}: bad education person`);
+      if (!VALID_EDUCATION.has(effect.status))
+        errors.push(`${label}: bad education status ${effect.status}`);
       break;
     case 'relation':
       if (!ref(effect.a) || !ref(effect.b)) errors.push(`${label}: bad relation`);
@@ -303,6 +318,7 @@ export function compileGeneratedPack(pack: GeneratedPack): SceneDefinition[] {
     roles: node.roles,
     conditions: [...(pack.conditions ?? []), ...(node.conditions ?? [])],
     tags: [...new Set([...pack.tags, ...(node.tags ?? [])])],
+    triggerTags: node.triggerTags,
     rate: (rawRates[index] ?? 0) * scale,
     weight: node.weight ?? 1,
     subjectProvenance: ['birth', 'initial'],

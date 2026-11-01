@@ -10,6 +10,13 @@ export type Id = string;
 export type WorldDate = { year: number; month: number }; // month 1..12
 export type LifeStage = 'infancy' | 'childhood' | 'adolescence' | 'adulthood' | 'elderhood';
 
+export type BirthClause = {
+  kind: string;
+  text: string;
+  tags: string[];
+  maxEffect: number;
+};
+
 export type PersonLife = {
   mood: number;
   reputation: number;
@@ -89,7 +96,20 @@ export type Person = {
     /** Bounded skill nudges applied by the birth compiler. */
     skillDeltas?: Partial<PersonLife['skills']>;
     /** A bounded affinity used by event weighting. */
-    capability?: 'none' | 'literacy' | 'numeracy' | 'craft' | 'social' | 'health';
+    capability?:
+      | 'none'
+      | 'literacy'
+      | 'numeracy'
+      | 'social_insight'
+      | 'craft_affinity'
+      | 'frail_body'
+      | 'craft'
+      | 'social'
+      | 'health';
+    /** Bounded clauses from the Birth Contract 2.0 compiler. */
+    conditions?: BirthClause[];
+    limits?: BirthClause[];
+    costs?: BirthClause[];
     compiledBy?: string;
     compiledAt?: WorldDate;
     createdAt: WorldDate;
@@ -401,8 +421,14 @@ export type SceneCondition =
   | { kind: 'placeKind'; in: Place['kind'][] }
   | { kind: 'hasRole'; role: string }
   | { kind: 'notHasRole'; role: string }
-  | { kind: 'hasRelation'; relationKind: Relation['kind']; minTrust?: number }
-  | { kind: 'notHasRelation'; relationKind: Relation['kind'] }
+  | {
+      kind: 'hasRelation';
+      relationKind: Relation['kind'];
+      minTrust?: number;
+      /** Only count a partner who actually shares the subject's household. */
+      sameHousehold?: boolean;
+    }
+  | { kind: 'notHasRelation'; relationKind: Relation['kind']; sameHousehold?: boolean }
   | { kind: 'worldYear'; min?: number; max?: number }
   | { kind: 'pressure'; key: string; min: number };
 
@@ -473,6 +499,8 @@ export type SceneDefinition = {
   weight?: number;
   /** Narration variants keyed by outcome id. */
   narration?: NarrationVariant[];
+  /** Fact tags this event subscribes to (injury, death, unemployment, ...). */
+  triggerTags?: string[];
   historicalBasis?: string;
   sourceIds?: string[];
   /**

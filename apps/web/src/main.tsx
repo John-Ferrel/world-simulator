@@ -54,6 +54,12 @@ type World = {
   terminalReason?: string;
   revision: number;
   people: PersonSummary[];
+  peopleTotal?: number;
+  peopleAlive?: number;
+  householdCount?: number;
+  peopleLimit?: number;
+  peopleNextCursor?: string | null;
+  peopleHasMore?: boolean;
   places: { id: string; name: string; kind: string }[];
   organizations: { id: string; name: string; kind: string }[];
   recentEvents: LogEvent[];
@@ -145,6 +151,37 @@ const educationText: Record<string, string> = {
   higher: '高等教育',
 };
 
+/**
+ * The world endpoint now returns one page of person summaries. A background
+ * refresh replaces that first page but must keep pages the observer already
+ * loaded, otherwise map pins and the person switcher silently shrink.
+ */
+function mergeWorldRefresh(previous: World | null, page: World): World {
+  if (!previous || previous.id !== page.id) return page;
+  const firstPage = new Set(page.people.map((person) => person.id));
+  const extra = previous.people.filter((person) => !firstPage.has(person.id));
+  if (extra.length === 0) return page;
+  return {
+    ...page,
+    people: [...page.people, ...extra],
+    peopleNextCursor:
+      previous.peopleNextCursor === undefined ? page.peopleNextCursor : previous.peopleNextCursor,
+  };
+}
+
+/** Append a cursor page without duplicating anybody already loaded. */
+function mergeWorldPage(previous: World, page: World): World {
+  const seen = new Set(previous.people.map((person) => person.id));
+  const appended = page.people.filter((person) => !seen.has(person.id));
+  return {
+    ...previous,
+    ...page,
+    people: [...previous.people, ...appended],
+    peopleNextCursor: page.peopleNextCursor,
+    peopleHasMore: page.peopleHasMore,
+  };
+}
+
 function App() {
   const [auth, setAuth] = useState<AuthState | null>(null);
   const [world, setWorld] = useState<World | null>(null);
@@ -157,13 +194,18 @@ function App() {
     null,
   );
   const [browsingWhilePending, setBrowsingWhilePending] = useState(false);
+  const [loadingMorePeople, setLoadingMorePeople] = useState(false);
   const selectedRef = useRef<string | null>(null);
   selectedRef.current = selectedId;
+  const worldRef = useRef<World | null>(null);
+  worldRef.current = world;
 
   const refreshWorld = useCallback(async () => {
     try {
-      const next = await api<World>('/v4/world');
+      const page = await api<World>('/v4/world');
+      const next = mergeWorldRefresh(worldRef.current, page);
       setWorld(next);
+      worldRef.current = next;
       setWorldError(null);
       const current = selectedRef.current;
       const alive = next.people.filter((person) => !person.died);
@@ -183,6 +225,27 @@ function App() {
     }
   }, []);
 
+  const loadMorePeople = useCallback(async () => {
+    const current = worldRef.current;
+    if (!current?.peopleNextCursor || loadingMorePeople) return;
+    setLoadingMorePeople(true);
+    try {
+      const page = await api<World>(
+        `/v4/world?limit=500&cursor=${encodeURIComponent(current.peopleNextCursor)}`,
+      );
+      setWorld((existing) => {
+        if (!existing) return page;
+        const merged = mergeWorldPage(existing, page);
+        worldRef.current = merged;
+        return merged;
+      });
+    } catch {
+      /* keep the people already loaded; the next refresh can retry */
+    } finally {
+      setLoadingMorePeople(false);
+    }
+  }, [loadingMorePeople]);
+
   const refreshDetail = useCallback(async (personId: string) => {
     try {
       const next = await api<PersonDetail>(`/v4/persons/${personId}`);
@@ -201,12 +264,13 @@ function App() {
       if (meResult.status === 'fulfilled') setAuth(meResult.value);
       else setAuth({ user: null, persons: [] });
       if (worldResult.status === 'fulfilled') {
-        setWorld(worldResult.value);
+        const next = mergeWorldRefresh(worldRef.current, worldResult.value);
+        setWorld(next);
+        worldRef.current = next;
         setWorldError(null);
-        const own = worldResult.value.people.find((person) => person.owner && !person.died);
+        const own = next.people.find((person) => person.owner && !person.died);
         const fallback =
-          worldResult.value.people.find((person) => person.id === 'person-anna-bauer') ??
-          worldResult.value.people[0];
+          next.people.find((person) => person.id === 'person-anna-bauer') ?? next.people[0];
         const pick =
           preferredId ?? (meResult.status === 'fulfilled' ? own?.id : undefined) ?? fallback?.id;
         if (pick) {
@@ -296,8 +360,11 @@ function App() {
   if (!world) return <div className="boot">正在读取世界……</div>;
 
   const ownPersons = world.people.filter((person) => person.owner);
+  // /auth/me has the authoritative list of this observer's people, so a page
+  // boundary can never hide their own character or re-open the birth screen.
+  const ownsPerson = ownPersons.length > 0 || auth.persons.length > 0;
 
-  if (view === 'birth' && ownPersons.length === 0 && !pending && world.status === 'running')
+  if (view === 'birth' && !ownsPerson && !pending && world.status === 'running')
     return (
       <BirthScreen
         world={world}
@@ -356,9 +423,11 @@ function App() {
         void bootstrap();
       }}
       onCreateAnother={() => setView('birth')}
-      canCreate={ownPersons.length === 0 && world.status === 'running'}
+      canCreate={!ownsPerson && world.status === 'running'}
       pending={pending ?? undefined}
       onRefresh={() => void bootstrap()}
+      onLoadMorePeople={() => void loadMorePeople()}
+      loadingMorePeople={loadingMorePeople}
     />
   );
 }
@@ -528,11 +597,17 @@ function BirthScreen({
             </div>
             <div>
               <span>城中人物</span>
-              <strong>{world.people.filter((person) => !person.died).length} 人</strong>
+              <strong>
+                {world.peopleAlive ?? world.people.filter((person) => !person.died).length} 人
+              </strong>
             </div>
             <div>
               <span>家庭</span>
-              <strong>{new Set(world.people.map((person) => person.householdId)).size} 户</strong>
+              <strong>
+                {world.householdCount ??
+                  new Set(world.people.map((person) => person.householdId)).size}{' '}
+                户
+              </strong>
             </div>
           </div>
           <div className="birth-quote">
@@ -694,6 +769,8 @@ function Observer({
   canCreate,
   pending,
   onRefresh,
+  onLoadMorePeople,
+  loadingMorePeople,
 }: {
   world: World;
   detail: PersonDetail | null;
@@ -705,6 +782,8 @@ function Observer({
   canCreate: boolean;
   pending?: { id: string; name: string };
   onRefresh: () => void;
+  onLoadMorePeople: () => void;
+  loadingMorePeople: boolean;
 }) {
   const person = detail?.person ?? world.people.find((item) => item.id === selectedId) ?? null;
   const [activePlace, setActivePlace] = useState<string | null>(null);
@@ -747,6 +826,8 @@ function Observer({
           detail={detail}
           onSelect={onSelect}
           onShowPlace={(id) => setActivePlace(id)}
+          onLoadMorePeople={onLoadMorePeople}
+          loadingMorePeople={loadingMorePeople}
         />
         <LogPane world={world} person={person} detail={detail} />
         <WorldPane
@@ -760,7 +841,12 @@ function Observer({
       <div className="footnote">
         {world.terminalReason ??
           '日志只来自已提交事件；地图用于定位，不是精确测绘。世界时间约每 30 秒推进一年。'}
-        <span className="alive-count">{alive.length} 人在世</span>
+        <span className="alive-count">
+          {world.peopleAlive ?? alive.length} 人在世
+          {world.peopleTotal !== undefined && world.peopleTotal > world.people.length
+            ? ` · 已载入 ${world.people.length}/${world.peopleTotal}`
+            : ''}
+        </span>
       </div>
     </div>
   );
@@ -772,12 +858,16 @@ function PersonPane({
   detail,
   onSelect,
   onShowPlace,
+  onLoadMorePeople,
+  loadingMorePeople,
 }: {
   world: World;
   person: PersonSummary | null;
   detail: PersonDetail | null;
   onSelect: (id: string) => void;
   onShowPlace: (id: string) => void;
+  onLoadMorePeople: () => void;
+  loadingMorePeople: boolean;
 }) {
   if (!person)
     return (
@@ -890,6 +980,13 @@ function PersonPane({
               ))}
           </select>
         </label>
+        {world.peopleNextCursor && (
+          <button className="link-button" disabled={loadingMorePeople} onClick={onLoadMorePeople}>
+            {loadingMorePeople
+              ? '正在读取……'
+              : `加载更多人物（已显示 ${world.people.length} / ${world.peopleTotal ?? world.people.length}）`}
+          </button>
+        )}
       </div>
     </aside>
   );
@@ -1098,7 +1195,10 @@ function WorldPane({
           onPlace={setActivePlace}
         />
         <div className="map-caption">
-          {placeById[activePlace ?? '']?.name ?? '利奥波德城与内城 · 点击地点查看在场的人'}
+          {placeById[activePlace ?? '']?.name ??
+            (world.peopleTotal !== undefined && world.peopleTotal > world.people.length
+              ? `已载入 ${world.people.length} / ${world.peopleTotal} 人 · 点击地点查看在场的人`
+              : '利奥波德城与内城 · 点击地点查看在场的人')}
         </div>
       </div>
       {activePlace && (

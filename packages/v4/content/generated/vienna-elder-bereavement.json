@@ -1,0 +1,796 @@
+{
+  "id": "vienna-elder-bereavement",
+  "title": "晚年、葬礼与空下来的房间",
+  "stage": "elderhood",
+  "ageWindow": {
+    "min": 60,
+    "max": 90
+  },
+  "tags": [
+    "elderhood",
+    "bereavement",
+    "family",
+    "health",
+    "memory",
+    "housing"
+  ],
+  "baseRate": 0.2,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 60,
+      "max": 90
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-elder-bereavement.spouse-death",
+      "title": "床边的最后一夜",
+      "weight": 0.8,
+      "rate": 0.05,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 90
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 90
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 90,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "spouse-death.neighbor-doctor",
+          "weight": 1,
+          "text": "{subject}披上外套去敲{neighbor}的门，请他去两条街外叫医生，又托人找神父。回来时炉子快灭了，{partner}的手已经凉透。医生收了四克朗出诊费，神父没要钱。",
+          "effects": [
+            {
+              "type": "death",
+              "personId": "$partner",
+              "cause": "stroke",
+              "reason": "夜里呼吸渐弱，医生到时已无气息"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "医生夜间出诊费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "守到天亮，人已经走了"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "半夜替人去叫医生和神父"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "spouse-death.neighbor-doctor",
+              "text": "楼下的门闩响了一声，{neighbor}披着棉袄跑出去，鞋跟敲在石板路上。{subject}回到床边，把{partner}的手握在掌心里，煤油灯芯爆了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "spouse-death.neighbor-doctor",
+              "text": "神父来的时候天刚蒙蒙亮，念了祷文，收下{subject}递去的一支蜡烛。桌上那碗晚饭还摆着，汤面结了一层薄皮，谁也没去动它。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "spouse-death.walk-alone",
+          "weight": 1,
+          "text": "{subject}一个人连夜去敲医生的门，回来时{partner}已经没了气息。医生说是心口的事，来得快。{subject}在床边坐到天亮，忘了买煤，也忘了去退掉订的牛奶。",
+          "effects": [
+            {
+              "type": "death",
+              "personId": "$partner",
+              "cause": "stroke",
+              "reason": "心口骤停，独自出门叫医生时已来不及"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "医生深夜上门"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "一夜未眠，冻着了"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.15,
+              "reason": "回来只见人已走"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "spouse-death.walk-alone",
+              "text": "医生提着药箱进门，摸了摸脉，摇了摇头，在{subject}的桌上写了两行字，收了三克朗。楼道里有人开门探头，又轻轻关上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "spouse-death.walk-alone",
+              "text": "{subject}把医生送到楼梯口，回来坐在床沿，听见隔壁传来小孩的哭声。早饭的锅还搁在灶上，水早凉了，一层灰落在锅盖上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "spouse-death.hold-hand",
+          "weight": 1,
+          "text": "{subject}没有出门，握着{partner}的手把最后的话听完。{partner}说柜子底层有一张存折，又说窗台那盆天竺葵别忘了浇水。说完这些，呼吸就停了。",
+          "effects": [
+            {
+              "type": "death",
+              "personId": "$partner",
+              "cause": "stroke",
+              "reason": "夜里安详离世，有话交代在前"
+            },
+            {
+              "type": "estate",
+              "personId": "$subject",
+              "heirHouseholdId": "$household",
+              "amount": 12,
+              "reason": "柜底存折里的积蓄"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "人在手边走了，话都听到了"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "keeps_savings_book",
+              "add": true,
+              "reason": "记住了存折放在柜子底层"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "spouse-death.hold-hand",
+              "text": "{partner}的声音越来越轻，{subject}凑近去听，闻见枕头上有肥皂和汗混在一起的气味。窗外的煤气灯灭了，天边发白。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "spouse-death.hold-hand",
+              "text": "第二天早上，{subject}从柜子底层摸出牛皮纸存折，十二克朗，是这些年一分一厘攒下的。窗台上那盆天竺葵确实还绿着，叶子上有灰。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-elder-bereavement.old-colleague-funeral",
+      "title": "老同事的讣告",
+      "weight": 0.9,
+      "rate": 0.05,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 90
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 90
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 85
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "old-colleague-funeral.go",
+          "weight": 1,
+          "text": "{subject}买了三赫勒一朵的白菊，坐电车去公墓。星期天下午风很硬，{worker}的棺木上盖着一块旧工布。{subject}在工会簿上写下自己的名字，签得手有点抖。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "买花和电车票"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "送老同事最后一程，心里沉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.06,
+              "reason": "工会簿上签了名，算敬他一程"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "union_book_signed",
+              "add": true,
+              "reason": "在工会活动室的簿子上留了名"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "old-colleague-funeral.go",
+              "text": "墓边的土是湿的，铁锹靠在石头上。{subject}把花放在棺盖上，看见{neighbor}站在人群后头，也穿了一身黑。风把讣告吹得贴在墙上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "old-colleague-funeral.go",
+              "text": "{subject}出来时在门口碰见工会的老簿子，油墨味还在。签名的人不多，名字一行行往下排，{worker}那一行用黑框围了起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "old-colleague-funeral.stay-home",
+          "weight": 1,
+          "text": "{subject}托{neighbor}带一束便宜的花去，自己留在家里把炉子修了修。{neighbor}回来时转告说，去的人稀稀落落，工头没有露面。{subject}听完，把面包切了，没说话。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "托人买的一束花"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "在家吃了顿简单的饭"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "没能亲自去送"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "托邻居代送花并回来转告"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "old-colleague-funeral.stay-home",
+              "text": "炉子里的煤烧得不匀，{subject}蹲下去用铁钩捅了两下，烟从缝里冒出来。{neighbor}走的时候，手里那束花用旧报纸裹着，只露出一点白。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "old-colleague-funeral.stay-home",
+              "text": "窗外的钟敲了三点，{subject}知道那边正在下葬。他在桌上摆了两只杯子，倒的是凉水，自己喝了一杯，另一杯搁到傍晚。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "old-colleague-funeral.help-family",
+          "weight": 1,
+          "text": "葬礼后{subject}留下来陪遗属清点{worker}的工具和工票。一把卡尺、两只油壶、几张没兑的工票，凑起来值九克朗。遗属把钱数进旧手帕，{subject}帮着把箱子抬进阁楼。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "遗属分给帮工的一点谢礼"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "在遗属家喝了碗汤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "替老同事家清点遗物、抬箱子"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "出了力，心里踏实些"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "old-colleague-funeral.help-family",
+              "text": "工票上的日期停在去年冬天，边角卷了起来。{subject}把卡尺擦了擦，递给遗属，说这个还能用，卖了可惜。阁楼的梯子窄，两个人抬箱子出了一身汗。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "old-colleague-funeral.help-family",
+              "text": "遗属用手帕包了九克朗，数了两遍，又抽出一枚二十赫勒的硬币塞给{subject}。{subject}推了一回，还是收下了，出门时在楼梯上站了一会儿。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-elder-bereavement.empty-room",
+      "title": "空下来的房间",
+      "weight": 1,
+      "rate": 0.06,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 65,
+          "max": 90
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 65,
+          "maxAge": 90
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "empty-room.lodger",
+          "weight": 1,
+          "text": "{subject}把空床租给一个年轻泥瓦匠，每月收十克朗，管一顿早饭。头一晚，屋里有了打鼾声和湿靴子的气味，{neighbor}来串门时说这才像个家。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 10,
+              "reason": "空床租给年轻泥瓦匠的月钱"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "多一个人吃早饭"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "家里重新有动静"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "邻居来串门看新租客"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "takes_lodger",
+              "add": true,
+              "reason": "把空床租了出去"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "empty-room.lodger",
+              "text": "泥瓦匠姓霍夫曼，靴子上有干了的灰浆。{subject}把旧箱子挪到墙角，铺上一条干净床单，又把{neighbor}送来的那罐果酱摆在桌上，说早上有面包。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "empty-room.lodger",
+              "text": "晚上煤油灯还是那盏，但桌边坐了两个人在吃饭。{subject}听着碗筷响，觉得方才那阵空落落的劲儿退了些。空眼镜收进了抽屉，没扔。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "empty-room.move-out",
+          "weight": 1,
+          "text": "{subject}退了房，把旧家具卖给街角的旧货商，得四克朗，搬去城外亲戚家。{neighbor}帮着捆箱子，绳子勒进手掌。临走在空房间里站了一会儿，墙上有挂镜子的浅印。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "旧家具卖给旧货商"
+            },
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-klosterneuburg-aunt-house",
+              "reason": "退了城里的房，搬去城外亲戚家"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "离开住惯的屋子"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "邻居帮着捆箱子搬家"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "empty-room.move-out",
+              "text": "旧货商只肯给四克朗，说柜子太旧、床架缺一条横档。{subject}点了头，看他用绳子把椅子四条腿捆在一起，扛上肩就走。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "empty-room.move-out",
+              "text": "箱子捆好放在门口，屋子显得比往常大。{neighbor}把钥匙交了，又回来拍掉{subject}肩上的灰。街上马车来的时候，太阳刚过屋顶。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "empty-room.keep-room",
+          "weight": 1,
+          "text": "{subject}什么也没动，空床照样铺着，每天擦一遍桌子，把眼镜搁回原来的位置。房租和煤照旧要付，{neighbor}劝过两回，{subject}说这样就挺好。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "一个人照付整间房的房租"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "守着原样，心里有个念想"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "屋子空，夜里坐着容易着凉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "邻居来劝过两回，也算往来"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "keeps_room_unchanged",
+              "add": true,
+              "reason": "空床旧物都留在原处"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "empty-room.keep-room",
+              "text": "抹布擦过桌面，那道眼镜留下的浅印被抹掉了，又慢慢渗回来。{subject}把眼镜找出来，摆回原处，镜片朝下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "empty-room.keep-room",
+              "text": "傍晚屋里冷得快，{subject}披着外套坐在空床沿上，听楼下有人唱小曲。煤筐见了底，还够烧三天。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-elder-bereavement.grave-visit",
+      "title": "公墓里的星期天",
+      "weight": 0.8,
+      "rate": 0.04,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 90
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 90
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "grave-visit.clean-stone",
+          "weight": 1,
+          "text": "{subject}自己提着一小桶水擦碑，把字缝里的青苔抠掉，换上一支新蜡烛，又摆了一小把丁香。{neighbor}在门口等着，说守墓人那边还留着空位。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "蜡烛和一小把丁香"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "亲手擦净墓碑，心里安稳些"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "蹲久了膝盖酸"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "邻居陪着去了公墓"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "grave-visit.clean-stone",
+              "text": "水凉，布巾很快就黑了。{subject}蹲在碑前，把字一笔一笔擦出来，听见身后有人推着小车卖蜡烛，喊声隔着一排柏树传过来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "grave-visit.clean-stone",
+              "text": "丁香才开，一小把要十赫勒。{subject}把它搁在碑脚，坐了一会儿再起身，裤子上沾了泥，{neighbor}伸手替他拍了拍。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "grave-visit.pay-keeper",
+          "weight": 1,
+          "text": "{subject}找到守墓人，付了两克朗，请他每星期浇一次碑前那两株常春藤，冬天把枯枝剪掉。守墓人把钱收进围裙口袋，说这一排他记得清楚。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "请守墓人照料墓地"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "托付妥当，心里放下一些"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "一起去找守墓人办妥此事"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "grave_keeper_paid",
+              "add": true,
+              "reason": "付钱托守墓人照料墓地"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "grave-visit.pay-keeper",
+              "text": "守墓人是个瘦老头，手里握着长柄剪，说这排第八座他熟，下葬那天也在。{subject}数出两克朗，硬币在掌心响了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "grave-visit.pay-keeper",
+              "text": "办完事从侧门出来，{neighbor}说这样也好，省得每回惦着。{subject}回头看了一眼，常春藤爬过碑角，叶子被太阳照得发亮。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "grave-visit.turn-back",
+          "weight": 1,
+          "text": "{subject}和{neighbor}走到公墓门口，看见里面的蜡烛摊和人群，脚步停了停，说改天再来，转身往回走。路上买了一个热面包，掰成两半分着吃。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "路上买了个热面包"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.2,
+              "reason": "买面包和去程车钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "到了门口又没进去，心里堵着"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "邻居陪着走了一趟又折回"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "grave-visit.turn-back",
+              "text": "公墓门口的铃响了一下，{subject}在门槛外站住，看见里面有人提着水桶往坡上走。他把帽子往下压了压，说风大，回吧。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "grave-visit.turn-back",
+              "text": "面包铺的炉子就在街角，{subject}买了刚出炉的一个，用纸包着，烫手。他和{neighbor}站在檐下吃完，谁也没再提墓园的事。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

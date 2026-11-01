@@ -1,0 +1,779 @@
+{
+  "id": "vienna-youth-threshold",
+  "title": "十六岁前后的门槛",
+  "stage": "adolescence",
+  "ageWindow": {
+    "min": 12,
+    "max": 17
+  },
+  "tags": [
+    "adolescence",
+    "school",
+    "work",
+    "family",
+    "transition"
+  ],
+  "baseRate": 0.34,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 12,
+      "max": 17
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-youth-threshold.school-leaving",
+      "title": "离开国民学校",
+      "weight": 1,
+      "rate": 0.102,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 15
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 15
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "print-shop-trial",
+          "weight": 1,
+          "text": "{teacher}把离校证明折好塞进{subject}手里，说西梅林区那家印刷厂正缺跑腿。{subject}当天下午就沿墙根走到厂门口，油墨和湿纸的味道从门缝里钻出来。工头记下名字，让下周一再来试工，先不算正式雇用，也不给工钱。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "与印刷厂工头约好试工"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "在印刷厂里看人排字上墨"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "有了可去的地方"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "print-shop-trial",
+              "text": "成绩单被汗手捏出褶子，{subject}站在印刷厂院子里数铅字的敲击声，工头用粉笔在木板上写下他的名字和日期。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "print-shop-trial",
+              "text": "回家路上{subject}绕到面包店窗口看了一眼标价，把离校证明夹进课本最后一页，晚饭时只说下周一要去试工。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "one-more-year-commercial",
+          "weight": 1,
+          "text": "{subject}把离校证明推回{teacher}的桌面，说想再读一年，考商业学校。{teacher}翻出旧课本和一张油印的考试科目表，书费要两克朗四十赫勒。家里那口锅还得照常烧，这笔钱最终是从母亲的首饰盒底抠出来的。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2.4,
+              "reason": "商业学校考试用的旧课本与报名费"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "primary",
+              "level": 2,
+              "reason": "留校再读一年并准备商业学校考试"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "被允许继续念书"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "one-more-year-commercial",
+              "text": "{teacher}用指节敲了敲黑板上算术题的位置，{subject}低头把科目表上的字一个个抄进自己的本子，铅笔尖断了一次。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "one-more-year-commercial",
+              "text": "晚上煤气灯拧到最小，{subject}把旧课本摊在桌上，母亲在旁边补袜子，两人都没提那两克朗四十赫勒是怎么凑出来的。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stay-home-siblings",
+          "weight": 1,
+          "text": "家里最小的两个还在出疹子，母亲天不亮就得去洗衣房。{subject}于是留在家照看弟妹，把离校证明压在镜子后面。街口的杂货铺说等秋天招工再来讲，{teacher}临走时叮嘱别把算术丢下，可水要烧，粥要搅，一天就这么过去了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.8,
+              "reason": "留在家中多烧的煤和额外口粮"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "老师离校时留下的叮嘱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "看着同龄人出门而自己留在灶台边"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stay-home-siblings",
+              "text": "{subject}把粥锅挪离火口，最小的妹妹在床角咳嗽，镜子后面那张离校证明的边角很快被水汽卷了起来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stay-home-siblings",
+              "text": "下午杂货铺老板隔着窗户摆手，说秋天再来，{subject}点点头，拎着空水桶往回走，路边学校正放课。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-youth-threshold.first-wage",
+      "title": "第一只工资信封",
+      "weight": 1,
+      "rate": 0.102,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 17
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 32,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "factory"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "whole-envelope-home",
+          "weight": 1,
+          "text": "{employer}把信封拍在{subject}手心，八克朗，纸币边角还带着面粉味。回家路上{subject}在电车轨道边站了很久，最后把整只信封放到{parent}的针线篮里，只留下四赫勒电车钱，母亲数钱时手指停了一下。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "第一个月工资全部交给家里"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.08,
+              "affection": 0.06,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "把整月工钱交给家里"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "第一次觉得自己能顶一点事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "whole-envelope-home",
+              "text": "信封口被{subject}捏得发软，{parent}把它举到灯泡底下数了两遍，然后把钱票压进铁盒，钥匙挂回脖子上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "whole-envelope-home",
+              "text": "电车在轨道上叮一声过去，{subject}摸了摸口袋里的四赫勒，转身进了面包店，只买了最便宜的半磅黑面包。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "half-for-shoes",
+          "weight": 1,
+          "text": "鞋铺橱窗里一双结实的工作鞋标价四克朗二十赫勒，{subject}的鞋底已经能吸进雪水。回家后{subject}把信封拆开，一半放在桌上，一半揣进内袋，说下个月不向家里要鞋钱。{parent}没说话，只把桌上的钱一张张抹平。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "工资的一半交给家里"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4.2,
+              "reason": "买一双不漏水的工作鞋"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "脚不再整日泡在湿冷里"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": 0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "自己承担鞋钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "half-for-shoes",
+              "text": "{subject}坐在鞋铺的矮凳上试鞋，鞋匠用拇指按了按鞋头，说这双能扛一个冬天，铜板落在柜台上的声音很沉。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "half-for-shoes",
+              "text": "夜里{parent}把桌上的钱票对着灯看水印，{subject}在旁边用旧布擦新鞋上的蜡，谁也没有先开口。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "quarrel-over-money",
+          "weight": 1,
+          "text": "{subject}想把钱留着买件厚外套，{parent}说屋顶漏水、煤还差两袋。话越说越硬，针线篮被碰翻在地上，扣子滚到炉脚。信封最后被撕成两半，一人一半，那顿饭谁也没添第二碗。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.06,
+              "affection": -0.04,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": -0.02,
+              "reason": "为工钱怎么用争执"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "争执后交给家里的一半工资"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "第一次和家里为钱翻脸"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "quarrel-over-money",
+              "text": "信封撕开的裂口不齐，{subject}把属于自己的那半张纸币折成小块塞进裤袋，弯腰去捡地上的扣子，{parent}背对着灶台没转身。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "quarrel-over-money",
+              "text": "屋外雪水顺着屋檐往下滴，屋里只剩锅盖的响动，{subject}把外套的事咽了回去，晚饭的汤明显比平时稀。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-youth-threshold.night-class",
+      "title": "夜校的座位",
+      "weight": 1,
+      "rate": 0.068,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 17
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "enroll-night-class",
+          "weight": 1,
+          "text": "{teacher}在黑板上写下课程表和书本费：一学期三克朗，另加六十赫勒杂费。{subject}下工后啃着冷土豆赶到教室，坐到公共长桌最靠煤气灯的一头。手指上还留着白天的油污，握笔时在本子上蹭出灰印，但座位号已经登记在册。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3.6,
+              "reason": "夜校学费与书本杂费"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "secondary",
+              "level": 1,
+              "reason": "报名商业夜校"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.05,
+              "reason": "夜校算术与记账课"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "白天上工夜里上课睡眠不足"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "enroll-night-class",
+              "text": "煤气灯把{subject}的影子投在黑板边缘，{teacher}点名时念错了他的姓，他举手改正，顺手把冻僵的手指按在温热的灯罩附近。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "enroll-night-class",
+              "text": "教室里全是白天干活的人，靴底带着雪泥，{subject}把书本费一张张数给{teacher}，找回来的赫勒硬币攥在汗湿的掌心里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "third",
+              "key": "enroll-night-class",
+              "text": "下课时街面已经结冰，{subject}把新发的课本塞进外套里贴着胸口，一路小跑回住处，脑子里还剩两道没算完的账。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "give-up-for-overtime",
+          "weight": 1,
+          "text": "工头说这个月赶印一批账簿，晚上加班每小时多给二十赫勒。{subject}站在教室门口听完课程表，转身回厂里搬纸。{teacher}追出来说座位可以保留两周，{subject}点点头，手已经摸上了作坊的门把，夜里机器的声音把课本的事盖了过去。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.6,
+              "reason": "夜间加班多挣的工钱"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "加班赶印账簿练出的手上功夫"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "看着课程表却没进教室"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "连续夜间加班"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "give-up-for-overtime",
+              "text": "{subject}把课程表折成小方块放进工具抽屉，作坊的煤气灯比教室的亮，也更高，照得纸堆的影子压到人身上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "give-up-for-overtime",
+              "text": "{teacher}站在夜校门口搓着手说座位留到月底，{subject}应了一声，拐进巷子时听见身后关门的声音。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "borrow-notes-at-home",
+          "weight": 1,
+          "text": "学费凑不出来，{subject}就向同屋的学徒借笔记。晚上把灶台边的桌子擦干净，用铅笔头把讲义抄在旧账单背面，{teacher}允他每两周交一次抄本抵作练习。抄到第三页时灯芯烧短了，字迹开始发颤。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.04,
+              "reason": "抄写讲义练出的读写"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.02,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "老师允准以抄本代替正式学费"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "照着笔记自学账目"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "没有正式座位但仍在学"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "borrow-notes-at-home",
+              "text": "铅笔头短得捏不住，{subject}用布条把它缠在指头上继续写，账单背面的蓝色格线把字挤得歪歪扭扭。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "borrow-notes-at-home",
+              "text": "同屋学徒翻了个身说灯太晃眼，{subject}把灯芯拧低，凑近纸面逐字核对借来的笔记。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-youth-threshold.sibling-departure",
+      "title": "兄姐的箱子",
+      "weight": 0.8,
+      "rate": 0.068,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 17
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 17
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 26
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "coins-into-box",
+          "weight": 1,
+          "text": "{sibling}的箱子摊在床板上，里面是两件衬衫、一双旧靴和母亲塞的一小袋面粉。{subject}把攒了半年的零钱数到第三遍，一共一克朗二十赫勒，全塞进箱角的袜子里。{sibling}看见了，没说话，只把箱子扣上，铜扣响了一声。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "把攒下的零钱塞给离家的兄姐"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.08,
+              "affection": 0.08,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "临行前悄悄塞钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "看着兄姐收拾箱子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coins-into-box",
+              "text": "硬币落在箱底的声音很轻，{subject}用袜子把它们盖住，{sibling}正弯腰捆绳子，背对着床板。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coins-into-box",
+              "text": "母亲在门口数车票钱，{subject}蹲在箱子旁边假装系鞋带，把最后几枚赫勒推进箱角的夹缝。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "take-over-bed-and-ledger",
+          "weight": 1,
+          "text": "{sibling}走后，靠墙那张床空了出来，{subject}把自己的铺盖搬过去，也接过那本记着欠账的旧账本：面包店三克朗、煤铺一克朗八十赫勒。晚上{subject}坐在床沿一笔笔抄清，第一次知道家里的钱是怎么缺的。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.04,
+              "obligation": 0.08,
+              "fear": 0,
+              "respect": 0.06,
+              "reason": "接过离家兄姐留下的家账"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.05,
+              "reason": "抄录家里的欠账与开销"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "看清家里欠了多少钱"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "替兄姐补齐欠煤铺的零头"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "take-over-bed-and-ledger",
+              "text": "旧床板上还留着草垫的印子，{subject}把账本摊在膝头，用铅笔在每笔欠账旁画一道竖线，纸面被压得发亮。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "take-over-bed-and-ledger",
+              "text": "面包店老板在账本末页又添了一行，{subject}接过来时闻见纸上残留的酵母味，把本子夹在腋下往回走。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "quarrel-who-leaves",
+          "weight": 1,
+          "text": "车票只够一个人走，晚饭桌上话越说越大声。{sibling}说该自己走，{subject}说自己也快够岁数了。母亲把汤勺往锅沿一磕，屋里静下来，最后{subject}摔门出去在楼梯上坐了半宿，直到楼上有人喊冷。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.06,
+              "affection": -0.03,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": -0.03,
+              "reason": "为谁该离家外出争执"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "与兄姐吵到深夜"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在冰冷的楼梯上坐到半夜"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "quarrel-who-leaves",
+              "text": "汤勺磕在锅沿的声音让所有人闭了嘴，{subject}拉开门时楼道灯已经灭，只有楼下的雪光从气窗透上来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "quarrel-who-leaves",
+              "text": "楼梯上的木扶手被摸得发亮，{subject}坐着数楼下的脚步，楼上有人推开窗喊冷，他才站起来回屋。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

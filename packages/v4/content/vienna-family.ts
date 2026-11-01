@@ -1,14 +1,13 @@
 import type { SceneDefinition } from '../domain.js';
 
 /**
- * Family formation for player-born people and their descendants. These scenes
- * are deliberately restricted to `provenance.kind === 'birth'`: the authored
- * 1912 cast keeps its written biography, while a player's child can marry,
- * move in with a partner and have children of their own.
- *
- * The engine creates the child as a real Person with parent/guardian relations,
- * household membership and its own birth EventFact. Names are drawn
- * deterministically from a small Vienna name pool unless the scene names one.
+ * Family formation for the player's descendants and the initial Vienna cast.
+ * Both `birth` and `initial` people may court, marry, separate and have
+ * children; otherwise the authored 1912 population would age out without
+ * replacement. The engine creates every child as a real Person with
+ * parent/guardian relations, household membership and its own birth EventFact.
+ * Names are drawn deterministically from a small Vienna name pool unless the
+ * scene names one.
  */
 
 const PACK = 'vienna-family';
@@ -16,7 +15,7 @@ const PACK = 'vienna-family';
 const basis =
   'Marriage, cohabitation, childbirth and infant mortality are modelled as household-level mechanisms in early twentieth-century Vienna; the scenes are not biographies of specific people.';
 
-export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
+const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
   {
     id: 'vienna-family-partnership-female',
     version: 1,
@@ -24,7 +23,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     title: '订婚与搬进同一间住处',
     stage: 'adulthood',
     ageWindow: { min: 18, max: 35 },
-    subjectProvenance: ['birth'],
+    subjectProvenance: ['birth', 'initial'],
     cooldownYears: 2,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 35, sex: 'female' },
@@ -33,7 +32,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     conditions: [
       { kind: 'age', min: 18, max: 35 },
       { kind: 'stage', in: ['adulthood'] },
-      { kind: 'notHasRelation', relationKind: 'partner' },
+      { kind: 'notHasRelation', relationKind: 'partner', sameHousehold: true },
     ],
     outcomes: [
       {
@@ -113,7 +112,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     title: '男人的婚事',
     stage: 'adulthood',
     ageWindow: { min: 18, max: 40 },
-    subjectProvenance: ['birth'],
+    subjectProvenance: ['birth', 'initial'],
     oncePerPerson: true,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 60, sex: 'male' },
@@ -189,8 +188,9 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     title: '产床与借来的摇篮',
     stage: 'adulthood',
     ageWindow: { min: 19, max: 40 },
-    subjectProvenance: ['birth'],
-    cooldownYears: 3,
+    subjectProvenance: ['birth', 'initial'],
+    rate: 1,
+    cooldownYears: 1,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 19, maxAge: 40, sex: 'female' },
       {
@@ -215,7 +215,6 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
       { kind: 'age', min: 19, max: 40 },
       { kind: 'stage', in: ['adulthood'] },
       { kind: 'hasRelation', relationKind: 'partner', minTrust: 0.05 },
-      { kind: 'cash', householdId: 'subject', max: 120 },
     ],
     outcomes: [
       {
@@ -306,7 +305,8 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     title: '产房外的男人',
     stage: 'adulthood',
     ageWindow: { min: 19, max: 45 },
-    subjectProvenance: ['birth'],
+    subjectProvenance: ['birth', 'initial'],
+    rate: 0.12,
     cooldownYears: 3,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 19, maxAge: 45, sex: 'male' },
@@ -405,7 +405,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     title: '提出共同生活',
     stage: 'adulthood',
     ageWindow: { min: 18, max: 35 },
-    subjectProvenance: ['birth'],
+    subjectProvenance: ['birth', 'initial'],
     rate: 0.35,
     cooldownYears: 2,
     roles: [
@@ -415,7 +415,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     conditions: [
       { kind: 'age', min: 18, max: 35 },
       { kind: 'stage', in: ['adulthood'] },
-      { kind: 'notHasRelation', relationKind: 'partner' },
+      { kind: 'notHasRelation', relationKind: 'partner', sameHousehold: true },
       { kind: 'health', min: 0.2 },
     ],
     outcomes: [
@@ -520,7 +520,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     title: '共同生活走到尽头',
     stage: 'adulthood',
     ageWindow: { min: 20, max: 55 },
-    subjectProvenance: ['birth'],
+    subjectProvenance: ['birth', 'initial'],
     rate: 0.08,
     cooldownYears: 5,
     roles: [
@@ -628,7 +628,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     title: '两个女人的共同生活',
     stage: 'adulthood',
     ageWindow: { min: 18, max: 40 },
-    subjectProvenance: ['birth'],
+    subjectProvenance: ['birth', 'initial'],
     rate: 0.12,
     cooldownYears: 3,
     roles: [
@@ -638,7 +638,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     conditions: [
       { kind: 'age', min: 18, max: 40 },
       { kind: 'stage', in: ['adulthood'] },
-      { kind: 'notHasRelation', relationKind: 'partner' },
+      { kind: 'notHasRelation', relationKind: 'partner', sameHousehold: true },
     ],
     outcomes: [
       {
@@ -711,7 +711,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     title: '不能见光的同住',
     stage: 'adulthood',
     ageWindow: { min: 18, max: 45 },
-    subjectProvenance: ['birth'],
+    subjectProvenance: ['birth', 'initial'],
     rate: 0.1,
     cooldownYears: 3,
     roles: [
@@ -721,7 +721,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     conditions: [
       { kind: 'age', min: 18, max: 45 },
       { kind: 'stage', in: ['adulthood'] },
-      { kind: 'notHasRelation', relationKind: 'partner' },
+      { kind: 'notHasRelation', relationKind: 'partner', sameHousehold: true },
     ],
     outcomes: [
       {
@@ -814,6 +814,17 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     historicalBasis: basis,
   },
 ];
+
+/**
+ * Tag the whole family pack as lifecycle content. The engine gives one
+ * lifecycle scene a dedicated attempt per person-year before the ordinary
+ * weighted pool, so a courtship or birth is not crowded out by dozens of
+ * smaller neighbourhood events.
+ */
+export const VIENNA_FAMILY_SCENES: SceneDefinition[] = FAMILY_SCENE_DEFINITIONS.map((scene) => ({
+  ...scene,
+  tags: [...new Set([...scene.tags, 'lifecycle'])],
+}));
 
 /** The runtime uses the request/response courtship path, not the legacy instant-marriage scenes. */
 export const VIENNA_FAMILY_RUNTIME_SCENES = VIENNA_FAMILY_SCENES.filter(

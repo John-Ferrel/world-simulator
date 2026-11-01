@@ -1,5 +1,7 @@
 # v4 Break Update Plan — 世界人生 / Another History
 
+> 2026-11-01 Phase 2 完成：内容工厂 22 族 / 88 场景、Birth Contract 2.0、观察 API 分页投影、生命周期优先与老年死亡修复。验收见 [phase-2-report.md](phase-2-report.md)。本页 V5 里程碑中“内容工厂/万人规模”已部分完成，20k/并发仍明确未完成。
+
 状态：adopted。输入：`simulator-1031/01-04` + 用户确认。
 原则：不做旧个人日志/旧事件文本/旧出生流程兼容。保留基础设施和 Earth 数据，重建领域层。
 

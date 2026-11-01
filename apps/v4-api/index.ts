@@ -10,12 +10,24 @@ import { pool } from '../../packages/storage/index.js';
 import {
   activeV4WorldMeta,
   createV4BirthRequest,
+  decodeV4PersonCursor,
   getV4BirthRequest,
-  latestV4World,
+  latestV4WorldMeta,
   migrateV4,
   recentV4Events,
-  v4EventsForPerson,
+  v4EventDetail,
+  v4EventLookups,
+  v4PersonDetail,
+  v4PersonSearch,
+  v4PersonSummaries,
+  v4PersonSummariesByIds,
+  v4WorldIndex,
+  V4CursorError,
+  V4_PERSON_PAGE_DEFAULT,
+  V4_PERSON_PAGE_MAX,
   type V4BirthRequest,
+  type V4EventLookups,
+  type V4PersonSummaryRecord,
 } from '../../packages/v4/store.js';
 import { ageAt, type EventFact, type Person, type WorldState } from '../../packages/v4/domain.js';
 import {
@@ -47,6 +59,15 @@ const Appearance = z
     doll: z.record(z.string(), z.unknown()).optional(),
   })
   .strict();
+
+const WorldQuery = z.object({
+  limit: z.coerce.number().int().min(1).max(V4_PERSON_PAGE_MAX).default(V4_PERSON_PAGE_DEFAULT),
+  cursor: z.string().min(1).max(512).optional(),
+});
+
+const SearchQuery = z.object({
+  q: z.string().max(200).optional(),
+});
 
 const BirthInput = z
   .object({
@@ -197,131 +218,155 @@ export function makeV4Api() {
   });
 
   app.get('/api/v4/world', async (req, reply) => {
-    const active = await latestV4World();
-    if (!active) return reply.code(404).send({ error: 'v4 世界尚未启动' });
-    const { world, meta } = active;
-    const viewer = await user(req);
+    const query = WorldQuery.parse(req.query);
+    const meta = await latestV4WorldMeta();
+    if (!meta) return reply.code(404).send({ error: 'v4 世界尚未启动' });
+    if (query.cursor) {
+      try {
+        decodeV4PersonCursor(query.cursor);
+      } catch (error) {
+        if (error instanceof V4CursorError)
+          return reply.code(400).send({ error: '人物分页游标无效' });
+        throw error;
+      }
+    }
+    let page: Awaited<ReturnType<typeof v4PersonSummaries>>;
+    try {
+      page = await v4PersonSummaries(meta.id, { limit: query.limit, cursor: query.cursor });
+    } catch (error) {
+      if (error instanceof V4CursorError)
+        return reply.code(400).send({ error: '人物分页游标无效' });
+      throw error;
+    }
+    const [viewer, index, recent] = await Promise.all([
+      user(req),
+      v4WorldIndex(meta.id),
+      recentV4Events(meta.id, 100),
+    ]);
+    const publicEvents = recent.filter((event) => event.visibility === 'public');
+    const lookups = await v4EventLookups(meta.id, publicEvents);
     return {
-      id: world.id,
-      date: world.date,
-      status: world.status,
-      terminalReason: world.terminalReason,
+      id: meta.id,
+      date: meta.date,
+      status: meta.status,
+      terminalReason: meta.terminalReason,
       revision: meta.revision,
-      pressures: world.pressures,
-      places: Object.values(world.places).map((place) => ({
-        id: place.id,
-        name: place.name,
-        kind: place.kind,
-      })),
-      people: Object.values(world.persons)
-        .map((person) => publicPerson(world, person, viewer?.id))
-        .sort((a, b) => a.name.localeCompare(b.name)),
-      organizations: Object.values(world.organizations).map((org) => ({
-        id: org.id,
-        name: org.name,
-        kind: org.kind,
-      })),
-      recentEvents: (await recentV4Events(world.id, 100))
-        .filter((event: EventFact) => event.visibility === 'public')
-        .map((event: EventFact) => projectEvent(world, event)),
-      chronicle: VIENNA_1912_CHRONICLE.filter((entry) => entry.date.year <= world.date.year),
+      pressures: meta.pressures,
+      places: index?.places ?? [],
+      organizations: index?.organizations ?? [],
+      people: page.people.map((person) => publicPerson(meta.date, person, viewer?.id)),
+      peopleTotal: page.total,
+      peopleAlive: page.alive,
+      householdCount: index?.householdCount ?? 0,
+      peopleLimit: query.limit,
+      peopleNextCursor: page.nextCursor ?? null,
+      peopleHasMore: Boolean(page.nextCursor),
+      recentEvents: publicEvents.map((event) => projectEvent(event, lookups)),
+      chronicle: VIENNA_1912_CHRONICLE.filter((entry) => entry.date.year <= meta.date.year),
     };
   });
 
   app.get('/api/v4/persons/:id', async (req, reply) => {
-    const active = await latestV4World();
-    if (!active) return reply.code(404).send({ error: 'v4 世界尚未启动' });
-    const { world } = active;
-    const person = world.persons[(req.params as any).id];
-    if (!person) return reply.code(404).send({ error: '人物不存在' });
+    const meta = await latestV4WorldMeta();
+    if (!meta) return reply.code(404).send({ error: 'v4 世界尚未启动' });
+    const detail = await v4PersonDetail(meta.id, (req.params as any).id);
+    if (!detail) return reply.code(404).send({ error: '人物不存在' });
     const u = await user(req);
-    const isOwner = Boolean(u && person.ownerId && person.ownerId === u.id);
-    const household = world.households[person.householdId];
+    const isOwner = Boolean(u && detail.person.ownerId && detail.person.ownerId === u.id);
+    const peopleById = Object.fromEntries(detail.people.map((person) => [person.id, person]));
+    const relationsById = Object.fromEntries(
+      detail.relations.map((relation) => [relation.id, relation]),
+    );
     return {
-      person: publicPerson(world, person, u?.id),
-      canReadLog: isOwner || !person.ownerId,
-      household: household
+      person: publicPerson(meta.date, detail.person, u?.id, detail.place?.name),
+      canReadLog: isOwner || !detail.person.ownerId,
+      household: detail.household
         ? {
-            id: household.id,
-            residenceId: household.residenceId,
-            sharingRules: household.sharingRules,
-            members: household.memberIds
-              .map((id) => world.persons[id])
-              .filter((member): member is Person => Boolean(member))
+            id: detail.household.id,
+            residenceId: detail.household.residenceId,
+            sharingRules: detail.household.sharingRules,
+            members: detail.household.memberIds
+              .map((id) => peopleById[id])
+              .filter((member): member is V4PersonSummaryRecord => Boolean(member))
               .map((member) => ({
                 id: member.id,
                 name: member.name,
-                age: ageAt(member, world.date),
+                age: ageAt(member, meta.date),
                 occupation: member.employment?.occupation,
                 relation:
-                  member.id === person.id
+                  member.id === detail.person.id
                     ? '本人'
-                    : person.parentIds.includes(member.id)
+                    : detail.person.parentIds.includes(member.id)
                       ? '父母'
-                      : member.parentIds.includes(person.id)
+                      : member.parentIds.includes(detail.person.id)
                         ? '子女'
-                        : member.guardianIds.includes(person.id)
+                        : member.guardianIds.includes(detail.person.id)
                           ? '监护人'
                           : '同住',
                 died: member.died,
               })),
           }
         : undefined,
-      place: world.places[person.locationId],
-      relationships: person.relationshipIds
-        .map((id) => world.relations[id])
+      place: detail.place,
+      relationships: detail.person.relationshipIds
+        .map((id) => relationsById[id])
         .filter(Boolean)
         .map((relation) => ({
           id: relation.id,
-          personId: relation.a === person.id ? relation.b : relation.a,
+          personId: relation.a === detail.person.id ? relation.b : relation.a,
           name:
-            world.persons[relation.a === person.id ? relation.b : relation.a]?.name ?? '旧日相识',
+            peopleById[relation.a === detail.person.id ? relation.b : relation.a]?.name ??
+            '旧日相识',
           kind: relation.kind,
           trust: relation.trust,
           affection: relation.affection,
           obligation: relation.obligation,
         })),
-      events: (await v4EventsForPerson(world.id, person.id))
-        .filter((event: EventFact) => isOwner || !person.ownerId || event.visibility === 'public')
-        .map((event: EventFact) => projectEvent(world, event)),
-      worldEvents: (await recentV4Events(world.id, 100))
-        .filter((event: EventFact) => event.visibility === 'public')
-        .map((event: EventFact) => projectEvent(world, event)),
+      events: detail.events
+        .filter((event) => isOwner || !detail.person.ownerId || event.visibility === 'public')
+        .map((event) => projectEvent(event, detail.lookups)),
+      worldEvents: detail.worldEvents
+        .filter((event) => event.visibility === 'public')
+        .map((event) => projectEvent(event, detail.lookups)),
     };
   });
 
   app.get('/api/v4/events/:id', async (req, reply) => {
-    const active = await latestV4World();
-    if (!active) return reply.code(404).send({ error: 'v4 世界尚未启动' });
-    const event = active.world.events.find((item) => item.id === (req.params as any).id);
-    if (!event) return reply.code(404).send({ error: '事件不存在' });
+    const meta = await latestV4WorldMeta();
+    if (!meta) return reply.code(404).send({ error: 'v4 世界尚未启动' });
+    const detail = await v4EventDetail(meta.id, (req.params as any).id);
+    if (!detail) return reply.code(404).send({ error: '事件不存在' });
+    const event = detail.event;
     const u = await user(req);
-    const subject = active.world.persons[event.subjectId];
+    const subject = detail.subject;
     const isOwner = Boolean(u && subject?.ownerId && subject.ownerId === u.id);
     if (event.visibility === 'private' && !isOwner)
       return reply.code(403).send({ error: '这件事没有公开' });
-    if (
-      event.visibility === 'participants' &&
-      !isOwner &&
-      !event.participants.some((p) => p.personId === subject?.id)
-    )
-      return reply.code(403).send({ error: '这件事只在当事人之间流传' });
+    if (event.visibility === 'participants' && !isOwner) {
+      // Only an owner of one of the participants may read a participants-only
+      // event. The previous check compared the subject to itself, which made
+      // these events effectively public.
+      const participants = u
+        ? await v4PersonSummariesByIds(
+            meta.id,
+            event.participants.map((participant) => participant.personId),
+          )
+        : [];
+      const ownsParticipant = participants.some((person) => person.ownerId === u?.id);
+      if (!ownsParticipant) return reply.code(403).send({ error: '这件事只在当事人之间流传' });
+    }
     return event;
   });
 
   app.get('/api/v4/search', async (req, reply) => {
-    const active = await latestV4World();
-    if (!active) return reply.code(404).send({ error: 'v4 世界尚未启动' });
-    const q = String((req.query as any).q ?? '')
-      .trim()
-      .toLocaleLowerCase();
+    const query = SearchQuery.parse(req.query);
+    const q = (query.q ?? '').trim();
     if (q.length < 1) return { people: [] };
-    const viewer = await user(req);
+    const meta = await latestV4WorldMeta();
+    if (!meta) return reply.code(404).send({ error: 'v4 世界尚未启动' });
+    const [viewer, people] = await Promise.all([user(req), v4PersonSearch(meta.id, q)]);
     return {
-      people: Object.values(active.world.persons)
-        .filter((person) => person.name.toLocaleLowerCase().includes(q))
-        .slice(0, 30)
-        .map((person) => publicPerson(active.world, person, viewer?.id)),
+      people: people.map((person) => publicPerson(meta.date, person, viewer?.id)),
     };
   });
 
@@ -412,33 +457,35 @@ const sceneTitles = new Map(
   ].map((scene) => [scene.id, scene.title]),
 );
 
-function projectEvent(world: WorldState, event: EventFact) {
-  const instance = event.sceneId
-    ? world.scenes.find((scene) => scene.id === event.sceneId)
-    : undefined;
+function projectEvent(event: EventFact, lookups: V4EventLookups) {
+  const sceneId = event.sceneId ? lookups.sceneIdByInstance[event.sceneId] : undefined;
   return {
     ...event,
     title:
-      instance && sceneTitles.get(instance.sceneId)
-        ? sceneTitles.get(instance.sceneId)
+      sceneId && sceneTitles.get(sceneId)
+        ? sceneTitles.get(sceneId)
         : event.provenance.kind === 'birth'
           ? '出生'
           : event.action === 'death'
             ? '死亡'
             : undefined,
-    placeName: event.placeId ? world.places[event.placeId]?.name : undefined,
+    placeName: event.placeId ? lookups.placeNames[event.placeId] : undefined,
     people: event.participants.map((participant) => ({
       id: participant.personId,
-      name: world.persons[participant.personId]?.name ?? '无名',
+      name: lookups.personNames[participant.personId] ?? '无名',
       role: participant.role,
     })),
   };
 }
 
-function publicPerson(world: WorldState, person: Person, ownerId?: string) {
-  const place = world.places[person.locationId];
+function publicPerson(
+  date: WorldState['date'],
+  person: V4PersonSummaryRecord,
+  ownerId?: string,
+  placeName?: string,
+) {
   const employment = person.employment;
-  const age = ageAt(person, world.date);
+  const age = ageAt(person, date);
   const occupation =
     employment?.occupation ??
     (age < 6
@@ -459,7 +506,7 @@ function publicPerson(world: WorldState, person: Person, ownerId?: string) {
     deathCause: person.deathCause,
     age,
     locationId: person.locationId,
-    locationName: place?.name,
+    locationName: placeName ?? person.placeName,
     occupation,
     householdId: person.householdId,
     health: {

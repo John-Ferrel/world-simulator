@@ -75,7 +75,7 @@
             {
               "type": "skill",
               "personId": "$subject",
-              "skill": "street_games",
+              "skill": "social",
               "amount": 0.02,
               "reason": "练习滚铁环"
             }
@@ -125,7 +125,8 @@
               "personId": "$subject",
               "condition": "scraped_knee",
               "severity": 0.05,
-              "reason": "追铁环时在石板路上擦破膝盖"
+              "reason": "追铁环时在石板路上擦破膝盖",
+              "add": true
             }
           ],
           "narration": [
@@ -164,11 +165,11 @@
             {
               "type": "relation",
               "a": "$subject",
-              "b": "$mother",
-              "kind": "kin",
+              "b": "$neighbor",
+              "kind": "friend",
               "trust": 0.02,
               "fear": 0.02,
-              "reason": "被叫回家时没有顶嘴"
+              "reason": "被叫回家时仍与邻居约好明天"
             },
             {
               "type": "mood",
@@ -225,6 +226,13 @@
           "required": true,
           "minAge": 28,
           "maxAge": 50
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 14
         }
       ],
       "outcomes": [
@@ -346,7 +354,8 @@
               "personId": "$subject",
               "condition": "bruised_shoulder",
               "severity": 0.03,
-              "reason": "被推搡时肩膀撞到柱子"
+              "reason": "被推搡时肩膀撞到柱子",
+              "add": true
             }
           ],
           "narration": [
@@ -415,7 +424,8 @@
               "personId": "$subject",
               "condition": "peeling_lips",
               "severity": 0.04,
-              "reason": "退烧后嘴唇脱皮"
+              "reason": "退烧后嘴唇脱皮",
+              "add": true
             },
             {
               "type": "relation",
@@ -469,7 +479,8 @@
               "personId": "$subject",
               "condition": "quarantined",
               "severity": 0.6,
-              "reason": "被隔离在阁楼"
+              "reason": "被隔离在阁楼",
+              "add": true
             }
           ],
           "narration": [
@@ -588,7 +599,8 @@
               "personId": "$subject",
               "condition": "scraped_palm",
               "severity": 0.02,
-              "reason": "摔倒时手掌擦地"
+              "reason": "摔倒时手掌擦地",
+              "add": true
             }
           ],
           "narration": [
@@ -624,8 +636,8 @@
             {
               "type": "reputation",
               "personId": "$subject",
-              "delta": 0.02,
-              "reason": "在烟草店门口有礼貌"
+              "reason": "在烟草店门口有礼貌",
+              "amount": 0.02
             },
             {
               "type": "relation",

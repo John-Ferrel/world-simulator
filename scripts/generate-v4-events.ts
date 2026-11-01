@@ -7,8 +7,13 @@ import {
   compileGeneratedPack,
   type GeneratedPack,
 } from '../packages/v4/generated.js';
+import {
+  PHASE2_FAMILY_BRIEFS,
+  generatePack,
+  type GenerationBrief,
+} from '../packages/v4/content-author/index.js';
 
-const briefs: Record<string, Omit<GeneratedPack, 'nodes'>> = {
+const legacyBriefs: Record<string, Omit<GeneratedPack, 'nodes'>> = {
   'vienna-printshop-daily': {
     id: 'vienna-printshop-daily',
     title: '印刷厂的普通一天',
@@ -143,72 +148,129 @@ const briefs: Record<string, Omit<GeneratedPack, 'nodes'>> = {
   },
 };
 
+const briefs: Record<string, GenerationBrief> = {
+  ...legacyBriefs,
+  ...Object.fromEntries(PHASE2_FAMILY_BRIEFS.map((brief) => [brief.id, brief])),
+};
+
 const family = process.argv[2];
 if (!family || !briefs[family]) {
   console.error(`usage: tsx scripts/generate-v4-events.ts <${Object.keys(briefs).join('|')}>`);
   process.exit(1);
 }
 const brief = briefs[family]!;
+mkdirSync(resolve('packages/v4/content/generated'), { recursive: true });
 
-const schemaExample = {
-  id: brief.id,
-  title: brief.title,
-  stage: brief.stage,
-  ageWindow: brief.ageWindow,
-  tags: brief.tags,
-  baseRate: brief.baseRate,
-  conditions: brief.conditions,
-  nodes: [
-    {
-      id: `${brief.id}.example`,
-      title: '具体事件标题',
-      weight: 1,
-      rate: 0.2,
-      conditions: [{ kind: 'health', min: 0.3 }],
-      roles: [
-        { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 60 },
-        {
-          key: 'employer',
-          kind: 'employer',
-          required: true,
-          minAge: 18,
-          maxAge: 80,
-          organizationKind: 'factory',
-        },
-      ],
-      outcomes: [
-        {
-          id: 'concrete-outcome',
-          weight: 1,
-          text: '{subject}在{workplace}做了具体的事，{employer}作出了具体回应。后果是具体的。',
-          effects: [
-            { type: 'health', personId: '$subject', amount: -0.03, reason: '具体原因' },
-            { type: 'cash', householdId: '$household', amount: 2, reason: '具体收入' },
-            {
-              type: 'relation',
-              a: '$subject',
-              b: '$employer',
-              kind: 'employer',
-              trust: -0.1,
-              fear: 0.05,
-              reason: '具体关系变化',
-            },
-          ],
-          narration: [
-            {
-              id: 'default',
-              key: 'concrete-outcome',
-              text: '{subject}在{workplace}做了具体的事。{employer}的回应具体而直接。',
-              tone: ['dry'],
-            },
-          ],
-        },
-      ],
+if ('nodeBriefs' in brief) {
+  const result = await generatePack(brief, {
+    maxAttempts: 3,
+    maxTokens: 8000,
+    timeoutMs: 180000,
+    onAttempt: (attempt) => {
+      console.error(
+        `${brief.id} attempt ${attempt.attempt}: ${attempt.tokens} tokens, ${attempt.errors.length} errors`,
+      );
     },
-  ],
-};
+  });
+  if (!result.ok || !result.pack) {
+    console.error(
+      JSON.stringify(
+        {
+          status: 'failed',
+          family: brief.id,
+          tokens: result.tokens,
+          errors: result.errors,
+          attempts: result.attempts,
+          written: false,
+        },
+        null,
+        2,
+      ),
+    );
+    process.exit(1);
+  }
+  assertGeneratedPack(result.pack);
+  const scenes = compileGeneratedPack(result.pack);
+  const output = resolve(`packages/v4/content/generated/${brief.id}.json`);
+  writeFileSync(output, JSON.stringify(result.pack, null, 2) + '\n');
+  console.log(
+    JSON.stringify({
+      status: 'written',
+      file: output,
+      nodes: result.pack.nodes.length,
+      scenes: scenes.length,
+      outcomes: result.pack.nodes.reduce((sum, node) => sum + node.outcomes.length, 0),
+      narrations: result.pack.nodes.reduce(
+        (sum, node) =>
+          sum + node.outcomes.reduce((inner, outcome) => inner + (outcome.narration?.length ?? 0), 0),
+        0,
+      ),
+      tokens: result.successTokens,
+      model: result.model,
+      warnings: result.warnings,
+      attempts: result.attempts,
+    }),
+  );
+} else {
+  const schemaExample = {
+    id: brief.id,
+    title: brief.title,
+    stage: brief.stage,
+    ageWindow: brief.ageWindow,
+    tags: brief.tags,
+    baseRate: brief.baseRate,
+    conditions: brief.conditions,
+    nodes: [
+      {
+        id: `${brief.id}.example`,
+        title: '具体事件标题',
+        weight: 1,
+        rate: 0.2,
+        conditions: [{ kind: 'health', min: 0.3 }],
+        roles: [
+          { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 60 },
+          {
+            key: 'employer',
+            kind: 'employer',
+            required: true,
+            minAge: 18,
+            maxAge: 80,
+            organizationKind: 'factory',
+          },
+        ],
+        outcomes: [
+          {
+            id: 'concrete-outcome',
+            weight: 1,
+            text: '{subject}在{workplace}做了具体的事，{employer}作出了具体回应。后果是具体的。',
+            effects: [
+              { type: 'health', personId: '$subject', amount: -0.03, reason: '具体原因' },
+              { type: 'cash', householdId: '$household', amount: 2, reason: '具体收入' },
+              {
+                type: 'relation',
+                a: '$subject',
+                b: '$employer',
+                kind: 'employer',
+                trust: -0.1,
+                fear: 0.05,
+                reason: '具体关系变化',
+              },
+            ],
+            narration: [
+              {
+                id: 'default',
+                key: 'concrete-outcome',
+                text: '{subject}在{workplace}做了具体的事。{employer}的回应具体而直接。',
+                tone: ['dry'],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
 
-const prompt = `你是一个历史人生模拟游戏的内容作者。为1900年代维也纳生成一个事件族包，严格输出 JSON，不要 markdown，不要解释。
+  const prompt = `你是一个历史人生模拟游戏的内容作者。为1900年代维也纳生成一个事件族包，严格输出 JSON，不要 markdown，不要解释。
 
 事件族：${brief.title} (${brief.id})
 适用阶段：${brief.stage}
@@ -236,31 +298,31 @@ ${JSON.stringify(schemaExample, null, 2)}
 - 同一节点、同一 outcome 的文本必须彼此不同，不能只换形容词。
 - 输出 JSON 之外不能有任何字符。`;
 
-const result = await chat(
-  [
-    {
-      role: 'system',
-      content:
-        '你是严谨的历史游戏内容作者，熟悉1900年代维也纳工人生活。你只输出可编译的 JSON 内容，不写解释。',
-    },
-    { role: 'user', content: prompt },
-  ],
-  { conversation: `v4-content:${brief.id}`, maxTokens: 6000, json: true, timeoutMs: 120000 },
-);
+  const result = await chat(
+    [
+      {
+        role: 'system',
+        content:
+          '你是严谨的历史游戏内容作者，熟悉1900年代维也纳工人生活。你只输出可编译的 JSON 内容，不写解释。',
+      },
+      { role: 'user', content: prompt },
+    ],
+    { conversation: `v4-content:${brief.id}`, maxTokens: 6000, json: true, timeoutMs: 120000 },
+  );
 
-const pack = parseModelJSON(result.text) as GeneratedPack;
-writeFileSync(`/tmp/opencode/${brief.id}.raw.json`, JSON.stringify(pack, null, 2));
-assertGeneratedPack(pack);
-const scenes = compileGeneratedPack(pack);
-mkdirSync(resolve('packages/v4/content/generated'), { recursive: true });
-const output = resolve(`packages/v4/content/generated/${brief.id}.json`);
-writeFileSync(output, JSON.stringify(pack, null, 2) + '\n');
-console.log(
-  JSON.stringify({
-    file: output,
-    nodes: pack.nodes.length,
-    scenes: scenes.length,
-    tokens: result.tokens,
-    model: result.model,
-  }),
-);
+  const pack = parseModelJSON(result.text) as GeneratedPack;
+  writeFileSync(`/tmp/opencode/${brief.id}.raw.json`, JSON.stringify(pack, null, 2));
+  assertGeneratedPack(pack);
+  const scenes = compileGeneratedPack(pack);
+  const output = resolve(`packages/v4/content/generated/${brief.id}.json`);
+  writeFileSync(output, JSON.stringify(pack, null, 2) + '\n');
+  console.log(
+    JSON.stringify({
+      file: output,
+      nodes: pack.nodes.length,
+      scenes: scenes.length,
+      tokens: result.tokens,
+      model: result.model,
+    }),
+  );
+}

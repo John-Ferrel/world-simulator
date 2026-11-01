@@ -13,11 +13,11 @@
 - 19 个维也纳 1912–1918 作者场景：印刷厂工伤、房租与医疗、学校/学费、女子中学、家庭折页、工会、1914 动员、配给队列、1918 流感、孤儿监护。
 - 19 个通用人生场景：婴儿喂养/发烧、入学、课堂、童工、1918 流感、学徒、工伤、1930 年代失业、1938、二战征召/空袭、1945、退休与老年死亡。通用场景只使用角色相对引用，可以落到玩家新生儿身上。
 - 8 个家庭/关系场景：求婚/同居、婚礼、女性生育、男性成为父亲、离婚、女性同性共同生活、男性同性关系风险。孩子是真实 Person，拥有父母/监护人关系、家庭住址和自己的出生事件。
-- 56 个由 LLM 内容工厂生成并验证的维也纳场景（14 个事件族），另有 230 条条件化叙事变体；覆盖印刷厂、合租楼、学校、市场、学徒、疾病、教区、街头童年、青春期、成年社交、婴儿期和老年。
+- 88 个由 LLM 内容工厂生成并验证的维也纳场景（22 个事件族），另有 423 条条件化叙事变体；覆盖印刷厂、合租楼、学校、市场、学徒、疾病、教区、街头童年、青春期、成年社交、婴儿期、老年、恋爱、住房、医疗、教区互助、债务和女性家务。
 - 年度事件运行时不再“一年只选一个场景”：按年龄/身份/地点的发生率抽样多个普通事件，事实/后续事件进入队列，人物请求由对方独立回应。
 - 每个事件有真实参与角色、年龄、地点、类型化效果和后续记录；文本来自场景 outcome，不由日志模板生成。
 
-**尚未完成**：玩家人物之间的持久互动、LLM 场景决策、Knowledge/Project/Interaction 的完整消费、History Director、内容工厂、万人规模、公网部署。婚姻/生育目前是自动场景，不是玩家选择或完整婚配系统。详见 [v4 实现报告](docs/v4/implementation-report.md)。
+**尚未完成**：玩家人物之间的持久互动、LLM 场景决策、History Director、20k 完整持久化/并发压测、公网部署。内容工厂已完成离线生成/验证/审计，但不是运行时自动发布。婚姻/生育仍是自动场景，不是玩家选择或完整婚配系统。详见 [Phase 2 验收报告](docs/v4/phase-2-report.md) 与 [v4 实现报告](docs/v4/implementation-report.md)。
 
 ## 启动
 
@@ -49,11 +49,13 @@ pnpm dev
 
 ```sh
 pnpm typecheck
-pnpm exec vitest run tests/v4-engine.test.ts tests/v4-vienna-content.test.ts \
-  tests/v4-vienna-slice.test.ts tests/v4-vienna-life.test.ts tests/v4-vienna-family.test.ts \
-  tests/v4-player-life.test.ts tests/v4-wish.test.ts tests/v4-generated-content.test.ts
+TEST_DATABASE=1 pnpm exec vitest run tests/v4-*.test.ts
+pnpm test
 pnpm test:e2e --config playwright.v4.config.ts
 pnpm build
+pnpm v4:audit 80
+pnpm exec tsx scripts/v4-content-author.ts
+pnpm exec tsx scripts/v4-db-benchmark.ts   # 需独立 *_test/_e2e 数据库
 ```
 
 `pnpm test:e2e` 使用独立 `living_world_e2e` 数据库，清空 v4/认证表，播种 5 秒/年的测试世界；不会碰开发世界。浏览器流程实际注册、出生、读取日志、切换 Anna Bauer 并打开地图地点。
@@ -68,14 +70,19 @@ packages/v4/engine.ts                 纯函数年度场景引擎、角色选角
                                       家庭经济、项目/交互生命周期
 packages/v4/store.ts                  v4 实体表、事件表、出生请求/契约队列表
 packages/v4/birth.ts                  立即出生事务
-packages/v4/wish.ts                   有界出生愿望 JSON 解析与模型提示
+packages/v4/wish.ts                   Birth Contract 编译入口与模型提示
+packages/v4/birth-contract.ts         结构、白名单、严格验证与不可信愿望边界
+packages/v4/birth-contract-store.ts   contract 持久化、revision 锁、增量只应用一次
 packages/v4/content/vienna-1912.ts    作者场景、26 人 seed、地点/组织/来源/时代
 packages/v4/content/vienna-life.ts    角色相对通用人生场景
 packages/v4/content/vienna-family.ts  婚姻、同居、生育、离婚、同性关系与新生儿 Person 创建
-packages/v4/content/generated/        LLM 生成的 14 个事件族（56 场景、230 叙事变体）
+packages/v4/content/generated/        LLM 生成的 22 个事件族（88 场景、239 outcome、423 叙事变体）
+packages/v4/content-author/           覆盖报告、内容 brief、真实模型生成与严格校验
 packages/v4/generated.ts              生成内容 schema、验证与编译
 scripts/generate-v4-events.ts        LLM 内容工厂入口
-scripts/v4-content-audit.ts          80 年内容/事件分布审计
+scripts/v4-content-audit.ts          80 年内容/事件分布与可达性审计
+scripts/v4-content-author.ts         离线内容作者 CLI（覆盖/生成缺失族/验证）
+scripts/v4-db-benchmark.ts           1k/5k 具名人物 PostgreSQL 读写基准
 scripts/v4-runtime-benchmark.ts      1k/5k/20k 合成运行时基准
 apps/v4-api/index.ts                  Fastify API/SSE/认证/公开信息过滤
 apps/v4-simulator/index.ts            v4 时钟与出生处理
@@ -89,10 +96,11 @@ infra/migrations/004_v4_birth_contracts.sql
 
 ## 已知限制与边界
 
-- **内容范围**：当前运行时 101 个场景、230 条生成叙事变体，仍只是维也纳切片的首批内容，不是完整 1900 地球人生。离婚、再婚、同性关系、继承和住房容量已有第一版机制，但缺少玩家选择、完整法律程序、再婚/继承分配策略和大规模内容覆盖。
+- **内容范围**：当前运行时 134 个场景（含 88 个生成场景、423 条生成叙事变体），仍只是维也纳切片，不是完整 1900 地球人生。离婚、再婚、同性关系、继承和住房容量已有第一版机制，但缺少玩家选择、完整法律程序、再婚/继承分配策略和大规模内容覆盖。
+- **人口与生命周期**：老年死亡已改为每年可重复的风险，初始人口也可求偶/生育；但人口账本不是完整人口学，婴儿死亡、迁移、遗嘱和债务分配仍只覆盖部分内容。
 - **经济**：家庭/组织账本包含工资、租金、食物、债务和显式月度外部收入/营收；没有完整市场、价格形成、税收、生产链或驱逐机制。Bauer 家庭在工伤后可能长期欠租而不被驱逐，这是当前缺口。
-- **时间**：世界按年推进，场景日期在年内大多落在 1 月；不是逐月人口账本。模型/场景决策是同步的确定性权重，异步 LLM 仅用于出生愿望读法。
-- **出生契约**：模型只返回 300 字以内的愿望读法、focus、最多 4 个 ±0.08 的性格微调和一个 taboo 文本；不产生超能力、金钱、关系或未来剧情。真正深度的条件式 Life Contract 尚未实现。
+- **时间**：世界按年推进，普通场景日期分布到 12 个月，但仍是年度 tick，不是逐月事务队列。模型/场景决策是同步的确定性权重，异步 LLM 仅用于 Birth Contract。
+- **出生契约**：Birth Contract 2.0 返回有界 reading/privateGoal/focus/trait/skill/capability/conditions/limits/costs；服务端复核后持久化。能力只改变事件权重/资格并产生年度代价，不保证实现；文本过滤仍是启发式。
 - **旧代码**：v1–v3 的引擎、旧 UI、旧测试仍在仓库中作为冻结参考；`pnpm dev` 不启动它们，旧世界已归档。不要用旧报告数字代表 v4。
 - **部署**：未做生产部署、Compose 实测、万人负载或公网验收。
 

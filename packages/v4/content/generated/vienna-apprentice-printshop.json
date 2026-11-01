@@ -70,8 +70,8 @@
             {
               "type": "relation",
               "a": "$subject",
-              "b": "$employer",
-              "kind": "employer",
+              "b": "$worker",
+              "kind": "colleague",
               "trust": -0.1,
               "fear": 0.08,
               "reason": "被当众斥责"
@@ -105,7 +105,8 @@
               "type": "skill",
               "personId": "$subject",
               "amount": 0.04,
-              "reason": "重新排完一整页价目表"
+              "reason": "重新排完一整页价目表",
+              "skill": "craft"
             },
             {
               "type": "health",
@@ -195,8 +196,8 @@
             {
               "type": "relation",
               "a": "$subject",
-              "b": "$employer",
-              "kind": "employer",
+              "b": "$worker",
+              "kind": "colleague",
               "trust": -0.12,
               "reason": "加班被算作练习"
             },
@@ -234,8 +235,8 @@
             {
               "type": "relation",
               "a": "$subject",
-              "b": "$employer",
-              "kind": "employer",
+              "b": "$worker",
+              "kind": "colleague",
               "trust": -0.15,
               "respect": 0.04,
               "reason": "被从正式工候选划掉"
@@ -350,15 +351,13 @@
               "type": "skill",
               "personId": "$subject",
               "amount": 0.03,
-              "reason": "学会分辨旧铅字型号"
+              "reason": "学会分辨旧铅字型号",
+              "skill": "craft"
             },
             {
-              "type": "relation",
-              "a": "$subject",
-              "b": "$employer",
-              "kind": "employer",
-              "trust": 0.03,
-              "fear": 0.05,
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
               "reason": "被调去筛旧铅字"
             }
           ],
@@ -429,8 +428,8 @@
               "type": "flag",
               "personId": "$subject",
               "flag": "printshop_union_contact",
-              "value": true,
-              "reason": "与工会成员建立联系"
+              "reason": "与工会成员建立联系",
+              "add": true
             },
             {
               "type": "mood",
@@ -464,8 +463,8 @@
             {
               "type": "relation",
               "a": "$subject",
-              "b": "$employer",
-              "kind": "employer",
+              "b": "$worker",
+              "kind": "colleague",
               "trust": -0.14,
               "fear": 0.06,
               "reason": "夹带传单被当场抓住"

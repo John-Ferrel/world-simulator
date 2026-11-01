@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { migrate as migrateBase, pool } from '../storage/index.js';
-import type { WorldState } from './domain.js';
+import type { EventFact, Household, Person, Place, Relation, WorldState } from './domain.js';
 
 const V4_MIGRATION_VERSION = 4;
 
@@ -198,6 +198,484 @@ export async function latestV4World(): Promise<
   return { world: { ...world, status: meta.status, terminalReason: meta.terminalReason }, meta };
 }
 
+/**
+ * Read-path projections.
+ *
+ * The simulator still loads and saves the whole world. The observer API uses
+ * these narrower queries so a routine page view does not transfer every
+ * person's traits, life state and id arrays. All projections are read-only;
+ * they never write world state or consume the world revision.
+ */
+
+/** The active world if one is running, otherwise the newest archive. */
+export async function latestV4WorldMeta(): Promise<V4WorldMeta | undefined> {
+  const row = (
+    await pool.query(
+      `SELECT id FROM v4_worlds
+       ORDER BY (status='running') DESC, created_at DESC
+       LIMIT 1`,
+    )
+  ).rows[0];
+  if (!row) return undefined;
+  return v4WorldMeta(row.id);
+}
+
+/**
+ * A person projection used by list, map, search and household members. It
+ * keeps the fields the observer renders but drops traits, life, provenance,
+ * project ids, relationship ids, knowledge ids and the full employment record.
+ */
+export type V4PersonSummaryRecord = {
+  id: string;
+  name: string;
+  ownerId?: string;
+  sex: Person['sex'];
+  born: Person['born'];
+  died?: Person['died'];
+  deathCause?: string;
+  locationId: string;
+  householdId: string;
+  parentIds: string[];
+  guardianIds: string[];
+  health: Person['health'];
+  education: Person['education'];
+  employment?: Pick<NonNullable<Person['employment']>, 'occupation'>;
+  roles: string[];
+  appearance?: Person['appearance'];
+  lifeContract?: Person['lifeContract'];
+  /** Resolved in SQL so the API does not need the whole place table. */
+  placeName?: string;
+};
+
+export type V4PersonPage = {
+  people: V4PersonSummaryRecord[];
+  /** All persons in the world, alive or dead. */
+  total: number;
+  alive: number;
+  /** Opaque keyset cursor for the next page; absent on the last page. */
+  nextCursor?: string;
+};
+
+export type V4PlaceSummary = { id: string; name: string; kind: string };
+export type V4OrganizationSummary = { id: string; name: string; kind: string };
+
+export type V4WorldIndex = {
+  meta: V4WorldMeta;
+  peopleTotal: number;
+  peopleAlive: number;
+  householdCount: number;
+  places: V4PlaceSummary[];
+  organizations: V4OrganizationSummary[];
+};
+
+export type V4PersonCursor = {
+  /** 0 = owned by a player (sorted first), 1 = not owned. */
+  owned: 0 | 1;
+  /** Lower-cased name as ordered by PostgreSQL. */
+  name: string;
+  id: string;
+};
+
+export type V4EventLookups = {
+  placeNames: Record<string, string>;
+  personNames: Record<string, string>;
+  /** Scene instance id -> authored scene id. */
+  sceneIdByInstance: Record<string, string>;
+};
+
+export type V4PersonDetail = {
+  person: Person;
+  household?: Household;
+  /** Full place row for the person's current location, as the API returns it. */
+  place?: Place;
+  residence?: Place;
+  relations: Relation[];
+  events: EventFact[];
+  worldEvents: EventFact[];
+  people: V4PersonSummaryRecord[];
+  lookups: V4EventLookups;
+};
+
+export type V4EventDetail = {
+  event: EventFact;
+  subject?: V4PersonSummaryRecord;
+  lookups: V4EventLookups;
+};
+
+export const V4_PERSON_PAGE_DEFAULT = 200;
+export const V4_PERSON_PAGE_MAX = 500;
+export const V4_PERSON_SEARCH_MAX = 30;
+
+export class V4CursorError extends Error {
+  constructor() {
+    super('invalid v4 person cursor');
+    this.name = 'V4CursorError';
+  }
+}
+
+export function encodeV4PersonCursor(cursor: V4PersonCursor): string {
+  return Buffer.from(
+    JSON.stringify({ v: 1, o: cursor.owned, n: cursor.name, i: cursor.id }),
+    'utf8',
+  ).toString('base64url');
+}
+
+export function decodeV4PersonCursor(value: string): V4PersonCursor {
+  if (typeof value !== 'string' || value.length < 1 || value.length > 512)
+    throw new V4CursorError();
+  let parsed: any;
+  try {
+    parsed = JSON.parse(Buffer.from(value, 'base64url').toString('utf8'));
+  } catch {
+    throw new V4CursorError();
+  }
+  if (
+    !parsed ||
+    typeof parsed !== 'object' ||
+    parsed.v !== 1 ||
+    (parsed.o !== 0 && parsed.o !== 1) ||
+    typeof parsed.n !== 'string' ||
+    typeof parsed.i !== 'string' ||
+    parsed.n.length > 200 ||
+    parsed.i.length > 200
+  )
+    throw new V4CursorError();
+  return { owned: parsed.o, name: parsed.n, id: parsed.i };
+}
+
+export function normalizeV4PersonLimit(value: unknown): number {
+  const limit = value === undefined || value === null ? V4_PERSON_PAGE_DEFAULT : Number(value);
+  if (!Number.isInteger(limit) || limit < 1 || limit > V4_PERSON_PAGE_MAX)
+    throw new RangeError(`person limit must be an integer between 1 and ${V4_PERSON_PAGE_MAX}`);
+  return limit;
+}
+
+const PERSON_SUMMARY_COLUMNS = `
+  p.id AS id,
+  p.payload->>'name' AS name,
+  p.payload->>'ownerId' AS owner_id,
+  p.payload->>'sex' AS sex,
+  p.payload->'born' AS born,
+  p.payload->'died' AS died,
+  p.payload->>'deathCause' AS death_cause,
+  p.payload->>'locationId' AS location_id,
+  p.payload->>'householdId' AS household_id,
+  p.payload->'parentIds' AS parent_ids,
+  p.payload->'guardianIds' AS guardian_ids,
+  p.payload->'health' AS health,
+  p.payload->'education' AS education,
+  p.payload #>> '{employment,occupation}' AS employment_occupation,
+  p.payload->'roles' AS roles,
+  p.payload->'appearance' AS appearance,
+  p.payload->'lifeContract' AS life_contract,
+  pl.payload->>'name' AS place_name,
+  lower(p.payload->>'name') AS sort_name,
+  CASE WHEN p.payload->>'ownerId' IS NOT NULL THEN 0 ELSE 1 END AS owned
+`;
+
+const PERSON_SUMMARY_FROM = `
+  FROM v4_persons p
+  LEFT JOIN v4_places pl ON pl.world_id=p.world_id AND pl.id=p.payload->>'locationId'
+`;
+
+const PERSON_SUMMARY_ORDER = `
+  ORDER BY CASE WHEN p.payload->>'ownerId' IS NOT NULL THEN 0 ELSE 1 END,
+           lower(p.payload->>'name'),
+           p.id
+`;
+
+function personSummaryFromRow(row: any): V4PersonSummaryRecord {
+  return {
+    id: row.id,
+    name: row.name,
+    ownerId: row.owner_id ?? undefined,
+    sex: row.sex as Person['sex'],
+    born: row.born,
+    died: row.died ?? undefined,
+    deathCause: row.death_cause ?? undefined,
+    locationId: row.location_id,
+    householdId: row.household_id,
+    parentIds: Array.isArray(row.parent_ids) ? row.parent_ids : [],
+    guardianIds: Array.isArray(row.guardian_ids) ? row.guardian_ids : [],
+    health: row.health,
+    education: row.education,
+    employment: row.employment_occupation ? { occupation: row.employment_occupation } : undefined,
+    roles: Array.isArray(row.roles) ? row.roles : [],
+    appearance: row.appearance ?? undefined,
+    lifeContract: row.life_contract ?? undefined,
+    placeName: row.place_name ?? undefined,
+  };
+}
+
+/**
+ * One keyset page of person summaries. Player-owned people sort first so a
+ * logged-in observer's own character is present even when the first page is
+ * smaller than the world; inside each group the order is name, id.
+ */
+export async function v4PersonSummaries(
+  worldId: string,
+  options: { limit?: number; cursor?: string } = {},
+): Promise<V4PersonPage> {
+  const limit = normalizeV4PersonLimit(options.limit);
+  const cursor = options.cursor ? decodeV4PersonCursor(options.cursor) : undefined;
+  const params: unknown[] = [worldId];
+  let where = 'p.world_id=$1';
+  if (cursor) {
+    params.push(cursor.owned, cursor.name, cursor.id);
+    where += ` AND (
+      CASE WHEN p.payload->>'ownerId' IS NOT NULL THEN 0 ELSE 1 END,
+      lower(p.payload->>'name'),
+      p.id
+    ) > ($2::int, $3::text, $4::text)`;
+  }
+  params.push(limit + 1);
+  const [page, counts] = await Promise.all([
+    pool.query(
+      `SELECT ${PERSON_SUMMARY_COLUMNS} ${PERSON_SUMMARY_FROM}
+       WHERE ${where}
+       ${PERSON_SUMMARY_ORDER}
+       LIMIT $${params.length}`,
+      params,
+    ),
+    pool.query(
+      `SELECT count(*)::int AS total,
+              count(*) FILTER (WHERE payload->>'died' IS NULL)::int AS alive
+       FROM v4_persons WHERE world_id=$1`,
+      [worldId],
+    ),
+  ]);
+  const rows = page.rows.slice(0, limit);
+  const last = rows[rows.length - 1];
+  return {
+    people: rows.map(personSummaryFromRow),
+    total: Number(counts.rows[0]?.total ?? 0),
+    alive: Number(counts.rows[0]?.alive ?? 0),
+    nextCursor:
+      page.rows.length > limit && last
+        ? encodeV4PersonCursor({
+            owned: Number(last.owned) === 0 ? 0 : 1,
+            name: last.sort_name,
+            id: last.id,
+          })
+        : undefined,
+  };
+}
+
+export async function v4PersonSummariesByIds(
+  worldId: string,
+  ids: string[],
+): Promise<V4PersonSummaryRecord[]> {
+  const unique = [...new Set(ids.filter((id) => typeof id === 'string' && id.length > 0))];
+  if (unique.length === 0) return [];
+  return (
+    await pool.query(
+      `SELECT ${PERSON_SUMMARY_COLUMNS} ${PERSON_SUMMARY_FROM}
+       WHERE p.world_id=$1 AND p.id = ANY($2::text[])`,
+      [worldId, unique],
+    )
+  ).rows.map(personSummaryFromRow);
+}
+
+export async function v4PersonSearch(
+  worldId: string,
+  query: string,
+  limit = V4_PERSON_SEARCH_MAX,
+): Promise<V4PersonSummaryRecord[]> {
+  const term = query.trim();
+  if (term.length === 0) return [];
+  const size = Math.max(1, Math.min(V4_PERSON_SEARCH_MAX, Math.floor(limit)));
+  return (
+    await pool.query(
+      `SELECT ${PERSON_SUMMARY_COLUMNS} ${PERSON_SUMMARY_FROM}
+       WHERE p.world_id=$1 AND position(lower($2) in lower(p.payload->>'name')) > 0
+       ${PERSON_SUMMARY_ORDER}
+       LIMIT $3`,
+      [worldId, term, size],
+    )
+  ).rows.map(personSummaryFromRow);
+}
+
+export async function v4PlacesByIds(worldId: string, ids: string[]): Promise<Place[]> {
+  const unique = [...new Set(ids.filter((id) => typeof id === 'string' && id.length > 0))];
+  if (unique.length === 0) return [];
+  return (
+    await pool.query('SELECT payload FROM v4_places WHERE world_id=$1 AND id = ANY($2::text[])', [
+      worldId,
+      unique,
+    ])
+  ).rows.map((row) => row.payload as Place);
+}
+
+/** World counts and the small reference lists the observer needs. */
+export async function v4WorldIndex(worldId: string): Promise<V4WorldIndex | undefined> {
+  const meta = await v4WorldMeta(worldId);
+  if (!meta) return undefined;
+  const [counts, places, organizations] = await Promise.all([
+    pool.query(
+      `SELECT
+         (SELECT count(*)::int FROM v4_persons WHERE world_id=$1) AS people_total,
+         (SELECT count(*)::int FROM v4_persons
+          WHERE world_id=$1 AND payload->>'died' IS NULL) AS people_alive,
+         (SELECT count(*)::int FROM v4_households WHERE world_id=$1) AS households`,
+      [worldId],
+    ),
+    pool.query(
+      `SELECT id, payload->>'name' AS name, payload->>'kind' AS kind
+       FROM v4_places WHERE world_id=$1 ORDER BY payload->>'name', id`,
+      [worldId],
+    ),
+    pool.query(
+      `SELECT id, payload->>'name' AS name, payload->>'kind' AS kind
+       FROM v4_organizations WHERE world_id=$1 ORDER BY payload->>'name', id`,
+      [worldId],
+    ),
+  ]);
+  const row = counts.rows[0] ?? {};
+  return {
+    meta,
+    peopleTotal: Number(row.people_total ?? 0),
+    peopleAlive: Number(row.people_alive ?? 0),
+    householdCount: Number(row.households ?? 0),
+    places: places.rows,
+    organizations: organizations.rows,
+  };
+}
+
+/** Name/scene lookups for projecting a bounded set of event facts. */
+export async function v4EventLookups(
+  worldId: string,
+  events: EventFact[],
+): Promise<V4EventLookups> {
+  const placeIds = new Set<string>();
+  const personIds = new Set<string>();
+  const sceneIds = new Set<string>();
+  for (const event of events) {
+    if (event.placeId) placeIds.add(event.placeId);
+    if (event.sceneId) sceneIds.add(event.sceneId);
+    for (const participant of event.participants) personIds.add(participant.personId);
+  }
+  const [persons, places, scenes] = await Promise.all([
+    personIds.size
+      ? pool.query(
+          `SELECT id, payload->>'name' AS name FROM v4_persons
+           WHERE world_id=$1 AND id = ANY($2::text[])`,
+          [worldId, [...personIds]],
+        )
+      : Promise.resolve({ rows: [] as any[] }),
+    placeIds.size
+      ? pool.query(
+          `SELECT id, payload->>'name' AS name FROM v4_places
+           WHERE world_id=$1 AND id = ANY($2::text[])`,
+          [worldId, [...placeIds]],
+        )
+      : Promise.resolve({ rows: [] as any[] }),
+    sceneIds.size
+      ? pool.query(
+          `SELECT id, payload->>'sceneId' AS scene_id FROM v4_scenes
+           WHERE world_id=$1 AND id = ANY($2::text[])`,
+          [worldId, [...sceneIds]],
+        )
+      : Promise.resolve({ rows: [] as any[] }),
+  ]);
+  return {
+    placeNames: Object.fromEntries(
+      places.rows.filter((row: any) => row.name).map((row: any) => [row.id, row.name]),
+    ),
+    personNames: Object.fromEntries(
+      persons.rows.filter((row: any) => row.name).map((row: any) => [row.id, row.name]),
+    ),
+    sceneIdByInstance: Object.fromEntries(
+      scenes.rows.filter((row: any) => row.scene_id).map((row: any) => [row.id, row.scene_id]),
+    ),
+  };
+}
+
+/**
+ * A single person's page data: one full person row plus only that household,
+ * their relations, their own event log and the bounded public recent events.
+ */
+export async function v4PersonDetail(
+  worldId: string,
+  personId: string,
+): Promise<V4PersonDetail | undefined> {
+  const personRow = (
+    await pool.query('SELECT payload FROM v4_persons WHERE world_id=$1 AND id=$2', [
+      worldId,
+      personId,
+    ])
+  ).rows[0];
+  if (!personRow) return undefined;
+  const person = personRow.payload as Person;
+  const relationshipIds = Array.isArray(person.relationshipIds) ? person.relationshipIds : [];
+  const [householdRow, relationRows, events, worldEvents] = await Promise.all([
+    person.householdId
+      ? pool.query('SELECT payload FROM v4_households WHERE world_id=$1 AND id=$2', [
+          worldId,
+          person.householdId,
+        ])
+      : Promise.resolve({ rows: [] as any[] }),
+    relationshipIds.length
+      ? pool.query('SELECT payload FROM v4_relations WHERE world_id=$1 AND id = ANY($2::text[])', [
+          worldId,
+          relationshipIds,
+        ])
+      : Promise.resolve({ rows: [] as any[] }),
+    v4EventsForPerson(worldId, person.id),
+    recentV4Events(worldId, 100),
+  ]);
+  const household = (householdRow.rows[0]?.payload as Household | undefined) ?? undefined;
+  const relations = relationRows.rows.map((row: any) => row.payload as Relation);
+  const personIds = new Set<string>([person.id]);
+  for (const memberId of household?.memberIds ?? []) personIds.add(memberId);
+  for (const relation of relations) {
+    personIds.add(relation.a);
+    personIds.add(relation.b);
+  }
+  for (const event of [...events, ...worldEvents])
+    for (const participant of event.participants) personIds.add(participant.personId);
+  const placeIds = new Set<string>();
+  if (person.locationId) placeIds.add(person.locationId);
+  if (household?.residenceId) placeIds.add(household.residenceId);
+  for (const event of [...events, ...worldEvents]) if (event.placeId) placeIds.add(event.placeId);
+  const [people, lookups, places] = await Promise.all([
+    v4PersonSummariesByIds(worldId, [...personIds]),
+    v4EventLookups(worldId, [...events, ...worldEvents]),
+    v4PlacesByIds(worldId, [...placeIds]),
+  ]);
+  const placeById = Object.fromEntries(places.map((place) => [place.id, place]));
+  return {
+    person,
+    household,
+    place: placeById[person.locationId],
+    residence: household ? placeById[household.residenceId] : undefined,
+    relations,
+    events,
+    worldEvents,
+    people,
+    lookups,
+  };
+}
+
+/** One event plus the subject ownership check the API needs. */
+export async function v4EventDetail(
+  worldId: string,
+  eventId: string,
+): Promise<V4EventDetail | undefined> {
+  const row = (
+    await pool.query('SELECT payload FROM v4_events WHERE world_id=$1 AND id=$2', [
+      worldId,
+      eventId,
+    ])
+  ).rows[0];
+  if (!row) return undefined;
+  const event = row.payload as EventFact;
+  const [subjects, lookups] = await Promise.all([
+    v4PersonSummariesByIds(worldId, [event.subjectId]),
+    v4EventLookups(worldId, [event]),
+  ]);
+  return { event, subject: subjects[0], lookups };
+}
+
 export async function seedV4World(world: WorldState): Promise<V4WorldMeta> {
   const client = await pool.connect();
   try {
@@ -391,22 +869,26 @@ export async function markV4Birth(
   ]);
 }
 
-export async function recentV4Events(worldId: string, limit = 40) {
+export async function recentV4Events(worldId: string, limit = 40): Promise<EventFact[]> {
   return (
     await pool.query(
       'SELECT payload FROM v4_events WHERE world_id=$1 ORDER BY date_year DESC,date_month DESC LIMIT $2',
       [worldId, limit],
     )
-  ).rows.map((row) => row.payload);
+  ).rows.map((row) => row.payload as EventFact);
 }
 
-export async function v4EventsForPerson(worldId: string, personId: string, limit = 200) {
+export async function v4EventsForPerson(
+  worldId: string,
+  personId: string,
+  limit = 200,
+): Promise<EventFact[]> {
   return (
     await pool.query(
       'SELECT payload FROM v4_events WHERE world_id=$1 AND subject_id=$2 ORDER BY date_year,date_month LIMIT $3',
       [worldId, personId, limit],
     )
-  ).rows.map((row) => row.payload);
+  ).rows.map((row) => row.payload as EventFact);
 }
 
 /** Archive one v4 world without deleting its entities or event record. */
@@ -534,7 +1016,9 @@ export async function applyV4WishReading(
       },
       flags: [...(person.life?.flags ?? [])],
     };
-    const alreadyCompiled = Boolean(person.lifeContract.interpretation);
+    // Birth creation writes a placeholder interpretation; only compiledAt
+    // proves that the deltas were already applied.
+    const alreadyCompiled = Boolean(person.lifeContract.compiledAt);
     for (const [key, value] of Object.entries(reading.traitDeltas)) {
       if (alreadyCompiled) break;
       if (typeof value !== 'number' || !Number.isFinite(value)) continue;

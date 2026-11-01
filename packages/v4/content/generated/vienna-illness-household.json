@@ -199,12 +199,6 @@
       "title": "母亲在楼梯上跌倒",
       "weight": 1,
       "rate": 0.2,
-      "conditions": [
-        {
-          "kind": "hasRelation",
-          "relation": "mother"
-        }
-      ],
       "roles": [
         {
           "key": "subject",
@@ -304,7 +298,7 @@
             {
               "id": "neighbor-referral",
               "key": "hire-care",
-              "text": "经{neighbor}介绍，{subject}雇了看护妇照看{mother}。钱花得心疼，但母亲的腿伤有人料理，{subject}晚上替人缝补补上开销。",
+              "text": "经街坊介绍，{subject}雇了看护妇照看{mother}。钱花得心疼，但母亲的腿伤有人料理，{subject}晚上替人缝补补上开销。",
               "tone": [
                 "matter_of_fact"
               ]
@@ -669,8 +663,8 @@
             {
               "type": "relation",
               "a": "$subject",
-              "b": "$employer",
-              "kind": "employer",
+              "b": "$worker",
+              "kind": "colleague",
               "trust": -0.15,
               "fear": 0.1,
               "reason": "当面要求修理机器"
@@ -680,7 +674,9 @@
               "personId": "$worker",
               "flag": "workshop_guard_fixed",
               "value": 1,
-              "reason": "冲床护板修好"
+              "reason": "冲床护板修好",
+              "add": true,
+              "condition": "workshop_guard_fixed"
             },
             {
               "type": "reputation",
