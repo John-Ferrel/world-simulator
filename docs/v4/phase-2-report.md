@@ -5,6 +5,8 @@
 范围：同一 v4 Vienna 人生的内容运行时扩展、Birth Contract 2.0、观察 API 投影。  
 原则：只记录本工作树实际跑过的命令和结果；Phase 1 数字只作对照，不替代本轮验收。
 
+> 复盘与偏差分析见 [phase-2-retrospective.md](phase-2-retrospective.md)。Phase 2 的工程交付通过测试，但人口/历史模型未成立；该文记录了原因与 Phase 3 方案。
+
 ## 状态总表
 
 | 工作项             | 状态   | 实际证据                                                                                                                      |

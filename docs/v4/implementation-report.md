@@ -6,6 +6,8 @@
 
 > 2026-11-01 Phase 2 更新：内容工厂扩展到 22 族 / 88 场景 / 423 叙事变体；Birth Contract 2.0 已持久化并由 engine 消费；观察 API 改为分页投影；全量 353 项通过、构建和浏览器通过。最新验收见 [phase-2-report.md](phase-2-report.md)，Phase 1 证据见 [content-runtime-report.md](content-runtime-report.md)。本页下方旧数字（45 项测试、14 族）只在明确标注处保留为历史快照。
 
+> 复盘与偏差分析见 [phase-2-retrospective.md](phase-2-retrospective.md)。Phase 2 的工程交付通过测试，但人口/历史模型未成立；该文记录了原因与 Phase 3 方案。
+
 ## 状态总表
 
 | 项目                 | 状态             | 证据 / 边界                                                                                                                                                                  |
