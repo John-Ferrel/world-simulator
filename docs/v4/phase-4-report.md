@@ -312,13 +312,13 @@ TEST_DATABASE=1 pnpm exec vitest run tests/v4-*.test.ts
 pnpm test
 → 62 files passed / 7 skipped
 → 375 tests passed / 36 skipped
-→ 154.37s
+→ 154.75s
 
 pnpm build
-→ 通过（2.85s）
+→ 通过（2.88s）
 
 pnpm test:e2e --config playwright.v4.config.ts
-→ 1 passed（7.0s）
+→ 1 passed（6.8s）
 ```
 
 新增测试覆盖：
