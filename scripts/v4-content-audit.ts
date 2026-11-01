@@ -4,6 +4,7 @@ import { createV4Birth } from '../packages/v4/birth.js';
 import type { EventFact, SceneInstance } from '../packages/v4/domain.js';
 import { VIENNA_1912_SEED, VIENNA_1912_SCENES } from '../packages/v4/content/vienna-1912.js';
 import { defaultMacroState, syncMacroPressures } from '../packages/v4/macro.js';
+import { applyScenarioToMacro, type MacroScenarioName } from '../packages/v4/macro-scenarios.js';
 import { populationSummary } from '../packages/v4/statistics.js';
 import { VIENNA_LIFE_SCENES } from '../packages/v4/content/vienna-life.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
@@ -14,6 +15,7 @@ const years = Number(process.argv[2] ?? 80);
 let world = structuredClone(VIENNA_1912_SEED);
 world.macro = defaultMacroState(world);
 syncMacroPressures(world, world.macro);
+const scenario = process.env.V4_AUDIT_SCENARIO as MacroScenarioName | undefined;
 const birth = createV4Birth(
   world,
   {
@@ -39,6 +41,10 @@ const sceneInstances: SceneInstance[] = [];
 const warnings: { code: string; message: string; personId?: string; sceneId?: string }[] = [];
 const scenesByYear: number[] = [];
 for (let i = 0; i < years; i += 1) {
+  if (scenario) {
+    world.macro = applyScenarioToMacro(world.macro!, scenario, world.date.year);
+    syncMacroPressures(world, world.macro);
+  }
   const result = advanceV4Year(world, scenes, {
     economy: { enabled: true },
     eventRuntime: true,
@@ -174,6 +180,7 @@ const population = world.macro ? populationSummary(world.macro) : undefined;
 
 const report = {
   years,
+  scenario: scenario ?? 'baseline-no-directed-history',
   date: world.date,
   persons: Object.keys(world.persons).length,
   alive: Object.values(world.persons).filter((person) => !person.died).length,

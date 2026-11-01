@@ -418,6 +418,25 @@ export function updateMacroPopulation(
   return next;
 }
 
+/** Refresh only the named count after scenes/births, without aging cohorts. */
+export function refreshNamedPopulation(state: MacroState, world: WorldState): MacroState {
+  const next = structuredClone(state);
+  for (const region of Object.values(next.regions)) {
+    const placeIds = new Set(
+      Object.values(world.places)
+        .filter((place) => (place.regionId ?? 'region-lower-austria') === region.id)
+        .map((place) => place.id),
+    );
+    const population = next.population[region.id];
+    if (!population) continue;
+    population.namedAlive = Object.values(world.persons).filter(
+      (person) => !person.died && placeIds.has(person.locationId),
+    ).length;
+    population.lastUpdated = { ...world.date };
+  }
+  return next;
+}
+
 export function populationSummary(state: MacroState): {
   named: number;
   unnamed: number;

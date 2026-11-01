@@ -431,11 +431,10 @@ export function validateMacroProposal(
   const proposal = parsed.data as MacroProposal;
   const region = context.state.regions[proposal.regionId];
   if (!region) throw new MacroContractError(`未知地区 ${proposal.regionId}`);
-  if (
-    proposal.effectiveFrom.year < context.world.date.year - 1 ||
-    proposal.effectiveFrom.year > context.world.date.year + 2
-  ) {
-    throw new MacroContractError('宏观提案生效时间超出允许窗口');
+  const currentMonth = context.world.date.year * 12 + context.world.date.month;
+  const proposalMonth = proposal.effectiveFrom.year * 12 + proposal.effectiveFrom.month;
+  if (proposalMonth > currentMonth || proposalMonth < currentMonth - 12) {
+    throw new MacroContractError('宏观提案生效时间必须落在当前月或过去 12 个月内');
   }
   const changes = validateParameterChanges(proposal.parameterChanges, region);
   if (
@@ -475,6 +474,13 @@ export function validateMacroProposal(
     }
     return true;
   });
+  if (
+    Object.keys(changes).length === 0 &&
+    validEventPoolChanges.length === 0 &&
+    !proposal.maintainStatus
+  ) {
+    throw new MacroContractError('宏观提案没有可执行的参数或事件池变化');
+  }
   return {
     ...proposal,
     developments: normalizedDevelopments,

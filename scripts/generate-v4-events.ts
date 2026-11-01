@@ -9,6 +9,7 @@ import {
 } from '../packages/v4/generated.js';
 import {
   PHASE2_FAMILY_BRIEFS,
+  PHASE3_FAMILY_BRIEFS,
   generatePack,
   type GenerationBrief,
 } from '../packages/v4/content-author/index.js';
@@ -151,6 +152,7 @@ const legacyBriefs: Record<string, Omit<GeneratedPack, 'nodes'>> = {
 const briefs: Record<string, GenerationBrief> = {
   ...legacyBriefs,
   ...Object.fromEntries(PHASE2_FAMILY_BRIEFS.map((brief) => [brief.id, brief])),
+  ...Object.fromEntries(PHASE3_FAMILY_BRIEFS.map((brief) => [brief.id, brief])),
 };
 
 const family = process.argv[2];
@@ -202,7 +204,8 @@ if ('nodeBriefs' in brief) {
       outcomes: result.pack.nodes.reduce((sum, node) => sum + node.outcomes.length, 0),
       narrations: result.pack.nodes.reduce(
         (sum, node) =>
-          sum + node.outcomes.reduce((inner, outcome) => inner + (outcome.narration?.length ?? 0), 0),
+          sum +
+          node.outcomes.reduce((inner, outcome) => inner + (outcome.narration?.length ?? 0), 0),
         0,
       ),
       tokens: result.successTokens,

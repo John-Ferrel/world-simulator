@@ -1,0 +1,723 @@
+{
+  "id": "vienna-wartime-homefront",
+  "title": "战时的家书、配给与空位",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 60
+  },
+  "tags": [
+    "war",
+    "homefront",
+    "family",
+    "ration",
+    "separation"
+  ],
+  "baseRate": 0.24,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 60
+    },
+    {
+      "kind": "pressure",
+      "key": "war_supply_stress",
+      "min": 0.2
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-wartime-homefront.field-letter",
+      "title": "前线的信与厨房里的回信",
+      "weight": 1,
+      "rate": 0.06,
+      "conditions": [
+        {
+          "kind": "pressure",
+          "key": "war_supply_stress",
+          "min": 0.2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 55
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "send-sugar-and-soles",
+          "weight": 1,
+          "text": "{subject}把罐底最后两勺糖倒进纸包，又把一双旧鞋的皮底割下来垫进鞋垫，塞进邮包。煤筐里只剩碎屑，{partner}没有说话，只把炉门关小。一星期后回信到了，说鞋垫合脚，糖分给了同班的两个人。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "寄包裹的邮资和包扎用布"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "糖和面包皮寄去了前线"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.05,
+              "affection": 0.05,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "一起在昏暗厨房里包完这个包裹"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "send-sugar-and-soles",
+              "text": "邮局的秤盘晃了晃，{subject}盯着指针，怕超重再加一克朗。回到家，{partner}把炉子调到最小，说这个月少烧两铲煤也过得去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "send-sugar-and-soles",
+              "text": "包鞋垫的布是从旧衬衣上撕的，针脚歪歪扭扭。{partner}把信折好夹进日历，说等下次发薪再寄一包。厨房里飘着糖罐空了以后的铁皮味。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wait-for-payday",
+          "weight": 1,
+          "text": "{subject}把信压进抽屉最里头，打算等发薪日再回。可那一周面包涨了四赫勒，{partner}从抽屉找针线时翻出信纸，读完只说了一句：先回几个字也好。{subject}当晚在厨房桌上写了半页，字迹被灯油熏得发灰。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "迟迟没有回信带来的心口发闷"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": -0.03,
+              "affection": 0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "为回信早晚起了几句低声争执"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wait-for-payday",
+              "text": "抽屉合上时发出干涩的一响。{subject}数了数口袋里的铜币，七赫勒，连一张邮票都紧。{partner}把面包切成更薄的片，刀在案板上顿了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wait-for-payday",
+              "text": "夜里煤气灯芯短了一截，{subject}就着那点光写字，写到“鞋”字停住，因为家里也没有多余的。{partner}端来一杯温水，放在桌角，没有催。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "parish-shoe-drive",
+          "weight": 1,
+          "text": "{subject}去教区办事处问能否替前线士兵募鞋。管事的修士翻了翻登记簿，说可以放在教堂门厅，但得有人看着。{subject}和{partner}轮流守了两个下午，收下三双旧鞋和一堆鞋带，也听了一耳朵抱怨配给的话。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.04,
+              "affection": 0.03,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0,
+              "reason": "轮流去教堂门厅守募鞋桌"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "募到旧鞋后心里松了一点"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "parish-shoe-drive",
+              "text": "教堂门厅冷得厉害，{subject}把收来的鞋按大小排开，鞋底的泥在石板上蹭出灰印。一个老妇放下鞋就走，嘴里嘟囔着自家儿子也没鞋穿。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "parish-shoe-drive",
+              "text": "修士给了半截蜡烛照桌子。{partner}把鞋带一根根理齐，说这些散东西到了前线也是好的。募箱里除了鞋，还落进几枚十赫勒的硬币。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-wartime-homefront.ration-card",
+      "title": "配给卡上的一格",
+      "weight": 1,
+      "rate": 0.06,
+      "conditions": [
+        {
+          "kind": "pressure",
+          "key": "war_supply_stress",
+          "min": 0.35
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "stand-in-line",
+          "weight": 1,
+          "text": "{subject}在面包店门口排到腿发麻，轮到时店员把面包往秤上一搁，又拿回半块，说今天只够这个数。配给卡上再划一格，纸面起了毛边。{neighbor}在后面叹气，说自家孩子今早只喝了稀汤。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "排到的不足额面包"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "在冷风里站了太久"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "一起在队伍里低声抱怨配给"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stand-in-line",
+              "text": "面包店门上的玻璃蒙着水汽，{subject}把手缩进袖口。轮到时店员连头都没抬，只在卡上划了一道。那半块面包用旧报纸包着，还烫手。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stand-in-line",
+              "text": "队伍拐过街角时，{neighbor}从后面递来一小撮盐，说拿回去撒在汤里。{subject}接过来，没道谢，只把配给卡攥得更紧，纸边硌着掌心。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "borrow-for-black-market",
+          "weight": 1,
+          "text": "{subject}向{neighbor}借了六克朗，绕到巷子深处敲开一扇门。一小袋面粉要价五克朗，手指捻起来还有潮气。回家路上，{subject}把袋子贴在胸口，怕人看见，也怕自己闻见那股生面粉味忍不住抓一把。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "黑市面粉的价钱和向邻居借的债"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "黑市买回的一小袋面粉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0,
+              "obligation": 0.06,
+              "fear": 0,
+              "respect": 0,
+              "reason": "邻居借出了一笔不小的钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "borrow-for-black-market",
+              "text": "那扇门开了一条缝，一只手伸出来，钱进去，面粉出来。{subject}数了两遍找零，三个铜赫勒，攥在汗手里。巷口的巡警看了一眼，没问。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "borrow-for-black-market",
+              "text": "{neighbor}从围裙内兜里摸出几张揉皱的票子，说月底前还就行。{subject}点头，把面粉袋塞进外套，走回家时觉得衣襟比平时沉了一倍。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "turnips-and-old-bread",
+          "weight": 1,
+          "text": "{subject}把配给卡收回口袋，没再等面粉。回家路上买了两根萝卜，十赫勒，又从篮底翻出前天的干面包。锅里的汤煮开时，{neighbor}在门口探头，说这味道闻着倒像从前。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "萝卜和干面包煮成的汤"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "买萝卜的零钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "把缺面粉的一顿对付过去了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "turnips-and-old-bread",
+              "text": "萝卜切成薄片，干面包掰碎了沉在锅底。{subject}拿勺子搅了搅，汤色发白，盐罐里抖出最后一点。{neighbor}倚着门框，没进来，只说了一句“总比空锅强”。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "turnips-and-old-bread",
+              "text": "配给卡上那格面粉还空着，{subject}就把它叠好收进抽屉。锅盖边冒出的热气把窗玻璃糊白，屋里总算有点暖意。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-wartime-homefront.war-work",
+      "title": "工厂里的空缺与女工",
+      "weight": 1,
+      "rate": 0.06,
+      "conditions": [
+        {
+          "kind": "pressure",
+          "key": "war_supply_stress",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 55
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "factory"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "take-heavier-machines",
+          "weight": 1,
+          "text": "{subject}在{employer}钉在墙上的新工序表前站了一会儿，还是走去了那台轰鸣更响的冲床。工钱按周结算，多了两克朗，可下班时手指抖得扣不上外套扣子。工头记下了名字，说下批军需还排这条线。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "接受重工序后多出的周薪"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "冲床的震动和长时间站立"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "hand-tremor",
+              "add": true,
+              "reason": "连续操作重机器后手指发麻发抖"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "take-heavier-machines",
+              "text": "冲床每落一下，脚下的水泥地就跟着一颤。{subject}把袖口卷到肘上，机器边放着半杯凉水，一直没空喝。{employer}隔着玻璃看了一眼，没说话。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "take-heavier-machines",
+              "text": "下班铃响时，{subject}在更衣钩前站了半天，才把扣子一颗颗扣上。多出来的两克朗用纸包好，塞进内兜，走路时贴着肋骨。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "demand-equal-pay",
+          "weight": 1,
+          "text": "{subject}和几个工友趁午休把话挑明：一样的机器、一样的工时，工钱得按岗位算。{employer}起初只说要按章程办，后来见几个人都站着不走，才松口补上一克朗半。车间里没人大声欢呼，只是下午的机器声听起来变了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.5,
+              "reason": "工友一起争取到的岗位补贴"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.03,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "午休时当面要求补足工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "说出口的话没有白费"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "demand-equal-pay",
+              "text": "午休的钟敲过，{subject}没回长凳，站在工序表前面。{employer}翻着考勤簿，纸页掀得很快。最后补的那一克朗半写在纸条上，钉在表旁边。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "demand-equal-pay",
+              "text": "工友里有人一直没开口，只在{subject}说完后往前挪了半步。{employer}看了看这一小群人，把铅笔夹回耳后，说下不为例，工钱按岗位补。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cut-shifts-for-family",
+          "weight": 1,
+          "text": "{subject}向{employer}提出少上两班，家里老人夜里要人照看。工头皱了皱眉，把排班表上{subject}的名字挪到白班末尾，工钱按班头减了。回家路上，{subject}算着少的那些克朗，脚步却比往常快。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "减少班次后少拿的工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.03,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "工头同意调整排班"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "晚上能在家里照看老人"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cut-shifts-for-family",
+              "text": "排班表钉在车间门口，{subject}的名字被铅笔划了一道，又写在白班那栏。{employer}把铅笔夹回耳后，说少了班就少了钱，别到时候再来找。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cut-shifts-for-family",
+              "text": "傍晚回家时，天还没黑透，{subject}拐进巷口买了半升牛奶。老人坐在窗边等，炉子上温着水。少掉的工钱在口袋里空出一块，但屋里有人声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-wartime-homefront.return-or-absence",
+      "title": "门口的空位",
+      "weight": 1,
+      "rate": 0.06,
+      "conditions": [
+        {
+          "kind": "pressure",
+          "key": "war_supply_stress",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "queue-at-station",
+          "weight": 1,
+          "text": "{subject}和{partner}天没亮就去车站排队，队伍里全是拿纸条的人。办事处窗口的{official}翻了半天名册，只找到一行模糊的记录，说再等通知。{partner}把旧箱子又拖回床底，箱扣碰着地板，响了一声。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "名册上没有确切消息"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.04,
+              "affection": 0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "一起在车站排了一整天队"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "queue-at-station",
+              "text": "车站大厅的钟走得很慢，{subject}数着前面还剩几个人。窗口后的{official}每翻一页名册就舔一下手指，纸页声在队伍里传得很远。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "queue-at-station",
+              "text": "{partner}把纸条攥成小团，又展开抹平。轮到时{official}只抬头看了一眼，说名单还在核。走出车站，两人都没提箱子的事，只是脚步慢了些。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hold-the-absent-job",
+          "weight": 1,
+          "text": "{subject}去工厂替缺席的人保住工位，答应接下双份的班。车间里那台机器空着，工具还挂在钩上，没人动。{subject}把自己的饭盒放在旁边，干到天黑，回家时手里多了一张记工条，肩背酸得直不起来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "替缺席者顶班多挣的工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "双份班次带来的疲乏"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.04,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "为家里多扛了一份工"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hold-the-absent-job",
+              "text": "空位旁的钩子上还挂着别人的围裙，{subject}没动它，只把自己的饭盒放在机器底座。工头在记工条上按了个章，墨迹蹭到手指上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hold-the-absent-job",
+              "text": "天黑得早，车间里只剩几盏灯。{subject}做完最后一组活，把工具一件件归回原位，才拎着饭盒往回走。肩上的酸劲到巷口也没散。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "register-missing-household",
+          "weight": 1,
+          "text": "{subject}和{partner}把旧箱子收进柜顶，锁扣扣上。第二天去办事处按失踪者家属登记，{official}要了地址和姓名，写在一张黄表上，说补助不多，按月领。回来路上，{partner}买了两块便宜蜡烛，说晚上点着屋里不空。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "失踪者家属按月领取的第一笔补助"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.05,
+              "affection": 0.04,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0,
+              "reason": "一起面对登记表上的空白"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在表格上写下失踪二字"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "register-missing-household",
+              "text": "办事处屋里排着长凳，{official}把黄表推过来，指着空栏说这里写姓名，这里写最后消息。{subject}一笔一画写下去，笔尖在“失踪”两个字上停了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "register-missing-household",
+              "text": "柜顶的箱子落了灰，{partner}拿抹布擦了一遍才放上去。登记完回来的路上，蜡烛用报纸裹着，{partner}说省着点，能点好些天。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

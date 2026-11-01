@@ -92,14 +92,14 @@ const crisis: ScenarioProfile = {
   label: '严重粮食与公共卫生危机',
   parametersForYear: () => ({
     ...MACRO_DEFAULT_PARAMETERS,
-    foodSupply: 0.3,
-    sanitation: 0.32,
-    healthcare: 0.18,
-    stability: 0.42,
-    epidemicCholera: 0.32,
-    epidemicTyphus: 0.18,
-    epidemicTuberculosis: 0.42,
-    migrationPressure: 0.35,
+    foodSupply: 0.5,
+    sanitation: 0.45,
+    healthcare: 0.3,
+    stability: 0.52,
+    epidemicCholera: 0.12,
+    epidemicTyphus: 0.06,
+    epidemicTuberculosis: 0.32,
+    migrationPressure: 0.22,
   }),
 };
 

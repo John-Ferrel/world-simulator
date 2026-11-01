@@ -55,6 +55,7 @@ import {
   estimateAnnualRisks,
   infectionNameForAge,
   recoveryRisk,
+  refreshNamedPopulation,
   sampleDeathCause,
   updateMacroPopulation,
   type DeathCause,
@@ -399,6 +400,7 @@ export function advanceV4Year(
     runScenes(context, definitions, target, resolvedCounts, false);
   }
   reapVitalityZero(context, target);
+  if (draft.macro) draft.macro = refreshNamedPopulation(draft.macro, draft);
   draft.date = target;
 
   diagnostics.personsConsidered = Object.keys(draft.persons).filter(

@@ -53,7 +53,7 @@ export function macroContentGaps(state: MacroState, packs: GeneratedPack[]): Mac
   }
   const food = 1 - max('foodSupply');
   if (food >= 0.25) {
-    const matches = hasTag(packs, ['famine', 'hunger', 'ration', 'food_shortage']);
+    const matches = hasTag(packs, ['famine', 'hunger', 'food_shortage']);
     if (matches.length === 0)
       gaps.push({
         kind: 'famine',

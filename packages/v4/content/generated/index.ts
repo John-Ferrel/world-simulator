@@ -19,6 +19,7 @@ import printshop from './vienna-printshop-daily.json';
 import school from './vienna-school-childhood.json';
 import tenement from './vienna-tenement-neighbors.json';
 import womenHousework from './vienna-women-housework.json';
+import wartimeHomefront from './vienna-wartime-homefront.json';
 import youthThreshold from './vienna-youth-threshold.json';
 import {
   compileGeneratedPack,
@@ -53,6 +54,7 @@ export const GENERATED_PACKS = [
   marketDebt,
   womenHousework,
   elderBereavement,
+  wartimeHomefront,
 ] as unknown as GeneratedPack[];
 
 export const GENERATED_SCENES = GENERATED_PACKS.flatMap((pack) => compileGeneratedPack(pack));

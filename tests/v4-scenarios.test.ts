@@ -169,6 +169,10 @@ describe('Phase 3 historical scenarios', () => {
     const w = structuredClone(VIENNA_1912_SEED);
     const macro = scenarioWorldMacro(w, 'historical-vienna-1912-1920', { year: 1916, month: 1 });
     const gaps = macroContentGaps(macro, GENERATED_PACKS);
-    expect(gaps.some((gap) => gap.kind === 'war')).toBe(true);
+    expect(gaps.some((gap) => gap.kind === 'war')).toBe(false);
+    const crisis = scenarioWorldMacro(w, 'food-and-sanitation-crisis', { year: 1916, month: 1 });
+    expect(macroContentGaps(crisis, GENERATED_PACKS).some((gap) => gap.kind === 'famine')).toBe(
+      true,
+    );
   });
 });

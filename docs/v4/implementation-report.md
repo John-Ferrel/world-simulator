@@ -4,7 +4,7 @@
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
 
-> 2026-11-01 Phase 2 更新：内容工厂扩展到 22 族 / 88 场景 / 423 叙事变体；Birth Contract 2.0 已持久化并由 engine 消费；观察 API 改为分页投影；全量 353 项通过、构建和浏览器通过。最新验收见 [phase-2-report.md](phase-2-report.md)，Phase 1 证据见 [content-runtime-report.md](content-runtime-report.md)。本页下方旧数字（45 项测试、14 族）只在明确标注处保留为历史快照。
+> 2026-11-01 Phase 3 更新：已加入宏观状态与人口账本、年龄/原因别统计引擎、真实 LLM Macro Director、事件池政策、统一死亡裁决和 macro-driven 战时内容族。Phase 3 验收见 [phase-3-report.md](phase-3-report.md)；Phase 2 见 [phase-2-report.md](phase-2-report.md)。全量 369 项通过，构建和浏览器通过。本页下方旧数字只在明确标注处保留为历史快照。
 
 > 复盘与偏差分析见 [phase-2-retrospective.md](phase-2-retrospective.md)。Phase 2 的工程交付通过测试，但人口/历史模型未成立；该文记录了原因与 Phase 3 方案。
 
@@ -31,6 +31,7 @@
 | History Director     | 未完成           | 只有内容包中的公开时代记录和 pressures                                                                                                                                       |
 | 内容工厂             | 完成（离线）     | 22 族 / 88 场景 / 239 outcome / 423 narration；8 个新族真实模型生成；验证后落盘；22/22 族审计触发                                                                            |
 | 读取路径与规模       | 部分完成         | 世界摘要/人物 keyset 分页/单人详情/搜索；1k/5k PostgreSQL 实测；未做 20k 或并发 API 压测                                                                                     |
+| 宏观多地区/全球      | 未完成           | Director/统计只验证维也纳；聚合人口无具名化；不能宣称全球历史模拟                                                                                                            |
 | 内容覆盖审计         | 完成             | 80 年：3,657 事件、279 focal、358 causal、75 出生；零事件年份 0；未解析 token 0；顶层场景占比 7.9%                                                                           |
 | Birth Contract 写入  | 完成             | `birth-contract-store.ts` 事务锁 + revision；`compiledAt` 防止重复应用；worker 已切到完整 contract                                                                           |
 | 生产部署             | 未完成           | 仅本地 `pnpm dev`；Compose 未在 v4 实测                                                                                                                                      |

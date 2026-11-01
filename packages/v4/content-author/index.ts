@@ -1,3 +1,4 @@
+export { PHASE3_FAMILY_BRIEFS } from './phase3-briefs.js';
 export {
   PHASE2_FAMILY_BRIEFS,
   briefById,

@@ -30,11 +30,11 @@ const PHASE2_PACK_IDS = new Set([
 
 describe('generated content factory packs', () => {
   it('compiles strict JSON packs with narration variants', () => {
-    expect(GENERATED_PACKS.length).toBe(22);
-    expect(GENERATED_SCENES.length).toBe(88);
+    expect(GENERATED_PACKS.length).toBe(23);
+    expect(GENERATED_SCENES.length).toBe(92);
     expect(generatedPackErrors()).toEqual([]);
     expect(GENERATED_SCENES.reduce((sum, scene) => sum + (scene.narration?.length ?? 0), 0)).toBe(
-      423,
+      447,
     );
     expect(new Set(GENERATED_SCENES.map((scene) => scene.id)).size).toBe(GENERATED_SCENES.length);
     for (const pack of GENERATED_PACKS) {

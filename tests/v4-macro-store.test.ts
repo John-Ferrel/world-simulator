@@ -23,7 +23,7 @@ const worldId = `macro-store-test-${Date.now().toString(36)}`;
 const proposal: MacroProposal = {
   version: 1,
   regionId: 'region-lower-austria',
-  effectiveFrom: { year: 1917, month: 2 },
+  effectiveFrom: { year: 1917, month: 1 },
   durationMonths: 12,
   summary: 'test food shortage',
   confidence: 0.7,

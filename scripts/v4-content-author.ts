@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import {
   PHASE2_FAMILY_BRIEFS,
+  PHASE3_FAMILY_BRIEFS,
   auditPacks,
   briefById,
   describeBrief,
@@ -15,6 +16,7 @@ import { validateGeneratedPack, type GeneratedPack } from '../packages/v4/genera
 import type { MacroState } from '../packages/v4/macro.js';
 
 const packDir = resolve('packages/v4/content/generated');
+const allBriefs = [...PHASE2_FAMILY_BRIEFS, ...PHASE3_FAMILY_BRIEFS];
 const auditFile = resolve('docs/v4/content-audit.json');
 
 function readPacks(): GeneratedPack[] {
@@ -55,9 +57,7 @@ function report() {
         generatedDirectory: packDir,
         auditFile: existsSync(auditFile) ? auditFile : null,
         coverage,
-        ungeneratedBriefs: PHASE2_FAMILY_BRIEFS.filter((brief) => !present.has(brief.id)).map(
-          describeBrief,
-        ),
+        ungeneratedBriefs: allBriefs.filter((brief) => !present.has(brief.id)).map(describeBrief),
         audit,
         macroContentGaps: macro ? macroContentGaps(macro, packs) : [],
       },
@@ -68,14 +68,14 @@ function report() {
 }
 
 async function generate(id: string, force: boolean) {
-  const brief = briefById(id);
+  const brief = allBriefs.find((candidate) => candidate.id === id);
   if (!brief) {
     console.error(
       JSON.stringify({
         status: 'failed',
         reason: 'unknown family',
         family: id,
-        available: PHASE2_FAMILY_BRIEFS.map((candidate) => candidate.id),
+        available: allBriefs.map((candidate) => candidate.id),
       }),
     );
     process.exitCode = 1;
@@ -188,20 +188,20 @@ if (generateIndex >= 0) {
   await generate(id, args.includes('--force'));
 } else if (generateMissing) {
   const present = new Set(readPacks().map((pack) => pack.id));
-  const missing = PHASE2_FAMILY_BRIEFS.find((brief) => !present.has(brief.id));
+  const missing = allBriefs.find((brief) => !present.has(brief.id));
   if (!missing) {
     console.log(
       JSON.stringify({
         status: 'complete',
-        reason: 'all Phase-2 briefs already have generated packs',
-        families: PHASE2_FAMILY_BRIEFS.map((brief) => brief.id),
+        reason: 'all authored briefs already have generated packs',
+        families: allBriefs.map((brief) => brief.id),
       }),
     );
   } else {
     await generate(missing.id, false);
   }
 } else if (args.includes('--list-briefs')) {
-  console.log(JSON.stringify(PHASE2_FAMILY_BRIEFS.map(describeBrief), null, 2));
+  console.log(JSON.stringify(allBriefs.map(describeBrief), null, 2));
 } else {
   report();
 }
