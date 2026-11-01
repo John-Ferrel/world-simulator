@@ -1,0 +1,106 @@
+"""Reviewed historical anchors; duration, severity and effects are simulation parameters, never factual estimates."""
+import json,pathlib
+S='https://history.state.gov/milestones/'
+rows=[]
+def add(id,date,kind,title,countries='',duration=12,severity=.5,url=None,center=None,radius=None,end=None):
+ row=dict(id=id,date=date,precision='month',kind=kind,title=title,countries=countries.split(),duration=duration,severity=severity,url=url)
+ if center:row['center']=dict(lon=center[0],lat=center[1]);row['radiusKm']=radius
+ if end:row['endDate']=end
+ rows.append(row)
+a=lambda *args,**kw:add(*args,**kw)
+a('boxer-1900','1900-06','war','义和团运动与八国联军侵华，华北陷入战乱','CHN',15,.7,S+'1899-1913/hay-and-china', (116.4,39.9),700)
+a('philippine-war','1900-01','war','菲律宾战争仍在持续','PHL',30,.65,S+'1899-1913/war')
+a('russo-japanese-war','1904-02','war','日俄战争爆发','CHN JPN RUS KOR',19,.7,S+'1899-1913/portsmouth-treaty',(123,40),1800)
+a('chinese-revolution','1911-10','reform','辛亥革命改变中国的政治秩序','CHN',18,.65,S+'1899-1913/chinese-rev')
+a('wwi','1914-07','war','第一次世界大战爆发','FRA DEU GBR RUS AUT HUN BEL SRB TUR ITA POL',52,.85,'https://www.nam.ac.uk/explore/first-world-war',end='1918-11')
+a('gallipoli','1915-04','war','加里波利战役展开','TUR',9,.8,'https://www.nam.ac.uk/explore/first-world-war',(26.4,40.2),180)
+a('somme','1916-07','war','索姆河战役开始','FRA BEL',5,.9,'https://www.theworldwar.org/learn/about-wwi/key-dates',(2.6,50),180)
+a('russia-revolution','1917-11','reform','俄国十月革命发生','RUS UKR BLR',24,.8,'https://www.npg.org.uk/whatson/firstworldwarcentenary/chronology')
+a('wwi-us-entry','1917-04','war','美国参加第一次世界大战','USA',19,.4,S+'1914-1920/wwi')
+a('influenza-1918','1918-03','epidemic','1918 年流感大流行扩散','',26,.85,'https://archive.cdc.gov/www_cdc_gov/flu/pandemic-resources/1918-pandemic-h1n1.html')
+a('armistice-1918','1918-11','peace','第一次世界大战停战','FRA DEU GBR RUS AUT HUN BEL SRB TUR ITA POL USA',18,.7,'https://www.theworldwar.org/learn/about-wwi/key-dates')
+a('versailles','1919-06','reform','巴黎和会与凡尔赛条约','DEU FRA GBR POL AUT HUN',30,.6,S+'1914-1920/paris-peace')
+a('league-nations','1920-01','peace','国际联盟成立','',24,.35,S+'1914-1920/league')
+a('washington-conference','1921-11','peace','华盛顿会议讨论军备与太平洋秩序','USA JPN GBR CHN FRA',18,.3,S+'1921-1936/naval-conference')
+a('depression','1929-10','crisis','大萧条开始冲击就业、贸易和家庭生计','',120,.9,'https://www.federalreservehistory.org/essays/great-depression')
+a('manchuria','1931-09','war','九一八事变后中国东北战事扩大','CHN',70,.8,S+'1937-1945/pearl-harbor',(124,44),1100)
+a('china-war-1937','1937-07','war','全面抗日战争爆发','CHN',97,.9,S+'1937-1945/pearl-harbor',end='1945-08')
+a('wwii-europe','1939-09','war','第二次世界大战欧洲战事爆发','POL DEU FRA GBR CZE SVK AUT NOR BEL NLD DNK GRC SRB HRV',68,.9,'https://encyclopedia.ushmm.org/content/en/article/world-war-ii-in-europe',end='1945-05')
+a('soviet-war','1941-06','war','德国入侵苏联，东线战争扩大','RUS UKR BLR LTU LVA EST MDA',47,.95,S+'1937-1945/us-soviet',end='1945-05')
+a('pacific-war','1941-12','war','太平洋战争扩大','JPN PHL IDN MYS MMR THA PNG SLB USA',44,.8,S+'1937-1945/pearl-harbor',end='1945-08')
+a('d-day','1944-06','war','诺曼底登陆','FRA',3,.85,'https://www.iwm.org.uk/history/the-10-things-you-need-to-know-about-d-day',(-.9,49.3),180)
+a('hiroshima','1945-08','earthquake','广岛遭受原子弹轰炸','JPN',24,.95,'https://hpmmuseum.jp/?lang=eng',(132.45,34.39),65)
+a('nagasaki','1945-08','earthquake','长崎遭受原子弹轰炸','JPN',24,.95,'https://nagasakipeace.jp/en/',(129.87,32.75),65)
+a('un-founded','1945-10','peace','联合国成立','',36,.5,'https://www.un.org/about-us/history-of-the-un')
+a('japan-reconstruction','1945-09','reform','日本进入战后占领与重建时期','JPN',84,.6,S+'1945-1952/japan-reconstruction')
+a('india-partition','1947-08','displacement','英属印度分治，大量居民迁移','IND PAK BGD',30,.85,'https://www.unhcr.org/sites/default/files/legacy-pdf/3ebf9bab0.pdf')
+a('marshall-plan','1948-04','reform','马歇尔计划开始实施','FRA DEU GBR ITA NLD BEL AUT GRC',48,.55,S+'1945-1952/marshall-plan')
+a('arab-israeli-1948','1948-05','war','第一次中东战争爆发','ISR PSX EGY JOR SYR LBN',10,.8,S+'1945-1952/arab-israeli-war')
+a('berlin-blockade','1948-06','crisis','柏林封锁与空运','DEU',11,.7,S+'1945-1952/berlin-airlift',(13.4,52.5),120)
+a('china-1949','1949-10','reform','中华人民共和国成立','CHN',36,.65,S+'1945-1952/chinese-rev')
+a('korean-war','1950-06','war','朝鲜战争爆发','KOR PRK',37,.9,S+'1945-1952/korean-war',end='1953-07')
+a('korea-armistice','1953-07','peace','朝鲜停战协定签署','KOR PRK',24,.6,S+'1945-1952/korean-war')
+a('dien-bien-phu','1954-05','war','奠边府战役与印度支那战争转折','VNM LAO KHM',6,.7,S+'1953-1960/dien-bien-phu')
+a('bandung','1955-04','reform','万隆会议召开','IDN IND CHN EGY',24,.3,S+'1953-1960/bandung-conf')
+a('suez','1956-10','war','苏伊士运河危机','EGY ISR',5,.7,S+'1953-1960/suez')
+a('sputnik','1957-10','innovation','第一颗人造地球卫星发射','',60,.45,'https://www.nasa.gov/history/65-years-ago-sputnik-ushers-in-the-space-age/')
+a('chile-quake-1960','1960-05','earthquake','智利瓦尔迪维亚大地震','CHL',24,.9,'https://www.usgs.gov/programs/earthquake-hazards/science/20-largest-earthquakes-world-1900',(-73.4,-38.14),700)
+a('africa-independence','1960-12','reform','联合国通过殖民地独立宣言，去殖民化浪潮持续','DZA COG COD SEN MLI NER TCD NGA SOM MDG CMR GAB CIV BFA BEN TGO',60,.6,'https://www.un.org/en/global-issues/decolonization/')
+a('berlin-wall','1961-08','displacement','柏林墙修建，城市与家庭受到分隔','DEU',36,.65,S+'1953-1960/berlin-crises',(13.4,52.5),120)
+a('cuban-crisis','1962-10','crisis','古巴导弹危机','CUB USA RUS',2,.75,S+'1961-1968/cuban-missile-crisis')
+a('alaska-quake','1964-03','earthquake','阿拉斯加大地震','USA',18,.8,'https://www.usgs.gov/programs/earthquake-hazards/science/20-largest-earthquakes-world-1900',(-147.34,60.91),800)
+a('vietnam-escalation','1964-08','war','越南战争升级','VNM LAO KHM',128,.85,S+'1961-1968/gulf-of-tonkin',end='1975-04')
+a('six-day-war','1967-06','war','第三次中东战争爆发','ISR PSX EGY SYR JOR',3,.75,S+'1961-1968/arab-israeli-war-1967')
+a('apollo11','1969-07','innovation','阿波罗 11 号完成人类首次登月','',48,.4,'https://www.nasa.gov/mission/apollo-11/')
+a('bangladesh','1971-03','war','孟加拉国独立战争与难民危机','BGD PAK IND',10,.85,S+'1969-1976/south-asia')
+a('china-us-1972','1972-02','reform','尼克松访华，中美关系转向缓和','CHN USA',36,.4,S+'1969-1976/rapprochement-china')
+a('oil-shock','1973-10','crisis','石油危机引发能源与物价冲击','',18,.8,'https://www.federalreservehistory.org/essays/oil-shock-of-1973-74')
+a('middleeast-1973','1973-10','war','第四次中东战争爆发','ISR EGY SYR PSX',4,.8,S+'1969-1976/arab-israeli-war-1973')
+a('cambodia','1975-04','war','柬埔寨进入红色高棉统治时期','KHM',45,.95,'https://peacekeeping.un.org/sites/default/files/past/unamicbackgr.html')
+a('afghanistan-1979','1979-12','war','苏联入侵阿富汗','AFG',110,.85,S+'1977-1980/soviet-invasion-afghanistan',end='1989-02')
+a('iran-hostage','1979-11','crisis','伊朗人质危机','IRN USA',15,.65,'https://www.archives.gov/research/foreign-policy/iran-hostage-crisis')
+a('falklands','1982-04','war','马尔维纳斯群岛战争爆发','FLK',3,.7,S+'1981-1988/south-atlantic')
+a('berlin-wall-fall','1989-11','reform','柏林墙开放，东欧政治局势转变','DEU POL HUN CZE SVK ROU BGR',36,.6,S+'1989-1992/fall-of-communism')
+a('gulf-war','1991-01','war','海湾战争爆发','IRQ KWT',3,.85,S+'1989-1992/gulf-war')
+a('soviet-collapse','1991-12','crisis','苏联解体，社会经济转型开始','RUS UKR BLR LTU LVA EST MDA GEO ARM AZE KAZ UZB TKM KGZ TJK',60,.75,S+'1989-1992/collapse-soviet-union')
+a('yugoslavia','1991-06','war','南斯拉夫解体与地区战争','SRB HRV BIH SVN MKD KOS',54,.85,S+'1989-1992/breakup-yugoslavia')
+a('rwanda','1994-04','war','卢旺达发生针对图西族的种族灭绝','RWA',4,.99,'https://www.un.org/en/preventgenocide/rwanda/historical-background.shtml')
+a('indian-ocean-tsunami','2004-12','earthquake','印度洋地震与海啸','IDN LKA IND THA',30,.95,'https://www.usgs.gov/programs/earthquake-hazards/science/20-largest-earthquakes-world-1900',(95.98,3.3),2500)
+a('financial-crisis','2008-09','crisis','全球金融危机冲击就业与信贷','',36,.85,'https://www.federalreservehistory.org/essays/great-recession-and-its-aftermath')
+a('chile-quake-2010','2010-02','earthquake','智利马乌莱大地震','CHL',18,.8,'https://www.usgs.gov/programs/earthquake-hazards/science/20-largest-earthquakes-world-1900',(-72.9,-36.12),500)
+a('tohoku','2011-03','earthquake','日本东北地震与海啸','JPN',30,.95,'https://www.usgs.gov/programs/earthquake-hazards/science/20-largest-earthquakes-world-1900',(142.37,38.3),600)
+a('covid','2020-03','epidemic','世界卫生组织将 COVID-19 定性为大流行','',30,.7,'https://www.who.int/europe/emergencies/situations/COVID-19')
+a('pakistan-floods','2022-08','flood','巴基斯坦遭受严重洪灾','PAK',12,.8,'https://www.unicef.org/press-releases/more-three-million-children-risk-devastating-floods-hit-pakistan')
+a('turkiye-syria-quake','2023-02','earthquake','土耳其与叙利亚发生严重地震','TUR SYR',24,.9,'https://www.who.int/europe/emergencies/situations/turkiye-and-syria-earthquakes',(37,37.1),500)
+# Public-health and modern humanitarian history broaden the event grammar beyond warfare.
+health='https://www.who.int/campaigns/75-years-of-improving-public-health/milestones/'
+a('penicillin-discovery','1928-01','innovation','青霉素被发现，抗生素研究开始发展','',60,.4,health)
+a('penicillin-clinical','1941-01','innovation','青霉素进入临床应用阶段','',84,.5,health)
+a('who-founded','1948-04','reform','世界卫生组织成立','',60,.5,health)
+a('influenza-1957','1957-01','epidemic','1957 年流感大流行开始','',24,.6,'https://www.cdc.gov/mmwr/preview/mmwrhtml/su6004a16.htm')
+a('influenza-1968','1968-07','epidemic','1968 年流感大流行开始','',24,.55,'https://www.cdc.gov/mmwr/preview/mmwrhtml/su6004a16.htm')
+a('alma-ata','1978-09','reform','阿拉木图宣言提出初级卫生保健目标','',72,.5,health)
+a('smallpox-eradication','1980-05','innovation','世界卫生大会确认天花已被根除','',60,.6,'https://www.cdc.gov/smallpox/about/history.html')
+a('polio-programme','1988-01','reform','全球消除脊髓灰质炎行动启动','',120,.55,health)
+a('millennium-development','2000-09','reform','联合国千年发展目标推动减贫与公共健康合作','',120,.45,health)
+a('ihr-2005','2005-05','reform','修订后的国际卫生条例加强疫情通报与应对合作','',60,.5,health)
+a('influenza-2009','2009-04','epidemic','2009 年 H1N1 流感大流行','',20,.5,'https://www.cdc.gov/mmwr/preview/mmwrhtml/su6004a16.htm')
+a('syria-war','2011-03','war','叙利亚动荡升级为长期冲突','SYR',120,.85,'https://digitallibrary.un.org/record/4025047/files/1386775EN.pdf')
+a('ukraine-invasion','2022-02','war','俄罗斯全面入侵乌克兰','UKR',36,.9,'https://ukraine.un.org/en/173250-statement-secretary-general-%E2%80%93-ukraine')
+a('gaza-2023','2023-10','war','哈马斯袭击以色列后，加沙与以色列冲突升级','ISR PSX',24,.95,'https://www.ochaopt.org/content/escalation-gaza-strip-and-israel-flash-update-1')
+for row in rows:
+ if row['id'] in ('penicillin-discovery','penicillin-clinical','polio-programme','influenza-1957'):row['precision']='year'
+
+# Atomic attacks are human-caused disasters, never earthquakes.
+for row in rows:
+ if row['id'] in ('hiroshima','nagasaki'):row['kind']='attack'
+# Exact event timestamps and coordinates from the USGS catalogue; hazards remain simulated.
+from datetime import datetime,timezone
+known=[r for r in rows if r['kind']=='earthquake']
+for f in json.load(open('.data/assets/historic-earthquakes.geojson'))['features']:
+ p=f['properties'];lon,lat=f['geometry']['coordinates'][:2];date=datetime.fromtimestamp(p['time']/1000,timezone.utc).strftime('%Y-%m')
+ if any(r['date']==date for r in known):continue
+ add('usgs-'+f['id'],date,'earthquake',f"{p['mag']} 级地震：{p['place']}",'',24,min(.98,p['mag']/10),p['url'],(lon,lat),700)
+rows.sort(key=lambda r:(r['date'],r['id']))
+p=pathlib.Path('packages/world-packs/earth/history.json');p.write_text(json.dumps(rows,ensure_ascii=False,indent=2)+'\n')
+print(len(rows),'historical anchors')

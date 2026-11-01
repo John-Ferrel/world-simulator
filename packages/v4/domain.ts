@@ -1,0 +1,575 @@
+/**
+ * v4 domain contract — a person-first historical world.
+ *
+ * This is deliberately not the old `World` JSON shape. The old flat event log
+ * mixed facts, prose and state changes; v4 keeps facts, scenes and projections
+ * separate. This package can be built/tested without the old simulator.
+ */
+
+export type Id = string;
+export type WorldDate = { year: number; month: number }; // month 1..12
+export type LifeStage = 'infancy' | 'childhood' | 'adolescence' | 'adulthood' | 'elderhood';
+
+export type PersonLife = {
+  mood: number;
+  reputation: number;
+  skills: {
+    literacy: number;
+    numeracy: number;
+    craft: number;
+    social: number;
+  };
+  flags: string[];
+};
+export type Sex = 'female' | 'male' | 'intersex';
+
+export type Person = {
+  id: Id;
+  name: string;
+  ownerId?: Id;
+  sex: Sex;
+  born: WorldDate;
+  died?: WorldDate;
+  deathCause?: string;
+  locationId: Id;
+  householdId: Id;
+  parentIds: Id[];
+  guardianIds: Id[];
+  health: {
+    /** 0..1 constitutional vitality, not a visible UI stat. */
+    vitality: number;
+    conditions: string[];
+    nutrition: number;
+    lastIllness?: { name: string; since: WorldDate; severity: number };
+  };
+  traits: {
+    care: number;
+    ambition: number;
+    tradition: number;
+    openness: number;
+    conscientiousness: number;
+    extraversion: number;
+    agreeableness: number;
+    neuroticism: number;
+  };
+  education: {
+    status: 'none' | 'home' | 'primary' | 'secondary' | 'apprenticeship' | 'higher';
+    level: number;
+    placeId?: Id;
+    started?: WorldDate;
+  };
+  employment?: {
+    organizationId: Id;
+    positionId?: Id;
+    occupation: string;
+    wage: number;
+    since: WorldDate;
+    workplaceId: Id;
+  };
+  roles: string[];
+  appearance?: {
+    skin: number;
+    hair: number;
+    clothes: number;
+    doll?: Record<string, unknown>;
+  };
+  lifeContract?: {
+    originalWish: string;
+    mode: 'ordinary' | 'legendary';
+    /** Plain-language reading of the wish; never a command to the engine. */
+    interpretation?: string;
+    /** Bounded trait adjustment proposed by the reading and applied once. */
+    traitDeltas?: Partial<Person['traits']>;
+    /** Content tag for later scene eligibility, not a superpower. */
+    focus?: 'education' | 'work' | 'family' | 'faith' | 'politics' | 'health' | 'craft' | 'none';
+    /** A private boundary the child may later act around, stored as text. */
+    taboo?: string;
+    compiledBy?: string;
+    compiledAt?: WorldDate;
+    createdAt: WorldDate;
+  };
+  projectIds: Id[];
+  relationshipIds: Id[];
+  knowledgeIds: Id[];
+  /** Mutable life state used by ambient events. Optional for old saves. */
+  life?: PersonLife;
+  /** Where the person came from and which record made them named. */
+  provenance: {
+    kind: 'birth' | 'materialized_population' | 'historical_activation' | 'initial';
+    sourceId?: Id;
+  };
+};
+
+export type Household = {
+  id: Id;
+  residenceId: Id;
+  memberIds: Id[];
+  guardianIds: Id[];
+  cash: number;
+  food: number;
+  debt: number;
+  rent: number;
+  /** Monthly obligations that must be paid from cash/food. */
+  obligations: {
+    id: string;
+    kind: 'rent' | 'food' | 'school' | 'medical' | 'debt';
+    amount: number;
+  }[];
+  assets: { id: string; kind: string; value: number }[];
+  /** Modelled external income: pension, charity, room rent, fees. */
+  monthlyIncome?: { id: string; amount: number; reason: string }[];
+  sharingRules: 'pooled' | 'guardian_managed' | 'separate';
+};
+
+export type Place = {
+  id: Id;
+  name: string;
+  kind:
+    | 'home'
+    | 'school'
+    | 'factory'
+    | 'shop'
+    | 'hospital'
+    | 'church'
+    | 'cafe'
+    | 'government'
+    | 'union'
+    | 'barracks'
+    | 'street'
+    | 'other';
+  settlementId: Id;
+  regionId?: Id;
+  polityId?: Id;
+  capacity?: number;
+  ownershipOrganizationId?: Id;
+  /** Concrete behaviors a place can offer to people present here. */
+  offers: string[];
+};
+
+export type Organization = {
+  id: Id;
+  name: string;
+  kind:
+    | 'household_firm'
+    | 'factory'
+    | 'school'
+    | 'union'
+    | 'party'
+    | 'army'
+    | 'state'
+    | 'church'
+    | 'other';
+  placeId: Id;
+  memberIds: Id[];
+  positions: Id[];
+  treasury: number;
+  /** Modelled market/tax receipts per month; the external sector is explicit. */
+  monthlyRevenue?: number;
+  authorityRules: string[];
+  projects: Id[];
+  status: 'active' | 'dissolved';
+  causeIds: Id[];
+};
+
+export type Position = {
+  id: Id;
+  organizationId: Id;
+  title: string;
+  holderId?: Id;
+  authority: string[];
+  wage?: number;
+  start?: WorldDate;
+  end?: WorldDate;
+};
+
+export type Project = {
+  id: Id;
+  ownerId: Id;
+  kind: string;
+  title: string;
+  participants: { personId: Id; role: string }[];
+  placeId?: Id;
+  state: 'proposed' | 'active' | 'blocked' | 'failed' | 'completed' | 'cancelled';
+  stage: number;
+  required: { cash?: number; food?: number; people?: number; resources?: Record<string, number> };
+  committed: { cash?: number; food?: number; resources?: Record<string, number> };
+  deadline?: WorldDate;
+  blockers: string[];
+  causeIds: Id[];
+  history: { date: WorldDate; note: string; eventId?: Id }[];
+};
+
+export type Interaction = {
+  id: Id;
+  initiatorId: Id;
+  counterpartyIds: Id[];
+  kind: 'request' | 'offer' | 'proposal' | 'threat' | 'introduction' | 'negotiation';
+  subject: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'expired' | 'withdrawn';
+  created: WorldDate;
+  due?: WorldDate;
+  proposal: Record<string, unknown>;
+  responses: { personId: Id; response: 'accepted' | 'rejected' | 'counter'; note?: string }[];
+  linkedProjectId?: Id;
+  visibility: 'private' | 'participants' | 'public';
+};
+
+export type Relation = {
+  id: Id;
+  a: Id;
+  b: Id;
+  kind:
+    'kin' | 'guardian' | 'partner' | 'friend' | 'colleague' | 'employer' | 'rival' | 'acquaintance';
+  /** Directional: a -> b. */
+  trust: number;
+  affection: number;
+  obligation: number;
+  fear: number;
+  respect: number;
+  start: WorldDate;
+  end?: WorldDate;
+  sharedEventIds: Id[];
+};
+
+export type Knowledge = {
+  id: Id;
+  holderId: Id;
+  proposition: string;
+  confidence: number;
+  source: { kind: 'witnessed' | 'told' | 'document' | 'inferred'; eventId?: Id; personId?: Id };
+  observed: WorldDate;
+  visibility: 'private' | 'shared';
+  trueInWorld?: boolean;
+};
+
+export type EventParticipant = {
+  personId: Id;
+  role: string;
+  /** Optional organization/place role holder (e.g. employer). */
+  organizationId?: Id;
+};
+
+export type EventEffect =
+  | { type: 'cash'; householdId: Id; amount: number; reason: string }
+  | { type: 'food'; householdId: Id; amount: number; reason: string }
+  | { type: 'health'; personId: Id; amount: number; reason: string }
+  | { type: 'condition'; personId: Id; condition: string; add: boolean; reason: string }
+  | { type: 'mood'; personId: Id; amount: number; reason: string }
+  | { type: 'reputation'; personId: Id; amount: number; reason: string }
+  | {
+      type: 'skill';
+      personId: Id;
+      skill: keyof PersonLife['skills'];
+      amount: number;
+      reason: string;
+    }
+  | { type: 'flag'; personId: Id; flag: string; add: boolean; reason: string }
+  | {
+      type: 'education';
+      personId: Id;
+      status: Person['education']['status'];
+      level?: number;
+      placeId?: Id;
+      reason: string;
+    }
+  | {
+      type: 'employment';
+      personId: Id;
+      organizationId: Id;
+      occupation: string;
+      wage: number;
+      workplaceId: Id;
+      reason: string;
+    }
+  | { type: 'unemployment'; personId: Id; reason: string }
+  | {
+      type: 'relation';
+      a: Id;
+      b: Id;
+      kind: Relation['kind'];
+      trust?: number;
+      affection?: number;
+      obligation?: number;
+      fear?: number;
+      respect?: number;
+      reason: string;
+    }
+  | { type: 'role'; personId: Id; role: string; add: boolean; reason: string }
+  | { type: 'project'; project: Project }
+  | { type: 'interaction'; interaction: Interaction }
+  | { type: 'move'; personId: Id; locationId: Id; reason: string }
+  | { type: 'household'; personId: Id; householdId: Id; reason: string }
+  | { type: 'residence'; householdId: Id; residenceId: Id; reason: string }
+  | { type: 'residence'; householdId: Id; residenceId: Id; reason: string }
+  | {
+      type: 'birth';
+      parentIds: Id[];
+      childSex: Sex;
+      /** Optional authored name; otherwise the simulator draws one deterministically. */
+      name?: string;
+      reason: string;
+      /** Filled by the engine after the child exists. */
+      childId?: Id;
+      childName?: string;
+    }
+  | { type: 'death'; personId: Id; cause: string; reason: string }
+  | {
+      type: 'estate';
+      personId: Id;
+      heirHouseholdId: Id;
+      amount: number;
+      reason: string;
+    };
+
+/**
+ * A committed fact. Text is only a fast index; the structured fields are the
+ * authority. Prose and player-facing chapters are projections, not this object.
+ */
+export type EventFact = {
+  id: Id;
+  date: WorldDate;
+  placeId?: Id;
+  subjectId: Id;
+  participants: EventParticipant[];
+  action: string;
+  causes: Id[];
+  effects: EventEffect[];
+  /** Immediate, factual text; never a multi-year prognosis. */
+  immediateText: string;
+  /** Short player-facing title for ambient events. */
+  title?: string;
+  significance: number;
+  visibility: 'private' | 'participants' | 'public';
+  sceneId?: Id;
+  choices?: { actorId: Id; choiceId: string; reason: string }[];
+  provenance: {
+    kind: 'scene' | 'ambient' | 'project' | 'interaction' | 'system' | 'birth';
+    sourceId?: Id;
+  };
+};
+
+export type SceneStage = LifeStage;
+
+export type RoleRequirement = {
+  key: string;
+  kind:
+    | 'subject'
+    | 'parent'
+    | 'guardian'
+    | 'sibling'
+    | 'partner'
+    | 'teacher'
+    | 'employer'
+    | 'worker'
+    | 'union_member'
+    | 'neighbor'
+    | 'official'
+    | 'organization';
+  required?: boolean;
+  minAge?: number;
+  maxAge?: number;
+  sex?: Sex;
+  sameHousehold?: boolean;
+  samePlaceKind?: Place['kind'];
+  occupation?: string;
+  organizationKind?: Organization['kind'];
+};
+
+export type SceneCondition =
+  | { kind: 'age'; min?: number; max?: number }
+  | { kind: 'stage'; in: SceneStage[] }
+  | { kind: 'cash'; householdId?: 'subject'; min?: number; max?: number }
+  | { kind: 'householdSize'; min?: number; max?: number }
+  | { kind: 'overcrowded'; value: boolean }
+  | { kind: 'householdSize'; min?: number; max?: number }
+  | { kind: 'overcrowded'; value: boolean }
+  | { kind: 'health'; min?: number; max?: number }
+  | { kind: 'education'; in: Person['education']['status'][] }
+  | { kind: 'employment'; employed: boolean }
+  | { kind: 'placeKind'; in: Place['kind'][] }
+  | { kind: 'hasRole'; role: string }
+  | { kind: 'hasRelation'; relationKind: Relation['kind']; minTrust?: number }
+  | { kind: 'notHasRelation'; relationKind: Relation['kind'] }
+  | { kind: 'worldYear'; min?: number; max?: number }
+  | { kind: 'pressure'; key: string; min: number };
+
+export type SceneEffect = EventEffect; // v4 effects are the same typed vocabulary.
+
+export type SceneOutcome = {
+  id: string;
+  weight: number;
+  /** The agent's own disposition chooses among available outcomes; weights are fallback. */
+  conditions?: SceneCondition[];
+  immediateText: string;
+  effects: SceneEffect[];
+  followupSceneIds?: string[];
+  significance?: number;
+};
+
+export type SceneChoice = {
+  id: string;
+  actorRole: string;
+  label: string;
+  conditions?: SceneCondition[];
+  outcomes: SceneOutcome[];
+};
+
+export type SceneDefinition = {
+  id: string;
+  version: number;
+  packId: string;
+  title: string;
+  stage: SceneStage;
+  ageWindow: { min: number; max: number };
+  roles: RoleRequirement[];
+  conditions: SceneCondition[];
+  /** At least one; if an actor has a choice, the scene creates a PendingInteraction. */
+  choices?: SceneChoice[];
+  /** Forced situations (infant illness, external disaster) use outcomes directly. */
+  outcomes?: SceneOutcome[];
+  tags: string[];
+  historicalBasis?: string;
+  sourceIds?: string[];
+  /**
+   * Optional cast restriction. Scenes written around a specific authored
+   * person carry `subjectIds` so they never resolve for a player-born child
+   * whose family has different names and institutions.
+   */
+  subjectIds?: Id[];
+  /**
+   * Restrict universal scenes to persons created through a particular path,
+   * e.g. player births, so generic life content does not overwrite authored
+   * biographies of the seed cast.
+   */
+  subjectProvenance?: Person['provenance']['kind'][];
+  /** If true, only one focal scene per person per age window. */
+  oncePerPerson?: boolean;
+  cooldownYears?: number;
+};
+
+export type SceneInstance = {
+  id: Id;
+  sceneId: string;
+  sceneVersion: number;
+  subjectId: Id;
+  roles: Record<string, Id>;
+  date: WorldDate;
+  status: 'offered' | 'resolved' | 'blocked';
+  chosenOutcome?: string;
+  eventId?: Id;
+  reason?: string;
+};
+
+export type WorldState = {
+  id: Id;
+  seed: string;
+  date: WorldDate;
+  timePolicy: { secondsPerYear: number; monthsPerTick: number };
+  places: Record<Id, Place>;
+  households: Record<Id, Household>;
+  persons: Record<Id, Person>;
+  organizations: Record<Id, Organization>;
+  positions: Record<Id, Position>;
+  projects: Record<Id, Project>;
+  interactions: Record<Id, Interaction>;
+  relations: Record<Id, Relation>;
+  knowledge: Record<Id, Knowledge>;
+  events: EventFact[];
+  scenes: SceneInstance[];
+  /** Content can reference a small set of world-level pressures. */
+  pressures: Record<string, number>;
+  historyMeta: { lastSceneId?: string; lastEventId?: string; sequence: number };
+  status: 'running' | 'archived';
+  terminalReason?: string;
+};
+
+export function stageForAge(age: number): LifeStage {
+  if (age < 3) return 'infancy';
+  if (age < 12) return 'childhood';
+  if (age < 18) return 'adolescence';
+  if (age < 60) return 'adulthood';
+  return 'elderhood';
+}
+
+export function ageAt(person: Pick<Person, 'born'>, date: WorldDate): number {
+  return Math.max(
+    0,
+    Math.floor(date.year - person.born.year + (date.month - person.born.month) / 12),
+  );
+}
+
+export function monthIndex(date: WorldDate): number {
+  return date.year * 12 + (date.month - 1);
+}
+
+export function addMonths(date: WorldDate, months: number): WorldDate {
+  const index = monthIndex(date) + months;
+  return { year: Math.floor(index / 12), month: (index % 12) + 1 };
+}
+
+/**
+ * A reusable ambient event. Unlike a milestone SceneDefinition it has one
+ * concrete outcome, can occur in any year inside its window, and is selected
+ * from a weighted pool. This is the density layer: several per person-year.
+ */
+export type AmbientEventDefinition = {
+  id: string;
+  packId: string;
+  title: string;
+  stage: LifeStage;
+  ageWindow: { min: number; max: number };
+  weight: number;
+  roles: RoleRequirement[];
+  conditions: SceneCondition[];
+  effects: EventEffect[];
+  immediateText: string;
+  significance?: number;
+  cooldownYears?: number;
+  oncePerPerson?: boolean;
+  subjectIds?: Id[];
+  subjectProvenance?: Person['provenance']['kind'][];
+  tags: string[];
+  historicalBasis?: string;
+  sourceIds?: string[];
+};
+
+/** A strict invariant check used after every mutation; throws on impossible state. */
+export function assertWorldV4(world: WorldState): void {
+  const ids = new Set<string>();
+  const add = (id: string, kind: string, record: unknown) => {
+    if (!id || ids.has(id)) throw new Error(`v4: duplicate or empty ${kind} id ${id}`);
+    if (!record) throw new Error(`v4: missing ${kind} ${id}`);
+    ids.add(id);
+  };
+  for (const [id, p] of Object.entries(world.persons)) {
+    add(id, 'person', p);
+    if (!world.households[p.householdId]) throw new Error(`v4: person ${id} has no household`);
+    if (!world.places[p.locationId]) throw new Error(`v4: person ${id} has no place`);
+    if (p.died && p.health.vitality > 0) throw new Error(`v4: dead person ${id} has vitality`);
+  }
+  for (const [id, h] of Object.entries(world.households)) {
+    add(id, 'household', h);
+    if (!world.places[h.residenceId]) throw new Error(`v4: household ${id} has no residence`);
+    if (h.memberIds.some((personId) => !world.persons[personId]))
+      throw new Error(`v4: household ${id} references an unknown member`);
+    if (h.cash < 0 || h.food < 0) throw new Error(`v4: household ${id} has negative stock`);
+  }
+  for (const [id, place] of Object.entries(world.places)) add(id, 'place', place);
+  for (const [id, org] of Object.entries(world.organizations)) {
+    add(id, 'organization', org);
+    if (!world.places[org.placeId]) throw new Error(`v4: organization ${id} has no place`);
+    if (org.treasury < 0) throw new Error(`v4: organization ${id} has negative treasury`);
+  }
+  for (const [id, relation] of Object.entries(world.relations)) {
+    add(id, 'relation', relation);
+    if (!world.persons[relation.a] || !world.persons[relation.b])
+      throw new Error(`v4: relation ${id} references an unknown person`);
+  }
+  for (const event of world.events) {
+    if (!world.persons[event.subjectId]) throw new Error(`v4: event ${event.id} has no subject`);
+    if (event.participants.some((p) => !world.persons[p.personId]))
+      throw new Error(`v4: event ${event.id} has unknown participant`);
+    if (event.causes.some((cause) => !world.events.some((e) => e.id === cause)))
+      throw new Error(`v4: event ${event.id} has unknown cause`);
+  }
+}

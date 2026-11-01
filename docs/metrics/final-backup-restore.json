@@ -1,0 +1,223 @@
+{
+  "recordedAt": "2026-10-31T06:47:22.877Z",
+  "native": {
+    "path": ".data/pre-1900-sovereignty.dump",
+    "bytes": 4068116147,
+    "mode": "600",
+    "sha256": "a73969f85e18b5882faba58550937caa9dc95ea33e34050270dbdd9e34aa88ba",
+    "independentDatabase": "living_world_final_restore",
+    "restore": "complete",
+    "recovery": {
+      "world": "world-4-tide4",
+      "revision": 348,
+      "checksum": "7fb1a333d9e3c980e449f30f9f0f59f11afda5a126113e5397e83665bbdb21d5",
+      "result": "exact",
+      "log": ".data/final-restored-pg-verify.log"
+    },
+    "worlds": [
+      {
+        "id": "world-1-tide1",
+        "revision": "5",
+        "checksum": "888e9387382a15c7f3d20f81ed2d412e3734640c26b406cfac57779a039af2b3",
+        "expected_sequence": "504",
+        "journal_rows": "5",
+        "event_rows": "1504",
+        "sequenced_events": "504",
+        "outbox_rows": "1504",
+        "journalComplete": true,
+        "eventSequenceComplete": true,
+        "outboxComplete": true
+      },
+      {
+        "id": "world-2-tide2",
+        "revision": "109",
+        "checksum": "e704b536b312885cdb006290facb16be72ffe6cb71d2f1118650a8612062f128",
+        "expected_sequence": "15702",
+        "journal_rows": "109",
+        "event_rows": "16702",
+        "sequenced_events": "15702",
+        "outbox_rows": "16702",
+        "journalComplete": true,
+        "eventSequenceComplete": true,
+        "outboxComplete": true
+      },
+      {
+        "id": "world-3-tide3",
+        "revision": "92",
+        "checksum": "021055a6feed970cf487478f27af2fde2d41cefb18bcf5633368151c90bee085",
+        "expected_sequence": "20377",
+        "journal_rows": "92",
+        "event_rows": "21877",
+        "sequenced_events": "20377",
+        "outbox_rows": "21877",
+        "journalComplete": true,
+        "eventSequenceComplete": true,
+        "outboxComplete": true
+      },
+      {
+        "id": "world-4-tide4",
+        "revision": "348",
+        "checksum": "7fb1a333d9e3c980e449f30f9f0f59f11afda5a126113e5397e83665bbdb21d5",
+        "expected_sequence": "1019134",
+        "journal_rows": "348",
+        "event_rows": "1020634",
+        "sequenced_events": "1019134",
+        "outbox_rows": "1020634",
+        "journalComplete": true,
+        "eventSequenceComplete": true,
+        "outboxComplete": true
+      }
+    ]
+  },
+  "streamingV2": {
+    "path": ".data/final-stream-backup.ndjson",
+    "bytes": 36270415667,
+    "mode": "600",
+    "footer": {
+      "type": "footer",
+      "version": 2,
+      "rows": 2128550,
+      "tableRows": {
+        "worlds": 5,
+        "users": 8,
+        "sessions": 8,
+        "commands": 12,
+        "journal": 555,
+        "checkpoints": 50,
+        "events": 1062218,
+        "outbox": 1062218,
+        "maps": 525,
+        "narratives": 3,
+        "jobs": 2847,
+        "settings": 2,
+        "admin_audit": 21,
+        "model_budget": 36,
+        "model_calls": 42
+      },
+      "sha256": "a9cc2c81124c3cdaa490afbd92dae14dd303a351afe23b770e03bba6a5d10e95"
+    },
+    "restore": "complete",
+    "independentDatabase": "living_world_stream_restore",
+    "worlds": [
+      {
+        "id": "world-1-tide1",
+        "revision": "5",
+        "checksum": "888e9387382a15c7f3d20f81ed2d412e3734640c26b406cfac57779a039af2b3",
+        "sourceWitnessMatches": true,
+        "recovered": "exact",
+        "headCheckpointPresent": false
+      },
+      {
+        "id": "world-2-tide2",
+        "revision": "109",
+        "checksum": "e704b536b312885cdb006290facb16be72ffe6cb71d2f1118650a8612062f128",
+        "sourceWitnessMatches": true,
+        "recovered": "exact",
+        "headCheckpointPresent": true
+      },
+      {
+        "id": "world-3-tide3",
+        "revision": "92",
+        "checksum": "021055a6feed970cf487478f27af2fde2d41cefb18bcf5633368151c90bee085",
+        "sourceWitnessMatches": true,
+        "recovered": "exact",
+        "headCheckpointPresent": true
+      },
+      {
+        "id": "world-4-tide4",
+        "revision": "349",
+        "checksum": "a0a315293c3d1bf55bf985258c5e2e4f444351b0600c0a47d0d4c2f103db3ba3",
+        "sourceWitnessMatches": true,
+        "recovered": "exact",
+        "headCheckpointPresent": true
+      },
+      {
+        "id": "world-5-tide5",
+        "revision": "0",
+        "checksum": "42472abe253d6a470f5b6971bfc252859b01fffbb7a78a27517947910ef754f9",
+        "sourceWitnessMatches": true,
+        "recovered": "exact",
+        "headCheckpointPresent": true
+      }
+    ],
+    "eventCauses": {
+      "missing": "0",
+      "cross_world": "0",
+      "non_previous": "0"
+    },
+    "tableRows": {
+      "worlds": {
+        "snapshotRows": 5,
+        "actualRows": 5
+      },
+      "users": {
+        "snapshotRows": 8,
+        "actualRows": 8
+      },
+      "sessions": {
+        "snapshotRows": 8,
+        "actualRows": 8
+      },
+      "commands": {
+        "snapshotRows": 12,
+        "actualRows": 12
+      },
+      "journal": {
+        "snapshotRows": 555,
+        "actualRows": 555
+      },
+      "checkpoints": {
+        "snapshotRows": 50,
+        "actualRows": 50
+      },
+      "events": {
+        "snapshotRows": 1062218,
+        "actualRows": 1062218
+      },
+      "outbox": {
+        "snapshotRows": 1062218,
+        "actualRows": 1062218
+      },
+      "maps": {
+        "snapshotRows": 525,
+        "actualRows": 525
+      },
+      "narratives": {
+        "snapshotRows": 3,
+        "actualRows": 3
+      },
+      "jobs": {
+        "snapshotRows": 2847,
+        "actualRows": 2847
+      },
+      "settings": {
+        "snapshotRows": 2,
+        "actualRows": 2
+      },
+      "admin_audit": {
+        "snapshotRows": 21,
+        "actualRows": 23
+      },
+      "model_budget": {
+        "snapshotRows": 36,
+        "actualRows": 36
+      },
+      "model_calls": {
+        "snapshotRows": 42,
+        "actualRows": 42
+      }
+    },
+    "recovery": {
+      "world": "world-5-tide5",
+      "revision": 0,
+      "checksum": "42472abe253d6a470f5b6971bfc252859b01fffbb7a78a27517947910ef754f9",
+      "result": "exact",
+      "log": ".data/final-stream-restored-verify.log"
+    },
+    "auditDifference": "Restore and verification append two operational audit records after the snapshot"
+  },
+  "limitations": [
+    "Native restore initially failed because the optional LLVM JIT library was absent; rerun with local JIT disabled completed successfully",
+    "Independent restore validation does not deploy or overwrite the live world"
+  ]
+}

@@ -1,0 +1,11 @@
+# Runtime contracts
+
+The pure monthly transition produces a new versioned state and causal historical events. Stable seed/entity/month hash streams isolate outcomes from observer ownership. The simulator is the only canonical writer; API commands and model results use inbox tables. PostgreSQL transactions atomically fence authority, consume commands, persist state, append a checksum-protected lossless state journal, historical ledger, map projections and outbox. Checkpoints are initial/annual; recovery replays exact state patches. Archives are sealed and only one running epoch is permitted.
+
+Macro cohorts cover demographic scale; persistent named people cover relationships, plans and individual lives. Stocks and transfers are explicit. Food availability drives work, stress, migration, mortality, legitimacy and conflict; conflict consumes treasury/food and displaces people; research and institutions modify future production and policy. Facts, beliefs and narrative projections remain distinct.
+
+React observer reads HTTP/SSE projections. Pixi renders seeded terrain and current/historical settlement ownership and locations. Replay uses recorded maps and ledger time, never world mutations. Creation first normalizes a typed draft and then submits a command consuming a cohort slot. Model results are bounded proposals compiled in simulator; model worker cannot write canonical state.
+
+Entity identity is `(world_id, local_entity_id)`: all APIs, journals, maps and event queries carry the immutable world namespace. IDs are never reused within a namespace; cross-world archive references retain both components. Event IDs additionally embed world identity directly. Raw creation descriptions are observer-private input metadata and never become canonical claims about existing people.
+
+Cultural policies are bounded executable decision biases with adoption time, TTL and causal source events. Cooperative norms can spread only during legitimate local contact and depend on the receiver's disposition. Research discoveries have durable identities, creators and actual measured knowledge gains; their only shipped physical hook is the approved production modifier. Unsupported inventions cannot add new physics.

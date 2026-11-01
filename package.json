@@ -1,0 +1,66 @@
+{
+  "name": "shared-living-world",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "dev": "tsx scripts/dev.ts",
+    "api": "tsx apps/api/index.ts",
+    "simulator": "tsx apps/simulator/index.ts",
+    "worker": "tsx apps/llm-worker/index.ts",
+    "migrate": "tsx packages/storage/migrate.ts",
+    "build": "tsc --noEmit && vite build --config apps/web/vite.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "tsx scripts/run-e2e.ts",
+    "benchmark": "tsx scripts/benchmark.ts",
+    "admin": "tsx scripts/admin.ts",
+    "format": "prettier --write apps packages scripts tests *.ts *.json docs/*.md docs/decisions/*.md",
+    "format:check": "prettier --check apps packages scripts tests *.ts *.json docs/*.md docs/decisions/*.md",
+    "db:local": "tsx scripts/local-db.ts",
+    "test:integration": "TEST_DATABASE=1 NODE_ENV=test vitest run",
+    "load": "tsx scripts/load.ts",
+    "benchmark:scale": "tsx scripts/benchmark-scale.ts",
+    "acceptance:v3": "tsx scripts/v3-acceptance.ts",
+    "acceptance:v3-life": "tsx scripts/v3-long-life.ts",
+    "worldline": "tsx scripts/worldline.ts",
+    "v4:api": "tsx apps/v4-api/index.ts",
+    "v4:simulator": "tsx apps/v4-simulator/index.ts",
+    "v4:migrate": "tsx scripts/v4-migrate.ts",
+    "v4:seed": "tsx scripts/v4-seed.ts",
+    "v4:reset": "tsx scripts/v4-reset.ts",
+    "v4:worker": "tsx apps/v4-birth-worker/index.ts"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/rate-limit": "^10.3.0",
+    "@fastify/static": "^8.3.0",
+    "@fontsource/noto-sans-sc": "^5.3.1",
+    "fastify": "^5.6.0",
+    "pg": "^8.16.3",
+    "pixi.js": "^8.14.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^24.10.0",
+    "@types/pg": "^8.15.5",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.1.0",
+    "fast-check": "^4.3.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.0",
+    "vitest": "^3.2.4"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

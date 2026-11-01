@@ -1,0 +1,11 @@
+{
+  "backupCommand": "pg_dump -h localhost -p 55432 -Fc -f .data/earth-delivery.dump living_world",
+  "restoreCommand": "pg_restore -h localhost -p 55432 --exit-on-error -d living_world_delivery_restore .data/earth-delivery.dump",
+  "verifyCommand": "DATABASE_URL=postgres://localhost:55432/living_world_delivery_restore pnpm admin verify",
+  "world": "world-4-tide4",
+  "revision": 148,
+  "checksum": "785ad4a7c1f5d8cc4bd86110c9c4b0e086b339c093764154135f735a8782ef1b",
+  "recovery": "exact",
+  "dumpBytes": 533291624,
+  "scope": "Independent database restored from the current complete database snapshot; verification compares its canonical state with checkpoint plus committed journal. No live-world mutation."
+}

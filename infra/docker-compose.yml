@@ -1,0 +1,56 @@
+name: shared-living-world
+x-runtime: &runtime
+  build:
+    context: ..
+    dockerfile: infra/Dockerfile
+  restart: unless-stopped
+  environment: &environment
+    DATABASE_URL: postgres://world:${POSTGRES_PASSWORD:-local-development-only}@db:5432/living_world
+    WORLD_SEED: ${WORLD_SEED:-tide}
+    WORLD_MINUTES_PER_YEAR: ${WORLD_MINUTES_PER_YEAR:-20}
+    WORLD_MAX_YEARS: ${WORLD_MAX_YEARS:-300}
+    AUTO_NEXT_WORLD: ${AUTO_NEXT_WORLD:-true}
+    WORLD_PACK: ${WORLD_PACK:-earth-1900}
+    LLM_PROVIDER: ${LLM_PROVIDER:-opencode-go}
+    LLM_BASE_URL: ${LLM_BASE_URL:-https://opencode.ai/zen/go/v1}
+    LLM_MODEL: ${LLM_MODEL:-opencode-go/deepseek-v4.1-flash}
+    LLM_API_KEY: ${LLM_API_KEY:-${OPENCODE_API_KEY:-${OPENCODE_key:-}}}
+    OPENCODE_SESSION: ${OPENCODE_SESSION:-world-simulator}
+    LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-45000}
+    LLM_DAILY_TOKEN_CAP: ${LLM_DAILY_TOKEN_CAP:-50000}
+    LLM_PLANS_PER_MONTH: ${LLM_PLANS_PER_MONTH:-16}
+    SIM_COMMAND_BATCH_SIZE: ${SIM_COMMAND_BATCH_SIZE:-100}
+  depends_on:
+    db:
+      condition: service_healthy
+services:
+  db:
+    image: postgres:16-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: world
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-development-only}
+      POSTGRES_DB: living_world
+    volumes:
+      - world-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U world -d living_world']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  api:
+    <<: *runtime
+    command: ['pnpm', 'api']
+    ports:
+      - '${PORT:-3001}:3001'
+    environment:
+      <<: *environment
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+  simulator:
+    <<: *runtime
+    command: ['pnpm', 'simulator']
+  llm-worker:
+    <<: *runtime
+    command: ['pnpm', 'worker']
+volumes:
+  world-db:

@@ -1,0 +1,3 @@
+# ADR 002 — bound active cognition, retain the historical ledger
+
+Active cognition retains 96 salient memories per person; deceased cognition retains 32 final salient memories. Compaction never deletes the immutable event ledger, ancestry, relationships or goal provenance. Transition cloning copies living people; deceased state is shared read-only between pure transitions and never receives new memories after its month of death. Per-transition identity maps replace repeated historical-person scans. This keeps increasing historical identities from forcing deep copies of all deceased cognition every month. Recovery remains lossless for committed compacted state; the full event history remains queryable separately.
