@@ -12,6 +12,7 @@ import { assertWorldV4, type WorldState } from '../packages/v4/domain.js';
 
 const scenes = [...VIENNA_1912_SCENES, ...VIENNA_LIFE_SCENES, ...VIENNA_FAMILY_SCENES];
 const personIds = new Set(Object.keys(VIENNA_1912_SEED.persons));
+const householdIds = new Set(Object.keys(VIENNA_1912_SEED.households));
 const tokens = new Set([
   '$subject',
   '$mother',
@@ -54,7 +55,7 @@ function runLife() {
 
 describe('family formation content and engine', () => {
   it('has valid ids, roles, tokens and effects', () => {
-    expect(VIENNA_FAMILY_SCENES.length).toBe(4);
+    expect(VIENNA_FAMILY_SCENES.length).toBe(8);
     expect(new Set(VIENNA_FAMILY_SCENES.map((scene) => scene.id)).size).toBe(
       VIENNA_FAMILY_SCENES.length,
     );
@@ -73,12 +74,15 @@ describe('family formation content and engine', () => {
           }
           if (effect.type === 'household') {
             expect(effect.personId === '$partner' || personIds.has(effect.personId)).toBe(true);
-            expect(effect.householdId === '$household').toBe(true);
+            expect(
+              effect.householdId === '$household' || householdIds.has(effect.householdId),
+            ).toBe(true);
           }
         }
         for (const match of outcome.immediateText.matchAll(/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g)) {
           expect(
-            roleKeys.has(match[1]!) || ['subject', 'residence', 'child'].includes(match[1]!),
+            roleKeys.has(match[1]!) ||
+              ['subject', 'residence', 'place', 'child'].includes(match[1]!),
           ).toBe(true);
         }
       }

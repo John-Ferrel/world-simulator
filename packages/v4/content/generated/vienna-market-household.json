@@ -1,0 +1,699 @@
+{
+  "id": "vienna-market-household",
+  "title": "市场、赊账与家里的锅",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 70
+  },
+  "tags": [
+    "home",
+    "market",
+    "food",
+    "social"
+  ],
+  "baseRate": 0.4,
+  "conditions": [
+    {
+      "kind": "placeKind",
+      "in": [
+        "home",
+        "shop"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-market-household.market-credit",
+      "title": "纳旭市场的赊账",
+      "weight": 1,
+      "rate": 0.25,
+      "conditions": [
+        {
+          "kind": "cash",
+          "max": 15
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "market-credit.pay-later",
+          "weight": 1,
+          "text": "{subject}在纳旭市场向菜贩子玛丽亚欠了三个克朗的土豆和洋葱钱，答应周五结清。{neighbor}在场作证。周五早晨，{subject}把硬币数了两遍才凑够，交到玛丽亚手里，玛丽亚把欠账划掉。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "偿还市场赊账"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "赊购的土豆和洋葱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "邻居作证并看到守信用"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "market-credit.pay-later",
+              "text": "{subject}捏着三个克朗硬币站在玛丽亚的菜摊前，土豆和洋葱已经装进布袋。周五结清时，玛丽亚用粉笔在小黑板上划掉名字，{neighbor}点点头。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "market-credit.pay-later",
+              "text": "菜贩玛丽亚把账记在木牌上，{subject}答应周五还。到了周五，{subject}把三个克朗数了又数，终于递过去，{neighbor}在旁边看着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "market-credit.delay",
+          "weight": 1,
+          "text": "{subject}周五没凑够三个克朗，拖到下周才还。玛丽亚收钱时没说话，但把{subject}的名字从赊账木牌上擦掉后，又用粉笔在角落画了个小叉。{neighbor}撞见这一幕，没打招呼就走开了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "延迟偿还市场赊账"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "赊购的土豆和洋葱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "市场赊账延迟"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "邻居看到赊账拖延"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "market-credit.delay",
+              "text": "周五{subject}摊开手掌，只有两个克朗二十个十字币。玛丽亚挥挥手让下周再给。下周{subject}把钱放到秤盘上，玛丽亚擦掉名字，却在木牌角上画了个叉。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "market-credit.delay",
+              "text": "三个克朗拖了九天。玛丽亚收下时数都没数，只把{subject}的名字从木牌上抹去，粉笔灰落在卷心菜上。{neighbor}拎着篮子从旁边过去，没停脚。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "market-credit.default",
+          "weight": 1,
+          "text": "{subject}始终没还那三个克朗。玛丽亚在纳旭市场入口堵住{subject}，当众要账。{subject}掏空口袋只有几个十字币，玛丽亚把布袋收回，说以后不赊了。{neighbor}站在人群里看着。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "被收回的土豆和洋葱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.15,
+              "reason": "市场当众赖账"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "当众受辱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "reason": "邻居目睹赖账"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "market-credit.default",
+              "text": "玛丽亚在市场拱门下拦住{subject}，声音不大但周围人都听得见：三个克朗。{subject}翻遍口袋只摸出几个十字币。玛丽亚把布袋从{subject}胳膊上解下来，转身走了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "market-credit.default",
+              "text": "欠账拖了半个月。玛丽亚在菜摊前看见{subject}路过，直接喊住要钱。{subject}拿不出，玛丽亚把已经称好的土豆倒回筐里。{neighbor}提着篮子站在两步外，什么也没说。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-market-household.soup-kitchen",
+      "title": "锅里的汤分给谁",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "householdSize",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "soup-kitchen.share",
+          "weight": 1,
+          "text": "{subject}在家把一锅扁豆汤分出一半，让{neighbor}端回去给生病的老母亲。{neighbor}第二天还回一只空锅，锅底放着一小块猪油。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "分给邻居的扁豆汤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "affection": 0.1,
+              "reason": "分享食物给邻居生病家人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "帮助邻居后的宽慰"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "soup-kitchen.share",
+              "text": "{subject}把扁豆汤舀进邻居的陶罐，锅底刮得干干净净。第二天清早，空锅放在门槛上，锅底有一小块猪油用纸包着。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "soup-kitchen.share",
+              "text": "汤锅冒着热气，{subject}盛出两勺倒进{neighbor}带来的罐子里。{neighbor}说了声谢谢就匆匆上楼。隔天罐子还回来，锅底搁着一小块猪油。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "soup-kitchen.keep",
+          "weight": 1,
+          "text": "{neighbor}来借一勺汤，{subject}把锅盖按回原位，说家里孩子多不够吃。{neighbor}转身走了，楼梯上脚步很重。当晚{subject}听见隔壁传来碗碟轻响，知道老母亲在喝清水泡面包。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "保留下来的汤多分给自家"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "拒绝分享食物"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "听见隔壁清汤寡水的不安"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "soup-kitchen.keep",
+              "text": "{neighbor}拿着碗站在门口，{subject}说锅里没剩多少。门关上后，楼梯上传来慢慢的脚步声。晚上隔壁有碗碟碰撞的轻响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "soup-kitchen.keep",
+              "text": "扁豆汤的香味从门缝飘出去，{neighbor}敲了门。{subject}掀开锅盖又盖上，说只够自家吃。{neighbor}什么也没说就走了。夜里{subject}听见隔壁有人用勺子刮碗底。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "soup-kitchen.sell",
+          "weight": 1,
+          "text": "{subject}把多出来的半锅扁豆汤卖给街角的鞋匠，收了两个十字币。{neighbor}来晚一步，看着鞋匠端着汤上楼。{neighbor}没说什么，但之后三天在楼梯上遇见{subject}都只点头。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "卖出半锅扁豆汤"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "卖掉的汤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "邻居看到汤被卖给鞋匠"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "soup-kitchen.sell",
+              "text": "鞋匠敲后门问有没有热汤，{subject}把剩下的半锅倒进他的罐子里，收下两个十字币。{neighbor}提着空碗上来时，只看见{subject}把硬币塞进围裙口袋。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "soup-kitchen.sell",
+              "text": "{subject}把汤锅端到鞋匠铺子后门，连锅一起借给他，换回两个十字币。回来时{neighbor}正站在楼梯口，手里拿着碗，什么也没问。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-market-household.stove-repair",
+      "title": "炉子裂了缝",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "overcrowded",
+          "min": 0.5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 80,
+          "organizationKind": "factory"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "stove-repair.patch",
+          "weight": 1,
+          "text": "{subject}用铁皮和铁丝自己箍住炉门裂缝，借来泥瓦匠的灰浆把缝抹上。炉子勉强能用，但烟从接口处漏出来，熏得墙纸发黄。买铁皮和灰浆花了八个十字币。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "铁皮、铁丝和灰浆"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "烟熏"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "简单炉具修理"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stove-repair.patch",
+              "text": "{subject}蹲在炉子前，把铁皮剪成条，用铁丝箍住裂缝。灰浆是从泥瓦匠那里讨来的。炉子点着了，烟从铁皮接口往外冒，墙上慢慢留下一道黄印子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stove-repair.patch",
+              "text": "铁皮八个十字币，灰浆是赊来的。{subject}花了一下午箍炉门，手指被铁丝划了两道口子。火升起来后烟还是漏，但至少锅能烧热了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stove-repair.call-smith",
+          "weight": 1,
+          "text": "{subject}请来铁匠铺的学徒换了一整个炉门，花了二十个十字币。学徒把旧炉门扔在院子里，说还能当铁卖。新炉门装上后火稳了，但{subject}这个月的煤钱只剩几个十字币。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -20,
+              "reason": "新炉门和工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "炉子修好"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stove-repair.call-smith",
+              "text": "铁匠铺学徒扛着新炉门上来，旧门拆下来靠在墙边。二十个十字币数出去，{subject}摸了摸剩下的煤钱，把旧炉门拎到院子里，想着改天卖给收废铁的。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stove-repair.call-smith",
+              "text": "新炉门是学徒用锤子敲了一上午的，装上去严丝合缝。二十个十字币，够买半袋煤。{subject}把旧炉门立在门后，火苗终于不再往屋里窜了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stove-repair.borrow",
+          "weight": 1,
+          "text": "{subject}向{employer}预支了二十个十字币修炉子，答应从下周工钱里扣。{employer}在账本上记了一笔，说下不为例。炉子修好后，{subject}每天带饭去工厂热，省下家里的煤。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 20,
+              "reason": "预支工钱修炉子"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.05,
+              "obligation": 0.1,
+              "reason": "预支工钱"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "debt_to_employer",
+              "reason": "欠雇主预支款"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stove-repair.borrow",
+              "text": "{employer}翻开账本，用铅笔写下{subject}的名字和二十个十字币。炉子修好那天，{subject}把饭盒放进工厂的蒸锅里，省下家里一块煤。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stove-repair.borrow",
+              "text": "预支工钱的话说出口时{subject}盯着自己的鞋尖。{employer}从抽屉里数出二十个十字币，在账本上记了一笔，说下周扣。炉子修好后，家里的煤省着烧。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-market-household.friday-fish",
+      "title": "周五的鱼",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "cash",
+          "min": 5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "friday-fish.buy",
+          "weight": 1,
+          "text": "{subject}在鱼市收摊前花六个十字币买了一条小鳟鱼，摊主搭送一把欧芹。回家用黄油煎了，整层楼都闻到味。{neighbor}敲门问是不是过节，{subject}分了一小块鱼尾巴。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "买鳟鱼和黄油"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "煎鱼的一餐"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "吃到鱼"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "分了一小块鱼"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "friday-fish.buy",
+              "text": "鱼摊快收了，{subject}挑了一条最小的鳟鱼，摊主顺手抓了把欧芹丢进纸里。黄油在锅里化开，鱼皮卷起来，楼道里都是味。{neighbor}敲门时，{subject}从鱼尾切下一小块递过去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "friday-fish.buy",
+              "text": "六个十字币换来一条鳟鱼和一把欧芹。{subject}把鱼煎得两面焦黄，鱼尾巴给了闻着味来的{neighbor}。自家孩子用面包把盘底的黄油擦干净。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "friday-fish.salt",
+          "weight": 1,
+          "text": "{subject}没买鲜鱼，花两个十字币买了半条腌鲱鱼和一块黑面包。腌鱼咸得发苦，但能放。{neighbor}来借盐时看见桌上的鲱鱼，说自家还有半棵卷心菜，可以换一块鱼。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "腌鲱鱼和黑面包"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "腌鱼和面包"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "交换食物"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "friday-fish.salt",
+              "text": "腌鲱鱼切成两段，一段今天吃，一段留着。黑面包硬得要用刀锯。{neighbor}来借盐，眼睛落在鱼上，说可以用半棵卷心菜换一块。{subject}切了一指宽递过去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "friday-fish.salt",
+              "text": "{subject}把腌鲱鱼放在黑面包上，咸味够配一大杯水。{neighbor}拿着盐罐过来，看见鱼就说拿卷心菜换。换完以后，两家灶上都多了一样东西。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "friday-fish.share",
+          "weight": 1,
+          "text": "{subject}买了鱼，回家路上看见{neighbor}蹲在门口刮空锅。{subject}把鱼分成两半，一半给了{neighbor}。{neighbor}接过去时手在围裙上擦了又擦，第二天还回来一小袋面粉。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "买鱼"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "自家吃的一半鱼"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "affection": 0.1,
+              "reason": "分半条鱼给揭不开锅的邻居"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "friday-fish.share",
+              "text": "{subject}拎着鱼上楼，看见{neighbor}蹲在门口用刀刮锅底。{subject}把鱼放在两家之间的窗台上，切了一半推过去。第二天门口多了一小袋面粉。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "friday-fish.share",
+              "text": "鱼还滴着水，{subject}在走廊里分成两份。一份拿进自家，一份搁在{neighbor}的门口。傍晚{neighbor}来还盘子，盘子里是一小袋面粉。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -8,25 +8,34 @@ import type { Person, WorldDate } from './domain.js';
  * money, relationships, future events or mechanics. Anything else is rejected.
  */
 const traitDelta = z.number().min(-0.08).max(0.08);
-const WishReadingSchema = z
-  .object({
-    interpretation: z.string().trim().min(1).max(300),
-    focus: z.enum(['education', 'work', 'family', 'faith', 'politics', 'health', 'craft', 'none']),
-    traitDeltas: z
-      .object({
-        care: traitDelta.optional(),
-        ambition: traitDelta.optional(),
-        tradition: traitDelta.optional(),
-        openness: traitDelta.optional(),
-        conscientiousness: traitDelta.optional(),
-        extraversion: traitDelta.optional(),
-        agreeableness: traitDelta.optional(),
-        neuroticism: traitDelta.optional(),
-      })
-      .strict(),
-    taboo: z.string().trim().max(200).nullable().optional(),
-  })
-  .strict();
+const WishReadingSchema = z.object({
+  interpretation: z.string().trim().min(1).max(300),
+  focus: z.enum(['education', 'work', 'family', 'faith', 'politics', 'health', 'craft', 'none']),
+  traitDeltas: z
+    .object({
+      care: traitDelta.optional(),
+      ambition: traitDelta.optional(),
+      tradition: traitDelta.optional(),
+      openness: traitDelta.optional(),
+      conscientiousness: traitDelta.optional(),
+      extraversion: traitDelta.optional(),
+      agreeableness: traitDelta.optional(),
+      neuroticism: traitDelta.optional(),
+    })
+    .strict(),
+  taboo: z.string().trim().max(200).nullable().optional(),
+  privateGoal: z.string().trim().max(200).optional(),
+  skillDeltas: z
+    .object({
+      literacy: z.number().min(-0.15).max(0.15).optional(),
+      numeracy: z.number().min(-0.15).max(0.15).optional(),
+      craft: z.number().min(-0.15).max(0.15).optional(),
+      social: z.number().min(-0.15).max(0.15).optional(),
+    })
+    .strict()
+    .optional(),
+  capability: z.enum(['none', 'literacy', 'numeracy', 'craft', 'social', 'health']).optional(),
+});
 
 export type ParsedWishReading = z.infer<typeof WishReadingSchema> & {
   traitDeltas: Partial<Record<keyof Person['traits'], number>>;
@@ -67,7 +76,10 @@ export function wishMessages(input: WishInput) {
         '你只输出严格 JSON，字段为：interpretation（不超过300字的中文，说明这个愿望在这个家庭和时代里可能意味着什么，以及它的矛盾/代价），' +
         'focus（education|work|family|faith|politics|health|craft|none 之一），' +
         'traitDeltas（只允许 care/ambition/tradition/openness/conscientiousness/extraversion/agreeableness/neuroticism，每项 -0.08..0.08，最多4项），' +
-        'taboo（可为 null，不超过200字，写孩子可能不愿触碰的边界，不是预言）。' +
+        'taboo（可为 null，不超过200字，写孩子可能不愿触碰的边界，不是预言），' +
+        'privateGoal（可选，不超过200字，一个具体但可能失败的私人目标），' +
+        'skillDeltas（可选，只允许 literacy/numeracy/craft/social，每项 -0.15..0.15），' +
+        'capability（none|literacy|numeracy|craft|social|health，只能作为事件权重/技能倾向，不是超能力）。' +
         '不要写“多年后”“从此”“她决定”等未来总结；只写对这个愿望的当前理解。不要输出 JSON 以外的文字。',
     },
     {

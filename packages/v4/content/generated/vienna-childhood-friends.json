@@ -1,0 +1,482 @@
+{
+  "id": "vienna-childhood-friends",
+  "title": "同学、院子与第一份秘密",
+  "stage": "childhood",
+  "ageWindow": {
+    "min": 7,
+    "max": 12
+  },
+  "tags": [
+    "childhood",
+    "social",
+    "school",
+    "street"
+  ],
+  "baseRate": 0.35,
+  "conditions": [
+    {
+      "kind": "placeKind",
+      "in": [
+        "home",
+        "school",
+        "street"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-childhood-friends.hidden-book",
+      "title": "藏在砖缝里的书",
+      "weight": 1,
+      "rate": 0.25,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 7,
+          "max": 12
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 12
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "book-borrowed-and-returned",
+          "weight": 1,
+          "text": "{subject}从{teacher}那里借来一本缺了封面的冒险故事书，答应只在课间看。三天后书角被雨淋皱，{subject}用熨斗隔着布把它压平，还书时{teacher}翻了翻，只说下次别带进院子。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "偷偷读完了整本故事书"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "按时还书并承认书角淋了雨"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "book-borrowed-and-returned",
+              "text": "{subject}把书压在床垫下睡了三天。还书时{teacher}用手指抹过皱起的书角，没抬头，只说了句“下回别让雨看见它”。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "book-borrowed-and-returned",
+              "text": "书角是{subject}在院子石阶上睡着时淋湿的。{teacher}把书举到窗边看了看，又放回{subject}手里：“压平了再还我。”{subject}用母亲的熨斗垫着旧布烫了半个钟头。",
+              "tone": [
+                "warm"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "book-confiscated",
+          "weight": 1,
+          "text": "{subject}在课堂上把书藏在算术本下面，被{teacher}抽走。{teacher}翻到折角那页，罚{subject}放学后擦一星期黑板，但没把书交给校长。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "书被没收并罚擦黑板"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "fear": 0.1,
+              "trust": 0.05,
+              "reason": "老师没把书交上去，但罚了劳动"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "book-confiscated",
+              "text": "{teacher}用两根手指把书从算术本底下抽出来。放学后{subject}站在黑板前，粉笔灰落进袖口，书就搁在讲台上，谁也没碰。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "book-confiscated",
+              "text": "书被抽走时{subject}的手指还按在“第四章”上。{teacher}把书脊朝下放进抽屉，说擦完黑板自己来拿。{subject}擦到第三遍时，抽屉已经锁了。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-childhood-friends.courtyard-race",
+      "title": "院子里的赛跑赌局",
+      "weight": 1,
+      "rate": 0.3,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "home",
+            "street"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 12
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "won-the-race-lost-a-button",
+          "weight": 1,
+          "text": "{subject}和院子里的孩子绕晒衣绳跑三圈，赌注是两颗玻璃弹珠。{subject}赢了，但外套第二颗纽扣崩飞进下水道。{neighbor}从窗口探出头骂了一句，又扔下一根别针让{subject}把衣襟别住。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "赛跑赢了玻璃弹珠"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "邻居给别针救急"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "won-the-race-lost-a-button",
+              "text": "{subject}冲线时外套扣子飞出去，滚进铁栅栏下的水沟。{neighbor}在二楼敲窗框，骂跑得太野，然后垂下一根别针，线头上还穿着。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "won-the-race-lost-a-button",
+              "text": "三圈跑完{subject}喘着气摊开手掌，两颗弹珠归自己。胸口凉飕飕的——第二颗扣子没了。{neighbor}下楼倒水时看见了，回屋拿了根别针，别在衣襟内侧。",
+              "tone": [
+                "warm"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fell-on-wet-stones",
+          "weight": 1,
+          "text": "{subject}在第二圈踩上晒衣绳滴下的湿石板，膝盖磕破一层皮。{neighbor}端出半盆清水冲伤口，用干净手帕扎紧，没收了{subject}兜里赢来的弹珠。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "膝盖在湿石板上磕破"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "邻居包扎伤口并暂扣弹珠"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fell-on-wet-stones",
+              "text": "{subject}滑倒时膝盖先着地，裤腿洇出一小片红。{neighbor}拎着水壶出来，冲掉沙砾，手帕打了个死结，说：“弹珠我先拿着，等你妈不骂了再还。”",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "fell-on-wet-stones",
+              "text": "湿石板是晒衣绳滴的水。{subject}趴在地上，听见{neighbor}的拖鞋声由远及近。半盆凉水冲下去，{subject}咬住嘴唇，{neighbor}把赢来的弹珠全收进围裙口袋，说这是伤药钱。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-childhood-friends.secret-kiosk",
+      "title": "报亭后的秘密画片",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "street",
+            "school"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 12
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "traded-for-picture",
+          "weight": 1,
+          "text": "{subject}在报亭后面和同学交换画片，用一块咬了一半的糖换到一张火车头。{neighbor}是报亭摊主，看见糖纸掉在地上，扣下画片，让{subject}把地扫干净才还。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "画片被摊主扣下"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "fear": 0.05,
+              "reason": "扫完地才拿回画片"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "traded-for-picture",
+              "text": "{neighbor}用扫帚柄把糖纸拨到{subject}脚边：“扫干净，画片就还你。”{subject}扫了半条人行道，最后一张火车头画片被{neighbor}夹在旧报纸里递回来，边角折了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "traded-for-picture",
+              "text": "画片刚到手，{neighbor}就从报亭窗户后面伸手抽走了。{subject}扫完地，{neighbor}把画片往柜台上一拍，糖纸粘在背面，撕了半天。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "found-coin-under-rack",
+          "weight": 1,
+          "text": "{subject}在报亭的明信片架子下面摸到一枚两赫勒硬币，攥着没吭声。{neighbor}正背对着数报纸，{subject}用这枚硬币买了一张画片，{neighbor}找零时多看了{subject}一眼，没问。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.02,
+              "reason": "买画片花掉捡到的硬币"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "conditionId": "guilty-secret",
+              "reason": "偷偷留下了捡到的钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "摊主多看了一眼但没追问"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "found-coin-under-rack",
+              "text": "硬币粘在架子脚的灰里。{subject}把它在裤子上蹭亮，买了那张早就想要的画片。{neighbor}找零时手指在柜台上停了一拍，然后把钱推过来。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "found-coin-under-rack",
+              "text": "{subject}蹲着系鞋带，看见银边在明信片架下反光。两赫勒够买一张画片。{neighbor}正对着账本，{subject}把硬币拍在柜台上，说“买这张”，声音比预想的响。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-childhood-friends.hand-in-hand",
+      "title": "教室后排的手套",
+      "weight": 1,
+      "rate": 0.25,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "school"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 8,
+          "max": 12
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 12
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "glove-left-behind",
+          "weight": 1,
+          "text": "{subject}的同桌在课间塞给{subject}一只旧毛线手套，说是从家里多出来的。放学时同桌被家里叫走，手套落在{subject}的课桌抽屉里。{subject}把它带回家，藏进枕头套，谁也没说。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "收到同桌悄悄塞的手套"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "conditionId": "keeps-small-treasure",
+              "reason": "枕头下藏着一只旧毛线手套"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "glove-left-behind",
+              "text": "手套是深灰色，指尖磨薄了。{subject}把它卷进作业本带回家，晚上塞进枕头套。第二天{subject}的手在课上一直放在桌子底下，攥着那只手套的边。",
+              "tone": [
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "glove-left-behind",
+              "text": "同桌把手套塞过来时说了句“反正少一只”，就跑去院子了。放学后{subject}打开抽屉，手套还在。带回家时{subject}故意把书包斜着背，让手套压在课本底下。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "teacher-asks",
+          "weight": 1,
+          "text": "{subject}在课上传手套，被{teacher}看见。{teacher}课后让{subject}留下来，问手套是谁给的。{subject}说“捡的”，{teacher}没拆穿，但把手套放在讲台上，说没人认领就交给门房。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "撒谎后被老师把手套留在讲台"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "fear": 0.1,
+              "trust": -0.05,
+              "reason": "老师看出在撒谎但没追究"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "teacher-asks",
+              "text": "{teacher}把手套摊在讲台上，问了三遍。{subject}咬定是捡的。{teacher}把粉笔盒压在上面，说：“放学到门房问一声。”{subject}盯着那只手套，直到铃响。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "teacher-asks",
+              "text": "手套在课桌底下传回来时被{teacher}截住。{subject}说捡的，{teacher}没追问，只把手套搁在讲桌角上，压在一摞听写本下面，只露出几根手指。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

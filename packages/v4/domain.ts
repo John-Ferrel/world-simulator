@@ -84,6 +84,12 @@ export type Person = {
     focus?: 'education' | 'work' | 'family' | 'faith' | 'politics' | 'health' | 'craft' | 'none';
     /** A private boundary the child may later act around, stored as text. */
     taboo?: string;
+    /** One concrete private goal; not a guaranteed plot. */
+    privateGoal?: string;
+    /** Bounded skill nudges applied by the birth compiler. */
+    skillDeltas?: Partial<PersonLife['skills']>;
+    /** A bounded affinity used by event weighting. */
+    capability?: 'none' | 'literacy' | 'numeracy' | 'craft' | 'social' | 'health';
     compiledBy?: string;
     compiledAt?: WorldDate;
     createdAt: WorldDate;
@@ -294,12 +300,12 @@ export type EventEffect =
       respect?: number;
       reason: string;
     }
+  | { type: 'relation_end'; a: Id; b: Id; kind: Relation['kind']; reason: string }
   | { type: 'role'; personId: Id; role: string; add: boolean; reason: string }
   | { type: 'project'; project: Project }
   | { type: 'interaction'; interaction: Interaction }
   | { type: 'move'; personId: Id; locationId: Id; reason: string }
   | { type: 'household'; personId: Id; householdId: Id; reason: string }
-  | { type: 'residence'; householdId: Id; residenceId: Id; reason: string }
   | { type: 'residence'; householdId: Id; residenceId: Id; reason: string }
   | {
       type: 'birth';
@@ -312,7 +318,15 @@ export type EventEffect =
       childId?: Id;
       childName?: string;
     }
-  | { type: 'death'; personId: Id; cause: string; reason: string }
+  | {
+      type: 'death';
+      personId: Id;
+      cause: string;
+      reason: string;
+      /** Filled when an extinct household's cash passes to an heir. */
+      estateTo?: Id;
+      estateAmount?: number;
+    }
   | {
       type: 'estate';
       personId: Id;
@@ -381,19 +395,28 @@ export type SceneCondition =
   | { kind: 'cash'; householdId?: 'subject'; min?: number; max?: number }
   | { kind: 'householdSize'; min?: number; max?: number }
   | { kind: 'overcrowded'; value: boolean }
-  | { kind: 'householdSize'; min?: number; max?: number }
-  | { kind: 'overcrowded'; value: boolean }
   | { kind: 'health'; min?: number; max?: number }
   | { kind: 'education'; in: Person['education']['status'][] }
   | { kind: 'employment'; employed: boolean }
   | { kind: 'placeKind'; in: Place['kind'][] }
   | { kind: 'hasRole'; role: string }
+  | { kind: 'notHasRole'; role: string }
   | { kind: 'hasRelation'; relationKind: Relation['kind']; minTrust?: number }
   | { kind: 'notHasRelation'; relationKind: Relation['kind'] }
   | { kind: 'worldYear'; min?: number; max?: number }
   | { kind: 'pressure'; key: string; min: number };
 
 export type SceneEffect = EventEffect; // v4 effects are the same typed vocabulary.
+
+export type NarrationVariant = {
+  id: string;
+  /** Outcome id or `default`. */
+  key: string;
+  text: string;
+  conditions?: SceneCondition[];
+  /** Optional tonal tags (dry, tender, cruel, bureaucratic). */
+  tone?: string[];
+};
 
 export type SceneOutcome = {
   id: string;
@@ -403,6 +426,8 @@ export type SceneOutcome = {
   immediateText: string;
   effects: SceneEffect[];
   followupSceneIds?: string[];
+  /** Optional key used by the narration library; defaults to outcome id. */
+  narrationKey?: string;
   significance?: number;
 };
 
@@ -428,6 +453,16 @@ export type SceneDefinition = {
   /** Forced situations (infant illness, external disaster) use outcomes directly. */
   outcomes?: SceneOutcome[];
   tags: string[];
+  /** Content tree family. Runtime may use it for rate/eligibility policy. */
+  familyId?: string;
+  /** Ordinary statistical chance per person-year. Fact/followup triggers ignore it. */
+  rate?: number;
+  /** Fact-triggered and action scenes bypass ordinary density control. */
+  triggerMode?: 'statistical' | 'fact' | 'action';
+  /** Weight used when more than one eligible event competes. */
+  weight?: number;
+  /** Narration variants keyed by outcome id. */
+  narration?: NarrationVariant[];
   historicalBasis?: string;
   sourceIds?: string[];
   /**
@@ -445,6 +480,16 @@ export type SceneDefinition = {
   /** If true, only one focal scene per person per age window. */
   oncePerPerson?: boolean;
   cooldownYears?: number;
+};
+
+export type ScheduledEvent = {
+  id: string;
+  sceneId: string;
+  subjectId: Id;
+  due: WorldDate;
+  causeEventId?: Id;
+  depth: number;
+  source: 'followup' | 'fact' | 'action';
 };
 
 export type SceneInstance = {
@@ -478,7 +523,12 @@ export type WorldState = {
   scenes: SceneInstance[];
   /** Content can reference a small set of world-level pressures. */
   pressures: Record<string, number>;
-  historyMeta: { lastSceneId?: string; lastEventId?: string; sequence: number };
+  historyMeta: {
+    lastSceneId?: string;
+    lastEventId?: string;
+    sequence: number;
+    scheduledEvents?: ScheduledEvent[];
+  };
   status: 'running' | 'archived';
   terminalReason?: string;
 };

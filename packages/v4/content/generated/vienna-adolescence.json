@@ -1,0 +1,570 @@
+{
+  "id": "vienna-adolescence",
+  "title": "十四岁前后的选择",
+  "stage": "adolescence",
+  "ageWindow": {
+    "min": 12,
+    "max": 17
+  },
+  "tags": [
+    "adolescence",
+    "school",
+    "work",
+    "family",
+    "social"
+  ],
+  "baseRate": 0.32,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 12,
+      "max": 17
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-adolescence.workshop-apprentice",
+      "title": "作坊学徒",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 17
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 17
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "workshop"
+        },
+        {
+          "key": "mother",
+          "kind": "parent",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "apprenticeship-accepted",
+          "weight": 2,
+          "text": "{subject}跟着{mother}走进{workplace}，{employer}让{subject}推了十分钟刨子，木花落了一地，当场收下当学徒，讲好每周一先交三天的饭钱。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "{subject}学徒首周的膳食预付款"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "在木工作坊学到推刨和量尺"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.1,
+              "fear": 0.05,
+              "reason": "{employer}当场收徒并交代规矩"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "affection": 0.05,
+              "obligation": 0.05,
+              "reason": "{mother}带{subject}去作坊谈学徒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "accepted-a",
+              "key": "apprenticeship-accepted",
+              "text": "{subject}跟着{mother}走进{workplace}，{employer}让{subject}推了十分钟刨子，木花落了一地，当场收下当学徒，讲好每周一先交三天的饭钱。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "accepted-b",
+              "key": "apprenticeship-accepted",
+              "text": "{employer}用拇指蹭了蹭{subject}推刨时压出的木纹，点头说留下，{mother}从手帕里数出三枚硬币放在工作台上。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "apprenticeship-rejected",
+          "weight": 1,
+          "text": "{employer}看了看{subject}的手掌，说太薄，推不了硬木，让{mother}领回去。{subject}在门口站了一会儿，听见里面刨子又响起来。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "被作坊拒绝当学徒"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "{employer}当面拒绝收徒"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "affection": -0.03,
+              "obligation": 0.05,
+              "reason": "{mother}白跑一趟作坊"
+            }
+          ],
+          "narration": [
+            {
+              "id": "rejected-a",
+              "key": "apprenticeship-rejected",
+              "text": "{employer}看了看{subject}的手掌，说太薄，推不了硬木，让{mother}领回去。{subject}在门口站了一会儿，听见里面刨子又响起来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "rejected-b",
+              "key": "apprenticeship-rejected",
+              "text": "{employer}把{subject}推好的木条翻过来看了一眼，说歪了，学徒名额已经满了，{mother}把手里攥着的三枚硬币又放回手帕。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-adolescence.brothers-torn-jacket",
+      "title": "哥哥的旧外套",
+      "weight": 1,
+      "rate": 0.18,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 17
+        },
+        {
+          "kind": "householdSize",
+          "min": 4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 17
+        },
+        {
+          "key": "father",
+          "kind": "parent",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sew-it-yourself",
+          "weight": 2,
+          "text": "{subject}把哥哥留下的灰外套摊在厨房桌上，自己用粗线把腋下的裂口缝上，针脚歪歪扭扭。{father}看了一眼，没说话，把自己那碗汤推过去半碗。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "自己缝补外套裂口"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "{father}分给{subject}半碗汤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$father",
+              "kind": "kin",
+              "affection": 0.06,
+              "trust": 0.04,
+              "reason": "{father}看见{subject}自己补衣服"
+            }
+          ],
+          "narration": [
+            {
+              "id": "sew-a",
+              "key": "sew-it-yourself",
+              "text": "{subject}把哥哥留下的灰外套摊在厨房桌上，自己用粗线把腋下的裂口缝上，针脚歪歪扭扭。{father}看了一眼，没说话，把自己那碗汤推过去半碗。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "sew-b",
+              "key": "sew-it-yourself",
+              "text": "{subject}坐在窗边借着最后一点天光补外套，线用完三次又接上。{father}把煤油灯往{subject}那边挪了挪，说下个月再买线。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sell-the-coat",
+          "weight": 1,
+          "text": "{subject}把外套拿到巷口的旧货贩子那里，换回两个铜板，藏在鞋垫底下。晚上{father}发现外套不见了，盯着空衣钩看了很久。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "卖掉哥哥旧外套"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$father",
+              "kind": "kin",
+              "trust": -0.08,
+              "fear": 0.05,
+              "reason": "{father}发现外套被卖掉"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "背着父亲卖掉外套"
+            }
+          ],
+          "narration": [
+            {
+              "id": "sell-a",
+              "key": "sell-the-coat",
+              "text": "{subject}把外套拿到巷口的旧货贩子那里，换回两个铜板，藏在鞋垫底下。晚上{father}发现外套不见了，盯着空衣钩看了很久。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "sell-b",
+              "key": "sell-the-coat",
+              "text": "{subject}把灰外套叠好塞给旧货贩子，贩子捏了捏袖口，只肯给两个铜板。{father}晚饭时问外套去哪了，{subject}说晾在外面忘了收。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-adolescence.school-or-brickworks",
+      "title": "学校还是砖厂",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 14
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 14
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "father",
+          "kind": "parent",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "stay-in-school",
+          "weight": 1,
+          "text": "{teacher}在放学后把{subject}留在教室里，指着算术本上最后一道题说，再念一年，也许能进商业学校。{father}在门外听完，把帽檐压低了半指。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "继续上学并准备商业学校考试"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "respect": 0.1,
+              "reason": "{teacher}鼓励{subject}继续读书"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$father",
+              "kind": "kin",
+              "obligation": 0.06,
+              "reason": "{father}听闻{subject}可能继续升学"
+            }
+          ],
+          "narration": [
+            {
+              "id": "school-a",
+              "key": "stay-in-school",
+              "text": "{teacher}在放学后把{subject}留在教室里，指着算术本上最后一道题说，再念一年，也许能进商业学校。{father}在门外听完，把帽檐压低了半指。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "school-b",
+              "key": "stay-in-school",
+              "text": "{teacher}用粉笔在黑板角落写下商业学校的报名费，{subject}盯着那个数字。{father}最后说，再念一年，砖厂不会跑。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "go-to-brickworks",
+          "weight": 2,
+          "text": "{father}把{subject}的算术本合上，说下周一跟着街尾的工头去砖厂。{teacher}在门口拦住{subject}，递来一张抄着夜校地址的纸条，{subject}把它折进鞋垫。",
+          "effects": [
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "brickworks_laborer",
+              "add": true,
+              "reason": "进入砖厂做工"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "{subject}砖厂首周工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "砖厂头几天搬砖"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "key": "has-evening-school-address",
+              "value": true,
+              "reason": "{teacher}给了夜校地址纸条"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "respect": 0.05,
+              "obligation": 0.04,
+              "reason": "{teacher}塞给{subject}夜校地址"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$father",
+              "kind": "kin",
+              "obligation": 0.08,
+              "fear": 0.03,
+              "reason": "{father}决定让{subject}去砖厂"
+            }
+          ],
+          "narration": [
+            {
+              "id": "brick-a",
+              "key": "go-to-brickworks",
+              "text": "{father}把{subject}的算术本合上，说下周一跟着街尾的工头去砖厂。{teacher}在门口拦住{subject}，递来一张抄着夜校地址的纸条，{subject}把它折进鞋垫。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "brick-b",
+              "key": "go-to-brickworks",
+              "text": "{father}带{subject}去砖厂，工头掀开{subject}的袖口看了看胳膊，说行。{teacher}的夜校纸条被汗水洇软，{subject}把它贴在砖垛上晾干。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-adolescence.stolen-roll",
+      "title": "面包房后的半个面包",
+      "weight": 1,
+      "rate": 0.16,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 17
+        },
+        {
+          "kind": "cash",
+          "max": 5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 17
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "caught-and-returned",
+          "weight": 2,
+          "text": "{subject}刚把面包房后门筐里的半个黑面包塞进怀里，{neighbor}就从晾衣绳后面走出来，一言不发地伸手。{subject}把面包放回去，手背上被{neighbor}用指节敲了两下。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "被{neighbor}当场抓住拿面包"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "fear": 0.12,
+              "reason": "{neighbor}抓住{subject}并敲了手背"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "偷面包被抓且没吃到"
+            }
+          ],
+          "narration": [
+            {
+              "id": "caught-a",
+              "key": "caught-and-returned",
+              "text": "{subject}刚把面包房后门筐里的半个黑面包塞进怀里，{neighbor}就从晾衣绳后面走出来，一言不发地伸手。{subject}把面包放回去，手背上被{neighbor}用指节敲了两下。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "caught-b",
+              "key": "caught-and-returned",
+              "text": "{neighbor}拎着{subject}的后领子把面包从怀里掏出来，放回筐里，说下回就告诉面包师。{subject}空着手回家，晚饭时盯着碗底。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "share-the-roll",
+          "weight": 1,
+          "text": "{neighbor}看见{subject}蹲在面包房后门，没喊人，从自己篮子里掰下半个面包递过去，说别让面包师看见。{subject}吃完把面包皮留给了{neighbor}的狗。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "{neighbor}给的半个面包"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.06,
+              "reason": "{neighbor}分面包给{subject}"
+            }
+          ],
+          "narration": [
+            {
+              "id": "share-a",
+              "key": "share-the-roll",
+              "text": "{neighbor}看见{subject}蹲在面包房后门，没喊人，从自己篮子里掰下半个面包递过去，说别让面包师看见。{subject}吃完把面包皮留给了{neighbor}的狗。",
+              "tone": [
+                "warm"
+              ]
+            },
+            {
+              "id": "share-b",
+              "key": "share-the-roll",
+              "text": "{neighbor}把{subject}拉到楼梯间，从篮子里摸出半个面包，说以后饿了就敲她家门，别在面包房后门转。{subject}把面包分了一半带回家。",
+              "tone": [
+                "warm"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

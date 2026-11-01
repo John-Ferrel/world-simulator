@@ -22,7 +22,8 @@ import {
   VIENNA_1912_CHRONICLE,
   VIENNA_1912_SCENES,
 } from '../../packages/v4/content/vienna-1912.js';
-import { VIENNA_FAMILY_SCENES } from '../../packages/v4/content/vienna-family.js';
+import { VIENNA_FAMILY_RUNTIME_SCENES } from '../../packages/v4/content/vienna-family.js';
+import { GENERATED_SCENES } from '../../packages/v4/content/generated/index.js';
 import { VIENNA_LIFE_SCENES } from '../../packages/v4/content/vienna-life.js';
 
 const sha = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -403,10 +404,12 @@ export function makeV4Api() {
 }
 
 const sceneTitles = new Map(
-  [...VIENNA_1912_SCENES, ...VIENNA_LIFE_SCENES, ...VIENNA_FAMILY_SCENES].map((scene) => [
-    scene.id,
-    scene.title,
-  ]),
+  [
+    ...VIENNA_1912_SCENES,
+    ...VIENNA_LIFE_SCENES,
+    ...VIENNA_FAMILY_RUNTIME_SCENES,
+    ...GENERATED_SCENES,
+  ].map((scene) => [scene.id, scene.title]),
 );
 
 function projectEvent(world: WorldState, event: EventFact) {

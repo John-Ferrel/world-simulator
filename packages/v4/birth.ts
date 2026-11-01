@@ -113,6 +113,12 @@ export function createV4Birth(
       nutrition: 0.72,
     },
     traits: defaultTraits(childId),
+    life: {
+      mood: 0,
+      reputation: 0,
+      skills: { literacy: 0, numeracy: 0, craft: 0, social: 0 },
+      flags: [],
+    },
     education: { status: 'none', level: 0 },
     roles: ['infant', 'child'],
     appearance: input.appearance,

@@ -1,0 +1,654 @@
+{
+  "id": "vienna-printshop-daily",
+  "title": "印刷厂的普通一天",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 60
+  },
+  "tags": [
+    "work",
+    "factory",
+    "labour",
+    "social"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "employment",
+      "employed": true
+    },
+    {
+      "kind": "placeKind",
+      "in": [
+        "factory"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-printshop-daily.lead-type",
+      "title": "铅字盘上的烫伤",
+      "weight": 1,
+      "rate": 0.24,
+      "conditions": [
+        {
+          "kind": "health",
+          "min": 0.3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80,
+          "organizationKind": "factory"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "lead-type-burn-keep-quiet",
+          "weight": 1,
+          "text": "{subject}在{workplace}的排字台前被一块刚浇铸的铅字烫到左手掌，起了水泡。{employer}看了一眼，说换块湿布包上就回去干活，不要耽误明天的晨报。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "手掌被滚烫铅字烫伤"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.2,
+              "reason": "当日未扣工的计件工资"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.06,
+              "fear": 0.08,
+              "reason": "对方不许停工包扎"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lead-type-burn-keep-quiet",
+              "text": "铅字从字模里落下来还带着热度，{subject}一把抓住，掌心立刻鼓起一串水泡。{employer}只说了句湿布，晨报不能晚。",
+              "tone": [
+                "dry",
+                "grim"
+              ]
+            }
+          ],
+          "followupIds": [
+            "vienna-printshop-daily.wage-shortfall"
+          ]
+        },
+        {
+          "id": "lead-type-burn-clinic",
+          "weight": 1,
+          "text": "{subject}把烫伤的手包起来，趁午休走到街角的工人互助所，让人挑破水泡、涂了药膏，花了几个铜板。下午回到{workplace}时，{employer}在门口盯着迟到的那半小时。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "在互助所处理烫伤"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.8,
+              "reason": "互助所药膏和纱布钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.04,
+              "fear": 0.05,
+              "reason": "午休超时被记下"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lead-type-burn-clinic",
+              "text": "互助所的护士用针尖挑开水泡，{subject}咬着牙没出声。回到厂里，{employer}把怀表盖合上，只说了句下次早点回来。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ],
+          "followupIds": [
+            "vienna-printshop-daily.wage-shortfall"
+          ]
+        },
+        {
+          "id": "lead-type-burn-hide",
+          "weight": 1,
+          "text": "{subject}把烫伤的手揣进围裙，谁也没说，照常把整版铅字排完。晚上回家手指肿得握不住勺子。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "烫伤未处理，手指肿胀"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.5,
+              "reason": "满工计件工资"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "独自忍着痛"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lead-type-burn-hide",
+              "text": "围裙底下那块布慢慢渗出水，{subject}照样把字盘一格一格推回原位。到家时手指直挺挺的，连汤匙都拿不稳。",
+              "tone": [
+                "grim"
+              ]
+            }
+          ],
+          "followupIds": [
+            "vienna-printshop-daily.wage-shortfall"
+          ]
+        }
+      ],
+      "followupIds": [
+        "vienna-printshop-daily.overtime-order",
+        "vienna-printshop-daily.union-pamphlet"
+      ]
+    },
+    {
+      "id": "vienna-printshop-daily.overtime-order",
+      "title": "午夜加印",
+      "weight": 1,
+      "rate": 0.22,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18
+        },
+        {
+          "kind": "health",
+          "min": 0.35
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "overtime-accept",
+          "weight": 1,
+          "text": "{employer}需要在明早之前加印一批选举传单，{subject}和{worker}留在{workplace}，油灯点到后半夜。机器停下时每人多拿了一点加班钱，手上全是油墨。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2.4,
+              "reason": "通宵加班费"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "通宵站立和油墨气味"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.08,
+              "obligation": 0.05,
+              "reason": "一起熬过一夜"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "overtime-accept",
+              "text": "油灯下{worker}递过来一块干面包，{subject}一边啃一边把纸喂进压印机。天蒙蒙亮时{employer}数出几枚硬币拍在桌上，没多一句话。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "overtime-refuse",
+          "weight": 1,
+          "text": "{subject}说家里有人等着，把围裙挂在钉子上就走了。第二天{employer}把最费眼的细号活派下来，一整天没提加班的事。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.1,
+              "fear": 0.06,
+              "reason": "拒绝临时加班"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "按时回家"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被排除在急件工序外"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "overtime-refuse",
+              "text": "{subject}把围裙挂回钉子，走过{employer}身边时两人都没说话。第二天字盘上摊着整版六号小字，眼睛要贴着看。",
+              "tone": [
+                "dry",
+                "somber"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "overtime-bargain",
+          "weight": 1,
+          "text": "{subject}没有直接答应，而是问{employer}要按双倍计件。{employer}骂了一句，最后还是点了头，但把印数往上加了两成。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3.6,
+              "reason": "议价后的加班工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "更大的印数，更长的夜"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.03,
+              "respect": 0.07,
+              "reason": "敢当面讨价"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "overtime-bargain",
+              "text": "{subject}伸出两根手指，{employer}先是拍了一下字盘，随后把印数报得更高。两人都在纸上签了字，墨还没干就开机了。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-printshop-daily.union-pamphlet",
+      "title": "不该印的那张纸",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "worker",
+          "kind": "union_member",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "pamphlet-print-secretly",
+          "weight": 1,
+          "text": "{worker}趁夜班把一版工会呼吁加薪的传单塞进{subject}的排字盘里，说是替工友印的，谁都不会知道。{subject}把那张纸压到排版最底层，机器照样轰隆转。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "key": "printed_union_pamphlet",
+              "value": true,
+              "reason": "私印工会传单"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.12,
+              "obligation": 0.1,
+              "reason": "共担风险"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "担心被人看出"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pamphlet-print-secretly",
+              "text": "{worker}的传单夹在商业广告背面，{subject}一张一张过机，眼睛盯着门口。成品叠进纸箱最底下，盖上旧报纸。",
+              "tone": [
+                "tense",
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pamphlet-report",
+          "weight": 1,
+          "text": "{subject}把{worker}递来的传单样张交到{employer}桌上。当天下午那张纸就不见了，{worker}被叫进办公室，出来时不再看{subject}。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.45,
+              "fear": 0.2,
+              "reason": "向雇主告发"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.5,
+              "reason": "雇主给的赏钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.15,
+              "reason": "车间里传开告密的事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pamphlet-report",
+              "text": "样张放在{employer}的吸墨纸上，对方只说了一句知道了。{worker}从办公室出来时脸是白的，走过字盘时肩膀撞了{subject}一下。",
+              "tone": [
+                "grim"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pamphlet-refuse",
+          "weight": 1,
+          "text": "{subject}把传单推回{worker}手里，说这活不能在我这台机上印。{worker}收起纸走了，第二天车间里多了一个不说笑的角落。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.1,
+              "respect": 0.05,
+              "reason": "拒绝但没告发"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "夹在中间"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pamphlet-refuse",
+              "text": "{subject}把纸推回去时手指在桌面上敲了两下。{worker}什么也没说，把纸折进内袋。之后几天两人只用眼神点头。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "followupIds": [
+        "vienna-printshop-daily.lead-type"
+      ]
+    },
+    {
+      "id": "vienna-printshop-daily.wage-shortfall",
+      "title": "星期五的工钱袋",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "cash",
+          "max": 40
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "wage-count-dispute",
+          "weight": 1,
+          "text": "星期五发工钱时，{subject}数出袋里少了一天的钱。{employer}说是上回弄坏的字模要从工钱里扣，{worker}在旁边盯着地板没吭声。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.8,
+              "reason": "被扣的字模赔偿"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.14,
+              "fear": 0.07,
+              "reason": "工钱被克扣"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "到手的钱不够"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wage-count-dispute",
+              "text": "{subject}把硬币在掌心排开又数了一遍，还是少。{employer}从架子上取下一块缺角的字模，在桌上敲了敲，算是解释。",
+              "tone": [
+                "grim",
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wage-argue-and-win",
+          "weight": 1,
+          "text": "{subject}把扣款的事提到厂里的老工人面前，几个人一起找{employer}说了半刻钟。最后那笔钱退回来一部分，但{subject}的名字被记在一张纸上。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "退还的部分扣款"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.08,
+              "fear": 0.1,
+              "reason": "带头争执"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.15,
+              "respect": 0.08,
+              "reason": "出面替大家说话"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wage-argue-and-win",
+              "text": "{worker}和另外两个人跟着{subject}去了办公室门口。{employer}最后从抽屉里摸出几枚硬币，边给边在本子上写了一行字。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wage-take-it",
+          "weight": 1,
+          "text": "{subject}把少了钱的工钱袋塞进内袋，没再问。回家路上买了两块面包，比平时少一块。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.8,
+              "reason": "工钱被扣"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "买的食物减少"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "咽下这口气"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wage-take-it",
+              "text": "工钱袋比平时轻，{subject}在手里掂了一下就收起来。面包铺前站了一会儿，最后只要了两块。",
+              "tone": [
+                "somber"
+              ]
+            }
+          ]
+        }
+      ],
+      "followupIds": [
+        "vienna-printshop-daily.overtime-order"
+      ]
+    }
+  ]
+}

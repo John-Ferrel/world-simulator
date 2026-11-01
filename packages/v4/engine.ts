@@ -24,8 +24,10 @@ import {
   type Household,
   type Id,
   type Interaction,
+  type NarrationVariant,
   type Organization,
   type Person,
+  type PersonLife,
   type Place,
   type Project,
   type Relation,
@@ -35,6 +37,7 @@ import {
   type SceneInstance,
   type SceneOutcome,
   type SceneStage,
+  type ScheduledEvent,
   type WorldDate,
   type WorldState,
 } from './domain.js';
@@ -71,6 +74,13 @@ export type V4AdvanceOptions = {
   choicePolicy?: V4ChoicePolicy;
   /** Maximum resolved focal scenes per living person per year. Defaults to 1. */
   maxScenesPerPerson?: number;
+  /**
+   * New event runtime: multiple ordinary events per year, rate-based sampling,
+   * fact/followup queue. Defaults to false so old fixtures remain stable.
+   */
+  eventRuntime?: boolean;
+  /** Soft cap for ordinary statistical events per person-year. Fact events bypass. */
+  maxOrdinaryEventsPerPerson?: number;
   economy?: {
     /** Defaults to true. Scenes still run when false. */
     enabled?: boolean;
@@ -98,6 +108,7 @@ export type V4EconomyDiagnostics = {
   foodSpent: number;
   foodConsumed: number;
   foodShortageMonths: number;
+  overcrowdedMonths: number;
 };
 
 export type V4AdvanceDiagnostics = {
@@ -124,6 +135,8 @@ export type V4AdvanceResult = {
 
 type NormalizedOptions = {
   maxScenesPerPerson: number;
+  eventRuntime: boolean;
+  maxOrdinaryEventsPerPerson: number;
   economyEnabled: boolean;
   foodPerPersonPerMonth: number;
   outcomePolicy?: V4OutcomePolicy;
@@ -162,6 +175,7 @@ type EventDraft = {
   subjectId: Id;
   participants: EventParticipant[];
   action: string;
+  title?: string;
   causes?: Id[];
   effects: EventEffect[];
   immediateText: string;
@@ -278,6 +292,7 @@ export function advanceV4Year(
       foodSpent: 0,
       foodConsumed: 0,
       foodShortageMonths: 0,
+      overcrowdedMonths: 0,
     },
     warnings: [],
   };
@@ -309,9 +324,11 @@ export function advanceV4Year(
   // reached after the calendar advance.
   draft.date = from;
   reapVitalityZero(context, from);
-  runScenes(context, definitions, from, resolvedCounts, true);
-  reapVitalityZero(context, from);
-  assertWorldV4(draft);
+  if (!normalized.eventRuntime) {
+    runScenes(context, definitions, from, resolvedCounts, true);
+    reapVitalityZero(context, from);
+    assertWorldV4(draft);
+  }
 
   if (normalized.economyEnabled) {
     for (let month = 1; month <= 12; month += 1) {
@@ -330,7 +347,12 @@ export function advanceV4Year(
   // Reap pre-existing zero vitality before casting, so a corpse is never
   // selected as a scene role.
   reapVitalityZero(context, target);
-  runScenes(context, definitions, target, resolvedCounts, false);
+  if (normalized.eventRuntime) {
+    processScheduledEvents(context, definitions, target);
+    runEventYear(context, definitions, target, resolvedCounts);
+  } else {
+    runScenes(context, definitions, target, resolvedCounts, false);
+  }
   reapVitalityZero(context, target);
   draft.date = target;
 
@@ -366,6 +388,12 @@ function normalizeOptions(options: V4AdvanceOptions): NormalizedOptions {
       : 1;
   return {
     maxScenesPerPerson,
+    eventRuntime: options.eventRuntime === true,
+    maxOrdinaryEventsPerPerson:
+      typeof options.maxOrdinaryEventsPerPerson === 'number' &&
+      Number.isFinite(options.maxOrdinaryEventsPerPerson)
+        ? Math.max(0, Math.min(20, Math.floor(options.maxOrdinaryEventsPerPerson)))
+        : 4,
     economyEnabled: options.economy?.enabled !== false,
     foodPerPersonPerMonth,
     outcomePolicy: options.outcomePolicy,
@@ -573,6 +601,29 @@ function conditionPasses(
       if (typeof condition.max === 'number' && household.cash > condition.max) return false;
       return true;
     }
+    case 'householdSize': {
+      const household = world.households[subject.householdId];
+      if (!household) return false;
+      const size = household.memberIds.filter((id) => {
+        const person = world.persons[id];
+        return Boolean(person) && !person.died;
+      }).length;
+      if (typeof condition.min === 'number' && size < condition.min) return false;
+      if (typeof condition.max === 'number' && size > condition.max) return false;
+      return true;
+    }
+    case 'overcrowded': {
+      const household = world.households[subject.householdId];
+      if (!household) return false;
+      const place = world.places[household.residenceId];
+      const capacity = place?.capacity;
+      if (!capacity) return condition.value === false;
+      const size = household.memberIds.filter((id) => {
+        const person = world.persons[id];
+        return Boolean(person) && !person.died;
+      }).length;
+      return size > capacity === condition.value;
+    }
     case 'health':
       if (typeof condition.min === 'number' && subject.health.vitality < condition.min) {
         return false;
@@ -591,6 +642,8 @@ function conditionPasses(
     }
     case 'hasRole':
       return subject.roles.includes(condition.role);
+    case 'notHasRole':
+      return !subject.roles.includes(condition.role);
     case 'hasRelation':
       return Object.values(world.relations).some((relation) => {
         if (relation.kind !== condition.relationKind) return false;
@@ -1076,7 +1129,10 @@ function usableChoices(
   });
 }
 
-function weightedPick(outcomes: SceneOutcome[], rng: () => number): SceneOutcome | undefined {
+function weightedPick<T extends { weight: number }>(
+  outcomes: T[],
+  rng: () => number,
+): T | undefined {
   const total = outcomes.reduce((sum, outcome) => sum + outcome.weight, 0);
   if (!(total > 0)) return undefined;
   let ticket = rng() * total;
@@ -1287,6 +1343,49 @@ function buildParticipants(
   return participants;
 }
 
+function selectNarration(
+  context: EngineContext,
+  definition: SceneDefinition,
+  outcome: SceneOutcome,
+  subject: Person,
+  roles: Record<Id, Id>,
+  date: WorldDate,
+): string {
+  const key = outcome.narrationKey ?? outcome.id;
+  const variants = (definition.narration ?? [])
+    .filter(
+      (variant) =>
+        variant.key === key &&
+        conditionsPass(
+          context.world,
+          subject,
+          Array.isArray(variant.conditions) ? variant.conditions : undefined,
+          date,
+        ),
+    )
+    .map((variant) => ({
+      variant,
+      text: interpolateSceneText(variant.text, context.world, subject, roles, date),
+    }))
+    .filter((entry) => !/\{[a-zA-Z_][a-zA-Z0-9_]*\}/.test(entry.text));
+  if (variants.length === 0)
+    return interpolateSceneText(outcome.immediateText, context.world, subject, roles, date);
+  const picked =
+    variants[
+      Math.floor(
+        seededRng(
+          context.world.seed,
+          'narration',
+          definition.id,
+          outcome.id,
+          subject.id,
+          date.year,
+        )() * variants.length,
+      ) % variants.length
+    ]!;
+  return picked.text;
+}
+
 /**
  * Universal scenes cannot know a player-born child's name when they are
  * authored. They write `{subject}`, `{mother}`, `{place}` and similar tokens;
@@ -1368,6 +1467,252 @@ function runScenes(
   }
 }
 
+function eventRate(
+  context: EngineContext,
+  definition: SceneDefinition,
+  subject: Person,
+  date: WorldDate,
+): number {
+  const explicit = definition.rate;
+  const base =
+    typeof explicit === 'number' && Number.isFinite(explicit)
+      ? explicit
+      : definition.triggerMode === 'fact' || definition.triggerMode === 'action'
+        ? 1
+        : definition.oncePerPerson
+          ? 1
+          : 0.12;
+  let rate = clamp(base, 0, 1);
+  const focus = subject.lifeContract?.focus;
+  if (focus && focus !== 'none') {
+    if (definition.tags.includes(focus) || definition.familyId?.includes(focus)) rate *= 1.5;
+  }
+  if (subject.ownerId) rate *= 2.5;
+  const capability = subject.life?.flags.find((flag) => flag.startsWith('capability:'))?.slice(11);
+  if (capability && definition.tags.includes(capability)) rate *= 1.2;
+  const mood = subject.life?.mood ?? 0;
+  if (definition.tags.includes('social') || definition.tags.includes('family')) {
+    rate *= mood >= 0.25 ? 1.15 : mood <= -0.35 ? 0.8 : 1;
+  }
+  if (subject.health.vitality < 0.4 && definition.tags.includes('health')) rate *= 1.25;
+  if (definition.tags.includes('work') && subject.employment) rate *= 1.1;
+  return clamp(rate, 0, 1);
+}
+
+function scheduleFollowups(
+  context: EngineContext,
+  definition: SceneDefinition,
+  outcome: SceneOutcome,
+  subject: Person,
+  event: EventFact,
+  date: WorldDate,
+  depth: number,
+): void {
+  if (depth >= 3) return;
+  const queue = context.world.historyMeta.scheduledEvents ?? [];
+  for (const sceneId of outcome.followupSceneIds ?? []) {
+    const due = addMonths(date, 12);
+    const id = `queue:${event.id}:${sceneId}:${subject.id}`;
+    if (queue.some((item) => item.id === id)) continue;
+    queue.push({
+      id,
+      sceneId,
+      subjectId: subject.id,
+      due,
+      causeEventId: event.id,
+      depth: depth + 1,
+      source: 'followup',
+    });
+  }
+  context.world.historyMeta.scheduledEvents = queue;
+}
+
+function processScheduledEvents(
+  context: EngineContext,
+  definitions: SceneDefinition[],
+  target: WorldDate,
+): void {
+  const byId = new Map(definitions.map((definition) => [definition.id, definition]));
+  const queue = [...(context.world.historyMeta.scheduledEvents ?? [])].sort(
+    (a, b) => monthIndex(a.due) - monthIndex(b.due) || a.id.localeCompare(b.id),
+  );
+  const remaining: ScheduledEvent[] = [];
+  const initialIds = new Set(queue.map((item) => item.id));
+  for (const item of queue) {
+    if (monthIndex(item.due) > monthIndex(target)) {
+      remaining.push(item);
+      continue;
+    }
+    const definition = byId.get(item.sceneId);
+    const primary = context.world.persons[item.subjectId];
+    if (!definition || !primary || primary.died) continue;
+    const date = item.due;
+    const cause = item.causeEventId
+      ? context.world.events.find((event) => event.id === item.causeEventId)
+      : undefined;
+    const candidateIds = [
+      item.subjectId,
+      ...(cause?.participants.map((participant) => participant.personId) ?? []),
+      ...(context.world.households[primary.householdId]?.memberIds ?? []),
+    ];
+    let subject = primary;
+    if (!sceneEligible(context, definition, subject, date)) {
+      const alternate = [...new Set(candidateIds)]
+        .map((id) => context.world.persons[id])
+        .find(
+          (person): person is Person =>
+            Boolean(person) && !person.died && sceneEligible(context, definition, person, date),
+        );
+      if (!alternate) {
+        warnContext(context, 'scheduled_event_ineligible', 'scheduled event no longer eligible', {
+          personId: primary.id,
+          sceneId: definition.id,
+        });
+        continue;
+      }
+      subject = alternate;
+    }
+    const cast = castSceneRoles(context, definition, subject, date);
+    if (cast.missing.length > 0) {
+      recordBlocked(
+        context,
+        definition,
+        subject,
+        cast.roles,
+        `scheduled_missing_role:${cast.missing.join(',')}`,
+        date,
+      );
+      continue;
+    }
+    const selection = selectOutcome(context, definition, subject, cast.roles, date);
+    if (!selection) {
+      recordBlocked(context, definition, subject, cast.roles, 'scheduled_no_outcome', date);
+      continue;
+    }
+    resolveScene(
+      context,
+      definition,
+      subject,
+      cast.roles,
+      selection,
+      date,
+      item.depth,
+      item.causeEventId,
+    );
+  }
+  const newlyScheduled = (context.world.historyMeta.scheduledEvents ?? []).filter(
+    (item) => !initialIds.has(item.id),
+  );
+  const mergedQueue = new Map<string, ScheduledEvent>();
+  for (const item of [...remaining, ...newlyScheduled]) mergedQueue.set(item.id, item);
+  context.world.historyMeta.scheduledEvents = [...mergedQueue.values()];
+}
+
+function runEventYear(
+  context: EngineContext,
+  definitions: SceneDefinition[],
+  date: WorldDate,
+  resolvedCounts: Map<Id, number>,
+): void {
+  const byStage = new Map<SceneStage, SceneDefinition[]>();
+  for (const definition of definitions) {
+    const list = byStage.get(definition.stage) ?? [];
+    list.push(definition);
+    byStage.set(definition.stage, list);
+  }
+  const personIds = Object.keys(context.world.persons).sort();
+  for (const personId of personIds) {
+    let subject = context.world.persons[personId];
+    if (!subject || subject.died) continue;
+    let ordinary = 0;
+    const used = new Set<string>();
+    const ordinaryCap = subject.ownerId
+      ? Math.max(context.options.maxOrdinaryEventsPerPerson, 6)
+      : context.options.maxOrdinaryEventsPerPerson;
+    // Once-per-person milestones (school entry, first apprenticeship, a
+    // historical epidemic) must not be crowded out by weighted ordinary
+    // events. Resolve at most one milestone first, then fill with ordinary
+    // events.
+    const stageDefinitionsForMilestone = byStage.get(stageForAge(ageAt(subject, date))) ?? [];
+    for (const definition of stageDefinitionsForMilestone) {
+      if (!definition.oncePerPerson || used.has(definition.id)) continue;
+      if (!sceneEligible(context, definition, subject, date)) continue;
+      const cast = castSceneRoles(context, definition, subject, date);
+      if (cast.missing.length > 0) {
+        recordBlocked(
+          context,
+          definition,
+          subject,
+          cast.roles,
+          `missing_role:${cast.missing.join(',')}`,
+          date,
+        );
+        continue;
+      }
+      const selection = selectOutcome(context, definition, subject, cast.roles, date);
+      if (!selection) {
+        recordBlocked(context, definition, subject, cast.roles, 'no_eligible_outcome', date);
+        continue;
+      }
+      resolveScene(context, definition, subject, cast.roles, selection, date, 0);
+      ordinary += 1;
+      used.add(definition.id);
+      resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
+      subject = context.world.persons[personId];
+      break;
+    }
+    while (ordinary < ordinaryCap) {
+      if (!subject || subject.died) break;
+      const candidates: { definition: SceneDefinition; weight: number }[] = [];
+      const stageDefinitions = byStage.get(stageForAge(ageAt(subject, date))) ?? [];
+      for (const definition of stageDefinitions) {
+        if (used.has(definition.id)) continue;
+        if (!sceneEligible(context, definition, subject, date)) continue;
+        if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
+        const rate = eventRate(context, definition, subject, date);
+        const rng = seededRng(
+          context.world.seed,
+          'rate',
+          definition.id,
+          subject.id,
+          date.year,
+          date.month,
+        );
+        if (rng() >= rate) continue;
+        candidates.push({ definition, weight: Math.max(0, definition.weight ?? 1) });
+      }
+      if (candidates.length === 0) break;
+      const chosen = weightedPick(
+        candidates,
+        seededRng(context.world.seed, 'event-choice', subject.id, date.year, String(ordinary)),
+      );
+      if (!chosen) break;
+      used.add(chosen.definition.id);
+      const cast = castSceneRoles(context, chosen.definition, subject, date);
+      if (cast.missing.length > 0) {
+        recordBlocked(
+          context,
+          chosen.definition,
+          subject,
+          cast.roles,
+          `missing_role:${cast.missing.join(',')}`,
+          date,
+        );
+        continue;
+      }
+      const selection = selectOutcome(context, chosen.definition, subject, cast.roles, date);
+      if (!selection) {
+        recordBlocked(context, chosen.definition, subject, cast.roles, 'no_eligible_outcome', date);
+        continue;
+      }
+      resolveScene(context, chosen.definition, subject, cast.roles, selection, date, 0);
+      ordinary += 1;
+      resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
+      subject = context.world.persons[personId];
+    }
+  }
+}
+
 function recordBlocked(
   context: EngineContext,
   definition: SceneDefinition,
@@ -1400,6 +1745,8 @@ function resolveScene(
   roles: Record<Id, Id>,
   selection: OutcomeSelection,
   date: WorldDate,
+  depth = 0,
+  causeEventId?: Id,
 ): void {
   const instanceId = nextSceneId(context);
   const outcome = selection.outcome;
@@ -1413,9 +1760,10 @@ function resolveScene(
     subjectId: subject.id,
     participants: buildParticipants(context.world, subject, roles),
     action: `${definition.id}/${outcome.id}`,
-    causes: [],
+    title: definition.title,
+    causes: causeEventId ? [causeEventId] : [],
     effects: outcome.effects,
-    immediateText: interpolateSceneText(outcome.immediateText, context.world, subject, roles, date),
+    immediateText: selectNarration(context, definition, outcome, subject, roles, date),
     significance:
       typeof outcome.significance === 'number' && Number.isFinite(outcome.significance)
         ? clamp(outcome.significance, 0, 1)
@@ -1482,6 +1830,8 @@ function resolveScene(
     );
   }
 
+  scheduleFollowups(context, definition, outcome, subject, event, date, depth);
+
   const instance: SceneInstance = {
     id: instanceId,
     sceneId: definition.id,
@@ -1495,7 +1845,6 @@ function resolveScene(
   };
   appendScene(context, instance);
   context.sceneHistory.set(sceneKey(definition.id, subject.id), monthIndex(date));
-  reapVitalityZero(context, date, event.id);
 }
 
 // ---------------------------------------------------------------------------
@@ -1561,6 +1910,7 @@ function commitEvent(
     subjectId: draft.subjectId,
     participants,
     action: draft.action,
+    title: draft.title,
     causes,
     effects: applied,
     immediateText: draft.immediateText,
@@ -1574,7 +1924,6 @@ function commitEvent(
   context.world.historyMeta.sequence = identity.sequence;
   context.world.historyMeta.lastEventId = event.id;
   context.newEvents.push(event);
-  assertWorldV4(context.world);
   return event;
 }
 
@@ -1592,6 +1941,8 @@ function resolveEffectRef(value: unknown, binding: EffectBinding, world: WorldSt
   switch (key) {
     case 'subject':
       return binding.subjectId;
+    case 'eventId':
+      return binding.eventId;
     case 'household':
       return subject?.householdId;
     case 'residence':
@@ -1627,6 +1978,25 @@ function resolveEffectRefs(
       .map((value) => resolveEffectRef(value, binding, world))
       .filter((value): value is string => typeof value === 'string');
   }
+  if (bound.type === 'interaction' && isRecord(bound.interaction)) {
+    const interaction = { ...bound.interaction } as Record<string, unknown>;
+    if (typeof interaction.id === 'string')
+      interaction.id = resolveEffectRef(interaction.id, binding, world);
+    if (typeof interaction.initiatorId === 'string')
+      interaction.initiatorId = resolveEffectRef(interaction.initiatorId, binding, world);
+    if (Array.isArray(interaction.counterpartyIds)) {
+      interaction.counterpartyIds = interaction.counterpartyIds
+        .map((value) => resolveEffectRef(value, binding, world))
+        .filter((value): value is string => typeof value === 'string');
+    }
+    if (isRecord(interaction.proposal)) {
+      const proposal = { ...interaction.proposal } as Record<string, unknown>;
+      if (typeof proposal.causeEventId === 'string')
+        proposal.causeEventId = resolveEffectRef(proposal.causeEventId, binding, world);
+      interaction.proposal = proposal;
+    }
+    bound.interaction = interaction;
+  }
   for (const key of [
     'personId',
     'householdId',
@@ -1654,6 +2024,31 @@ function applyEffect(
     return undefined;
   }
   const effect = resolveEffectRefs(rawEffect, binding, context.world);
+  const refKeys = [
+    'personId',
+    'householdId',
+    'locationId',
+    'workplaceId',
+    'organizationId',
+    'a',
+    'b',
+    'heirHouseholdId',
+  ];
+  const unresolved = refKeys.find((key) => {
+    const value = (effect as unknown as Record<string, unknown>)[key];
+    return typeof value === 'string' && value.startsWith('$');
+  });
+  if (unresolved) {
+    warnContext(
+      context,
+      'unresolved_effect_ref',
+      `effect ${effect.type} has unresolved ${String(unresolved)}`,
+      {
+        eventId: binding.eventId,
+      },
+    );
+    return undefined;
+  }
   switch (effect.type) {
     case 'cash':
       return applyCash(context, effect, binding);
@@ -1663,6 +2058,14 @@ function applyEffect(
       return applyHealth(context, effect, binding);
     case 'condition':
       return applyCondition(context, effect, binding);
+    case 'mood':
+      return applyMood(context, effect);
+    case 'reputation':
+      return applyReputation(context, effect);
+    case 'skill':
+      return applySkill(context, effect);
+    case 'flag':
+      return applyFlag(context, effect);
     case 'education':
       return applyEducation(context, effect, binding);
     case 'employment':
@@ -1671,6 +2074,8 @@ function applyEffect(
       return applyUnemployment(context, effect, binding);
     case 'relation':
       return applyRelation(context, effect, binding);
+    case 'relation_end':
+      return applyRelationEnd(context, effect, binding);
     case 'role':
       return applyRole(context, effect, binding);
     case 'project':
@@ -1681,10 +2086,14 @@ function applyEffect(
       return applyMove(context, effect, binding);
     case 'household':
       return applyHousehold(context, effect, binding);
+    case 'residence':
+      return applyResidence(context, effect, binding);
     case 'birth':
       return applyBirth(context, effect, binding);
     case 'death':
       return applyDeath(context, effect, binding);
+    case 'estate':
+      return applyEstate(context, effect, binding);
     default: {
       const unknownEffect = effect as unknown as { type?: unknown };
       warnContext(context, 'unknown_effect', `unknown effect type ${String(unknownEffect.type)}`, {
@@ -1834,6 +2243,130 @@ function applyCondition(
     person.health.conditions.splice(index, 1);
   }
   return { ...effect };
+}
+
+function ensureLife(person: Person): PersonLife {
+  if (!person.life) {
+    person.life = {
+      mood: 0,
+      reputation: 0,
+      skills: { literacy: 0, numeracy: 0, craft: 0, social: 0 },
+      flags: [],
+    };
+  }
+  return person.life;
+}
+
+function applyMood(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'mood' }>,
+): EventEffect | undefined {
+  const person = context.world.persons[effect.personId];
+  if (!person || person.died || !Number.isFinite(effect.amount)) return undefined;
+  const life = ensureLife(person);
+  const before = life.mood;
+  life.mood = clamp(life.mood + effect.amount, -1, 1);
+  return Math.abs(life.mood - before) < 1e-9
+    ? undefined
+    : { ...effect, amount: life.mood - before };
+}
+
+function applyReputation(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'reputation' }>,
+): EventEffect | undefined {
+  const person = context.world.persons[effect.personId];
+  if (!person || person.died || !Number.isFinite(effect.amount)) return undefined;
+  const life = ensureLife(person);
+  const before = life.reputation;
+  life.reputation = clamp(life.reputation + effect.amount, -1, 1);
+  return Math.abs(life.reputation - before) < 1e-9
+    ? undefined
+    : { ...effect, amount: life.reputation - before };
+}
+
+function applySkill(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'skill' }>,
+): EventEffect | undefined {
+  const person = context.world.persons[effect.personId];
+  if (!person || person.died || !Number.isFinite(effect.amount)) return undefined;
+  if (!['literacy', 'numeracy', 'craft', 'social'].includes(effect.skill)) return undefined;
+  const life = ensureLife(person);
+  const before = life.skills[effect.skill];
+  life.skills[effect.skill] = clamp(before + effect.amount, 0, 1);
+  return Math.abs(life.skills[effect.skill] - before) < 1e-9
+    ? undefined
+    : { ...effect, amount: life.skills[effect.skill] - before };
+}
+
+function applyFlag(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'flag' }>,
+): EventEffect | undefined {
+  const person = context.world.persons[effect.personId];
+  if (!person || person.died || !effect.flag) return undefined;
+  const life = ensureLife(person);
+  const index = life.flags.indexOf(effect.flag);
+  if (effect.add) {
+    if (index >= 0) return undefined;
+    life.flags.push(effect.flag);
+  } else {
+    if (index < 0) return undefined;
+    life.flags.splice(index, 1);
+  }
+  return { ...effect };
+}
+
+function applyRelationEnd(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'relation_end' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const relation = Object.values(context.world.relations).find(
+    (candidate) =>
+      candidate.kind === effect.kind &&
+      candidate.end === undefined &&
+      ((candidate.a === effect.a && candidate.b === effect.b) ||
+        (candidate.a === effect.b && candidate.b === effect.a)),
+  );
+  if (!relation) return undefined;
+  relation.end = { ...binding.date };
+  return { ...effect };
+}
+
+function applyResidence(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'residence' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const household = context.world.households[effect.householdId];
+  const place = context.world.places[effect.residenceId];
+  if (!household || !place) return undefined;
+  if (household.residenceId === place.id) return undefined;
+  household.residenceId = place.id;
+  for (const memberId of household.memberIds) {
+    const member = context.world.persons[memberId];
+    if (member && !member.died) member.locationId = place.id;
+  }
+  return { ...effect };
+}
+
+function applyEstate(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'estate' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const person = context.world.persons[effect.personId];
+  const heir = context.world.households[effect.heirHouseholdId];
+  const source = person ? context.world.households[person.householdId] : undefined;
+  if (!person || !heir || !source || source.id === heir.id) return undefined;
+  if (!Number.isFinite(effect.amount) || effect.amount <= 0) return undefined;
+  const transferred = roundMoney(Math.min(source.cash, effect.amount));
+  if (transferred <= 0) return undefined;
+  source.cash = roundMoney(source.cash - transferred);
+  heir.cash = roundMoney(heir.cash + transferred);
+  return { ...effect, amount: transferred };
 }
 
 function applyEducation(
@@ -2133,7 +2666,9 @@ function applyInteraction(
   if (!interaction.created || !isWorldDate(interaction.created)) {
     interaction.created = { ...binding.date };
   }
-  if (interaction.due !== undefined && !isWorldDate(interaction.due)) return undefined;
+  if (!interaction.due || !isWorldDate(interaction.due)) {
+    interaction.due = addMonths(binding.date, 12);
+  }
   if (interaction.linkedProjectId && !context.world.projects[interaction.linkedProjectId]) {
     return undefined;
   }
@@ -2296,6 +2831,12 @@ function applyBirth(
     guardianIds: parents.map((parent) => parent.id),
     health: { vitality, conditions: ['newborn'], nutrition: 0.7 },
     traits,
+    life: {
+      mood: 0,
+      reputation: 0,
+      skills: { literacy: 0, numeracy: 0, craft: 0, social: 0 },
+      flags: [],
+    },
     education: { status: 'none', level: 0 },
     roles: ['infant', 'child'],
     projectIds: [],
@@ -2331,6 +2872,38 @@ function applyBirth(
     childId: child.id,
     childName: child.name,
   };
+}
+
+function settleExtinctHousehold(
+  world: WorldState,
+  deceased: Person,
+  date: WorldDate,
+): { heirHouseholdId: Id; amount: number } | undefined {
+  const household = world.households[deceased.householdId];
+  if (!household) return undefined;
+  const living = household.memberIds
+    .map((id) => world.persons[id])
+    .filter((person): person is Person => Boolean(person) && !person.died);
+  if (living.length > 0) return undefined;
+  const candidates: Person[] = [];
+  for (const relation of Object.values(world.relations)) {
+    if (relation.end !== undefined) continue;
+    if (relation.a !== deceased.id && relation.b !== deceased.id) continue;
+    const other = world.persons[relation.a === deceased.id ? relation.b : relation.a];
+    if (other && !other.died && other.householdId !== household.id) candidates.push(other);
+  }
+  for (const person of Object.values(world.persons)) {
+    if (person.died || person.householdId === household.id) continue;
+    if (person.parentIds.includes(deceased.id)) candidates.push(person);
+  }
+  const heir = candidates.find((person) => Boolean(world.households[person.householdId]));
+  if (!heir) return undefined;
+  const amount = roundMoney(Math.max(0, household.cash));
+  if (amount <= 0) return undefined;
+  household.cash = 0;
+  const target = world.households[heir.householdId]!;
+  target.cash = roundMoney(target.cash + amount);
+  return { heirHouseholdId: target.id, amount };
 }
 
 function applyDeath(
@@ -2391,7 +2964,11 @@ function applyDeath(
     });
   }
 
-  return { ...effect };
+  const estate = settleExtinctHousehold(context.world, person, binding.date);
+  return {
+    ...effect,
+    ...(estate ? { estateTo: estate.heirHouseholdId, estateAmount: estate.amount } : {}),
+  };
 }
 
 function reapVitalityZero(context: EngineContext, date: WorldDate, causeEventId?: Id): void {
@@ -2511,6 +3088,11 @@ function settleEconomyMonth(context: EngineContext, date: WorldDate): void {
     const members = household.memberIds
       .map((id) => world.persons[id])
       .filter((person): person is Person => Boolean(person) && !person.died);
+    const residence = world.places[household.residenceId];
+    if (residence?.capacity && members.length > residence.capacity) {
+      economy.overcrowdedMonths += 1;
+      applyFoodHealth(members, 0.9);
+    }
     const foodBudget = roundMoney(
       obligations
         .filter((entry) => entry.kind === 'food')
@@ -2600,55 +3182,142 @@ function expireDueInteractions(context: EngineContext): void {
     const interaction = world.interactions[interactionId]!;
     if (interaction.status !== 'pending' || !interaction.due) continue;
     if (monthIndex(interaction.due) > monthIndex(context.target)) continue;
-    const updated: Interaction = { ...structuredClone(interaction), status: 'expired' };
-    const subjectId =
-      (world.persons[updated.initiatorId] && updated.initiatorId) ||
-      updated.counterpartyIds.find((id) => Boolean(world.persons[id]));
-    if (!subjectId) {
-      world.interactions[interactionId] = updated;
-      warnContext(
-        context,
-        'interaction_expired_without_subject',
-        'interaction had no person subject',
-        {
-          eventId: interactionId,
-        },
-      );
+    const initiator = world.persons[interaction.initiatorId];
+    const counterparty = interaction.counterpartyIds
+      .map((id) => world.persons[id])
+      .find((person): person is Person => Boolean(person) && !person.died);
+    if (!initiator || initiator.died || !counterparty) {
+      const expired: Interaction = { ...structuredClone(interaction), status: 'expired' };
+      world.interactions[interactionId] = expired;
       continue;
     }
-    const participants: EventParticipant[] = [
-      { personId: subjectId, role: 'subject' },
-      ...updated.counterpartyIds
-        .filter((id) => id !== subjectId && world.persons[id])
-        .map((id) => ({ personId: id, role: 'counterparty' })),
-    ];
+    const proposal = (interaction.proposal ?? {}) as Record<string, unknown>;
+    const hasResponse =
+      Array.isArray(proposal.acceptEffects) ||
+      Array.isArray(proposal.rejectEffects) ||
+      typeof proposal.acceptText === 'string' ||
+      typeof proposal.rejectText === 'string';
+    if (!hasResponse) {
+      const updated: Interaction = { ...structuredClone(interaction), status: 'expired' };
+      const event = commitEvent(
+        context,
+        {
+          date: { ...context.target },
+          placeId: initiator.locationId,
+          subjectId: initiator.id,
+          participants: [
+            { personId: initiator.id, role: 'subject' },
+            ...interaction.counterpartyIds
+              .filter((id) => id !== initiator.id && world.persons[id])
+              .map((id) => ({ personId: id, role: 'counterparty' })),
+          ],
+          action: 'interaction_expired',
+          causes: [],
+          effects: [{ type: 'interaction', interaction: updated }],
+          immediateText: '',
+          significance: 0.2,
+          visibility: 'participants',
+          provenance: { kind: 'interaction', sourceId: interaction.id },
+        },
+        { roleIds: {}, fundingOrganizationIds: [] },
+        false,
+      );
+      if (!event) {
+        world.interactions[interactionId] = updated;
+        warnContext(
+          context,
+          'interaction_expired_without_event',
+          'interaction expired without a fact',
+          { personId: initiator.id, eventId: interaction.id },
+        );
+      }
+      continue;
+    }
+    const acceptIf = (proposal.acceptIf ?? {}) as Record<string, unknown>;
+    const relation = Object.values(world.relations).find(
+      (candidate) =>
+        candidate.kind !== 'employer' &&
+        candidate.end === undefined &&
+        ((candidate.a === initiator.id && candidate.b === counterparty.id) ||
+          (candidate.a === counterparty.id && candidate.b === initiator.id)),
+    );
+    const threshold = typeof acceptIf.minTrust === 'number' ? acceptIf.minTrust : 0;
+    const chance =
+      typeof acceptIf.chance === 'number'
+        ? clamp(acceptIf.chance, 0, 1)
+        : relation
+          ? clamp(0.5 + relation.trust * 0.4 + relation.affection * 0.2, 0.05, 0.95)
+          : 0.35;
+    const rng = seededRng(
+      world.seed,
+      'interaction-response',
+      interaction.id,
+      initiator.id,
+      counterparty.id,
+      context.target.year,
+    );
+    const accepted = (relation?.trust ?? 0) >= threshold && rng() < chance;
+    const response = accepted ? 'accepted' : 'rejected';
+    const updated: Interaction = {
+      ...structuredClone(interaction),
+      status: accepted ? 'accepted' : 'rejected',
+      responses: [
+        ...interaction.responses,
+        {
+          personId: counterparty.id,
+          response,
+          note:
+            typeof proposal[accepted ? 'acceptText' : 'rejectText'] === 'string'
+              ? String(proposal[accepted ? 'acceptText' : 'rejectText'])
+              : undefined,
+        },
+      ],
+    };
+    const rawEffects = Array.isArray(proposal[accepted ? 'acceptEffects' : 'rejectEffects'])
+      ? (proposal[accepted ? 'acceptEffects' : 'rejectEffects'] as EventEffect[])
+      : [];
+    const text =
+      typeof proposal[accepted ? 'acceptText' : 'rejectText'] === 'string'
+        ? String(proposal[accepted ? 'acceptText' : 'rejectText'])
+        : `${counterparty.name}${accepted ? '接受了' : '拒绝了'}${initiator.name}的请求。`;
     const event = commitEvent(
       context,
       {
         date: { ...context.target },
-        placeId: world.persons[subjectId]?.locationId,
-        subjectId,
-        participants,
-        action: 'interaction_expired',
-        causes: [],
-        effects: [{ type: 'interaction', interaction: updated }],
-        immediateText: '',
-        significance: 0.2,
+        placeId: counterparty.locationId,
+        subjectId: initiator.id,
+        participants: [
+          { personId: initiator.id, role: 'initiator' },
+          { personId: counterparty.id, role: 'counterparty' },
+        ],
+        title: accepted ? '请求得到回应' : '请求被拒绝',
+        action: 'interaction_response',
+        causes: typeof proposal.causeEventId === 'string' ? [proposal.causeEventId] : [],
+        effects: [...rawEffects, { type: 'interaction', interaction: updated }],
+        immediateText: interpolateSceneText(
+          text,
+          world,
+          initiator,
+          { counterparty: counterparty.id },
+          context.target,
+        ),
+        significance: accepted ? 0.6 : 0.4,
         visibility: 'participants',
-        provenance: { kind: 'interaction', sourceId: updated.id },
+        provenance: { kind: 'interaction', sourceId: interaction.id },
       },
-      { roleIds: {}, fundingOrganizationIds: [] },
-      false,
+      {
+        roleIds: { counterparty: counterparty.id, subject: initiator.id },
+        fundingOrganizationIds: [],
+      },
+      true,
     );
-    if (!event || !event.effects.some((effect) => effect.type === 'interaction')) {
+    if (!event) {
       world.interactions[interactionId] = updated;
       warnContext(
         context,
-        'interaction_expired_without_event',
-        'interaction expired without a fact',
-        {
-          eventId: updated.id,
-        },
+        'interaction_response_without_event',
+        'interaction response could not commit effects',
+        { personId: initiator.id, eventId: interaction.id },
       );
     }
   }
@@ -2659,7 +3328,7 @@ function projectEventParticipants(world: WorldState, project: Project): EventPar
   const seen = new Set<string>();
   const push = (personId: Id, role: string) => {
     if (!world.persons[personId]) return;
-    const key = `${personId}\u0000${role}`;
+    const key = `${personId} ${role}`;
     if (seen.has(key)) return;
     seen.add(key);
     participants.push({ personId, role });

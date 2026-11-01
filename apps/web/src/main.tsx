@@ -718,7 +718,6 @@ function Observer({
         <div className="world-status">
           <span className={`dot ${world.status === 'running' ? 'live' : ''}`} />
           {world.status === 'running' ? '世界运行中' : '世界已结束'}
-          <span className="rev">修订 {world.revision}</span>
         </div>
         <div className="account">
           {pending && <span className="pending-chip">{pending.name} 等待出生</span>}

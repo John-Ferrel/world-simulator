@@ -6,7 +6,8 @@ import {
   VIENNA_1912_SCENES,
   VIENNA_1912_SEED,
 } from '../../packages/v4/content/vienna-1912.js';
-import { VIENNA_FAMILY_SCENES } from '../../packages/v4/content/vienna-family.js';
+import { VIENNA_FAMILY_RUNTIME_SCENES } from '../../packages/v4/content/vienna-family.js';
+import { GENERATED_SCENES } from '../../packages/v4/content/generated/index.js';
 import { VIENNA_LIFE_SCENES } from '../../packages/v4/content/vienna-life.js';
 import {
   activeV4WorldMeta,
@@ -49,6 +50,17 @@ const horizonYear = Number(process.env.V4_HORIZON_YEAR ?? 2000);
 while (!stopped) {
   const started = Date.now();
   try {
+    const currentMeta = await activeV4WorldMeta();
+    if (!currentMeta) {
+      console.log('v4 simulator: no active world; exiting');
+      break;
+    }
+    const pendingProbe = await pendingV4Births(currentMeta.id);
+    const tickDue = Date.now() - currentMeta.lastTickAt >= currentMeta.secondsPerYear * 1000;
+    if (pendingProbe.length === 0 && !tickDue) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      continue;
+    }
     const active = await loadActiveV4World();
     if (!active) {
       console.log('v4 simulator: no active world; exiting');
@@ -103,10 +115,16 @@ while (!stopped) {
       const timeline = applyViennaTimeline(world);
       const result = advanceV4Year(
         timeline,
-        [...VIENNA_1912_SCENES, ...VIENNA_LIFE_SCENES, ...VIENNA_FAMILY_SCENES],
+        [
+          ...VIENNA_1912_SCENES,
+          ...VIENNA_LIFE_SCENES,
+          ...VIENNA_FAMILY_RUNTIME_SCENES,
+          ...GENERATED_SCENES,
+        ],
         {
           economy: { enabled: economyEnabled },
-          maxScenesPerPerson: 1,
+          eventRuntime: true,
+          maxOrdinaryEventsPerPerson: 4,
         },
       );
       if (result.world.date.year > horizonYear) {

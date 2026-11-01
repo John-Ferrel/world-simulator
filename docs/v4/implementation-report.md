@@ -4,15 +4,17 @@
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
 
+> 2026-11-01 后续更新：已实现多事件年度运行时、事件队列、人物请求/回应、住房/离婚/同性关系/继承第一版、LLM 内容工厂与 56 个生成场景；最新数字见 [content-runtime-report.md](content-runtime-report.md)。本页下方部分旧数字（42 场景、45 项测试）保留为上一阶段快照。
+
 ## 状态总表
 
 | 项目                 | 状态             | 证据 / 边界                                                                                                                                                                  |
 | -------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | v4 领域契约          | 完成             | `packages/v4/domain.ts`；Person/Household/Place/Organization/Position/Project/Interaction/Relation/Knowledge/EventFact/SceneDefinition/SceneInstance；`assertWorldV4` 不变量 |
-| 纯年度场景引擎       | 完成             | `packages/v4/engine.ts`；19 项测试通过                                                                                                                                       |
+| 多事件年度运行时     | 完成（第一版）   | rate/weight、每年多事件、followup 队列、请求/回应、24 项 engine 测试                                                                                                         |
 | Vienna 作者场景包    | 完成             | 19 个场景、10 家庭、26 人、23 地点、6 组织、20 来源；10 项测试通过                                                                                                           |
 | 通用人生场景包       | 完成（切片级）   | 19 个场景；5 项内容测试 + 3 项玩家人生集成测试通过                                                                                                                           |
-| 家庭/生育场景包      | 完成（自动场景） | 4 个场景；3 项测试通过；新生儿是真实 Person，含父母/监护人/家庭/出生事件                                                                                                     |
+| 家庭/生育场景包      | 完成（自动场景） | 8 个场景；3 项测试通过；新生儿是真实 Person，含父母/监护人/家庭/出生事件                                                                                                     |
 | 1912–1918 作者人生链 | 完成             | 2 项 slice 测试通过；Anna/Josef 工伤、房租、学校、动员、流感                                                                                                                 |
 | v4 PostgreSQL 存储   | 完成             | `v4_*` 实体/事件表、出生请求、出生契约队列；`saveV4World` revision 检查                                                                                                      |
 | v4 API/认证/SSE      | 完成             | Fastify、scrypt 密码、cookie session、公开事件过滤、人物日志权限                                                                                                             |
@@ -54,8 +56,8 @@ pnpm exec vitest run tests/v4-engine.test.ts tests/v4-vienna-content.test.ts \
 ```text
 pnpm test
 → Test Files 56 passed | 5 skipped (61)
-→ Tests 325 passed | 28 skipped (353)
-→ 149.73s
+→ Tests 333 passed | 28 skipped (361)
+→ 153.06s
 ```
 
 旧测试通过不等于 v4 完成；v4 的独立证据是上面的 45 项与浏览器流程。

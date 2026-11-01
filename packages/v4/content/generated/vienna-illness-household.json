@@ -1,0 +1,714 @@
+{
+  "id": "vienna-illness-household",
+  "title": "家里的病与照护",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 75
+  },
+  "tags": [
+    "health",
+    "family",
+    "home"
+  ],
+  "baseRate": 0.28,
+  "conditions": [
+    {
+      "kind": "health",
+      "max": 0.85
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-illness-household.child-fever",
+      "title": "孩子夜里发烧",
+      "weight": 1,
+      "rate": 0.25,
+      "conditions": [
+        {
+          "kind": "householdSize",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "child",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 12
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "call-doctor",
+          "weight": 1,
+          "text": "{subject}在夜里发现{child}额头滚烫，用湿布敷额，天亮前去请街角的医生。医生开了药粉，收了诊费，{child}的烧在午后退了一些。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$child",
+              "amount": 0.1,
+              "reason": "医生诊治后退烧"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "支付医生诊费和药粉"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "整夜照护的疲倦"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "call-doctor",
+              "text": "{subject}摸到{child}滚烫的额头，湿布换了几回，天蒙蒙亮时敲开医生家门。药粉花了几个铜板，午后孩子出了汗。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "partner-absent",
+              "key": "call-doctor",
+              "text": "夜里{child}哭醒，{subject}独自用湿布敷额，熬到街上有人扫雪，才去请医生。诊费从抽屉里数出去，孩子的烧慢慢退了。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "home-remedy",
+          "weight": 1,
+          "text": "{subject}用湿布和兑水的醋给{child}擦身，整夜守在床边。天亮时烧退了些，{subject}却因为缺了半日工被扣了工钱。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$child",
+              "amount": 0.05,
+              "reason": "家庭护理后烧略退"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "缺工半日被扣工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "整夜未眠的疲惫"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "home-remedy",
+              "text": "{subject}没去请医生，用湿布和醋水给{child}擦身，守到窗纸发白。孩子退了烧，{subject}上工时却迟了半日。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "neighbor-help",
+              "key": "home-remedy",
+              "text": "{neighbor}过来看了一眼，教{subject}用湿布敷额。{child}天亮时安静睡了，{subject}却耽误了半日活计，工钱被扣。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "neighbor-help-night",
+          "weight": 1,
+          "text": "{neighbor}听见孩子哭，端来一壶热水和几片退烧药，替{subject}守了半宿。{child}的烧在清晨退了，{subject}给{neighbor}送去半块面包。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$child",
+              "amount": 0.08,
+              "reason": "邻居帮助后烧退"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "送给邻居半块面包作谢礼"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "邻居深夜相助"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "neighbor-help-night",
+              "text": "{neighbor}听见动静，端来热水和药片，替{subject}守了半宿。天亮{child}退了烧，{subject}把半块面包送了过去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "partner-away",
+              "key": "neighbor-help-night",
+              "text": "{subject}正没主意，{neighbor}敲门进来，带了热水和退烧药。孩子清晨安静下来，{subject}切了半块面包还这份人情。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-illness-household.mother-falls",
+      "title": "母亲在楼梯上跌倒",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "hasRelation",
+          "relation": "mother"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "mother",
+          "kind": "parent",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 90
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "stay-home-care",
+          "weight": 1,
+          "text": "{subject}向工头请了三天假，在家给{mother}换药、煮粥。工钱少了，但{mother}的腿肿消了些。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "请假三天损失的工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$mother",
+              "amount": 0.1,
+              "reason": "在家照护后腿肿消退"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "亲自照护受伤的母亲"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stay-home-care",
+              "text": "{subject}跟工头请了三天假，在灶上熬粥，给{mother}换药。工钱少了一截，母亲的腿却慢慢消了肿。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "tight-room",
+              "key": "stay-home-care",
+              "text": "屋里只有一张床，{subject}把椅子拼在床边守了三夜，给{mother}敷药换布。请假扣的工钱让人心疼，但腿伤见好。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hire-care",
+          "weight": 1,
+          "text": "{subject}托人请了巷尾的看护妇，每天来两回给{mother}擦洗换药。看护费不便宜，{subject}晚上多接了一份缝补的活。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "支付看护妇费用"
+            },
+            {
+              "type": "health",
+              "personId": "$mother",
+              "amount": 0.08,
+              "reason": "看护妇料理后伤势好转"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "夜间加班的疲劳"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hire-care",
+              "text": "{subject}托人请来巷尾的看护妇，每天两回给{mother}换药擦身。看护费从积蓄里出，{subject}夜里多缝了几件活。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "neighbor-referral",
+              "key": "hire-care",
+              "text": "经{neighbor}介绍，{subject}雇了看护妇照看{mother}。钱花得心疼，但母亲的腿伤有人料理，{subject}晚上替人缝补补上开销。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mother-returns-to-work",
+          "weight": 1,
+          "text": "{mother}只歇了两天就拄着扫帚去帮人洗衣。{subject}劝不住，晚上发现她的腿又肿了。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$mother",
+              "amount": -0.05,
+              "reason": "过早劳作导致腿伤加重"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "母亲洗衣挣的零钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "劝不住母亲的担忧"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "mother-returns-to-work",
+              "text": "{mother}歇了两天就拄着扫帚去洗衣，{subject}拦不住。晚上看她卷起裤腿，膝盖肿得发亮。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "small-wage",
+              "key": "mother-returns-to-work",
+              "text": "{mother}不肯躺着，第三天就去帮人洗衣挣几个铜板。{subject}晚上发现她的腿又肿了，那点工钱抵不上药钱。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-illness-household.tuberculosis-worry",
+      "title": "咳嗽与阴影",
+      "weight": 1,
+      "rate": 0.18,
+      "conditions": [
+        {
+          "kind": "overcrowded",
+          "min": 1
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sanatorium-referral",
+          "weight": 1,
+          "text": "{subject}咳了两个月，在市立诊所拍片后被告知肺尖有阴影，须去疗养院。手续和路费花去一笔钱，{neighbor}替{subject}照看屋子。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "疗养院手续和路费"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.15,
+              "reason": "进入疗养院接受治疗"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "邻居答应照看屋子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sanatorium-referral",
+              "text": "{subject}咳了两个月，诊所拍片后叫他去疗养院。手续和火车票花去一笔钱，{neighbor}答应隔天来看屋子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "partner-packs",
+              "key": "sanatorium-referral",
+              "text": "拍片结果压在{subject}手里，肺尖有阴影。去疗养院的手续和路费凑得艰难，{neighbor}来帮着收拾了行李。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "keep-working",
+          "weight": 1,
+          "text": "{subject}不理会咳嗽，照样上工，夜里咳得更凶。{partner}把窗户开了条缝，{subject}却嫌冷。工钱没少，身体却一天天沉下去。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "带病劳作使咳嗽加重"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "坚持上工所得工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "fear": 0.1,
+              "reason": "伴侣对病情的担忧"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "keep-working",
+              "text": "{subject}把咳嗽压在嗓子里照样上工，夜里咳得更凶。{partner}开了条窗缝，{subject}只说冷。工钱没短，人却见瘦。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "neighbor-warns",
+              "key": "keep-working",
+              "text": "{neighbor}说这咳法不对劲，{subject}摆摆手继续上工。夜里咳得床板发颤，{partner}把窗户开了条缝。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "home-quarantine",
+          "weight": 1,
+          "text": "{subject}借了块布帘把床隔开，白天开窗，晚上用热水熏。{partner}搬到灶间睡，{subject}的咳嗽慢慢轻了，但家里少了些热乎气。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "家庭隔离和通风后咳嗽减轻"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "affection": -0.1,
+              "reason": "分床睡导致疏远"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "独处养病的寂寞"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "home-quarantine",
+              "text": "{subject}借布帘把床隔开，白天开窗，晚上热水熏。{partner}搬到灶间睡，咳嗽轻了些，屋里却安静得发闷。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "curtain-divided",
+              "key": "home-quarantine",
+              "text": "怕过人，{subject}自己隔出半间屋，{partner}在灶间搭了铺。咳嗽慢慢少了，夫妻间的话也少了。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-illness-household.wage-earner-injury",
+      "title": "厂里来的工友",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "hasRole",
+          "role": "worker"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 70
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80,
+          "organizationKind": "factory"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "take-to-hospital",
+          "weight": 1,
+          "text": "{worker}在冲床里压了手指，{subject}和几个人把{worker}送到医院。{employer}派人送来两块钱，说算工钱里的部分，{worker}的手指保住了，却再也伸不直。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "雇主给的医药补贴"
+            },
+            {
+              "type": "health",
+              "personId": "$worker",
+              "amount": -0.05,
+              "reason": "手指压伤留下残疾"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "送工友去医院"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "危急时相助"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "take-to-hospital",
+              "text": "{worker}的指头被冲床压住，{subject}扶着他一路走到医院。{employer}派人送来两块钱，指头保住了，却弯不回去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "foreman-pays",
+              "key": "take-to-hospital",
+              "text": "冲床咬住{worker}的手指，{subject}用围裙裹住他的手送医。{employer}给了两块钱作补贴，那根手指从此伸不直。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "walk-home",
+          "weight": 1,
+          "text": "{subject}把{worker}扶回{worker}家的地下室，用干净布条裹住伤指。{worker}的家人千恩万谢，{subject}却担心明天怎么向{employer}交代。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "护送伤者回家"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "担心工作受牵连"
+            },
+            {
+              "type": "health",
+              "personId": "$worker",
+              "amount": -0.03,
+              "reason": "伤口只经简单包扎"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "walk-home",
+              "text": "{subject}把{worker}扶回地下室，用干净布条裹住伤指。他家里人连声道谢，{subject}心里却盘算明天怎么跟{employer}说。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "family-thanks",
+              "key": "walk-home",
+              "text": "没去医院，{subject}送{worker}回地下室，布条裹了伤指。他妻子端来热水，{subject}却惦记着耽误的工时。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "report-unsafe",
+          "weight": 1,
+          "text": "{subject}和几个工友去找{employer}，要求修冲床的护板。{employer}骂了几句，还是叫人来钉了块木板。{worker}的手指没能全好，但总算有了个说法。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.15,
+              "fear": 0.1,
+              "reason": "当面要求修理机器"
+            },
+            {
+              "type": "condition",
+              "personId": "$worker",
+              "flag": "workshop_guard_fixed",
+              "value": 1,
+              "reason": "冲床护板修好"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "替工友出头"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "report-unsafe",
+              "text": "{subject}带着几个工友找{employer}，要求修冲床护板。挨了一顿骂，木板还是钉上了。{worker}的指头没能全好，总算有个说法。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "small-win",
+              "key": "report-unsafe",
+              "text": "{subject}和工友围住{employer}，指着冲床说这机器要修。{employer}骂完还是叫人来钉护板。{worker}的手没全好，厂里却多了块木板。",
+              "tone": [
+                "matter_of_fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

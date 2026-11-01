@@ -397,4 +397,425 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     sourceIds: ['source-wien-geschichte-saeuglingssterblichkeit'],
     historicalBasis: basis,
   },
+
+  {
+    id: 'vienna-family-courtship',
+    version: 1,
+    packId: PACK,
+    title: '提出共同生活',
+    stage: 'adulthood',
+    ageWindow: { min: 18, max: 35 },
+    subjectProvenance: ['birth'],
+    rate: 0.25,
+    cooldownYears: 2,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 35 },
+      { key: 'partner', kind: 'partner', required: true, minAge: 18, maxAge: 45 },
+    ],
+    conditions: [
+      { kind: 'age', min: 18, max: 35 },
+      { kind: 'stage', in: ['adulthood'] },
+      { kind: 'notHasRelation', relationKind: 'partner' },
+      { kind: 'health', min: 0.2 },
+    ],
+    outcomes: [
+      {
+        id: 'ask-to-share-a-home',
+        weight: 0.7,
+        immediateText:
+          '{subject}在{place}向{partner}提出一起过日子：合付房租、共用一张桌子，先把日子过稳。{partner}没有当场回答，只说要想一想。',
+        effects: [
+          {
+            type: 'interaction',
+            interaction: {
+              id: 'courtship:$eventId',
+              initiatorId: '$subject',
+              counterpartyIds: ['$partner'],
+              kind: 'proposal',
+              subject: '是否一起生活',
+              status: 'pending',
+              created: { year: 1, month: 1 },
+              proposal: {
+                acceptIf: { minTrust: 0, chance: 0.55 },
+                causeEventId: '$eventId',
+                acceptText:
+                  '{counterparty}在几天后找到{subject}，说可以试试。两人开始合付房租，也把各自欠的账摊在桌上。',
+                rejectText:
+                  '{counterparty}没有答应，只说现在不合适。{subject}把这件事收回去，之后见面仍点头。',
+                acceptEffects: [
+                  {
+                    type: 'relation',
+                    a: '$subject',
+                    b: '$counterparty',
+                    kind: 'partner',
+                    trust: 0.1,
+                    affection: 0.12,
+                    obligation: 0.1,
+                    reason: 'agreed to share a household',
+                  },
+                  {
+                    type: 'household',
+                    personId: '$counterparty',
+                    householdId: '$household',
+                    reason: 'moved in together',
+                  },
+                  {
+                    type: 'role',
+                    personId: '$subject',
+                    role: 'partner',
+                    add: true,
+                    reason: 'shared household',
+                  },
+                  {
+                    type: 'role',
+                    personId: '$counterparty',
+                    role: 'partner',
+                    add: true,
+                    reason: 'shared household',
+                  },
+                ],
+                rejectEffects: [
+                  {
+                    type: 'relation',
+                    a: '$subject',
+                    b: '$counterparty',
+                    kind: 'acquaintance',
+                    trust: -0.04,
+                    reason: 'declined to share a household',
+                  },
+                ],
+              },
+              responses: [],
+              visibility: 'participants',
+            },
+          },
+        ],
+      },
+      {
+        id: 'wait-for-a-better-year',
+        weight: 0.3,
+        immediateText:
+          '{subject}把话咽回去，只说等明年工钱稳一点再谈。{partner}没有追问，两人把桌上的面包分完，各自去上工。',
+        effects: [
+          {
+            type: 'relation',
+            a: '$subject',
+            b: '$partner',
+            kind: 'acquaintance',
+            trust: 0.02,
+            reason: 'postponed the conversation',
+          },
+        ],
+      },
+    ],
+    tags: ['family', 'courtship', 'household', 'social'],
+    sourceIds: ['source-oeaw-wiener-arbeiterhaushalte-1912'],
+    historicalBasis: basis,
+  },
+
+  {
+    id: 'vienna-family-divorce',
+    version: 1,
+    packId: PACK,
+    title: '共同生活走到尽头',
+    stage: 'adulthood',
+    ageWindow: { min: 20, max: 55 },
+    subjectProvenance: ['birth'],
+    rate: 0.08,
+    cooldownYears: 5,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 20, maxAge: 55 },
+      {
+        key: 'partner',
+        kind: 'partner',
+        required: true,
+        minAge: 20,
+        maxAge: 60,
+        sameHousehold: true,
+      },
+    ],
+    conditions: [
+      { kind: 'age', min: 20, max: 55 },
+      { kind: 'stage', in: ['adulthood'] },
+      { kind: 'hasRelation', relationKind: 'partner' },
+    ],
+    outcomes: [
+      {
+        id: 'separate-under-one-roof',
+        weight: 0.45,
+        immediateText:
+          '{subject}和{partner}把床铺分开，米和煤也各算各的。两人仍住在{residence}，因为谁都没有钱再租一间房；孩子在两张床之间来回。',
+        effects: [
+          {
+            type: 'relation_end',
+            a: '$subject',
+            b: '$partner',
+            kind: 'partner',
+            reason: 'separated but could not afford two homes',
+          },
+          { type: 'mood', personId: '$subject', amount: -0.08, reason: 'separation' },
+          { type: 'mood', personId: '$partner', amount: -0.08, reason: 'separation' },
+          {
+            type: 'cash',
+            householdId: '$household',
+            amount: -3,
+            reason: 'separate household goods',
+          },
+        ],
+      },
+      {
+        id: 'partner-moves-to-shared-housing',
+        weight: 0.35,
+        immediateText:
+          '{partner}把一只箱子和自己的工票搬去合租房，带走一半锅碗。{subject}留在{residence}，把空出来的床租给了一个学徒，用租金补房租。',
+        effects: [
+          {
+            type: 'relation_end',
+            a: '$subject',
+            b: '$partner',
+            kind: 'partner',
+            reason: 'divorced and moved out',
+          },
+          {
+            type: 'household',
+            personId: '$partner',
+            householdId: 'household:shared-tenement',
+            reason: 'moved into shared housing after separation',
+          },
+          {
+            type: 'cash',
+            householdId: '$household',
+            amount: -4,
+            reason: 'moving and separate goods',
+          },
+          { type: 'mood', personId: '$subject', amount: -0.06, reason: 'separation' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'separated',
+            add: true,
+            reason: 'marriage ended',
+          },
+        ],
+      },
+      {
+        id: 'reconcile-for-now',
+        weight: 0.2,
+        immediateText:
+          '{subject}和{partner}在楼道里吵到半夜，最后因为下个月的房租又坐回同一张桌子。谁都没有提和好，只把账本重新摊开。',
+        effects: [
+          {
+            type: 'relation',
+            a: '$subject',
+            b: '$partner',
+            kind: 'partner',
+            trust: 0.03,
+            obligation: 0.05,
+            reason: 'stayed together for practical reasons',
+          },
+          { type: 'mood', personId: '$subject', amount: -0.03, reason: 'unresolved conflict' },
+        ],
+      },
+    ],
+    tags: ['family', 'marriage', 'divorce', 'housing'],
+    sourceIds: ['source-oeaw-wiener-arbeiterhaushalte-1912'],
+    historicalBasis: basis,
+  },
+  {
+    id: 'vienna-family-same-sex-female',
+    version: 1,
+    packId: PACK,
+    title: '两个女人的共同生活',
+    stage: 'adulthood',
+    ageWindow: { min: 18, max: 40 },
+    subjectProvenance: ['birth'],
+    rate: 0.12,
+    cooldownYears: 3,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 40, sex: 'female' },
+      { key: 'partner', kind: 'partner', required: true, minAge: 18, maxAge: 40, sex: 'female' },
+    ],
+    conditions: [
+      { kind: 'age', min: 18, max: 40 },
+      { kind: 'stage', in: ['adulthood'] },
+      { kind: 'notHasRelation', relationKind: 'partner' },
+    ],
+    outcomes: [
+      {
+        id: 'private-household',
+        weight: 0.55,
+        immediateText:
+          '{subject}和{partner}合租一间房，对外说是表姐妹。两人共用一只炉子、一本账和一张床，白天各自上工，晚上把门闩好。',
+        effects: [
+          {
+            type: 'relation',
+            a: '$subject',
+            b: '$partner',
+            kind: 'partner',
+            trust: 0.1,
+            affection: 0.15,
+            obligation: 0.08,
+            reason: 'private same-sex partnership',
+          },
+          {
+            type: 'household',
+            personId: '$partner',
+            householdId: '$household',
+            reason: 'moved in as a companion',
+          },
+          { type: 'mood', personId: '$subject', amount: 0.06, reason: 'companionship' },
+        ],
+      },
+      {
+        id: 'public-suspicion',
+        weight: 0.3,
+        immediateText:
+          '楼里的邻居开始议论{subject}和{partner}。有人把她们的门牌记下来，房东来敲门，说这栋楼不接受“这种住法”。{partner}当晚收拾了箱子。',
+        effects: [
+          {
+            type: 'relation',
+            a: '$subject',
+            b: '$partner',
+            kind: 'partner',
+            trust: 0.05,
+            affection: 0.08,
+            fear: 0.1,
+            reason: 'relationship under social pressure',
+          },
+          {
+            type: 'reputation',
+            personId: '$subject',
+            amount: -0.12,
+            reason: 'neighbourhood gossip',
+          },
+          { type: 'mood', personId: '$subject', amount: -0.1, reason: 'social exposure' },
+          { type: 'cash', householdId: '$household', amount: -5, reason: 'moving and lost rent' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'watched_by_neighbours',
+            add: true,
+            reason: 'same-sex household noticed',
+          },
+        ],
+      },
+    ],
+    tags: ['family', 'intimacy', 'same_sex', 'housing'],
+    sourceIds: ['source-oeaw-wiener-arbeiterhaushalte-1912'],
+    historicalBasis: basis,
+  },
+  {
+    id: 'vienna-family-same-sex-male',
+    version: 1,
+    packId: PACK,
+    title: '不能见光的同住',
+    stage: 'adulthood',
+    ageWindow: { min: 18, max: 45 },
+    subjectProvenance: ['birth'],
+    rate: 0.1,
+    cooldownYears: 3,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 45, sex: 'male' },
+      { key: 'partner', kind: 'partner', required: true, minAge: 18, maxAge: 45, sex: 'male' },
+    ],
+    conditions: [
+      { kind: 'age', min: 18, max: 45 },
+      { kind: 'stage', in: ['adulthood'] },
+      { kind: 'notHasRelation', relationKind: 'partner' },
+    ],
+    outcomes: [
+      {
+        id: 'private-arrangement',
+        weight: 0.55,
+        immediateText:
+          '{subject}和{partner}在城边租了一间小屋，对外只说是同事合住。两人不同时出门，信件用假名，夜里把窗帘拉严。',
+        effects: [
+          {
+            type: 'relation',
+            a: '$subject',
+            b: '$partner',
+            kind: 'partner',
+            trust: 0.08,
+            affection: 0.12,
+            fear: 0.08,
+            reason: 'private same-sex relationship',
+          },
+          { type: 'mood', personId: '$subject', amount: 0.04, reason: 'private companionship' },
+          { type: 'cash', householdId: '$household', amount: -4, reason: 'separate room rent' },
+        ],
+      },
+      {
+        id: 'denounced-to-police',
+        weight: 0.3,
+        immediateText:
+          '旅店伙计记下了{subject}和{partner}的名字。几天后警察来敲门，把两人带去问话；{subject}丢了工位，{partner}的家里把他接走。',
+        effects: [
+          {
+            type: 'relation',
+            a: '$subject',
+            b: '$partner',
+            kind: 'partner',
+            trust: -0.05,
+            fear: 0.2,
+            reason: 'police denunciation',
+          },
+          { type: 'health', personId: '$subject', amount: -0.08, reason: 'police questioning' },
+          { type: 'reputation', personId: '$subject', amount: -0.2, reason: 'public denunciation' },
+          { type: 'unemployment', personId: '$subject', reason: 'dismissed after police visit' },
+          { type: 'cash', householdId: '$household', amount: -8, reason: 'fine and lost work' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'police_record',
+            add: true,
+            reason: 'same-sex conduct recorded',
+          },
+        ],
+      },
+      {
+        id: 'leave-vienna',
+        weight: 0.15,
+        immediateText:
+          '{subject}和{partner}没有等到下一次敲门。两人把能卖的东西卖掉，买了去城外的车票，约好在不同车站上车。',
+        effects: [
+          {
+            type: 'relation',
+            a: '$subject',
+            b: '$partner',
+            kind: 'partner',
+            trust: 0.08,
+            affection: 0.1,
+            fear: 0.1,
+            reason: 'left together',
+          },
+          {
+            type: 'move',
+            personId: '$subject',
+            locationId: 'place-klosterneuburg-aunt-house',
+            reason: 'left Vienna',
+          },
+          {
+            type: 'move',
+            personId: '$partner',
+            locationId: 'place-klosterneuburg-aunt-house',
+            reason: 'left Vienna',
+          },
+          {
+            type: 'cash',
+            householdId: '$household',
+            amount: -12,
+            reason: 'train tickets and lodging',
+          },
+        ],
+      },
+    ],
+    tags: ['family', 'intimacy', 'same_sex', 'persecution'],
+    sourceIds: ['source-oeaw-wiener-arbeiterhaushalte-1912'],
+    historicalBasis: basis,
+  },
 ];
+
+/** The runtime uses the request/response courtship path, not the legacy instant-marriage scenes. */
+export const VIENNA_FAMILY_RUNTIME_SCENES = VIENNA_FAMILY_SCENES.filter(
+  (scene) => !scene.id.startsWith('vienna-family-partnership-'),
+);

@@ -1,0 +1,725 @@
+{
+  "id": "vienna-infant-household",
+  "title": "婴儿床边的一年",
+  "stage": "infancy",
+  "ageWindow": {
+    "min": 0,
+    "max": 2
+  },
+  "tags": [
+    "infancy",
+    "health",
+    "family",
+    "home"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "placeKind",
+      "in": [
+        "home"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-infant-household.croup",
+      "title": "夜里的犬吠咳",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "health",
+          "min": 0.3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 2
+        },
+        {
+          "key": "mother",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "steam-kettle",
+          "weight": 1,
+          "text": "{mother}把铜壶烧开，提起壶嘴对着床头旧毛巾罩出的布篷，让蒸汽灌进去。{subject}的犬吠样咳嗽慢慢松下来，天亮时睡着。{mother}用掉一整天份的煤，手背被蒸汽烫红一片。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "蒸汽缓解了喉部痉挛"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "多烧了一天的煤"
+            },
+            {
+              "type": "relation",
+              "a": "$mother",
+              "b": "$subject",
+              "kind": "guardian",
+              "affection": 0.05,
+              "reason": "整夜守候"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "steam-kettle",
+              "text": "厨房的铜壶嘴对准床头的布篷，蒸汽在冷房间里凝成白雾。{subject}的咳嗽从犬吠变成细喘，{mother}才敢坐下。",
+              "tone": [
+                "tense",
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "steam-kettle",
+              "text": "凌晨三点，{mother}一趟趟从灶台提热水。煤筐见了底，{subject}的胸口却平了下去。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "doctor-call",
+          "weight": 0.5,
+          "text": "{mother}打发邻居去请街角的医生。医生提着皮包来，听了听胸口，留下半瓶药水，收走一克朗。{subject}三天后不再咳得蜷成一团。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "医生出诊费和药水钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "服了止咳药水"
+            },
+            {
+              "type": "relation",
+              "a": "$mother",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "连夜帮忙跑腿请医"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "doctor-call",
+              "text": "医生的胡子还沾着晚饭的面包屑，他掀开襁褓听了听，说不要紧，留下药水瓶。{mother}数出一克朗，硬币在掌心里发凉。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "doctor-call",
+              "text": "邻居裹着披肩跑了两条街。医生来的时候{subject}已经哭哑了。药水用茶匙喂下去，第三天夜里，屋里第一次听不见那种拉风箱似的咳。",
+              "tone": [
+                "tense",
+                "relieved"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cough-worsens",
+          "weight": 0.5,
+          "text": "屋里没钱请医生，{mother}只能用旧披肩裹紧{subject}，坐在不熄的炉边熬。咳嗽拖了六天，{subject}瘦了一圈，{mother}的眼里布满血丝，父亲下工回来只带回半块黑面包。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "咳嗽迁延未愈"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "病中多消耗了家中口粮"
+            },
+            {
+              "type": "mood",
+              "personId": "$mother",
+              "amount": -0.05,
+              "reason": "看着孩子咳却无能为力"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cough-worsens",
+              "text": "炉膛里的火不敢灭，{mother}整夜抱着{subject}在屋里来回走。咳嗽到第六天才松，孩子的肋骨摸得根根分明。",
+              "tone": [
+                "grim"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cough-worsens",
+              "text": "药钱凑不齐，{mother}把旧披肩又裹紧一层。{subject}的咳声从尖利变成发闷，{mother}数着面包筐里剩下的半块黑面包，没说话。",
+              "tone": [
+                "tense",
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-infant-household.cradle-fall",
+      "title": "摇床边的翻身",
+      "weight": 1,
+      "rate": 0.18,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 0.8
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0.8,
+          "maxAge": 2
+        },
+        {
+          "key": "father",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 55
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 4,
+          "maxAge": 12
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "caught-by-sister",
+          "weight": 1,
+          "text": "{subject}在摇床里一蹬腿翻到边缘，正好被趴在地上画石板的{sibling}瞧见，{sibling}大叫一声伸手去挡，{subject}摔在稻草垫上，只哭了两声。{father}从厨房冲进来，把摇床栏杆又绑紧一道。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "从摇床边缘滑落，被垫子接住"
+            },
+            {
+              "type": "relation",
+              "a": "$sibling",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.1,
+              "reason": "及时伸手挡了一下"
+            },
+            {
+              "type": "relation",
+              "a": "$father",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.05,
+              "reason": "父亲夸了孩子眼疾手快"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "caught-by-sister",
+              "text": "{sibling}的石板笔滚到墙角，{subject}已经滑到摇床边沿。{sibling}的手正好垫在下面，{father}赶来时只看见两个孩子一起坐在地上。",
+              "tone": [
+                "tense",
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "caught-by-sister",
+              "text": "摇床的旧栏杆本来就松，{subject}一翻身就歪出去。{sibling}扔下粉笔扑过去，{father}用麻绳把栏杆捆了三圈。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "floor-thud",
+          "weight": 1,
+          "text": "{subject}从摇床缺口翻出来，后脑磕在木地板上，闷响一声。{father}正在灶边热奶，扔下锅跑过来，孩子哭得一口气堵在喉咙里。当晚{father}拆了旧木箱，钉了一块挡板。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "后脑磕在地板上"
+            },
+            {
+              "type": "relation",
+              "a": "$father",
+              "b": "$subject",
+              "kind": "guardian",
+              "affection": 0.05,
+              "obligation": 0.1,
+              "reason": "连夜修挡板"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "买了半把铁钉"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "floor-thud",
+              "text": "奶锅在灶上冒糊味，{father}蹲在地上拍着{subject}的背。后脑肿起小包，夜里{father}用旧木箱钉了块挡板。",
+              "tone": [
+                "tense",
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "floor-thud",
+              "text": "木地板不厚，闷响还是传到了楼下。{father}抱着{subject}在窗口站了很久，等哭声变成抽噎。",
+              "tone": [
+                "grim",
+                "warm"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "neighbor-warns",
+          "weight": 0.5,
+          "text": "邻居上楼借盐，看见摇床缺口，顺手用自己篮子里一块旧布垫在床沿，又叮嘱{father}把床挪离窗边冷墙。{subject}这次翻身被布兜住，{father}第二天下工把床挪了半米。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$father",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "提醒摇床隐患并帮忙垫布"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "摇床被加固，减少了磕碰"
+            },
+            {
+              "type": "mood",
+              "personId": "$father",
+              "amount": 0.03,
+              "reason": "邻居的提醒让他松了口气"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "neighbor-warns",
+              "text": "邻居把盐包搁在灶台上，弯腰看了看摇床，说这栏杆缝能塞进一个拳头。旧布垫上后，{father}当晚就把床挪了。",
+              "tone": [
+                "dry",
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "neighbor-warns",
+              "text": "借盐的功夫，邻居伸手在摇床缺口比了比，脸色一沉。{father}没吭声，第二天窗边的冷墙前空了半米。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-infant-household.baptism-gift",
+      "title": "洗礼桌上的银勺",
+      "weight": 1,
+      "rate": 0.12,
+      "conditions": [
+        {
+          "kind": "age",
+          "max": 1.2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 1.2
+        },
+        {
+          "key": "mother",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "silver-spoon-pawned",
+          "weight": 1,
+          "text": "洗礼后邻居送的小银勺被{mother}裹进手帕，拿到当铺换了两个克朗，买回一袋面粉和一小罐猪油。{subject}的粥里终于有了油花，银勺却留在了当铺的抽屉里。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "典当银勺所得"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "面粉和猪油补了几天口粮"
+            },
+            {
+              "type": "relation",
+              "a": "$mother",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "怕邻居问起银勺去向"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "silver-spoon-pawned",
+              "text": "当铺柜台的木格子里塞满别人的家当，{mother}的手帕打开又合上。两个克朗换回一袋面粉，{subject}的粥碗边浮起油星。",
+              "tone": [
+                "grim",
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "silver-spoon-pawned",
+              "text": "银勺在当票上写成“一件小银器”。{mother}回家时绕了远路，怕在楼梯口撞见邻居。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "spoon-kept",
+          "weight": 1,
+          "text": "{mother}把银勺擦亮，收进床头木匣，和结婚戒指放在一起。邻居隔周来访，看见勺子在匣里，点了点头。{subject}的粥还是稀的，但{mother}说这勺留给{subject}长大用。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$mother",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "邻居见礼物被珍视"
+            },
+            {
+              "type": "mood",
+              "personId": "$mother",
+              "amount": 0.05,
+              "reason": "守住了一件像样的东西"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "没添口粮，粥更稀了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "spoon-kept",
+              "text": "木匣里戒指旁边多了一把小银勺。邻居来串门时看了一眼，说留着好。那天{subject}的粥里只飘着几粒麦片。",
+              "tone": [
+                "warm",
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "spoon-kept",
+              "text": "{mother}用软布把银勺擦了又擦，匣盖合上时咔嗒一声。厨房的粮袋已经见底，她量粥时手腕抖了一下。",
+              "tone": [
+                "bittersweet"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "neighbor-takes-back",
+          "weight": 0.3,
+          "text": "邻居在楼梯口听说{mother}手头紧，第二天上门把银勺要了回去，说“先替我收着”。{mother}把空匣子放回床头，{subject}哭闹时她拍着孩子的背，拍得比平时久。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$mother",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.2,
+              "reason": "礼物被收回，心里不快"
+            },
+            {
+              "type": "mood",
+              "personId": "$mother",
+              "amount": -0.1,
+              "reason": "被人当面收回礼物"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "心里堵，买了一点酒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "neighbor-takes-back",
+              "text": "邻居的话说得客气，手却伸得直接。银勺回到她的篮子里，{mother}的木匣空了一格。",
+              "tone": [
+                "tense",
+                "grim"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "neighbor-takes-back",
+              "text": "“先替我收着”在楼梯间回响。{mother}关上门，把匣子推到床底，当晚{subject}的摇篮曲哼得断断续续。",
+              "tone": [
+                "grim"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-infant-household.laundry-day",
+      "title": "洗衣日的木盆",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "health",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 2
+        },
+        {
+          "key": "mother",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 5,
+          "maxAge": 13
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sibling-watches",
+          "weight": 1,
+          "text": "{mother}在厨房的木盆里搓亚麻布，热水汽模糊了窗。{sibling}坐在摇床边的矮凳上晃拨浪鼓，{subject}伸手去抓。等{mother}晾完最后一块尿布，{subject}已经在{child}的看护下睡熟，摇床没被蹬歪。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$sibling",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.05,
+              "reason": "帮忙照看摇床"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "被看护着，没磕碰"
+            },
+            {
+              "type": "mood",
+              "personId": "$mother",
+              "amount": 0.03,
+              "reason": "洗衣时有人搭手"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sibling-watches",
+              "text": "木盆里的水从清变灰，{mother}的指节泡得发白。屋里{subject}的拨浪鼓响一阵停一阵，摇床一直没歪。",
+              "tone": [
+                "warm",
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sibling-watches",
+              "text": "{sibling}的矮凳挪到摇床正中间，拨浪鼓举在{subject}眼前。{mother}晾完尿布回头，两个孩子都安静着。",
+              "tone": [
+                "warm"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "scalded-hand",
+          "weight": 1,
+          "text": "{mother}提热水壶往木盆里兑水时壶底脱了焊，滚水溅在左手背上。她咬着牙把壶搁下，{subject}被响声惊得大哭。手背起了水泡，接下来三天她只能用一只手洗尿布。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$mother",
+              "amount": -0.08,
+              "reason": "左手被开水烫伤"
+            },
+            {
+              "type": "mood",
+              "personId": "$mother",
+              "amount": -0.05,
+              "reason": "手伤拖累了活计"
+            },
+            {
+              "type": "relation",
+              "a": "$mother",
+              "b": "$subject",
+              "kind": "guardian",
+              "obligation": 0.05,
+              "reason": "忍着烫伤继续照料"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "scalded-hand",
+              "text": "壶底“啪”地脱开，热水泼在{mother}的手背和围裙上。她把{subject}从哭声里抱起来，水泡在袖口下面鼓着。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "scalded-hand",
+              "text": "木盆里的水太凉，{mother}提壶再兑，壶底却掉了。手背红成一片，她先去看摇床里的{subject}，才去找布条缠手。",
+              "tone": [
+                "grim",
+                "warm"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wet-floor",
+          "weight": 0.5,
+          "text": "{mother}端盆出去倒水，灶边淌了一地。{subject}在摇床里翻身，摇床被湿地板滑得挪了位，撞在桌脚上。{mother}回来时孩子哭得满脸通红，摇床腿松了一条。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "摇床撞上桌脚，受了惊"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "请楼下木匠紧摇床腿"
+            },
+            {
+              "type": "mood",
+              "personId": "$mother",
+              "amount": -0.03,
+              "reason": "自责倒水没看好孩子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wet-floor",
+              "text": "水泼在灶边，摇床顺着湿地板滑了半尺，磕在桌脚上。{mother}端盆回来，先摸孩子的头，再看摇床腿。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wet-floor",
+              "text": "地板湿得发亮，{subject}的哭声从摇床里传出来。{mother}把盆一放，抱起孩子，摇床腿已经歪了。",
+              "tone": [
+                "grim"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

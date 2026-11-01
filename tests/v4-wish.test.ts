@@ -9,10 +9,15 @@ describe('bounded birth-wish reading', () => {
         focus: 'education',
         traitDeltas: { ambition: 0.04, openness: -0.02 },
         taboo: '不愿被当成家庭的牺牲品。',
+        privateGoal: '在印刷厂找到不用把手伸进机器的位置。',
+        skillDeltas: { literacy: 0.08, craft: 0.04 },
+        capability: 'literacy',
       }),
     );
     expect(reading.focus).toBe('education');
     expect(reading.traitDeltas.ambition).toBe(0.04);
+    expect(reading.privateGoal).toContain('印刷厂');
+    expect(reading.capability).toBe('literacy');
   });
 
   it('rejects powers, extra fields and out-of-range nudges', () => {

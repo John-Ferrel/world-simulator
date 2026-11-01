@@ -485,6 +485,9 @@ export type V4WishReading = {
   focus: 'education' | 'work' | 'family' | 'faith' | 'politics' | 'health' | 'craft' | 'none';
   traitDeltas: Partial<Record<keyof import('./domain.js').Person['traits'], number>>;
   taboo?: string;
+  privateGoal?: string;
+  skillDeltas?: Partial<import('./domain.js').PersonLife['skills']>;
+  capability?: 'none' | 'literacy' | 'numeracy' | 'craft' | 'social' | 'health';
 };
 
 /**
@@ -519,6 +522,17 @@ export async function applyV4WishReading(
     const person = row.payload as import('./domain.js').Person;
     if (!person.lifeContract) throw new Error('person has no life contract');
     const traits = { ...person.traits };
+    const life = {
+      mood: person.life?.mood ?? 0,
+      reputation: person.life?.reputation ?? 0,
+      skills: {
+        literacy: person.life?.skills.literacy ?? 0,
+        numeracy: person.life?.skills.numeracy ?? 0,
+        craft: person.life?.skills.craft ?? 0,
+        social: person.life?.skills.social ?? 0,
+      },
+      flags: [...(person.life?.flags ?? [])],
+    };
     const alreadyCompiled = Boolean(person.lifeContract.interpretation);
     for (const [key, value] of Object.entries(reading.traitDeltas)) {
       if (alreadyCompiled) break;
@@ -530,19 +544,35 @@ export async function applyV4WishReading(
         Math.min(1, traits[trait] + Math.max(-0.08, Math.min(0.08, value))),
       );
     }
+    if (!alreadyCompiled) {
+      for (const [key, value] of Object.entries(reading.skillDeltas ?? {})) {
+        if (typeof value !== 'number' || !Number.isFinite(value)) continue;
+        const skill = key as keyof typeof life.skills;
+        if (!(skill in life.skills)) continue;
+        life.skills[skill] = Math.max(
+          0,
+          Math.min(1, life.skills[skill] + Math.max(-0.15, Math.min(0.15, value))),
+        );
+      }
+      if (reading.capability && reading.capability !== 'none')
+        life.flags.push(`capability:${reading.capability}`);
+    }
     const lifeContract = {
       ...person.lifeContract,
       interpretation: reading.interpretation,
       focus: reading.focus,
       traitDeltas: reading.traitDeltas,
       taboo: reading.taboo,
+      privateGoal: reading.privateGoal,
+      skillDeltas: reading.skillDeltas,
+      capability: reading.capability,
       compiledBy: model,
       compiledAt: { year: Number(world.date_year), month: Number(world.date_month) },
     };
     await client.query('UPDATE v4_persons SET payload=$3 WHERE world_id=$1 AND id=$2', [
       worldId,
       personId,
-      JSON.stringify({ ...person, traits, lifeContract }),
+      JSON.stringify({ ...person, traits, life, lifeContract }),
     ]);
     await client.query('UPDATE v4_worlds SET revision=revision+1 WHERE id=$1', [worldId]);
     await client.query('COMMIT');

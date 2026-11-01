@@ -1,0 +1,486 @@
+{
+  "id": "vienna-adult-social",
+  "title": "成年人之间的来往",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 65
+  },
+  "tags": [
+    "adulthood",
+    "social",
+    "work",
+    "family"
+  ],
+  "baseRate": 0.22,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 65
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-adult-social.wage-loan",
+      "title": "预支工资的请求",
+      "weight": 1,
+      "rate": 0.3,
+      "conditions": [
+        {
+          "kind": "employment",
+          "value": "employed"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80,
+          "organizationKind": "factory"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "wage-loan.granted",
+          "weight": 1,
+          "text": "{subject}在{workplace}的账房里向{employer}开口预支十二克朗，因为家里的煤和面包钱同时到期。{employer}从抽屉里数出钞票，让会计在发薪日扣回，并记下“下不为例”。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 12,
+              "reason": "预支工资，先拿到现金"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "预支工资后欠下一份人情和一笔账"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wage-loan.granted",
+              "text": "{subject}从{employer}的账房出来时，口袋里多了钞票，也多了发薪日要还的债。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wage-loan.granted",
+              "text": "会计把十二克朗记在{subject}名下，{employer}叮嘱了一句“下个月的工钱里扣”。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wage-loan.refused",
+          "weight": 1,
+          "text": "{subject}在{workplace}的走廊里拦住{employer}，话还没说完，对方就摆手说账上没这笔规矩。{subject}回车间时，工头正往布告栏上钉新的计件单。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "预支被拒，家里的窟窿还在"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.05,
+              "fear": 0.03,
+              "reason": "开口借钱被拒，觉得在厂里矮了一截"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wage-loan.refused",
+              "text": "{employer}说厂里没有预支的规矩，{subject}只好把空手插回大衣口袋。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wage-loan.refused",
+              "text": "走廊里几个工人听见了{subject}开口借钱，也听见了{employer}的拒绝。",
+              "tone": [
+                "bleak"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-adult-social.sunday-table",
+      "title": "星期日的家庭餐桌",
+      "weight": 1,
+      "rate": 0.25,
+      "conditions": [
+        {
+          "kind": "hasRole",
+          "role": "partner",
+          "value": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sunday-table.argument",
+          "weight": 1,
+          "text": "星期天中午，{subject}和{partner}在出租屋的厨房桌边分面包，话题从房租转到{subject}母亲上个月的药钱。{partner}把刀放下，说这个家不能总先填那边的窟窿。面包凉了，汤也没再热。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": -0.08,
+              "affection": -0.06,
+              "reason": "为贴补哪一边的家用吵了一顿"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "星期天的饭没吃完就冷了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sunday-table.argument",
+              "text": "{partner}把刀搁在盘沿上，{subject}盯着桌布上的面包屑，谁也没再动汤匙。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sunday-table.argument",
+              "text": "厨房里只剩下座钟走针的声音，{subject}和{partner}各自把半块面包吃完。",
+              "tone": [
+                "bleak"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sunday-table.repair",
+          "weight": 1,
+          "text": "{partner}从柜子里拿出攒了三个月的零钱袋，倒在桌上，说先给{subject}买双能进厂的结实靴子。{subject}数出鞋匠要的数目，把剩下的又推回袋子中央。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "凑钱买了一双结实的工靴"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "脚上有了不漏水的靴子"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "affection": 0.1,
+              "trust": 0.06,
+              "reason": "一起数钱、一起打算盘，觉得日子还能过"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sunday-table.repair",
+              "text": "零钱在桌面上摊开，{partner}一枚一枚数给{subject}看，说靴子比吵架要紧。",
+              "tone": [
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sunday-table.repair",
+              "text": "{subject}把推回去的零钱又推到{partner}手边，说下个月再补自己的鞋。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-adult-social.stairwell-watch",
+      "title": "楼梯间的守夜",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "overcrowded",
+          "min": 1
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "stairwell-watch.help",
+          "weight": 1,
+          "text": "楼下{neighbor}家的孩子半夜咳得停不下来，{subject}披上外套下楼，把自家剩的半瓶止咳糖浆和一条旧毯子送过去。天亮前{neighbor}在楼梯口拦住{subject}，塞回两个鸡蛋。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.12,
+              "affection": 0.08,
+              "reason": "半夜送药送毯子，欠下又还上的人情"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "把家里的糖浆和鸡蛋匀给了楼下"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "半夜受凉，第二天鼻子发堵"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stairwell-watch.help",
+              "text": "{subject}在楼梯间听见孩子的咳嗽，回屋拿了糖浆和毯子，下楼时木阶吱呀作响。",
+              "tone": [
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stairwell-watch.help",
+              "text": "{neighbor}接过毯子时手是抖的，天亮后把两个鸡蛋放在{subject}家的门把手上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stairwell-watch.complaint",
+          "weight": 1,
+          "text": "咳嗽声从楼下一直传到{subject}家的床脚，{subject}敲开{neighbor}的门，说这栋楼里有人天亮还要上工。{neighbor}把门开了一条缝，说自己也没办法。第二天楼梯间的招呼就省了。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "fear": 0.04,
+              "reason": "为了夜里的响动上门抱怨"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "抱怨完也没睡好"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stairwell-watch.complaint",
+              "text": "{subject}站在{neighbor}家门口说完那几句话，听见门里孩子的咳嗽又响起来。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stairwell-watch.complaint",
+              "text": "第二天早上，{subject}和{neighbor}在楼梯上擦肩而过，谁也没先开口。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-adult-social.burial-fund",
+      "title": "丧葬互助会的月钱",
+      "weight": 1,
+      "rate": 0.18,
+      "conditions": [
+        {
+          "kind": "hasRelation",
+          "relationKind": "friend",
+          "value": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65,
+          "organizationKind": "factory"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "burial-fund.paid",
+          "weight": 1,
+          "text": "车间里管互助会的{worker}在午休时把本子摊在{subject}的工具箱上，说这个月还差最后一份月钱。{subject}从马甲内袋摸出二十个克罗伊策，{worker}当着他的面在本子上画了钩。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "缴纳丧葬互助会的月钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "按时交钱，在工友中间落了踏实名声"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "互助会上账，工友看见他守信"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "burial-fund.paid",
+              "text": "{worker}合上本子，说{subject}这份钱记上了，往后谁家出事都有个照应。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "burial-fund.paid",
+              "text": "二十个克罗伊策落在{worker}的手心，他又数了一遍，才在本子上画钩。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "burial-fund.skipped",
+          "weight": 1,
+          "text": "{subject}对{worker}说这个月实在挤不出来，房租刚涨了半个克朗。{worker}把本子翻到另一页，说那就先记着，只是下个月得补齐。午休铃响时，{subject}的工具箱上还留着本子压出的印子。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "手头紧到交不出互助会的月钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.04,
+              "obligation": 0.05,
+              "reason": "欠着互助会的月钱，见了管事的工友有点怵"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "burial-fund.skipped",
+              "text": "{worker}把本子合上，说记下了，下个月一起算，{subject}点头时没抬头。",
+              "tone": [
+                "bleak"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "burial-fund.skipped",
+              "text": "午休铃响过，{subject}回到车床前，工具箱上的本子印子还在。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

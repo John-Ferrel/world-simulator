@@ -258,7 +258,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
       { kind: 'age', min: 6, max: 7 },
       { kind: 'stage', in: ['childhood'] },
       { kind: 'education', in: ['none', 'home'] },
-      { kind: 'cash', householdId: 'subject', max: 60 },
+      { kind: 'cash', householdId: 'subject', max: 500 },
     ],
     outcomes: [
       {
@@ -1684,6 +1684,8 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
     stage: 'elderhood',
     ageWindow: { min: 60, max: 78 },
     subjectProvenance: ['birth', 'initial'],
+    rate: 0.08,
+    cooldownYears: 2,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 60, maxAge: 78 },
       {
@@ -1702,6 +1704,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
       {
         id: 'retires',
         weight: 0.5,
+        conditions: [{ kind: 'notHasRole', role: 'pensioner' }],
         immediateText:
           '{subject}把工票交回厂里，领到第一笔退休金。钱不多，但足够付房租和每天的面包。邻居帮忙把煤搬上楼。',
         effects: [
@@ -1829,5 +1832,93 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
     tags: ['elderhood', 'death'],
     sourceIds: ['source-wien-geschichte-tuberkulose'],
     ...viennaBasis,
+  },
+
+  {
+    id: 'vienna-life-overcrowded-flat',
+    version: 1,
+    packId: PACK,
+    title: '床铺不够的冬天',
+    stage: 'adulthood',
+    ageWindow: { min: 18, max: 60 },
+    subjectProvenance: ['birth', 'initial'],
+    rate: 0.12,
+    cooldownYears: 4,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 60 },
+      {
+        key: 'neighbor',
+        kind: 'neighbor',
+        required: false,
+        minAge: 18,
+        maxAge: 80,
+      },
+    ],
+    conditions: [
+      { kind: 'age', min: 18, max: 60 },
+      { kind: 'stage', in: ['adulthood'] },
+      { kind: 'overcrowded', value: true },
+      { kind: 'placeKind', in: ['home'] },
+    ],
+    outcomes: [
+      {
+        id: 'move-to-shared-tenement',
+        weight: 0.5,
+        immediateText:
+          '{subject}把床架拆开，用绳子捆在借来的手推车上，搬进利奥波德城的合租房。新住处人多、墙薄，但至少每个人有一块能躺下的地方；押金和车钱花掉了八克朗。',
+        effects: [
+          {
+            type: 'residence',
+            householdId: '$household',
+            residenceId: 'place-wien-leopoldstadt-tenement',
+            reason: 'moved to a larger shared flat',
+          },
+          { type: 'cash', householdId: '$household', amount: -8, reason: 'deposit and cart' },
+          { type: 'health', personId: '$subject', amount: -0.02, reason: 'moving in winter' },
+        ],
+      },
+      {
+        id: 'take-in-a-lodger',
+        weight: 0.3,
+        immediateText:
+          '{subject}把厨房角落隔出一块，租给一个在附近上工的学徒。每月多四克朗，但煤、水和厕所都要排队；夜里有人咳嗽，孩子睡不踏实。',
+        effects: [
+          { type: 'cash', householdId: '$household', amount: 4, reason: 'lodger rent' },
+          { type: 'health', personId: '$subject', amount: -0.04, reason: 'overcrowded housing' },
+          {
+            type: 'condition',
+            personId: '$subject',
+            condition: 'sleeping badly',
+            add: true,
+            reason: 'crowded flat',
+          },
+        ],
+      },
+      {
+        id: 'apply-for-a-municipal-flat',
+        weight: 0.2,
+        immediateText:
+          '{subject}去市政办事处登记申请更大的市营住宅。办事员收下表格和两克朗手续费，说前面还有几百户，至少要等两年。',
+        effects: [
+          {
+            type: 'cash',
+            householdId: '$household',
+            amount: -2,
+            reason: 'municipal housing application',
+          },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'housing_waitlist',
+            add: true,
+            reason: 'applied for a municipal flat',
+          },
+        ],
+      },
+    ],
+    tags: ['housing', 'home', 'health', 'family'],
+    sourceIds: ['source-push-wiener-wohnverhaeltnisse', 'source-wien-geschichte-wohnbaupolitik'],
+    historicalBasis:
+      'Viennese working-class flats were severely overcrowded; municipal housing and rent regulation changed access over the period.',
   },
 ];

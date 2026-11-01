@@ -1,0 +1,663 @@
+{
+  "id": "vienna-childhood-street",
+  "title": "街巷里的童年",
+  "stage": "childhood",
+  "ageWindow": {
+    "min": 5,
+    "max": 11
+  },
+  "tags": [
+    "childhood",
+    "street",
+    "social",
+    "home"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "placeKind",
+      "in": [
+        "home",
+        "street"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-childhood-street.hoop",
+      "title": "滚铁环的赌注",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 5,
+          "max": 10
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 10
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 14
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hoop-win",
+          "weight": 1,
+          "text": "{subject}在{place}用铁环从街上一个更大的孩子那里赢来三颗彩色玻璃弹珠，街上一个更大的孩子不服气地踢了一脚墙根。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "fear": 0.02,
+              "reason": "滚铁环比赛后关系更近"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "赢了弹珠"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "street_games",
+              "amount": 0.02,
+              "reason": "练习滚铁环"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hoop-win",
+              "text": "{subject}的铁环在石板缝上弹了一下，还是先滚到了巷口的排水沟边。街上一个更大的孩子把三颗玻璃弹珠拍进{subject}手心，说下次要赢回去。",
+              "tone": [
+                "dry",
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hoop-win",
+              "text": "围观的孩子数着数，{subject}的环一直没倒。街上一个更大的孩子蹲下捡起自己的铁钩，把弹珠推过来时嘴里嘟囔着巷子太窄。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hoop-lose",
+          "weight": 1,
+          "text": "{subject}的铁环撞上煤车掉落的煤块，街上一个更大的孩子捡起滚到脚边的铁环，{subject}得用一颗石弹子换回来。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": -0.03,
+              "fear": 0.02,
+              "reason": "比赛输掉后交换弹珠"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "输了铁环"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "scraped_knee",
+              "severity": 0.05,
+              "reason": "追铁环时在石板路上擦破膝盖"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hoop-lose",
+              "text": "铁环撞上煤块歪进垃圾堆，{subject}膝盖磕在石板沿上。街上一个更大的孩子把铁环举高，直到{subject}从口袋里摸出一颗灰色石弹子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hoop-lose",
+              "text": "街上一个更大的孩子的铁环先滚过了线。{subject}蹲在排水沟边用袖子擦膝盖上的土，把一颗石弹子扔给街上一个更大的孩子才拿回自己的铁环。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hoop-mother-call",
+          "weight": 1,
+          "text": "母亲从二楼窗户探出身喊{subject}回家，铁环还卡在街上一个更大的孩子脚边，{subject}答应第二天把铁钩借给对方。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "fear": 0,
+              "reason": "约定第二天一起玩"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "trust": 0.02,
+              "fear": 0.02,
+              "reason": "被叫回家时没有顶嘴"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被叫回家打断游戏"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hoop-mother-call",
+              "text": "母亲的喊声从晾衣绳的床单后面传下来。{subject}把铁钩塞给街上一个更大的孩子，说好明天晌午还在排水沟边见。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hoop-mother-call",
+              "text": "窗玻璃被母亲敲了三下。{subject}跑到楼梯口又折回来，把铁钩挂在街上一个更大的孩子的栅栏上，喊了一句明天带石弹子来。",
+              "tone": [
+                "dry",
+                "warm"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-childhood-street.market-errand",
+      "title": "市场跑腿",
+      "weight": 1,
+      "rate": 0.25,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 11
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        },
+        {
+          "key": "mother",
+          "kind": "parent",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 50
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "errand-ok",
+          "weight": 1,
+          "text": "{subject}攥着母亲给的铜板在纳旭市场买回一磅土豆和一小包盐，路上没让土豆滚出围裙。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "买回土豆和盐"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.15,
+              "reason": "市场花销"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "trust": 0.08,
+              "fear": 0,
+              "reason": "跑腿办妥，母亲更放心"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "errand-ok",
+              "text": "土豆从围裙兜里滚到市场台阶上，{subject}用下巴抵住围裙才没让它们继续跑。回家时母亲正把汤锅从炉子上端下来。",
+              "tone": [
+                "dry",
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "errand-ok",
+              "text": "卖土豆的女人多塞了一颗小洋葱，说{subject}数铜板数得清楚。母亲把洋葱切成四瓣扔进汤里，没问多出来的是哪来的。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "errand-lost-coin",
+          "weight": 1,
+          "text": "{subject}在菜摊前蹲下捡滚落的土豆时，一枚铜板从指缝滑进排水格栅，母亲晚上数钱时少了三枚克鲁泽。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "铜板掉进下水道"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "trust": -0.05,
+              "fear": 0.08,
+              "reason": "丢钱后母亲数落"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "弄丢铜板"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "errand-lost-coin",
+              "text": "铜板在格栅上转了两圈就不见了。{subject}趴在地上看黑乎乎的排水沟，卖菜的女人说别看了，回家跟你妈说清楚。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "errand-lost-coin",
+              "text": "母亲把围裙口袋翻过来抖了抖，三枚克鲁泽的缺口对不上。{subject}盯着地板缝，听见母亲说明天土豆少买半磅。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "errand-bullied",
+          "weight": 1,
+          "text": "两个大孩子堵在市场拱廊下，把{subject}的围裙带子系在柱子上，街上一个更大的孩子路过时用削土豆的小刀割开了结。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "fear": -0.05,
+              "reason": "邻居帮忙解围"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被大孩子欺负"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "bruised_shoulder",
+              "severity": 0.03,
+              "reason": "被推搡时肩膀撞到柱子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "errand-bullied",
+              "text": "围裙带子被系在拱廊柱上，{subject}的土豆撒了一地。街上一个更大的孩子从人群里挤过来，小刀一挑，结就松了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "errand-bullied",
+              "text": "大孩子笑着走开，{subject}蹲着捡土豆，肩膀火辣辣的。街上一个更大的孩子把最后一颗土豆踢回围裙里，说以后走肉铺那条巷子。",
+              "tone": [
+                "dry",
+                "warm"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-childhood-street.washhouse-fever",
+      "title": "洗衣房的热病",
+      "weight": 1,
+      "rate": 0.15,
+      "conditions": [
+        {
+          "kind": "health",
+          "max": 0.8
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 11
+        },
+        {
+          "key": "mother",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 50
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "fever-recover",
+          "weight": 2,
+          "text": "{subject}在公共洗衣房等母亲时染上热病，邻居用湿布敷额头三天，烧退后嘴唇还脱着皮。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "热病高烧"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "peeling_lips",
+              "severity": 0.04,
+              "reason": "退烧后嘴唇脱皮"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "trust": 0.06,
+              "fear": 0.02,
+              "reason": "母亲整夜换湿布"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fever-recover",
+              "text": "洗衣房的蒸汽让{subject}昏昏沉沉，回家路上就开始打颤。母亲把湿布叠成条敷在额头上，第三天清早{subject}才说要喝水。",
+              "tone": [
+                "dry",
+                "sad"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "fever-recover",
+              "text": "邻居轮流端来凉水和旧布，{subject}的烧在第三个晚上退了。母亲用指头碰了碰孩子的嘴唇，皮一碰就往下掉。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fever-scarlet",
+          "weight": 1,
+          "text": "热病在洗衣房那条巷子传开，{subject}被隔在阁楼小屋里，医生来看过一次，母亲把攒着买煤的铜板付了诊费。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.2,
+              "reason": "猩红热"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "付医生诊费"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "quarantined",
+              "severity": 0.6,
+              "reason": "被隔离在阁楼"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fever-scarlet",
+              "text": "医生把听诊器贴在{subject}胸口时，母亲站在门口绞围裙。诊费掏空了煤钱，阁楼门板上多了一张红纸条。",
+              "tone": [
+                "dry",
+                "sad"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "fever-scarlet",
+              "text": "巷子里已经有人家把小孩送去医院。母亲把{subject}挪到阁楼，每天从门缝递进去一碗汤，红纸条贴了十天。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-childhood-street.cigarette-card",
+      "title": "烟草店门口的卡片",
+      "weight": 1,
+      "rate": 0.18,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 7,
+          "max": 11
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 14
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "card-trade",
+          "weight": 1,
+          "text": "{subject}用三张攒下的烟画跟街上一个更大的孩子换来一张印着皇帝像的卡，街上一个更大的孩子转身又用这张卡跟杂货店老板换了块糖。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "换到喜欢的烟画"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": -0.02,
+              "fear": 0,
+              "reason": "换卡后发现对方转手换糖"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "card-trade",
+              "text": "烟草店门口的玻璃柜里摆着一排烟画。{subject}把三张积攒的风景卡推过去，街上一个更大的孩子从口袋里摸出皇帝像，交易在排水沟边完成。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "card-trade",
+              "text": "{subject}把卡放进衬衣口袋按了按。回头看见街上一个更大的孩子站在杂货店柜台前，皇帝像已经换成了嘴里含着的糖块。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "card-stolen",
+          "weight": 1,
+          "text": "一个穿背带裤的男孩撞了{subject}一下，烟画卡从指缝里飞出去，街上一个更大的孩子追到巷口只扯下对方一截袖子布条。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "烟画被抢"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "fear": 0,
+              "reason": "邻居帮忙追抢卡的人"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "scraped_palm",
+              "severity": 0.02,
+              "reason": "摔倒时手掌擦地"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "card-stolen",
+              "text": "背带裤男孩撞过来时，{subject}正把卡举高对着光看。卡片飞出去，街上一个更大的孩子追出十几步，只抓回一截扯断的袖子布条。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "card-stolen",
+              "text": "巷口拐角太窄，{subject}摔在石子路上，手掌蹭出血珠。街上一个更大的孩子蹲下来把布条塞进口袋，说认得那个背带裤上的补丁。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "card-gift",
+          "weight": 1,
+          "text": "烟草店老板见{subject}连着几天趴在柜台前看，把一张揉皱的风景烟画从柜台底下摸出来塞过来，说拿去吧别挡着门。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "得到免费的烟画"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "delta": 0.02,
+              "reason": "在烟草店门口有礼貌"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.04,
+              "fear": 0,
+              "reason": "把多出来的卡分给邻居看"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "card-gift",
+              "text": "老板用两根手指夹着烟画晃了晃，{subject}伸手接时他又缩回去，最后笑着拍在孩子掌心上。街上一个更大的孩子凑过来看卡片角上的折痕。",
+              "tone": [
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "card-gift",
+              "text": "烟画上印着一座桥和一条河。{subject}把它对着烟草店橱窗的光看，街上一个更大的孩子在旁边说背面有号码，可以拿去跟人换。",
+              "tone": [
+                "dry",
+                "warm"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

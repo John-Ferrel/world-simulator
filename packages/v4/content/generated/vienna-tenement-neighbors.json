@@ -1,0 +1,552 @@
+{
+  "id": "vienna-tenement-neighbors",
+  "title": "合租楼里的邻里",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 70
+  },
+  "tags": [
+    "home",
+    "social",
+    "family",
+    "housing"
+  ],
+  "baseRate": 0.28,
+  "conditions": [
+    {
+      "kind": "placeKind",
+      "in": [
+        "home"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-tenement-neighbors.shared_stove_fire",
+      "title": "公用灶台上的火",
+      "weight": 1,
+      "rate": 0.1,
+      "conditions": [
+        {
+          "kind": "householdSize",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "fire_scald_hand",
+          "weight": 1,
+          "text": "{subject}在合租房走廊的公用灶台上煮土豆，转身取盐时袖子扫翻了铁锅，滚水浇在左手背上。{neighbor}从隔壁冲出来，扯下自己的围裙裹住烫伤处，又跑下楼叫来住在二楼的接生婆。接生婆用蛋清和旧亚麻布包扎，嘱咐三天不能沾水。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "左手背烫伤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "邻居及时帮忙处理烫伤"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fire_scald_hand",
+              "text": "{subject}的左手背被滚水烫出一串水泡，{neighbor}的围裙派上了用场，接生婆的蛋清糊住了伤口。走廊里弥漫着焦土豆味。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fire_burns_curtain",
+          "weight": 1,
+          "text": "{subject}在公用灶台上热猪油，油星子溅到旁边晾着的床单上，火苗顺着床单爬上木隔板。{neighbor}拎起水桶泼过去，火灭了，但床单烧掉半幅，隔板熏黑一片。房东扣了那户人家两克朗押金，那家的女人在楼道里哭了一下午。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "赔给房东的隔板熏黑损失"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "fear": 0.1,
+              "reason": "邻居目睹火情后心有余悸"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fire_burns_curtain",
+              "text": "床单烧掉半幅，隔板熏黑，房东从押金里扣了两克朗。{neighbor}泼水时湿了半条裙子，站在楼道里直摇头。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fire_no_damage",
+          "weight": 1,
+          "text": "{subject}刚把锅端下灶，火苗就蹿了起来，{neighbor}一脚踩灭地上的油布，顺手抄起沙箱里的沙子盖住灶口。两人都没受伤，但{neighbor}的鞋底烧穿一个洞，那是唯一一双出门的鞋。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "reason": "共同对付灶台起火"
+            },
+            {
+              "type": "mood",
+              "personId": "$neighbor",
+              "amount": -0.05,
+              "reason": "烧坏唯一一双鞋"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fire_no_damage",
+              "text": "沙子盖住了火，{neighbor}的鞋底却烧穿一个洞。他蹲在楼梯口用麻绳把鞋底和鞋面捆在一起，嘴上没说什么。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-tenement-neighbors.lost_room_key",
+      "title": "丢了的房门钥匙",
+      "weight": 1,
+      "rate": 0.12,
+      "conditions": [
+        {
+          "kind": "householdSize",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "key_found_by_neighbor",
+          "weight": 1,
+          "text": "{subject}傍晚从面粉厂下工回来，发现挂在腰带上的房门钥匙不见了，在楼梯间来回找了四趟。{neighbor}在二楼拐角的煤堆旁捡到那把铜钥匙，钥匙上缠着红线，一眼就认出来。{neighbor}敲开{subject}的门，把钥匙拍在桌上，说自己眼神好使。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "邻居捡到并归还钥匙"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "钥匙失而复得"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "key_found_by_neighbor",
+              "text": "{neighbor}把缠红线的铜钥匙拍在桌上，说是从煤堆旁捡的。{subject}摸出两块方糖谢她，她收了一块，另一块塞回{subject}手里。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "key_lost_landlady",
+          "weight": 1,
+          "text": "{subject}把钥匙丢在了回家路上的有轨电车轨道旁，天黑也没找着。房东太太说换锁芯要一克朗五十赫勒，从下月房租里扣。{neighbor}借给{subject}一把旧挂锁，但锁鼻和门扣对不上，只能用铁丝拧着凑合。那夜{subject}睡不踏实，总觉得有人在拧门。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "换锁芯费用"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "obligation": 0.05,
+              "reason": "邻居借出旧挂锁"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "夜里担心门锁不牢"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "key_lost_landlady",
+              "text": "房东太太在账本上记下一克朗五十赫勒的换锁钱。{neighbor}的旧挂锁用铁丝拧在门扣上，风一吹就哐当响。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "key_stolen_by_stranger",
+          "weight": 1,
+          "text": "{subject}记得出门时钥匙还在，回来却没了。{neighbor}说下午看见一个穿灰外套的男人在楼道里转悠，手里晃着一把铜钥匙。两人下楼查看，房门虚掩，抽屉被拉开，攒着买煤的六克朗不见了。{neighbor}陪着{subject}去街角警察岗亭报了案，警察记下灰外套，说会留意。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "被盗的买煤钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.12,
+              "reason": "邻居提供线索并陪同报案"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "家中被盗"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "key_stolen_by_stranger",
+              "text": "抽屉空了，六克朗买煤钱没了。{neighbor}描述的灰外套男人被记在岗亭的本子上。{subject}把门扣用木楔子顶了又顶。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-tenement-neighbors.sick_child_doorstep",
+      "title": "邻居家发烧的孩子",
+      "weight": 1,
+      "rate": 0.08,
+      "conditions": [
+        {
+          "kind": "health",
+          "min": 0.3
+        },
+        {
+          "kind": "householdSize",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "helps_fetch_doctor",
+          "weight": 1,
+          "text": "隔壁{neighbor}的小儿子烧到说胡话，额头烫得能烘手。{neighbor}在楼道里抹眼泪，说请不起医生。{subject}下楼叫了街角药房的伙计，花四十赫勒买了一包退烧药粉，又帮着用湿布敷了一整夜。天亮时孩子退了烧，{neighbor}端来一碗热汤面，面底下卧着一个鸡蛋。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "买退烧药粉"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "熬夜照料病人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "帮邻居照料生病的孩子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "helps_fetch_doctor",
+              "text": "药粉冲开灌下去，湿布换到第三盆水，孩子才安静下来。{neighbor}的面汤里卧着鸡蛋，{subject}吃到底才发现。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "refuses_grudge",
+          "weight": 1,
+          "text": "{neighbor}敲门想借半块煤给发烧的孩子烧热水，{subject}那天刚和{neighbor}为走廊堆东西吵过嘴，没开门，隔着门板说自家也不够用。后半夜听见{neighbor}抱着孩子下楼去敲药房的门。第二天在走廊碰见，{neighbor}低头绕过去，手里的铜壶碰在栏杆上，响了一声。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.15,
+              "affection": -0.1,
+              "reason": "拒绝借煤导致隔阂"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "心中堵着事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "refuses_grudge",
+              "text": "隔着门板回绝的话说完，楼道里静了很久。第二天铜壶碰栏杆那一声，{subject}听得清清楚楚。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "borrows_coal_risk",
+          "weight": 1,
+          "text": "{subject}把自家煤箱里仅剩的四块煤分了两块给{neighbor}，自己家那一夜没生火，裹着大衣睡的。孩子烧退了，{neighbor}第二天还煤时多塞了一把粗盐。{subject}当天下午就开始流清鼻涕，第三天咳得直不起腰。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "受凉咳嗽"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居还礼的粗盐"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.2,
+              "obligation": 0.15,
+              "reason": "分煤给邻居家生病的孩子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "borrows_coal_risk",
+              "text": "两块煤换了一把粗盐，外加三天的咳嗽。{neighbor}还煤时在门口站了很久，说等孩子好了来帮工。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-tenement-neighbors.laundry_line_dispute",
+      "title": "晾衣绳上的争执",
+      "weight": 1,
+      "rate": 0.1,
+      "conditions": [
+        {
+          "kind": "householdSize",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "compromise_split_line",
+          "weight": 1,
+          "text": "{subject}把洗好的床单搭上院子里的公用晾衣绳，占了整条。{neighbor}抱着一盆湿衣服下来，说自家孩子明天要穿干净衬衫上学。两人在绳子两头扯了一阵，最后{subject}把床单对折，腾出一半，{neighbor}用木夹子把衬衫一件件排上去。谁也没道歉，但第二天见面都点了头。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "晾衣绳上达成妥协"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "争执平息"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "compromise_split_line",
+              "text": "湿床单对折，木夹子排开衬衫。两人各自扯紧绳子的一头，谁也没看谁，但第二天都点了头。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "neighbor_yanks_clothes",
+          "weight": 1,
+          "text": "{neighbor}嫌{subject}的床单滴水滴到{neighbor}家衬衫上，一把扯下床单扔在院子的石板上。{subject}下楼捡起来时，床单角沾了泥，重洗又要费肥皂。两人在院子当中对喊，楼上有人推开窗看热闹。{subject}把床单重新搭上绳子时，故意把水拧在{neighbor}那侧。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.12,
+              "affection": -0.08,
+              "reason": "晾衣绳冲突升级"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.15,
+              "reason": "重洗床单的肥皂钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "neighbor_yanks_clothes",
+              "text": "床单角沾了泥，肥皂又得省着用。{subject}拧水时故意往那侧甩，楼上窗户后面有人笑了一声。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "subject_yields_line",
+          "weight": 1,
+          "text": "{subject}看{neighbor}盆里那几件小衬衫，把自家床单卷起来抱回屋，说等下午再晾。{neighbor}愣了一下，闷头把衣服挂好，收工回来时在{subject}门口放了一小包用旧报纸裹的洗衣碱。{subject}打开报纸，碱面里还掺着几粒粗盐。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "让出晾衣绳"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居回赠洗衣碱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "subject_yields_line",
+              "text": "床单卷回屋，小衬衫挂满了绳子。门口旧报纸包里的洗衣碱掺着粗盐，{subject}掂了掂，收进了柜子。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

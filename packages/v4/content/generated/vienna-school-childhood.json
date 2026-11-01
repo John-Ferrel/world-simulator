@@ -1,0 +1,568 @@
+{
+  "id": "vienna-school-childhood",
+  "title": "国民学校的孩子",
+  "stage": "childhood",
+  "ageWindow": {
+    "min": 7,
+    "max": 11
+  },
+  "tags": [
+    "school",
+    "social",
+    "childhood"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "education",
+      "in": [
+        "primary"
+      ]
+    },
+    {
+      "kind": "placeKind",
+      "in": [
+        "school",
+        "home"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-school-childhood.spelling-bee",
+      "title": "拼写比赛与磨破的袖口",
+      "weight": 1,
+      "rate": 0.25,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 7,
+          "max": 11
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 6,
+          "maxAge": 12
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "spelling-bee.win",
+          "weight": 2,
+          "text": "{subject}在国民学校的拼写比赛中连续拼对“Zwetschkenknödel”和“Kaiserin”，{teacher}把一枚铜制小十字章别在{subject}磨破的袖口上。放学后{neighbor}用三颗李子换来看一眼。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "在班级拼写比赛中获胜"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "被老师当众表扬"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "respect": 0.15,
+              "reason": "老师认可了拼写能力"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居用李子换看奖章"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "spelling-bee.win",
+              "text": "{subject}站在黑板前，粉笔灰落在鞋面上。拼到“Kaiserin”时全班安静，{teacher}点了点头，把铜十字章别在{subject}的袖口。",
+              "tone": [
+                "warm",
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "spelling-bee.win",
+              "text": "拼写比赛结束时，{teacher}敲了敲讲台说“记住这个词”。{subject}袖口上多了一枚小十字章，回家路上{neighbor}追着要看，最后用三颗李子换了眼福。",
+              "tone": [
+                "plain"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "spelling-bee.fail",
+          "weight": 2,
+          "text": "{subject}在“Notwendigkeit”上卡住，{teacher}用尺子敲了敲桌角。放学后{subject}在楼梯间把这词抄了二十遍，手指沾满墨水。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "拼写失败被老师敲桌"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.05,
+              "reason": "罚抄二十遍单词"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "fear": 0.1,
+              "reason": "老师用尺子敲桌角"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "spelling-bee.fail",
+              "text": "{subject}拼到一半停住，{teacher}的尺子落在桌角上。放学后楼梯间只剩{subject}一个人，把“Notwendigkeit”抄了二十遍，墨水瓶见了底。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "spelling-bee.fail",
+              "text": "“Notwendigkeit”少了一个字母，{teacher}没说话，只敲了敲桌角。{subject}回家时手指上全是墨水，母亲问起，只说写了点作业。",
+              "tone": [
+                "plain"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-school-childhood.coal-sled",
+      "title": "煤渣坡上的雪橇",
+      "weight": 1,
+      "rate": 0.22,
+      "conditions": [
+        {
+          "kind": "health",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 12
+        },
+        {
+          "key": "mother",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "coal-sled.bruise",
+          "weight": 2,
+          "text": "{subject}和{neighbor}把破雪橇拖上煤渣坡，坡面结冰后滑得飞快。雪橇撞上砖堆，{subject}膝盖磕青了一块，{neighbor}的帽子滚进排水沟。{mother}用湿布敷了敷，把裤子上的洞补上。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "雪橇撞上砖堆磕伤膝盖"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "和邻居一起玩雪橇"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "一起经历雪橇事故"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "affection": 0.05,
+              "reason": "母亲敷布补裤子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coal-sled.bruise",
+              "text": "煤渣坡被踩得又硬又滑，雪橇冲下去时{subject}只听见{neighbor}在喊。砖堆挡住去路，膝盖青了，帽子滚进沟里。晚上{mother}一边补裤子一边说“明天别去了”。",
+              "tone": [
+                "plain",
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coal-sled.bruise",
+              "text": "{neighbor}的帽子在排水沟里漂着，{subject}的膝盖撞在砖堆上。{mother}用湿布敷了敷，针线在裤子上走了两圈。煤渣坡的雪被压成了黑冰。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coal-sled.trade",
+          "weight": 1,
+          "text": "{subject}在坡顶遇到住同一栋楼的{neighbor}，对方用一块焦炭换雪橇滑三次。{subject}把焦炭带回家，{mother}把它添进炉子，屋里多暖了一刻钟。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "焦炭换雪橇滑行，省下一点燃料"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "用焦炭交换雪橇玩耍"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "在雪坡上玩耍"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coal-sled.trade",
+              "text": "{neighbor}从口袋里摸出一块焦炭，{subject}把雪橇推过去。三次滑行之后，焦炭进了自家的炉子，{mother}没问从哪来的。",
+              "tone": [
+                "plain"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coal-sled.trade",
+              "text": "煤渣坡上风大，{neighbor}用一块焦炭换雪橇玩。{subject}把焦炭揣回家，{mother}添进炉子，说“今天炉子旺”。",
+              "tone": [
+                "warm"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-school-childhood.soup-kitchen",
+      "title": "学校汤厨房的木勺",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "cash",
+          "max": 15
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 7,
+          "maxAge": 12
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "soup-kitchen.extra",
+          "weight": 2,
+          "text": "{subject}放学后留在学校汤厨房帮{teacher}搅锅，木勺比{subject}的手臂还长。{teacher}多给了{subject}一勺扁豆汤，{subject}用铁皮饭盒带回家，倒进母亲的锅里。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "帮厨换得一勺扁豆汤带回家"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "在汤厨房帮厨"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "cooking",
+              "amount": 0.03,
+              "reason": "在汤厨房搅锅"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "soup-kitchen.extra",
+              "text": "汤厨房的蒸汽糊住窗户，{subject}握着长木勺搅扁豆汤，{teacher}往铁皮饭盒里多舀一勺。回家路上饭盒烫手，母亲把它倒进自家锅里。",
+              "tone": [
+                "warm",
+                "plain"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "soup-kitchen.extra",
+              "text": "{teacher}让{subject}搅锅底，说别让扁豆粘住。木勺磨得手心发红，换来的是一勺汤和{neighbor}羡慕的眼神。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "soup-kitchen.spill",
+          "weight": 1,
+          "text": "{subject}端锅时手滑，热汤泼在鞋面上，{teacher}把{subject}拉到水龙头下冲脚。汤没带成，{neighbor}替{subject}把剩下的面包屑刮进围裙口袋。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "热汤泼在脚面上"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "fear": 0.05,
+              "reason": "在汤厨房闯了祸"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "reason": "邻居帮忙收拾残局"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "soup-kitchen.spill",
+              "text": "锅沿太烫，{subject}手一松，汤泼在鞋面上。{teacher}拽着{subject}到水龙头下冲脚，{neighbor}蹲在地上刮面包屑。晚饭的汤没了，鞋还湿着。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "soup-kitchen.spill",
+              "text": "{teacher}说“端稳”，{subject}还是让锅歪了。脚面红了一片，{neighbor}把面包屑塞进围裙口袋，说回家可以泡着吃。",
+              "tone": [
+                "plain"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-school-childhood.fountain-pen",
+      "title": "钢笔尖与父亲的账单",
+      "weight": 1,
+      "rate": 0.18,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 8
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 11
+        },
+        {
+          "key": "father",
+          "kind": "parent",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 60
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "fountain-pen.gift",
+          "weight": 1,
+          "text": "{subject}把学校作文拿给{father}看，{father}从工具包里摸出一支旧钢笔，笔尖磨歪了但还能写。{subject}用它写作业，{teacher}在页边画了个红圈。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.06,
+              "reason": "用旧钢笔练习写字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$father",
+              "kind": "kin",
+              "affection": 0.1,
+              "reason": "父亲送旧钢笔"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "作文得到老师红圈"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fountain-pen.gift",
+              "text": "{father}用拇指试了试笔尖，在账单背面划一道，说“还能写”。{subject}把作文重新抄了一遍，{teacher}在页边画了红圈，没说话。",
+              "tone": [
+                "warm",
+                "plain"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "fountain-pen.gift",
+              "text": "旧钢笔的笔尖歪向左边，{subject}写出来的字母也跟着歪。{father}说工具包里翻出来的，凑合用。{teacher}的红圈画在歪字母旁边。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fountain-pen.broken",
+          "weight": 1,
+          "text": "{subject}向{father}要钱买钢笔，{father}把账单翻过来给他看。{subject}用线把旧笔尖绑在木杆上，写字时墨水从裂缝里渗出来，{teacher}罚{subject}重写一页。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "买不起钢笔，自制笔漏水被罚"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$father",
+              "kind": "kin",
+              "obligation": -0.05,
+              "reason": "父亲拒绝买钢笔"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "handwriting",
+              "amount": 0.03,
+              "reason": "用自制笔重写一页"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fountain-pen.broken",
+              "text": "{father}把账单翻了个面，上面全是数字。{subject}没再问，回家用线把旧笔尖绑在木杆上。第二天墨水从裂缝渗到指缝，{teacher}把本子推回来让重写。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "fountain-pen.broken",
+              "text": "“钢笔要钱，钱在账单上。”{father}说完把纸折起来。{subject}的自制笔漏了一页墨，{teacher}用红笔写“重写”，本子边角被墨水泡皱。",
+              "tone": [
+                "plain"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

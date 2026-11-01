@@ -1,0 +1,515 @@
+{
+  "id": "vienna-church-community",
+  "title": "教区、葬礼与邻里互助",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 75
+  },
+  "tags": [
+    "faith",
+    "social",
+    "family",
+    "home"
+  ],
+  "baseRate": 0.25,
+  "conditions": [
+    {
+      "kind": "placeKind",
+      "in": [
+        "home",
+        "church"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-church-community.funeral-tin",
+      "title": "邻居葬礼上的锡罐",
+      "weight": 1,
+      "rate": 0.3,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "church"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "funeral-tin-contribute",
+          "weight": 1,
+          "text": "{subject}在卡尔教堂侧廊为刚过世的鞋匠遗孀募捐，把两枚克朗放进锡罐。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "给鞋匠遗孀的丧葬募捐"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "respect": 0.1,
+              "reason": "公开认捐，邻里看得见"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "按教区规矩尽了本分"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "funeral-tin-contribute",
+              "text": "{subject}把两枚克朗按进锡罐口，管风琴师正弹着《震怒之日》。{neighbor}隔着黑纱点了点头。",
+              "tone": [
+                "solemn"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "funeral-tin-contribute",
+              "text": "锡罐传到{subject}手里。{subject}听见硬币落底的脆响，想起鞋匠去年冬天还替人免费钉过掌。{neighbor}低声念了句“天主保佑”。",
+              "tone": [
+                "warm"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "funeral-tin-hesitate",
+          "weight": 1,
+          "text": "{subject}摸了摸围裙口袋，只有买煤的三十十字币。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "募捐时袖手旁观，被邻座看在眼里"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "募捐时没有表示"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "空手离开教堂侧廊"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "funeral-tin-hesitate",
+              "text": "{subject}把手从锡罐边缩回来，指节碰到罐沿发出轻响。{neighbor}移开视线，回到自己的念珠上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "funeral-tin-hesitate",
+              "text": "轮到{subject}时，募捐人已经转向下一排。{subject}攥着那三十十字币退出侧廊，煤还没买。{neighbor}在门口没再问什么。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-church-community.tenement-prayer",
+      "title": "公寓楼里的守夜祈祷",
+      "weight": 1,
+      "rate": 0.25,
+      "conditions": [
+        {
+          "kind": "householdSize",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "rent-prayer-help",
+          "weight": 1,
+          "text": "{subject}在楼梯间守夜时，邻居说起楼下老太太病重。",
+          "effects": [
+            {
+              "type": "condition",
+              "personId": "$neighbor",
+              "condition": "ill",
+              "reason": "楼下老太太病情加重，需要照料"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居送来一碗汤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "neighbor",
+              "trust": 0.1,
+              "affection": 0.1,
+              "reason": "一起守夜祈祷"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-prayer-help",
+              "text": "{subject}跪在冰冷的亚麻油毡上念完三遍圣母经。{neighbor}端来一碗热汤，说楼下老太太咳了一整夜，问明天能不能替她捎药。",
+              "tone": [
+                "solemn"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-prayer-help",
+              "text": "楼梯间只点一根蜡烛。{neighbor}凑过来低声说，楼下老寡妇的喘病又重了，教区明早才能派修女来。{subject}把汤碗接过去，碗底还温着。",
+              "tone": [
+                "somber"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rent-prayer-argument",
+          "weight": 1,
+          "text": "有人抱怨守夜人太多，踩坏了楼梯木板。楼里的人围着看，谁也没先走开。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "neighbor",
+              "trust": -0.1,
+              "fear": 0.05,
+              "reason": "因楼梯木板损坏争执"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被房客指责带人踩坏楼梯"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "守夜变成口角"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-prayer-argument",
+              "text": "二楼的老木匠指着裂开的踏板骂起来。{subject}手里还捏着念珠，{neighbor}挡在中间说木板本来就朽了。房东太太在门后听着。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-prayer-argument",
+              "text": "{neighbor}怪{subject}把人都招到楼梯上，木头泡了潮气才裂的。{subject}没还嘴，蹲下去看那道裂缝，指甲刮下一层朽木屑。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-church-community.saint-vincent-box",
+      "title": "圣文生会赈济箱",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "cash",
+          "max": 30
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "box-request-granted",
+          "weight": 1,
+          "text": "{subject}在圣文生会门口登记，领到一张面包券和一小袋土豆。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "圣文生会发放的面包和土豆"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "obligation": 0.1,
+              "reason": "受助登记时邻居做保"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "领到救济，家里锅里有东西了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "box-request-granted",
+              "text": "圣文生会的修女在登记簿上写下{subject}的门牌号，递过面包券和一小袋土豆。{neighbor}在旁边按了指印作保，说这户男人在工厂有活。",
+              "tone": [
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "box-request-granted",
+              "text": "{subject}排在圣文生会侧门的队伍里，前面的人领走最后一条咸鱼。轮到时修女从箱底翻出一袋土豆，{neighbor}帮着拎到街角。",
+              "tone": [
+                "somber"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "box-request-refused",
+          "weight": 1,
+          "text": "登记员翻遍册子，说这户上个月已经领过。楼里的人围着看，谁也没先走开。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.06,
+              "reason": "作保时被登记员驳回"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被指重复申领赈济"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "当众被拒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "box-request-refused",
+              "text": "登记员用铅笔尖点着册子上一行字，说上个月十七号已经领过。{neighbor}涨红了脸，{subject}在队伍前站着，后面有人咂嘴。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "box-request-refused",
+              "text": "修女把册子合上，说赈济箱这周空了。{subject}退到台阶下，{neighbor}追出来塞了半块黑面包，算是替登记的事赔不是。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-church-community.bell-rope-donation",
+      "title": "为教堂新钟捐绳",
+      "weight": 1,
+      "rate": 0.15,
+      "conditions": [
+        {
+          "kind": "placeKind",
+          "in": [
+            "church"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "bell-rope-gift",
+          "weight": 1,
+          "text": "{subject}把家里一段旧麻绳送去教堂，神父收下记在本子上。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "为教堂新钟捐了麻绳"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "邻居看在眼里"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "神父回赠的蜡烛钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "bell-rope-gift",
+              "text": "{subject}把一段旧麻绳搁在圣器室桌上。神父翻开本子记下门牌号，说新钟挂起来那天会念一遍捐绳人的名字，又塞回一枚克朗。",
+              "tone": [
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "bell-rope-gift",
+              "text": "管堂的{neighbor}接过麻绳，在手里抻了抻，说够结实的。{subject}看着绳子被挂到新钟的横梁上，没说话，把神父给的蜡烛钱揣进围裙。",
+              "tone": [
+                "solemn"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bell-rope-refused",
+          "weight": 1,
+          "text": "管堂的说这绳太短，新钟敲不起来。楼里的人围着看，谁也没先走开。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "捐的绳子被退回"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "捐物被当面退回"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "捐的绳子不合用"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "bell-rope-refused",
+              "text": "管堂的把麻绳挽了挽，说差着两臂长，敲新钟要够着楼板。{subject}又把绳子夹回腋下，{neighbor}在门口看着，说了句“心意到了”。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "bell-rope-refused",
+              "text": "{neighbor}拿绳子比了比钟锤的位置，摇头。{subject}没争辩，转身走下圣器室的石阶，绳子在手里越攥越紧。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

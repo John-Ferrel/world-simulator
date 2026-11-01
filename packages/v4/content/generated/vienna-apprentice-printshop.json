@@ -1,0 +1,497 @@
+{
+  "id": "vienna-apprentice-printshop",
+  "title": "排字房学徒",
+  "stage": "adolescence",
+  "ageWindow": {
+    "min": 14,
+    "max": 17
+  },
+  "tags": [
+    "work",
+    "apprentice",
+    "factory",
+    "social"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "employment",
+      "employed": true
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-apprentice-printshop.lead-type-drop",
+      "title": "铅字落地",
+      "weight": 1,
+      "rate": 0.25,
+      "conditions": [
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 50
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "lead-type-drop.scolded",
+          "weight": 2,
+          "text": "{subject}在{workplace}把整盘8点铅字从字架上碰翻，字块散进过道。{employer}从玻璃隔间出来，用尺子敲桌沿，骂了五分钟，并扣掉当天两个克朗的工钱。{worker}蹲下去替{subject}捡字，小声说“下次用两只手托底”。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "赔偿散落铅字的工钱扣款"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.1,
+              "fear": 0.08,
+              "reason": "被当众斥责"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.06,
+              "reason": "帮忙捡字并提醒手法"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lead-type-drop.scolded",
+              "text": "{subject}在{workplace}碰翻一整盘8点铅字，字块滚了一地。{employer}敲着桌沿骂人，扣下两个克朗。{worker}蹲在过道里帮忙捡字，只说了一句“下次用两只手托底”。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lead-type-drop.repaired",
+          "weight": 1,
+          "text": "字块还没捡齐，{worker}把散落的字按字母补回字盘，让{subject}在午休前重新排完那页价目表。{employer}下午翻检时用指甲划过一行，说“排得还直”，没有扣钱，只是让{subject}留下把过道扫干净。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "重新排完一整页价目表"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "蹲着捡铅字与扫过道"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.05,
+              "reason": "对方帮忙补字盘"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lead-type-drop.repaired",
+              "text": "{worker}把散落的铅字按字母补回字盘，{subject}赶在午休前重新排完价目表。{employer}用指甲划过一行，说“排得还直”，没扣钱，只让把过道扫干净。",
+              "tone": [
+                "neutral"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-apprentice-printshop.overtime-wage-scuffle",
+      "title": "加班的工钱",
+      "weight": 1,
+      "rate": 0.22,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 14
+        },
+        {
+          "kind": "health",
+          "min": 0.3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 50
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "overtime-wage-scuffle.paid-short",
+          "weight": 2,
+          "text": "为赶制市议会选举的传单，{subject}在{workplace}连排三个晚上。结账时{employer}把加班算成“学徒练习”，只多给半克朗。{worker}在楼梯间低声说这是常事，让{subject}周末别来，去集市八角亭替人抄货单。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.5,
+              "reason": "三晚加班只补半克朗"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "连续三晚排字熬到十点"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.12,
+              "reason": "加班被算作练习"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "私下点了条赚钱的路"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "overtime-wage-scuffle.paid-short",
+              "text": "为赶选举传单，{subject}连排三个晚上。{employer}把加班算成“学徒练习”，只多给半克朗。{worker}在楼梯间说这是常事，叫{subject}周末去八角亭替人抄货单。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "overtime-wage-scuffle.pressed",
+          "weight": 1,
+          "text": "{subject}把加班的时辰记在排字房墙角的粉笔账上，{worker}带头去跟{employer}对账。{employer}看着粉笔印沉默一会儿，多补了两个克朗，但把{subject}的名字从下月的正式工候选名单上划掉，扔回学徒组。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "对账后补发的加班钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.15,
+              "respect": 0.04,
+              "reason": "被从正式工候选划掉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "一起对账"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "overtime-wage-scuffle.pressed",
+              "text": "{subject}把加班时辰记在墙角粉笔账上，{worker}领着去对账。{employer}补了两个克朗，却把{subject}的名字从正式工候选名单上划掉，扔回学徒组。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-apprentice-printshop.lung-cough",
+      "title": "铅尘与咳嗽",
+      "weight": 1,
+      "rate": 0.2,
+      "conditions": [
+        {
+          "kind": "health",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "lung-cough.rest",
+          "weight": 1,
+          "text": "{subject}夜里咳得床板发颤，{neighbor}隔着墙听见，清早端来一碗加蜂蜜的鼠尾草茶，并让{subject}的母亲去{workplace}请一天假。{employer}准了假，但说月底结算要扣掉一天工钱。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "休息一天并喝下热茶"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.8,
+              "reason": "病假扣一天工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "reason": "隔墙听见咳嗽送来热茶"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lung-cough.rest",
+              "text": "{subject}夜里咳得床板发颤。{neighbor}隔墙听见，清早端来一碗蜂蜜鼠尾草茶，让{subject}的母亲去{workplace}请一天假。{employer}准了假，月底扣掉一天工钱。",
+              "tone": [
+                "neutral"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lung-cough.stopped",
+          "weight": 1,
+          "text": "{subject}怕扣钱，揣着止咳糖继续上工，排到下午手一抖，整行字歪进字夹。{employer}看了一眼{subject}发青的嘴唇，让人把字重新排，并叫{subject}去后院筛一星期的旧铅字——那活更脏，但不用赶时。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "带咳上工并筛旧铅字"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "学会分辨旧铅字型号"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.03,
+              "fear": 0.05,
+              "reason": "被调去筛旧铅字"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lung-cough.stopped",
+              "text": "{subject}揣着止咳糖继续上工，排到下午手一抖，整行字歪进字夹。{employer}看见发青的嘴唇，让{subject}去后院筛一星期的旧铅字——更脏，但不用赶时。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-apprentice-printshop.union-leaflet",
+      "title": "工会传单",
+      "weight": 1,
+      "rate": 0.18,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 15
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 17
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 50
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "union-leaflet.hidden",
+          "weight": 1,
+          "text": "{worker}把一叠印着“十小时工作制”的德文传单塞进{subject}的围裙口袋，让{subject}下班后夹带出厂。{subject}在更衣室把传单塞进鞋垫底下，走到巷口才分给两个女工。{employer}第二天搜了每个人的柜子，什么也没找到。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "替工会传单打掩护"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "printshop_union_contact",
+              "value": true,
+              "reason": "与工会成员建立联系"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "成功带出传单"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "union-leaflet.hidden",
+              "text": "{worker}把一叠“十小时工作制”传单塞进{subject}的围裙口袋，叫下班后夹带出厂。{subject}把传单塞进鞋垫底下，走到巷口才分给两个女工。第二天{employer}搜遍柜子，什么也没找到。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "union-leaflet.caught",
+          "weight": 1,
+          "text": "{subject}把传单卷进裤腰，却在门口被{employer}叫住。{employer}抽出那卷纸，念了两行，说“印刷所不是煽动所”，把{subject}这个月的学徒补贴减半，并让{worker}在排字房当众道歉。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "学徒补贴被减半"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.14,
+              "fear": 0.06,
+              "reason": "夹带传单被当场抓住"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.08,
+              "obligation": 0.08,
+              "reason": "替对方承担了部分风险"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "union-leaflet.caught",
+              "text": "{subject}把传单卷进裤腰，在门口被{employer}叫住。{employer}抽出纸卷念了两行，说“印刷所不是煽动所”，把学徒补贴减半，并要{worker}在排字房当众道歉。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

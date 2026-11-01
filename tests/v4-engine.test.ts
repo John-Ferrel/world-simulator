@@ -1034,7 +1034,7 @@ describe('v4 annual engine', () => {
       stage: 'adulthood',
       ageWindow: { min: 18, max: 45 },
       roles: [
-        { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 45 },
+        { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 45, sex: 'female' },
         { key: 'partner', kind: 'partner', required: true, minAge: 18, maxAge: 45, sex: 'male' },
       ],
       conditions: [{ kind: 'age', min: 18, max: 45 }],
@@ -1092,6 +1092,355 @@ describe('v4 annual engine', () => {
     expect(birthFact!.causes).toEqual([event!.id]);
     expect(birthFact!.immediateText).toContain(child.name);
     expect(result.world.relations[child.relationshipIds[0]!]).toBeDefined();
+    assertWorldV4(result.world);
+  });
+
+  it('runs multiple ordinary events per year and respects rates', () => {
+    const world = vienna();
+    const one = scene({
+      id: 'event:one',
+      stage: 'childhood',
+      ageWindow: { min: 11, max: 11 },
+      rate: 1,
+      weight: 1,
+      conditions: [{ kind: 'age', min: 11, max: 11 }],
+    });
+    const two = scene({
+      id: 'event:two',
+      stage: 'childhood',
+      ageWindow: { min: 11, max: 11 },
+      rate: 1,
+      weight: 1,
+      conditions: [{ kind: 'age', min: 11, max: 11 }],
+    });
+    const never = scene({
+      id: 'event:never',
+      stage: 'childhood',
+      ageWindow: { min: 11, max: 11 },
+      rate: 0,
+      conditions: [{ kind: 'age', min: 11, max: 11 }],
+    });
+    const result = advanceV4Year(world, [one, two, never], {
+      economy: { enabled: false },
+      eventRuntime: true,
+      maxOrdinaryEventsPerPerson: 2,
+    });
+    const ids = result.events.map((event) => event.action.split('/')[0]);
+    expect(ids).toContain('event:one');
+    expect(ids).toContain('event:two');
+    expect(ids).not.toContain('event:never');
+    expect(result.events.filter((event) => event.subjectId === 'person:anna')).toHaveLength(2);
+  });
+
+  it('processes followup events from the queue even when their rate is zero', () => {
+    const world = vienna();
+    const first = scene({
+      id: 'event:first',
+      stage: 'childhood',
+      ageWindow: { min: 11, max: 11 },
+      rate: 1,
+      conditions: [{ kind: 'age', min: 11, max: 11 }],
+      outcomes: [
+        {
+          id: 'triggers-next',
+          weight: 1,
+          immediateText: 'The first event happened.',
+          effects: [],
+          followupSceneIds: ['event:second'],
+        },
+      ],
+    });
+    const second = scene({
+      id: 'event:second',
+      stage: 'adolescence',
+      ageWindow: { min: 12, max: 12 },
+      rate: 0,
+      conditions: [{ kind: 'age', min: 11, max: 12 }],
+      outcomes: [
+        {
+          id: 'followed',
+          weight: 1,
+          immediateText: 'The followup happened a year later.',
+          effects: [],
+        },
+      ],
+    });
+    const firstYear = advanceV4Year(world, [first, second], {
+      economy: { enabled: false },
+      eventRuntime: true,
+      maxOrdinaryEventsPerPerson: 2,
+    });
+    expect(firstYear.events.some((event) => event.action.startsWith('event:first/'))).toBe(true);
+    expect(firstYear.world.historyMeta.scheduledEvents?.length).toBeGreaterThan(0);
+    const secondYear = advanceV4Year(firstYear.world, [first, second], {
+      economy: { enabled: false },
+      eventRuntime: true,
+      maxOrdinaryEventsPerPerson: 2,
+    });
+    expect(secondYear.events.some((event) => event.action.startsWith('event:second/'))).toBe(true);
+    expect(
+      secondYear.events.find((event) => event.action.startsWith('event:second/'))?.causes,
+    ).toEqual([firstYear.events.find((event) => event.action.startsWith('event:first/'))?.id]);
+  });
+
+  it('commits an independent partner response and only then changes the household', () => {
+    const world = vienna();
+    const anna = world.persons['person:anna']!;
+    anna.born = { year: 1888, month: 1 };
+    anna.parentIds = [];
+    anna.guardianIds = [];
+    world.households['household:other'] = {
+      id: 'household:other',
+      residenceId: 'place:cafe',
+      memberIds: ['person:partner'],
+      guardianIds: [],
+      cash: 10,
+      food: 3,
+      debt: 0,
+      rent: 1,
+      obligations: [],
+      assets: [],
+      sharingRules: 'separate',
+    };
+    world.persons['person:partner'] = {
+      ...structuredClone(world.persons['person:josef']!),
+      id: 'person:partner',
+      name: 'Otto Partner',
+      born: { year: 1885, month: 3 },
+      householdId: 'household:other',
+      locationId: 'place:cafe',
+      parentIds: [],
+      guardianIds: [],
+      employment: undefined,
+      roles: [],
+      relationshipIds: [],
+    };
+    const offer = scene({
+      id: 'action:courtship',
+      stage: 'adulthood',
+      ageWindow: { min: 18, max: 45 },
+      rate: 1,
+      roles: [
+        { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 45, sex: 'female' },
+        { key: 'partner', kind: 'partner', required: true, minAge: 18, maxAge: 45 },
+      ],
+      conditions: [{ kind: 'age', min: 18, max: 45 }],
+      outcomes: [
+        {
+          id: 'ask',
+          weight: 1,
+          immediateText: '{subject} asks {partner} to share a household.',
+          effects: [
+            {
+              type: 'interaction',
+              interaction: {
+                id: 'courtship:$eventId',
+                initiatorId: '$subject',
+                counterpartyIds: ['$partner'],
+                kind: 'proposal',
+                subject: 'share a household',
+                status: 'pending',
+                created: { year: 1, month: 1 },
+                proposal: {
+                  acceptIf: { chance: 1 },
+                  acceptText: '{counterparty} agrees to move in with {subject}.',
+                  rejectText: '{counterparty} refuses.',
+                  acceptEffects: [
+                    {
+                      type: 'relation',
+                      a: '$subject',
+                      b: '$counterparty',
+                      kind: 'partner',
+                      trust: 0.1,
+                      reason: 'accepted',
+                    },
+                    {
+                      type: 'household',
+                      personId: '$counterparty',
+                      householdId: '$household',
+                      reason: 'moved in',
+                    },
+                  ],
+                  rejectEffects: [],
+                },
+                responses: [],
+                visibility: 'participants',
+              },
+            },
+          ],
+        },
+      ],
+    });
+    const first = advanceV4Year(world, [offer], {
+      economy: { enabled: false },
+      eventRuntime: true,
+      maxOrdinaryEventsPerPerson: 1,
+    });
+    const pending = Object.values(first.world.interactions)[0];
+    expect(pending?.status).toBe('pending');
+    expect(first.world.persons['person:partner']!.householdId).toBe('household:other');
+    const second = advanceV4Year(first.world, [], {
+      economy: { enabled: false },
+      eventRuntime: true,
+      maxOrdinaryEventsPerPerson: 1,
+    });
+    expect(second.events.some((event) => event.action === 'interaction_response')).toBe(true);
+    expect(second.world.persons['person:partner']!.householdId).toBe('household:huber');
+    expect(
+      Object.values(second.world.relations).some(
+        (relation) =>
+          relation.kind === 'partner' &&
+          ((relation.a === 'person:anna' && relation.b === 'person:partner') ||
+            (relation.a === 'person:partner' && relation.b === 'person:anna')),
+      ),
+    ).toBe(true);
+    assertWorldV4(second.world);
+  });
+
+  it('settles an extinct household to a living heir', () => {
+    const world = vienna();
+    world.households['household:alone'] = {
+      id: 'household:alone',
+      residenceId: 'place:home',
+      memberIds: ['person:parent'],
+      guardianIds: [],
+      cash: 60,
+      food: 1,
+      debt: 0,
+      rent: 1,
+      obligations: [],
+      assets: [],
+      sharingRules: 'separate',
+    };
+    world.households['household:heir'] = {
+      id: 'household:heir',
+      residenceId: 'place:cafe',
+      memberIds: ['person:heir'],
+      guardianIds: [],
+      cash: 0,
+      food: 1,
+      debt: 0,
+      rent: 1,
+      obligations: [],
+      assets: [],
+      sharingRules: 'separate',
+    };
+    const base = structuredClone(world.persons['person:josef']!);
+    world.persons['person:parent'] = {
+      ...base,
+      id: 'person:parent',
+      name: 'Parent Alone',
+      born: { year: 1840, month: 1 },
+      householdId: 'household:alone',
+      locationId: 'place:home',
+      parentIds: [],
+      guardianIds: [],
+      employment: undefined,
+      relationshipIds: [],
+      roles: [],
+    };
+    world.persons['person:heir'] = {
+      ...structuredClone(base),
+      id: 'person:heir',
+      name: 'Adult Heir',
+      born: { year: 1880, month: 1 },
+      householdId: 'household:heir',
+      locationId: 'place:cafe',
+      parentIds: ['person:parent'],
+      guardianIds: [],
+      employment: undefined,
+      relationshipIds: [],
+      roles: [],
+    };
+    world.relations['rel:parent:heir:kin'] = {
+      id: 'rel:parent:heir:kin',
+      a: 'person:parent',
+      b: 'person:heir',
+      kind: 'kin',
+      trust: 0.5,
+      affection: 0.5,
+      obligation: 0.5,
+      fear: 0,
+      respect: 0.5,
+      start: { year: 1900, month: 1 },
+      sharedEventIds: [],
+    };
+    const deathScene = scene({
+      id: 'test:death',
+      stage: 'elderhood',
+      ageWindow: { min: 60, max: 90 },
+      subjectIds: ['person:parent'],
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 60, maxAge: 90 }],
+      conditions: [{ kind: 'age', min: 60, max: 90 }],
+      outcomes: [
+        {
+          id: 'die',
+          weight: 1,
+          immediateText: 'Parent Alone died.',
+          effects: [{ type: 'death', personId: '$subject', cause: 'test', reason: 'test' }],
+        },
+      ],
+    });
+    const result = advanceV4Year(world, [deathScene], noEconomy);
+    expect(result.world.persons['person:parent']!.died).toBeDefined();
+    expect(result.world.households['household:alone']!.cash).toBe(0);
+    expect(result.world.households['household:heir']!.cash).toBe(60);
+    expect(result.events[0]!.effects[0]).toMatchObject({
+      type: 'death',
+      estateTo: 'household:heir',
+      estateAmount: 60,
+    });
+    assertWorldV4(result.world);
+  });
+
+  it('ends a relation and moves a household residence with typed effects', () => {
+    const world = vienna();
+    world.relations['rel:anna:josef:partner'] = {
+      id: 'rel:anna:josef:partner',
+      a: 'person:anna',
+      b: 'person:josef',
+      kind: 'partner',
+      trust: 0.5,
+      affection: 0.5,
+      obligation: 0.5,
+      fear: 0,
+      respect: 0.5,
+      start: { year: 1910, month: 1 },
+      sharedEventIds: [],
+    };
+    const sceneWithEffects = scene({
+      id: 'test:social-change',
+      stage: 'childhood',
+      ageWindow: { min: 11, max: 11 },
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 11, maxAge: 11 }],
+      conditions: [{ kind: 'age', min: 11, max: 11 }],
+      outcomes: [
+        {
+          id: 'change',
+          weight: 1,
+          immediateText: 'A household changed.',
+          effects: [
+            {
+              type: 'relation_end',
+              a: 'person:anna',
+              b: 'person:josef',
+              kind: 'partner',
+              reason: 'test separation',
+            },
+            {
+              type: 'residence',
+              householdId: 'household:huber',
+              residenceId: 'place:cafe',
+              reason: 'test move',
+            },
+          ],
+        },
+      ],
+    });
+    const result = advanceV4Year(world, [sceneWithEffects], noEconomy);
+    expect(result.world.relations['rel:anna:josef:partner']!.end).toEqual({ year: 1913, month: 1 });
+    expect(result.world.households['household:huber']!.residenceId).toBe('place:cafe');
+    expect(result.world.persons['person:anna']!.locationId).toBe('place:cafe');
     assertWorldV4(result.world);
   });
 });
