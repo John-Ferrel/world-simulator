@@ -42,6 +42,23 @@ import {
   type WorldDate,
   type WorldState,
 } from './domain.js';
+import {
+  eventPoolMultiplier,
+  macroForPerson,
+  regionIdForPerson,
+  syncMacroPressures,
+  type MacroState,
+} from './macro.js';
+import {
+  DEATH_CAUSE_TEXT,
+  annualInfectionRisk,
+  estimateAnnualRisks,
+  infectionNameForAge,
+  recoveryRisk,
+  sampleDeathCause,
+  updateMacroPopulation,
+  type DeathCause,
+} from './statistics.js';
 
 export type V4DecisionContext = {
   world: WorldState;
@@ -82,6 +99,8 @@ export type V4AdvanceOptions = {
   eventRuntime?: boolean;
   /** Soft cap for ordinary statistical events per person-year. Fact events bypass. */
   maxOrdinaryEventsPerPerson?: number;
+  /** Use the Phase 3 statistical risk engine when the world has macro state. */
+  statisticalModel?: boolean;
   economy?: {
     /** Defaults to true. Scenes still run when false. */
     enabled?: boolean;
@@ -121,6 +140,7 @@ export type V4AdvanceDiagnostics = {
   scenesBlocked: number;
   eventsCreated: number;
   deaths: Id[];
+  statistical: { deaths: number; infections: number; recoveries: number };
   economy: V4EconomyDiagnostics;
   warnings: V4Warning[];
 };
@@ -138,6 +158,7 @@ type NormalizedOptions = {
   maxScenesPerPerson: number;
   eventRuntime: boolean;
   maxOrdinaryEventsPerPerson: number;
+  statisticalModel: boolean;
   economyEnabled: boolean;
   foodPerPersonPerMonth: number;
   outcomePolicy?: V4OutcomePolicy;
@@ -285,6 +306,7 @@ export function advanceV4Year(
     scenesBlocked: 0,
     eventsCreated: 0,
     deaths: [],
+    statistical: { deaths: 0, infections: 0, recoveries: 0 },
     economy: {
       months: 0,
       wagesPaid: 0,
@@ -308,6 +330,7 @@ export function advanceV4Year(
     warn(diagnostics, 'world_not_running', `world status is ${draft.status}; year not advanced`);
     return { world: draft, events: [], scenes: [], diagnostics };
   }
+  if (draft.macro) syncMacroPressures(draft, draft.macro);
 
   const context: EngineContext = {
     world: draft,
@@ -322,7 +345,9 @@ export function advanceV4Year(
     triggerIndex: new Map(),
   };
 
-  const definitions = usableDefinitions(scenes, diagnostics);
+  const definitions = usableDefinitions(scenes, diagnostics).filter(
+    (definition) => !(draft.macro && definition.tags?.includes('baseline_mortality')),
+  );
   context.definitions = definitions;
   for (const definition of definitions) {
     for (const tag of definition.triggerTags ?? []) {
@@ -356,6 +381,12 @@ export function advanceV4Year(
   }
 
   draft.date = target;
+  if (normalized.statisticalModel && draft.macro) applyStatisticalYear(context, target);
+  reapVitalityZero(context, target);
+  if (draft.macro && normalized.statisticalModel) {
+    draft.macro = updateMacroPopulation(draft.macro, draft, target);
+    syncMacroPressures(draft, draft.macro);
+  }
   expireDueInteractions(context);
   advanceDueProjects(context);
   // Reap pre-existing zero vitality before casting, so a corpse is never
@@ -403,6 +434,7 @@ function normalizeOptions(options: V4AdvanceOptions): NormalizedOptions {
   return {
     maxScenesPerPerson,
     eventRuntime: options.eventRuntime === true,
+    statisticalModel: options.statisticalModel !== false,
     maxOrdinaryEventsPerPerson:
       typeof options.maxOrdinaryEventsPerPerson === 'number' &&
       Number.isFinite(options.maxOrdinaryEventsPerPerson)
@@ -1555,7 +1587,7 @@ function birthContractCostEffects(
  * inside the scheduler. It does not mutate state.
  */
 export function v4EventRate(
-  _context: EngineContext | null,
+  context: EngineContext | null,
   definition: SceneDefinition,
   subject: Person,
   _date: WorldDate,
@@ -1618,7 +1650,12 @@ export function v4EventRate(
   }
   if (subject.health.vitality < 0.4 && definition.tags.includes('health')) rate *= 1.25;
   if (definition.tags.includes('work') && subject.employment) rate *= 1.1;
-  return clamp(rate, 0, 1);
+  const regionId = context?.world
+    ? regionIdForPerson(context.world, subject)
+    : 'region-lower-austria';
+  const pool = eventPoolMultiplier(context?.world?.macro, definition, regionId);
+  if (pool <= 0) return 0;
+  return clamp(rate * pool, 0, 1);
 }
 
 function eventTags(event: EventFact): string[] {
@@ -2512,7 +2549,11 @@ function applyHealth(
   }
   if (typeof effect.amount !== 'number' || !Number.isFinite(effect.amount)) return undefined;
   const before = person.health.vitality;
-  const after = clamp(before + effect.amount, 0, 1);
+  // A Phase 3 world reserves final death for the statistical pass or an
+  // explicit `death` effect. Ordinary health damage cannot silently create a
+  // second, untyped mortality path by reaching exactly zero.
+  const floor = context.world.macro ? 0.01 : 0;
+  const after = clamp(before + effect.amount, floor, 1);
   const delta = after - before;
   if (Math.abs(delta) < 1e-9) return undefined;
   person.health.vitality = after;
@@ -3145,6 +3186,9 @@ function applyBirth(
   };
   context.world.persons[child.id] = child;
   household.memberIds.push(child.id);
+  // The annual statistical pass runs after scenes; keep the postpartum window
+  // open until the next annual pass so maternal risk is actually evaluated.
+  mother.health.postpartumUntil = addMonths(binding.date, 13);
   for (const parent of parents) {
     for (const relationKind of ['kin', 'guardian'] as Relation['kind'][]) {
       const relation: Relation = {
@@ -3270,6 +3314,219 @@ function applyDeath(
   };
 }
 
+function illnessLabel(name: string): string {
+  switch (name) {
+    case 'pneumonia':
+      return '肺炎';
+    case 'tuberculosis':
+      return '肺结核';
+    case 'dysentery':
+      return '痢疾';
+    case 'typhoid':
+      return '伤寒';
+    default:
+      return '急性感染';
+  }
+}
+
+function illnessCause(name: string): DeathCause {
+  switch (name) {
+    case 'pneumonia':
+      return 'pneumonia';
+    case 'tuberculosis':
+      return 'tuberculosis';
+    case 'dysentery':
+      return 'infant_diarrhoea';
+    case 'typhoid':
+      return 'other';
+    default:
+      return 'other';
+  }
+}
+
+function statisticalDeathText(
+  person: Person,
+  cause: DeathCause,
+  date: WorldDate,
+  placeName: string,
+): string {
+  switch (cause) {
+    case 'infant_diarrhoea':
+      return `${person.name}在${placeName}连续腹泻了两天，嘴唇干裂，喂水也留不住。家里没有钱再请医生，天亮前孩子停止了呼吸。`;
+    case 'pneumonia':
+      return `${person.name}在${placeName}发起高烧，咳嗽越来越深。邻居帮忙去请医生，医生到时只留下药粉和一张账单；几天后呼吸变得很浅。`;
+    case 'tuberculosis':
+      return `${person.name}咳了几个月，手帕上开始带血。${date.year}年冬天，${person.name}在${placeName}的床上消瘦下去，再没有力气去上工。`;
+    case 'childbirth':
+      return `${person.name}生产后一直发热，腹部疼痛。接生的人说已经排干净了，但几天后高热不退，${placeName}的家里人连夜去请医生，仍没赶上。`;
+    case 'war':
+      return `${person.name}在战乱中受了重伤，被送到${placeName}的临时救护站。血迹浸透了绷带，名字被写在一张潮湿的纸上。`;
+    case 'accident':
+      return `${person.name}在${placeName}附近出了事故。工友和路人把人抬到门口，等医生赶到时已经没有了呼吸。`;
+    case 'violence':
+      return `${person.name}在${placeName}卷入一场冲突，头部和胸口受了重伤。旁人把人抬回家，夜里伤势恶化。`;
+    case 'famine':
+      return `${person.name}已经很久没有吃到足够的面包。${date.year}年，${placeName}的配给再次缩减，${person.name}在饥饿和虚弱中去世。`;
+    case 'old_age':
+      return `${person.name}在${placeName}的床上安静地停止呼吸。桌上还放着没吃完的药和一杯水，邻居早上来敲门时才发现。`;
+    default:
+      return `${person.name}在${placeName}突发急病，高热和虚弱持续了几天。医生没能给出明确诊断，${person.name}在一个夜里去世。`;
+  }
+}
+
+function commitStatisticalDeath(
+  context: EngineContext,
+  person: Person,
+  cause: DeathCause,
+  date: WorldDate,
+): boolean {
+  const placeName = context.world.places[person.locationId]?.name ?? '维也纳';
+  const event = commitEvent(
+    context,
+    {
+      date: { ...date },
+      placeId: person.locationId,
+      subjectId: person.id,
+      participants: [{ personId: person.id, role: 'subject' }],
+      action: `statistical_death/${cause}`,
+      causes: [],
+      effects: [
+        {
+          type: 'death',
+          personId: person.id,
+          cause: DEATH_CAUSE_TEXT[cause],
+          reason: `statistical risk: ${cause}`,
+        },
+      ],
+      immediateText: statisticalDeathText(person, cause, date, placeName),
+      significance: 0.95,
+      visibility: 'participants',
+      provenance: { kind: 'system', sourceId: `statistics:${cause}` },
+    },
+    { roleIds: { subject: person.id }, fundingOrganizationIds: [] },
+    true,
+  );
+  return Boolean(event);
+}
+
+/**
+ * Phase 3 statistical pass. It is the only baseline natural-mortality
+ * authority: infection, recovery, worsening, maternal risk and age-specific
+ * death all pass through this function. Explicit content deaths remain
+ * external events (accidents, war, violence); they cannot double-kill an
+ * already dead person because commitEvent/applyDeath checks the person.
+ */
+function applyStatisticalYear(context: EngineContext, date: WorldDate): void {
+  const world = context.world;
+  if (!world.macro) return;
+  const personIds = Object.keys(world.persons).sort();
+  for (const personId of personIds) {
+    const person = world.persons[personId];
+    if (!person || person.died) continue;
+    const region = macroForPerson(world, person);
+    if (!region) continue;
+    if (
+      person.health.postpartumUntil &&
+      monthIndex(person.health.postpartumUntil) < monthIndex(date)
+    ) {
+      delete person.health.postpartumUntil;
+    }
+    const age = ageAt(person, date) - (date.month < person.born.month ? 1 : 0);
+    const params = region.parameters;
+    if (person.health.lastIllness) {
+      const name = person.health.lastIllness.name;
+      const rng = seededRng(world.seed, 'illness-progress', person.id, date.year);
+      if (rng() < recoveryRisk(age, params)) {
+        delete person.health.lastIllness;
+        context.diagnostics.statistical.recoveries += 1;
+        commitEvent(
+          context,
+          {
+            date: { ...date },
+            placeId: person.locationId,
+            subjectId: person.id,
+            participants: [{ personId: person.id, role: 'subject' }],
+            action: 'statistical_recovery',
+            causes: [],
+            effects: [],
+            immediateText: `${person.name}从${illnessLabel(name)}中慢慢恢复，能下床喝水，但身体还虚弱。`,
+            significance: 0.35,
+            visibility: 'participants',
+            provenance: { kind: 'system', sourceId: 'statistics:recovery' },
+          },
+          { roleIds: { subject: person.id }, fundingOrganizationIds: [] },
+          true,
+        );
+      } else {
+        person.health.lastIllness.severity = clamp(person.health.lastIllness.severity + 0.08, 0, 1);
+        const deathChance =
+          0.015 + person.health.lastIllness.severity * 0.16 + (1 - params.healthcare) * 0.03;
+        const deathRng = seededRng(world.seed, 'illness-death', person.id, date.year);
+        if (deathRng() < deathChance) {
+          if (commitStatisticalDeath(context, person, illnessCause(name), date)) {
+            context.diagnostics.statistical.deaths += 1;
+          }
+        } else {
+          commitEvent(
+            context,
+            {
+              date: { ...date },
+              placeId: person.locationId,
+              subjectId: person.id,
+              participants: [{ personId: person.id, role: 'subject' }],
+              action: 'statistical_illness_worsened',
+              causes: [],
+              effects: [],
+              immediateText: `${person.name}的${illnessLabel(name)}没有好转，咳嗽和发热拖了更久，家里人轮流守着。`,
+              significance: 0.4,
+              visibility: 'participants',
+              provenance: { kind: 'system', sourceId: 'statistics:worsening' },
+            },
+            { roleIds: { subject: person.id }, fundingOrganizationIds: [] },
+            true,
+          );
+        }
+      }
+      continue;
+    }
+    if (age >= 1) {
+      const infectionRng = seededRng(world.seed, 'infection', person.id, date.year);
+      if (infectionRng() < annualInfectionRisk(person, age, params)) {
+        const name = infectionNameForAge(
+          age,
+          seededRng(world.seed, 'infection-name', person.id, date.year),
+        );
+        person.health.lastIllness = { name, since: { ...date }, severity: 0.25 };
+        context.diagnostics.statistical.infections += 1;
+        commitEvent(
+          context,
+          {
+            date: { ...date },
+            placeId: person.locationId,
+            subjectId: person.id,
+            participants: [{ personId: person.id, role: 'subject' }],
+            action: 'statistical_infection',
+            causes: [],
+            effects: [],
+            immediateText: `${person.name}在${world.places[person.locationId]?.name ?? '维也纳'}病倒了，${illnessLabel(name)}让身体发热、虚弱，接下来的日子只能卧床。`,
+            significance: 0.55,
+            visibility: 'participants',
+            provenance: { kind: 'system', sourceId: 'statistics:infection' },
+          },
+          { roleIds: { subject: person.id }, fundingOrganizationIds: [] },
+          true,
+        );
+        continue;
+      }
+    }
+    const risks = estimateAnnualRisks(person, date, region);
+    const cause = sampleDeathCause(risks, seededRng(world.seed, 'mortality', person.id, date.year));
+    if (cause && commitStatisticalDeath(context, person, cause, date)) {
+      context.diagnostics.statistical.deaths += 1;
+    }
+  }
+}
+
 function reapVitalityZero(context: EngineContext, date: WorldDate, causeEventId?: Id): void {
   const personIds = Object.keys(context.world.persons).sort();
   for (const personId of personIds) {
@@ -3288,7 +3545,11 @@ function reapVitalityZero(context: EngineContext, date: WorldDate, causeEventId?
           {
             type: 'death',
             personId: person.id,
-            cause: 'vitality_exhausted',
+            cause: context.world.macro
+              ? person.health.lastIllness
+                ? DEATH_CAUSE_TEXT[illnessCause(person.health.lastIllness.name)]
+                : '重伤与衰竭'
+              : 'vitality_exhausted',
             reason: 'vitality reached zero',
           },
         ],
@@ -3390,7 +3651,7 @@ function settleEconomyMonth(context: EngineContext, date: WorldDate): void {
     const residence = world.places[household.residenceId];
     if (residence?.capacity && members.length > residence.capacity) {
       economy.overcrowdedMonths += 1;
-      applyFoodHealth(members, 0.9);
+      applyFoodHealth(members, 0.9, Boolean(world.macro));
     }
     const foodBudget = roundMoney(
       obligations
@@ -3411,9 +3672,9 @@ function settleEconomyMonth(context: EngineContext, date: WorldDate): void {
         if (foodShortage > 0.001) {
           const ratio = foodShortage / foodBudget;
           economy.foodShortageMonths += 1;
-          applyFoodHealth(members, 1 - ratio);
+          applyFoodHealth(members, 1 - ratio, Boolean(world.macro));
         } else {
-          applyFoodHealth(members, 1);
+          applyFoodHealth(members, 1, Boolean(world.macro));
         }
       } else {
         const need = roundFood(members.length * context.options.foodPerPersonPerMonth);
@@ -3422,7 +3683,7 @@ function settleEconomyMonth(context: EngineContext, date: WorldDate): void {
         economy.foodConsumed = roundFood(economy.foodConsumed + consumed);
         const ratio = need > 0 ? consumed / need : 1;
         if (ratio < 0.999) economy.foodShortageMonths += 1;
-        applyFoodHealth(members, ratio);
+        applyFoodHealth(members, ratio, Boolean(world.macro));
       }
     }
 
@@ -3462,15 +3723,16 @@ function settleEconomyMonth(context: EngineContext, date: WorldDate): void {
   }
 }
 
-function applyFoodHealth(members: Person[], ratio: number): void {
+function applyFoodHealth(members: Person[], ratio: number, macroWorld = false): void {
   const shortage = Math.max(0, 1 - clamp(ratio, 0, 1));
+  const floor = macroWorld ? 0.01 : 0;
   for (const member of members) {
     if (shortage <= 0.001) {
       member.health.nutrition = clamp(member.health.nutrition + 0.05, 0, 1);
       member.health.vitality = clamp(member.health.vitality + 0.01, 0, 1);
     } else {
       member.health.nutrition = clamp(member.health.nutrition - 0.2 * shortage, 0, 1);
-      member.health.vitality = clamp(member.health.vitality - 0.05 * shortage, 0, 1);
+      member.health.vitality = clamp(member.health.vitality - 0.05 * shortage, floor, 1);
     }
   }
 }

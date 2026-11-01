@@ -2603,7 +2603,14 @@ export const VIENNA_1912_SCENES: SceneDefinition[] = [
         significance: 0.85,
       },
     ],
-    tags: ['infancy', 'infant_disease', 'diarrhoea', 'mortality', 'medical_cost'],
+    tags: [
+      'infancy',
+      'infant_disease',
+      'diarrhoea',
+      'mortality',
+      'medical_cost',
+      'baseline_mortality',
+    ],
     historicalBasis:
       '在消毒牛奶和补液技术普及前，婴儿腹泻很容易在拥挤公寓里反复发生。维也纳婴儿死亡率在一战前仍约为15%，医生出诊、住院押金和殡葬费都要从工人家庭的现金里出。',
     sourceIds: [

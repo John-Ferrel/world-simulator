@@ -29,6 +29,7 @@ import {
   type V4EventLookups,
   type V4PersonSummaryRecord,
 } from '../../packages/v4/store.js';
+import { macroProposalSummary, v4MacroState } from '../../packages/v4/macro-store.js';
 import { ageAt, type EventFact, type Person, type WorldState } from '../../packages/v4/domain.js';
 import {
   VIENNA_1912_CHRONICLE,
@@ -263,7 +264,32 @@ export function makeV4Api() {
       peopleHasMore: Boolean(page.nextCursor),
       recentEvents: publicEvents.map((event) => projectEvent(event, lookups)),
       chronicle: VIENNA_1912_CHRONICLE.filter((entry) => entry.date.year <= meta.date.year),
+      macro: meta.macro
+        ? {
+            version: meta.macro.version,
+            updatedAt: meta.macro.updatedAt,
+            regions: Object.values(meta.macro.regions).map((region) => ({
+              id: region.id,
+              name: region.name,
+              effectiveFrom: region.effectiveFrom,
+              effectiveTo: region.effectiveTo,
+              parameters: region.parameters,
+            })),
+            population: meta.macro.population,
+          }
+        : null,
     };
+  });
+
+  app.get('/api/v4/macro', async (_req, reply) => {
+    const meta = await latestV4WorldMeta();
+    if (!meta) return reply.code(404).send({ error: 'v4 世界尚未启动' });
+    const [state, proposals] = await Promise.all([
+      v4MacroState(meta.id),
+      macroProposalSummary(meta.id),
+    ]);
+    if (!state) return reply.code(404).send({ error: '这个世界还没有宏观状态' });
+    return { date: meta.date, state, proposals };
   });
 
   app.get('/api/v4/persons/:id', async (req, reply) => {

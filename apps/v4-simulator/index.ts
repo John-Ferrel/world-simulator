@@ -1,13 +1,11 @@
 import { pool } from '../../packages/storage/index.js';
 import { advanceV4Year } from '../../packages/v4/engine.js';
 import { createV4Birth } from '../../packages/v4/birth.js';
-import {
-  applyViennaTimeline,
-  VIENNA_1912_SCENES,
-  VIENNA_1912_SEED,
-} from '../../packages/v4/content/vienna-1912.js';
+import { VIENNA_1912_SCENES, VIENNA_1912_SEED } from '../../packages/v4/content/vienna-1912.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../../packages/v4/content/vienna-family.js';
 import { GENERATED_SCENES } from '../../packages/v4/content/generated/index.js';
+import { defaultMacroState } from '../../packages/v4/macro.js';
+import { enqueueV4MacroProposal } from '../../packages/v4/macro-store.js';
 import { VIENNA_LIFE_SCENES } from '../../packages/v4/content/vienna-life.js';
 import {
   activeV4WorldMeta,
@@ -50,6 +48,8 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const)
 
 const economyEnabled = process.env.V4_ECONOMY !== '0';
 const horizonYear = Number(process.env.V4_HORIZON_YEAR ?? 2000);
+const directorEnabled = process.env.V4_DIRECTOR !== '0';
+const directorIntervalYears = Math.max(1, Number(process.env.V4_DIRECTOR_INTERVAL_YEARS ?? 10));
 
 while (!stopped) {
   const started = Date.now();
@@ -72,6 +72,7 @@ while (!stopped) {
     }
     let world = active.world;
     let revision = active.meta.revision;
+    if (!world.macro) world.macro = defaultMacroState(world);
 
     const pending = (await pendingV4Births(world.id)) as unknown as Array<
       V4BirthRequest & { user_id: string; life_mode: 'ordinary' | 'legendary'; userId?: string }
@@ -114,11 +115,15 @@ while (!stopped) {
 
     const meta = await activeV4WorldMeta();
     if (!meta) continue;
+    if (directorEnabled) {
+      await enqueueV4MacroProposal(meta.id, meta.date.year, directorIntervalYears).catch((error) =>
+        console.error('v4 macro enqueue failed', (error as Error).message),
+      );
+    }
     const elapsed = Date.now() - meta.lastTickAt;
     if (elapsed >= meta.secondsPerYear * 1000) {
-      const timeline = applyViennaTimeline(world);
       const result = advanceV4Year(
-        timeline,
+        world,
         [
           ...VIENNA_1912_SCENES,
           ...VIENNA_LIFE_SCENES,

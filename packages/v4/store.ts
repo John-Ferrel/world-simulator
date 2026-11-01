@@ -1,8 +1,9 @@
 import { readFile } from 'node:fs/promises';
 import { migrate as migrateBase, pool } from '../storage/index.js';
 import type { EventFact, Household, Person, Place, Relation, WorldState } from './domain.js';
+import { defaultMacroState, type MacroState } from './macro.js';
 
-const V4_MIGRATION_VERSION = 4;
+const V4_MIGRATION_VERSION = 5;
 
 /**
  * Apply the v4 schema. The schema is additive and independent of the archived
@@ -23,8 +24,14 @@ export async function migrateV4(): Promise<void> {
     const latest = Number(
       (await client.query('SELECT coalesce(max(version),0) AS v FROM schema_migrations')).rows[0].v,
     );
+    const migrationFiles: Record<number, string> = {
+      3: '003_v4.sql',
+      4: '004_v4_birth_contracts.sql',
+      5: '005_v4_macro.sql',
+    };
     for (let version = Math.max(3, latest + 1); version <= V4_MIGRATION_VERSION; version += 1) {
-      const file = version === 3 ? '003_v4.sql' : `00${version}_v4_birth_contracts.sql`;
+      const file = migrationFiles[version];
+      if (!file) throw new Error(`v4 migration ${version} is not mapped`);
       const sql = await readFile(
         new URL(`../../infra/migrations/${file}`, import.meta.url),
         'utf8',
@@ -53,6 +60,7 @@ export type V4WorldMeta = {
   secondsPerYear: number;
   monthsPerTick: number;
   pressures: Record<string, number>;
+  macro?: MacroState;
   historyMeta: WorldState['historyMeta'];
   lastTickAt: number;
   terminalReason?: string;
@@ -61,7 +69,7 @@ export type V4WorldMeta = {
 export async function activeV4WorldMeta(): Promise<V4WorldMeta | undefined> {
   const row = (
     await pool.query(
-      "SELECT id,seed,status,revision,date_year,date_month,seconds_per_year,months_per_tick,pressures,history_meta,last_tick_at,terminal_reason FROM v4_worlds WHERE status='running' LIMIT 1",
+      "SELECT id,seed,status,revision,date_year,date_month,seconds_per_year,months_per_tick,pressures,macro,history_meta,last_tick_at,terminal_reason FROM v4_worlds WHERE status='running' LIMIT 1",
     )
   ).rows[0];
   if (!row) return undefined;
@@ -74,6 +82,7 @@ export async function activeV4WorldMeta(): Promise<V4WorldMeta | undefined> {
     secondsPerYear: Number(row.seconds_per_year),
     monthsPerTick: Number(row.months_per_tick),
     pressures: row.pressures ?? {},
+    macro: row.macro && Object.keys(row.macro).length > 0 ? (row.macro as MacroState) : undefined,
     historyMeta: row.history_meta ?? { sequence: 0 },
     lastTickAt: new Date(row.last_tick_at).getTime(),
     terminalReason: row.terminal_reason ?? undefined,
@@ -83,7 +92,7 @@ export async function activeV4WorldMeta(): Promise<V4WorldMeta | undefined> {
 export async function v4WorldMeta(id: string): Promise<V4WorldMeta | undefined> {
   const row = (
     await pool.query(
-      'SELECT id,seed,status,revision,date_year,date_month,seconds_per_year,months_per_tick,pressures,history_meta,last_tick_at,terminal_reason FROM v4_worlds WHERE id=$1',
+      'SELECT id,seed,status,revision,date_year,date_month,seconds_per_year,months_per_tick,pressures,macro,history_meta,last_tick_at,terminal_reason FROM v4_worlds WHERE id=$1',
       [id],
     )
   ).rows[0];
@@ -97,6 +106,7 @@ export async function v4WorldMeta(id: string): Promise<V4WorldMeta | undefined> 
     secondsPerYear: Number(row.seconds_per_year),
     monthsPerTick: Number(row.months_per_tick),
     pressures: row.pressures ?? {},
+    macro: row.macro && Object.keys(row.macro).length > 0 ? (row.macro as MacroState) : undefined,
     historyMeta: row.history_meta ?? { sequence: 0 },
     lastTickAt: new Date(row.last_tick_at).getTime(),
     terminalReason: row.terminal_reason ?? undefined,
@@ -162,6 +172,7 @@ export async function loadV4World(worldId: string): Promise<WorldState | undefin
         (a.date?.year ?? 0) - (b.date?.year ?? 0) || (a.date?.month ?? 0) - (b.date?.month ?? 0),
     ),
     pressures: meta.pressures,
+    ...(meta.macro ? { macro: meta.macro } : {}),
     historyMeta: meta.historyMeta,
     status: meta.status,
     terminalReason: meta.terminalReason,
@@ -688,8 +699,8 @@ export async function seedV4World(world: WorldState): Promise<V4WorldMeta> {
       return (await v4WorldMeta(existing.id))!;
     }
     await client.query(
-      `INSERT INTO v4_worlds(id,seed,status,date_year,date_month,seconds_per_year,months_per_tick,pressures,history_meta,revision,last_tick_at)
-       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,0,now())`,
+      `INSERT INTO v4_worlds(id,seed,status,date_year,date_month,seconds_per_year,months_per_tick,pressures,macro,history_meta,revision,last_tick_at)
+       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,0,now())`,
       [
         world.id,
         world.seed,
@@ -699,6 +710,7 @@ export async function seedV4World(world: WorldState): Promise<V4WorldMeta> {
         world.timePolicy.secondsPerYear,
         world.timePolicy.monthsPerTick,
         JSON.stringify(world.pressures),
+        JSON.stringify(world.macro ?? defaultMacroState(world)),
         JSON.stringify(world.historyMeta),
       ],
     );
@@ -774,7 +786,7 @@ export async function saveV4World(
     const revision = expectedRevision + 1;
     await client.query(
       `UPDATE v4_worlds SET revision=$2,status=$3,date_year=$4,date_month=$5,
-         pressures=$6,history_meta=$7,terminal_reason=$8,last_tick_at=$9 WHERE id=$1`,
+         pressures=$6,macro=$7,history_meta=$8,terminal_reason=$9,last_tick_at=$10 WHERE id=$1`,
       [
         world.id,
         revision,
@@ -782,6 +794,7 @@ export async function saveV4World(
         world.date.year,
         world.date.month,
         JSON.stringify(world.pressures),
+        JSON.stringify(world.macro ?? {}),
         JSON.stringify(world.historyMeta),
         world.terminalReason ?? null,
         new Date(options.lastTickAt ?? Date.now()),

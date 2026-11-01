@@ -9,6 +9,7 @@ import { spawn } from 'node:child_process';
  */
 const entries = ['apps/v4-api/index.ts', 'apps/v4-simulator/index.ts'];
 if (process.env.V4_WISH_WORKER !== '0') entries.push('apps/v4-birth-worker/index.ts');
+if (process.env.V4_DIRECTOR !== '0') entries.push('apps/v4-macro-worker/index.ts');
 const children = entries.map((entry) =>
   spawn(process.execPath, ['--watch', '--import', 'tsx', entry], {
     stdio: 'inherit',

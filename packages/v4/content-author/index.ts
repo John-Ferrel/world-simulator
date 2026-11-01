@@ -28,3 +28,5 @@ export {
   type AuthoredValidation,
   type AuthoredValidationOptions,
 } from './strict.js';
+
+export { macroContentGaps, type MacroContentGap } from './macro-gap.js';

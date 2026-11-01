@@ -28,6 +28,7 @@ export default defineConfig({
       WEB_PORT: '5174',
       API_PROXY_URL: 'http://localhost:3011',
       V4_ECONOMY: '0',
+      V4_DIRECTOR: '0',
     },
   },
 });

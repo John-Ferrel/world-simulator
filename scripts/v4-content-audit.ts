@@ -2,21 +2,18 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { advanceV4Year } from '../packages/v4/engine.js';
 import { createV4Birth } from '../packages/v4/birth.js';
 import type { EventFact, SceneInstance } from '../packages/v4/domain.js';
-import {
-  applyViennaTimeline,
-  VIENNA_1912_SEED,
-  VIENNA_1912_SCENES,
-} from '../packages/v4/content/vienna-1912.js';
+import { VIENNA_1912_SEED, VIENNA_1912_SCENES } from '../packages/v4/content/vienna-1912.js';
+import { defaultMacroState, syncMacroPressures } from '../packages/v4/macro.js';
+import { populationSummary } from '../packages/v4/statistics.js';
 import { VIENNA_LIFE_SCENES } from '../packages/v4/content/vienna-life.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
-import {
-  GENERATED_PACKS,
-  GENERATED_SCENES,
-} from '../packages/v4/content/generated/index.js';
+import { GENERATED_PACKS, GENERATED_SCENES } from '../packages/v4/content/generated/index.js';
 import { validateGeneratedPack } from '../packages/v4/generated.js';
 
 const years = Number(process.argv[2] ?? 80);
 let world = structuredClone(VIENNA_1912_SEED);
+world.macro = defaultMacroState(world);
+syncMacroPressures(world, world.macro);
 const birth = createV4Birth(
   world,
   {
@@ -42,7 +39,6 @@ const sceneInstances: SceneInstance[] = [];
 const warnings: { code: string; message: string; personId?: string; sceneId?: string }[] = [];
 const scenesByYear: number[] = [];
 for (let i = 0; i < years; i += 1) {
-  world = applyViennaTimeline(world);
   const result = advanceV4Year(world, scenes, {
     economy: { enabled: true },
     eventRuntime: true,
@@ -162,6 +158,20 @@ const familyCounts = [...familyEventCounts.entries()]
   })
   .sort((a, b) => b.events - a.events || a.id.localeCompare(b.id));
 
+const deathEvents = events.filter((event) =>
+  event.effects.some((effect) => effect.type === 'death'),
+);
+const deathCauseCounts = new Map<string, number>();
+const ageAtDeath: number[] = [];
+for (const event of deathEvents) {
+  const cause = event.effects.find((effect) => effect.type === 'death');
+  if (cause && cause.type === 'death')
+    deathCauseCounts.set(cause.cause, (deathCauseCounts.get(cause.cause) ?? 0) + 1);
+  const person = world.persons[event.subjectId];
+  if (person) ageAtDeath.push(event.date.year - person.born.year);
+}
+const population = world.macro ? populationSummary(world.macro) : undefined;
+
 const report = {
   years,
   date: world.date,
@@ -177,9 +187,29 @@ const report = {
   causalEvents: events.filter((event) => event.causes.length > 0).length,
   interactionResponses: events.filter((event) => event.action === 'interaction_response').length,
   births: events.filter((event) => event.action === 'birth').length,
-  deaths: events.filter(
-    (event) => event.action === 'death' || event.effects.some((effect) => effect.type === 'death'),
-  ).length,
+  deaths: deathEvents.length,
+  statisticalDeaths: events.filter((event) => event.action.startsWith('statistical_death/')).length,
+  statisticalInfections: events.filter((event) => event.action === 'statistical_infection').length,
+  statisticalRecoveries: events.filter((event) => event.action === 'statistical_recovery').length,
+  infantDeaths: deathEvents.filter((event) => {
+    const person = world.persons[event.subjectId];
+    return person ? event.date.year - person.born.year < 1 : false;
+  }).length,
+  under5Deaths: deathEvents.filter((event) => {
+    const person = world.persons[event.subjectId];
+    return person ? event.date.year - person.born.year < 5 : false;
+  }).length,
+  maternalDeaths: deathEvents.filter((event) => {
+    const cause = event.effects.find((effect) => effect.type === 'death');
+    return cause?.type === 'death' && /childbirth|产后|maternal/i.test(cause.cause);
+  }).length,
+  medianAgeAtDeath: ageAtDeath.length
+    ? [...ageAtDeath].sort((a, b) => a - b)[Math.floor(ageAtDeath.length / 2)]
+    : null,
+  deathCauseCounts: [...deathCauseCounts.entries()]
+    .map(([cause, count]) => ({ cause, count }))
+    .sort((a, b) => b.count - a.count || a.cause.localeCompare(b.cause)),
+  population,
   zeroEventYears: scenesByYear.filter((count) => count === 0).length,
   generated: {
     packs: GENERATED_PACKS.length,
@@ -197,8 +227,9 @@ const report = {
   },
   generatedEvents: generated.length,
   generatedShare: Number((generated.length / Math.max(1, events.length)).toFixed(3)),
-  unresolvedTextEvents: events.filter((event) => /\{[a-zA-Z_][a-zA-Z0-9_]*\}/.test(event.immediateText))
-    .length,
+  unresolvedTextEvents: events.filter((event) =>
+    /\{[a-zA-Z_][a-zA-Z0-9_]*\}/.test(event.immediateText),
+  ).length,
   unresolvedTextSamples: events
     .filter((event) => /\{[a-zA-Z_][a-zA-Z0-9_]*\}/.test(event.immediateText))
     .slice(0, 10)

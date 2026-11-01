@@ -7,10 +7,12 @@ import {
   describeBrief,
   generatePack,
   summarizeAudit,
+  macroContentGaps,
   validateAuthoredPack,
   writeGeneratedPack,
 } from '../packages/v4/content-author/index.js';
 import { validateGeneratedPack, type GeneratedPack } from '../packages/v4/generated.js';
+import type { MacroState } from '../packages/v4/macro.js';
 
 const packDir = resolve('packages/v4/content/generated');
 const auditFile = resolve('docs/v4/content-audit.json');
@@ -32,11 +34,20 @@ function readAudit(): unknown {
   }
 }
 
+function macroFile(): MacroState | undefined {
+  const index = process.argv.indexOf('--macro');
+  if (index < 0) return undefined;
+  const file = process.argv[index + 1];
+  if (!file) throw new Error('--macro requires a JSON file path');
+  return JSON.parse(readFileSync(resolve(file), 'utf8')) as MacroState;
+}
+
 function report() {
   const packs = readPacks();
   const coverage = auditPacks(packs);
   const present = new Set(packs.map((pack) => pack.id));
   const audit = summarizeAudit(readAudit());
+  const macro = macroFile();
   console.log(
     JSON.stringify(
       {
@@ -48,6 +59,7 @@ function report() {
           describeBrief,
         ),
         audit,
+        macroContentGaps: macro ? macroContentGaps(macro, packs) : [],
       },
       null,
       2,
@@ -168,7 +180,9 @@ const generateMissing = args.includes('--generate-missing');
 if (generateIndex >= 0) {
   const id = args[generateIndex + 1];
   if (!id) {
-    console.error('usage: tsx scripts/v4-content-author.ts --generate <family-id> [--force]');
+    console.error(
+      'usage: tsx scripts/v4-content-author.ts [--macro <state.json>] [--generate <family-id> [--force] | --generate-missing]',
+    );
     process.exit(1);
   }
   await generate(id, args.includes('--force'));

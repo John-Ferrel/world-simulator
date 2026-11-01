@@ -6,6 +6,8 @@
  * separate. This package can be built/tested without the old simulator.
  */
 
+import type { MacroState } from './macro.js';
+
 export type Id = string;
 export type WorldDate = { year: number; month: number }; // month 1..12
 export type LifeStage = 'infancy' | 'childhood' | 'adolescence' | 'adulthood' | 'elderhood';
@@ -48,6 +50,8 @@ export type Person = {
     conditions: string[];
     nutrition: number;
     lastIllness?: { name: string; since: WorldDate; severity: number };
+    /** End of the postpartum risk window; set by a birth, cleared by the engine. */
+    postpartumUntil?: WorldDate;
   };
   traits: {
     care: number;
@@ -561,6 +565,8 @@ export type WorldState = {
   scenes: SceneInstance[];
   /** Content can reference a small set of world-level pressures. */
   pressures: Record<string, number>;
+  /** Phase 3 macro state. Optional so old archives and fixtures remain loadable. */
+  macro?: MacroState;
   historyMeta: {
     lastSceneId?: string;
     lastEventId?: string;
@@ -659,5 +665,22 @@ export function assertWorldV4(world: WorldState): void {
       throw new Error(`v4: event ${event.id} has unknown participant`);
     if (event.causes.some((cause) => !world.events.some((e) => e.id === cause)))
       throw new Error(`v4: event ${event.id} has unknown cause`);
+  }
+  if (world.macro) {
+    if (!world.macro.regions || Object.keys(world.macro.regions).length === 0)
+      throw new Error('v4: macro state has no region');
+    for (const [id, population] of Object.entries(world.macro.population)) {
+      if (population.regionId !== id) throw new Error(`v4: population ${id} has wrong region`);
+      if (
+        population.namedAlive < 0 ||
+        Object.values(population.unnamedByAgeBand).some((value) => value < 0)
+      )
+        throw new Error(`v4: population ${id} is negative`);
+    }
+    for (const [familyId, policy] of Object.entries(world.macro.eventPool)) {
+      if (policy.familyId !== familyId) throw new Error(`v4: event pool ${familyId} has wrong id`);
+      if (policy.weightMultiplier < 0 || policy.weightMultiplier > 3)
+        throw new Error(`v4: event pool ${familyId} weight out of range`);
+    }
   }
 }
