@@ -34,6 +34,7 @@ import {
   type SceneChoice,
   type SceneCondition,
   type SceneDefinition,
+  type SceneFollowupTarget,
   type SceneInstance,
   type SceneOutcome,
   type SceneStage,
@@ -1512,24 +1513,35 @@ function scheduleFollowups(
   definition: SceneDefinition,
   outcome: SceneOutcome,
   subject: Person,
+  roles: Record<Id, Id>,
   event: EventFact,
   date: WorldDate,
   depth: number,
 ): void {
   if (depth >= 3) return;
   const queue = context.world.historyMeta.scheduledEvents ?? [];
-  for (const sceneId of outcome.followupSceneIds ?? []) {
-    const due = { year: date.year + 1, month: 1 };
-    const id = `queue:${event.id}:${sceneId}:${subject.id}`;
+  const targets: SceneFollowupTarget[] = [
+    ...(outcome.followupTargets ?? []),
+    ...(outcome.followupSceneIds ?? []).map((sceneId) => ({ sceneId })),
+  ];
+  for (const target of targets) {
+    const targetId = target.subjectRole ? roles[target.subjectRole] : subject.id;
+    const targetPerson = targetId ? context.world.persons[targetId] : undefined;
+    if (!targetPerson || targetPerson.died) continue;
+    const due =
+      target.delayMonths !== undefined && Number.isFinite(target.delayMonths)
+        ? addMonths(date, Math.max(0, Math.floor(target.delayMonths)))
+        : { year: date.year + 1, month: 1 };
+    const id = `queue:${event.id}:${target.sceneId}:${targetPerson.id}`;
     if (queue.some((item) => item.id === id)) continue;
     queue.push({
       id,
-      sceneId,
-      subjectId: subject.id,
+      sceneId: target.sceneId,
+      subjectId: targetPerson.id,
       due,
       causeEventId: event.id,
       depth: depth + 1,
-      source: 'followup',
+      source: target.source ?? 'followup',
     });
   }
   context.world.historyMeta.scheduledEvents = queue;
@@ -1858,7 +1870,7 @@ function resolveScene(
     );
   }
 
-  scheduleFollowups(context, definition, outcome, subject, event, date, depth);
+  scheduleFollowups(context, definition, outcome, subject, roles, event, date, depth);
 
   const instance: SceneInstance = {
     id: instanceId,

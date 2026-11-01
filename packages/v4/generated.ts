@@ -3,6 +3,7 @@ import type {
   NarrationVariant,
   SceneCondition,
   SceneDefinition,
+  SceneFollowupTarget,
   SceneOutcome,
   SceneStage,
   RoleRequirement,
@@ -42,6 +43,7 @@ export type GeneratedOutcome = {
   text: string;
   effects: EventEffect[];
   followupIds?: string[];
+  followupTargets?: SceneFollowupTarget[];
   significance?: number;
   narration?: NarrationVariant[];
   conditions?: SceneCondition[];
@@ -311,6 +313,7 @@ export function compileGeneratedPack(pack: GeneratedPack): SceneDefinition[] {
       immediateText: outcome.text,
       effects: outcome.effects,
       followupSceneIds: outcome.followupIds,
+      followupTargets: outcome.followupTargets,
       narrationKey: outcome.id,
       significance: outcome.significance,
     })),

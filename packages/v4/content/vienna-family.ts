@@ -406,7 +406,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
     stage: 'adulthood',
     ageWindow: { min: 18, max: 35 },
     subjectProvenance: ['birth'],
-    rate: 0.25,
+    rate: 0.35,
     cooldownYears: 2,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 35 },
@@ -436,7 +436,7 @@ export const VIENNA_FAMILY_SCENES: SceneDefinition[] = [
               status: 'pending',
               created: { year: 1, month: 1 },
               proposal: {
-                acceptIf: { minTrust: 0, chance: 0.55 },
+                acceptIf: { minTrust: 0, chance: 0.7 },
                 causeEventId: '$eventId',
                 acceptText:
                   '{counterparty}在几天后找到{subject}，说可以试试。两人开始合付房租，也把各自欠的账摊在桌上。',

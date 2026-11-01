@@ -6,12 +6,7 @@
     "min": 18,
     "max": 60
   },
-  "tags": [
-    "work",
-    "factory",
-    "labour",
-    "social"
-  ],
+  "tags": ["work", "factory", "labour", "social"],
   "baseRate": 0.5,
   "conditions": [
     {
@@ -20,9 +15,7 @@
     },
     {
       "kind": "placeKind",
-      "in": [
-        "factory"
-      ]
+      "in": ["factory"]
     }
   ],
   "nodes": [
@@ -91,15 +84,10 @@
               "id": "default",
               "key": "lead-type-burn-keep-quiet",
               "text": "铅字从字模里落下来还带着热度，{subject}一把抓住，掌心立刻鼓起一串水泡。{employer}只说了句湿布，晨报不能晚。",
-              "tone": [
-                "dry",
-                "grim"
-              ]
+              "tone": ["dry", "grim"]
             }
           ],
-          "followupIds": [
-            "vienna-printshop-daily.wage-shortfall"
-          ]
+          "followupIds": ["vienna-printshop-daily.wage-shortfall"]
         },
         {
           "id": "lead-type-burn-clinic",
@@ -133,14 +121,10 @@
               "id": "default",
               "key": "lead-type-burn-clinic",
               "text": "互助所的护士用针尖挑开水泡，{subject}咬着牙没出声。回到厂里，{employer}把怀表盖合上，只说了句下次早点回来。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             }
           ],
-          "followupIds": [
-            "vienna-printshop-daily.wage-shortfall"
-          ]
+          "followupIds": ["vienna-printshop-daily.wage-shortfall"]
         },
         {
           "id": "lead-type-burn-hide",
@@ -171,14 +155,10 @@
               "id": "default",
               "key": "lead-type-burn-hide",
               "text": "围裙底下那块布慢慢渗出水，{subject}照样把字盘一格一格推回原位。到家时手指直挺挺的，连汤匙都拿不稳。",
-              "tone": [
-                "grim"
-              ]
+              "tone": ["grim"]
             }
           ],
-          "followupIds": [
-            "vienna-printshop-daily.wage-shortfall"
-          ]
+          "followupIds": ["vienna-printshop-daily.wage-shortfall"]
         }
       ],
       "followupIds": [
@@ -258,9 +238,14 @@
               "id": "default",
               "key": "overtime-accept",
               "text": "油灯下{worker}递过来一块干面包，{subject}一边啃一边把纸喂进压印机。天蒙蒙亮时{employer}数出几枚硬币拍在桌上，没多一句话。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
+            }
+          ],
+          "followupTargets": [
+            {
+              "sceneId": "vienna-printshop-daily.wage-shortfall",
+              "subjectRole": "subject",
+              "delayMonths": 1
             }
           ]
         },
@@ -296,10 +281,14 @@
               "id": "default",
               "key": "overtime-refuse",
               "text": "{subject}把围裙挂回钉子，走过{employer}身边时两人都没说话。第二天字盘上摊着整版六号小字，眼睛要贴着看。",
-              "tone": [
-                "dry",
-                "somber"
-              ]
+              "tone": ["dry", "somber"]
+            }
+          ],
+          "followupTargets": [
+            {
+              "sceneId": "vienna-printshop-daily.wage-shortfall",
+              "subjectRole": "subject",
+              "delayMonths": 1
             }
           ]
         },
@@ -335,9 +324,14 @@
               "id": "default",
               "key": "overtime-bargain",
               "text": "{subject}伸出两根手指，{employer}先是拍了一下字盘，随后把印数报得更高。两人都在纸上签了字，墨还没干就开机了。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
+            }
+          ],
+          "followupTargets": [
+            {
+              "sceneId": "vienna-printshop-daily.wage-shortfall",
+              "subjectRole": "subject",
+              "delayMonths": 1
             }
           ]
         }
@@ -412,10 +406,7 @@
               "id": "default",
               "key": "pamphlet-print-secretly",
               "text": "{worker}的传单夹在商业广告背面，{subject}一张一张过机，眼睛盯着门口。成品叠进纸箱最底下，盖上旧报纸。",
-              "tone": [
-                "tense",
-                "dry"
-              ]
+              "tone": ["tense", "dry"]
             }
           ]
         },
@@ -451,9 +442,7 @@
               "id": "default",
               "key": "pamphlet-report",
               "text": "样张放在{employer}的吸墨纸上，对方只说了一句知道了。{worker}从办公室出来时脸是白的，走过字盘时肩膀撞了{subject}一下。",
-              "tone": [
-                "grim"
-              ]
+              "tone": ["grim"]
             }
           ]
         },
@@ -483,16 +472,12 @@
               "id": "default",
               "key": "pamphlet-refuse",
               "text": "{subject}把纸推回去时手指在桌面上敲了两下。{worker}什么也没说，把纸折进内袋。之后几天两人只用眼神点头。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             }
           ]
         }
       ],
-      "followupIds": [
-        "vienna-printshop-daily.lead-type"
-      ]
+      "followupIds": ["vienna-printshop-daily.lead-type"]
     },
     {
       "id": "vienna-printshop-daily.wage-shortfall",
@@ -562,10 +547,7 @@
               "id": "default",
               "key": "wage-count-dispute",
               "text": "{subject}把硬币在掌心排开又数了一遍，还是少。{employer}从架子上取下一块缺角的字模，在桌上敲了敲，算是解释。",
-              "tone": [
-                "grim",
-                "dry"
-              ]
+              "tone": ["grim", "dry"]
             }
           ]
         },
@@ -604,9 +586,7 @@
               "id": "default",
               "key": "wage-argue-and-win",
               "text": "{worker}和另外两个人跟着{subject}去了办公室门口。{employer}最后从抽屉里摸出几枚硬币，边给边在本子上写了一行字。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             }
           ]
         },
@@ -639,16 +619,12 @@
               "id": "default",
               "key": "wage-take-it",
               "text": "工钱袋比平时轻，{subject}在手里掂了一下就收起来。面包铺前站了一会儿，最后只要了两块。",
-              "tone": [
-                "somber"
-              ]
+              "tone": ["somber"]
             }
           ]
         }
       ],
-      "followupIds": [
-        "vienna-printshop-daily.overtime-order"
-      ]
+      "followupIds": ["vienna-printshop-daily.overtime-order"]
     }
   ]
 }

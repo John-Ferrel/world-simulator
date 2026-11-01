@@ -110,10 +110,10 @@
 ```text
 80 年，1992 年结束
 27 人，存活 18
-499 条事件，6.24 条/年
-玩家 focal 事件 93 条，覆盖 50 个年份
-零事件年份 17
-生成内容事件 283 条，占 56.7%
+506 条事件，6.33 条/年
+玩家 focal 事件 97 条，覆盖 52 个年份
+零事件年份 13
+生成内容事件 284 条，占 56.1%
 叙事变体 230 条
 最高频场景约 13.4%
 因果事件 31 条
@@ -142,19 +142,19 @@ pnpm typecheck
 
 pnpm test
 → 57 files passed | 5 skipped
-→ 333 tests passed | 28 skipped
-→ 151.35s
+→ 334 tests passed | 28 skipped
+→ 150.66s
 
 pnpm build
-→ 通过（2.97s）
+→ 通过（3.03s）
 
 pnpm test:e2e --config playwright.v4.config.ts
-→ 1 passed（6.9s）
+→ 1 passed（7.0s）
 ```
 
 v4 专项测试：
 
-- engine：24 项
+- engine：25 项
 - Vienna 作者内容：10 项
 - 1912 slice：2 项
 - 通用人生：5 项

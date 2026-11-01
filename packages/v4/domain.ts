@@ -418,6 +418,14 @@ export type NarrationVariant = {
   tone?: string[];
 };
 
+export type SceneFollowupTarget = {
+  sceneId: string;
+  /** Role key from the parent scene; omit/`subject` to use the event subject. */
+  subjectRole?: string;
+  delayMonths?: number;
+  source?: 'followup' | 'fact' | 'action';
+};
+
 export type SceneOutcome = {
   id: string;
   weight: number;
@@ -426,6 +434,8 @@ export type SceneOutcome = {
   immediateText: string;
   effects: SceneEffect[];
   followupSceneIds?: string[];
+  /** Explicitly targets a role/person for the followup; preferred over bare ids. */
+  followupTargets?: SceneFollowupTarget[];
   /** Optional key used by the narration library; defaults to outcome id. */
   narrationKey?: string;
   significance?: number;

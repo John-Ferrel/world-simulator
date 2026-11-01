@@ -1443,4 +1443,62 @@ describe('v4 annual engine', () => {
     expect(result.world.persons['person:anna']!.locationId).toBe('place:cafe');
     assertWorldV4(result.world);
   });
+
+  it('schedules a followup for an explicit role rather than the original subject', () => {
+    const world = vienna();
+    const original = scene({
+      id: 'test:explicit-followup-source',
+      stage: 'childhood',
+      ageWindow: { min: 11, max: 11 },
+      rate: 1,
+      roles: [
+        { key: 'subject', kind: 'subject', required: true, minAge: 11, maxAge: 11 },
+        { key: 'guardian', kind: 'guardian', required: true, minAge: 25, maxAge: 60 },
+      ],
+      conditions: [{ kind: 'age', min: 11, max: 11 }],
+      outcomes: [
+        {
+          id: 'trigger',
+          weight: 1,
+          immediateText: 'The guardian is asked to answer later.',
+          effects: [],
+          followupTargets: [{ sceneId: 'test:explicit-followup-target', subjectRole: 'guardian' }],
+        },
+      ],
+    });
+    const target = scene({
+      id: 'test:explicit-followup-target',
+      stage: 'adulthood',
+      ageWindow: { min: 25, max: 60 },
+      rate: 0,
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 25, maxAge: 60 }],
+      conditions: [{ kind: 'age', min: 25, max: 60 }],
+      outcomes: [
+        {
+          id: 'answer',
+          weight: 1,
+          immediateText: 'The guardian answered the request.',
+          effects: [],
+        },
+      ],
+    });
+    const first = advanceV4Year(world, [original, target], {
+      economy: { enabled: false },
+      eventRuntime: true,
+      maxOrdinaryEventsPerPerson: 2,
+    });
+    expect(first.world.historyMeta.scheduledEvents?.[0]?.subjectId).toBe('person:josef');
+    const second = advanceV4Year(first.world, [original, target], {
+      economy: { enabled: false },
+      eventRuntime: true,
+      maxOrdinaryEventsPerPerson: 2,
+    });
+    const response = second.events.find((event) =>
+      event.action.startsWith('test:explicit-followup-target/'),
+    );
+    expect(response?.subjectId).toBe('person:josef');
+    expect(response?.causes).toEqual([
+      first.events.find((event) => event.action.startsWith('test:explicit-followup-source/'))?.id,
+    ]);
+  });
 });
