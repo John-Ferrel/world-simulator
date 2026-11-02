@@ -131,6 +131,7 @@ const definitions = scenes();
 const started = performance.now();
 let current = world;
 let events = 0;
+let lastTimings: Record<string, number> | undefined;
 for (let i = 0; i < years; i += 1) {
   const result = advanceV4Year(current, definitions, {
     economy: { enabled: false },
@@ -139,6 +140,7 @@ for (let i = 0; i < years; i += 1) {
   });
   current = result.world;
   events += result.events.length;
+  lastTimings = result.diagnostics.timings;
 }
 const elapsed = performance.now() - started;
 console.log(
@@ -146,6 +148,7 @@ console.log(
     persons: count,
     years,
     macro: Boolean(world.macro),
+    timings: lastTimings,
     events,
     ms: Math.round(elapsed),
     msPerYear: Math.round(elapsed / years),

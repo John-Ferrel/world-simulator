@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Person, Place, WorldDate, WorldState } from '../packages/v4/domain.js';
 import {
+  advanceDevelopmentLifecycle,
   applyMacroProposal,
   populationFromAgeBands,
   defaultMacroState,
@@ -534,5 +535,42 @@ describe('v4 statistical engine', () => {
       total(state.population['region-lower-austria']!) + total(state.population['region-other']!);
     expect(after).toBeCloseTo(before, 5);
     expect(state.population['region-other']!.migrations).toBeCloseTo(10, 5);
+  });
+
+  it('lets an organization development decline and end when it has no members', () => {
+    const w = world();
+    w.macro = defaultMacroState(w);
+    w.macro.developments = {
+      'development:test': {
+        id: 'development:test',
+        type: 'social_change',
+        regionId: 'region-lower-austria',
+        description: 'empty movement',
+        severity: 0.5,
+        start: date,
+        end: { year: 1920, month: 1 },
+        status: 'active',
+        eventFamilyIds: ['vienna-social-movement'],
+        organizationId: 'org-development-test',
+        source: 'test',
+      },
+    };
+    w.organizations['org-development-test'] = {
+      id: 'org-development-test',
+      name: 'Empty Movement',
+      kind: 'other',
+      placeId: 'place:home',
+      memberIds: [],
+      positions: [],
+      treasury: 0,
+      authorityRules: [],
+      projects: [],
+      status: 'active',
+      causeIds: [],
+    };
+    let state = advanceDevelopmentLifecycle(w, w.macro, date);
+    expect(state.developments!['development:test']!.status).toBe('declining');
+    state = advanceDevelopmentLifecycle(w, state, { year: 1913, month: 1 });
+    expect(state.developments!['development:test']!.status).toBe('ended');
   });
 });

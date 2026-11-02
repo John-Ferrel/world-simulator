@@ -545,7 +545,12 @@ describe('v4 annual engine', () => {
     const first = advanceV4Year(firstWorld, [definition]);
     const second = advanceV4Year(secondWorld, [definition]);
 
-    expect(first).toEqual(second);
+    const stable = (value: typeof first) => {
+      const diagnostics = { ...value.diagnostics };
+      delete diagnostics.timings;
+      return { ...value, diagnostics };
+    };
+    expect(stable(first)).toEqual(stable(second));
     expect(JSON.stringify(firstWorld)).toBe(firstSnapshot);
     expect(JSON.stringify(secondWorld)).toBe(secondSnapshot);
     expect(first.events).toHaveLength(1);
@@ -1697,6 +1702,7 @@ describe('v4 annual engine', () => {
       originalWish: 'learn to read',
       mode: 'ordinary',
       createdAt: { year: 1912, month: 1 },
+      compiledAt: { year: 1912, month: 1 },
       capability: 'literacy',
     };
     const withCapability = advanceV4Year(world, [gate], {
@@ -1708,5 +1714,86 @@ describe('v4 annual engine', () => {
     expect(
       withCapability.events.some((event) => event.action.startsWith('test:literacy-gate')),
     ).toBe(true);
+  });
+
+  it('applies frail_body and social_insight as concrete state effects', () => {
+    const base = vienna();
+    const frail = vienna();
+    frail.persons['person:anna']!.lifeContract = {
+      originalWish: 'frail',
+      mode: 'ordinary',
+      createdAt: { year: 1912, month: 1 },
+      capability: 'frail_body',
+    };
+    const healthScene = scene({
+      id: 'test:frail-health',
+      stage: 'childhood',
+      ageWindow: { min: 11, max: 11 },
+      rate: 1,
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 11, maxAge: 11 }],
+      conditions: [{ kind: 'age', min: 11, max: 11 }],
+      outcomes: [
+        {
+          id: 'damage',
+          weight: 1,
+          immediateText: 'hurt',
+          effects: [{ type: 'health', personId: '$subject', amount: -0.1, reason: 'test injury' }],
+        },
+      ],
+    });
+    const baseResult = advanceV4Year(base, [healthScene], {
+      eventRuntime: true,
+      economy: { enabled: false },
+      statisticalModel: false,
+    });
+    const frailResult = advanceV4Year(frail, [healthScene], {
+      eventRuntime: true,
+      economy: { enabled: false },
+      statisticalModel: false,
+    });
+    expect(baseResult.world.persons['person:anna']!.health.vitality).toBeCloseTo(0.7, 5);
+    expect(frailResult.world.persons['person:anna']!.health.vitality).toBeCloseTo(0.68, 5);
+
+    const insightful = vienna();
+    insightful.persons['person:anna']!.lifeContract = {
+      originalWish: 'insight',
+      mode: 'ordinary',
+      createdAt: { year: 1912, month: 1 },
+      capability: 'social_insight',
+    };
+    const relationScene = scene({
+      id: 'test:social-insight',
+      stage: 'childhood',
+      ageWindow: { min: 11, max: 11 },
+      rate: 1,
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 11, maxAge: 11 }],
+      conditions: [{ kind: 'age', min: 11, max: 11 }],
+      outcomes: [
+        {
+          id: 'meet',
+          weight: 1,
+          immediateText: 'meet',
+          effects: [
+            {
+              type: 'relation',
+              a: 'person:anna',
+              b: 'person:josef',
+              kind: 'friend',
+              trust: 0.1,
+              reason: 'test meeting',
+            },
+          ],
+        },
+      ],
+    });
+    const result = advanceV4Year(insightful, [relationScene], {
+      eventRuntime: true,
+      economy: { enabled: false },
+      statisticalModel: false,
+    });
+    const relation = Object.values(result.world.relations).find(
+      (candidate) => candidate.a === 'person:anna' && candidate.b === 'person:josef',
+    );
+    expect(relation?.trust).toBeCloseTo(0.13, 5);
   });
 });

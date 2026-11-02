@@ -43,6 +43,7 @@ import {
   type WorldState,
 } from './domain.js';
 import {
+  advanceDevelopmentLifecycle,
   eventPoolMultiplier,
   expireMacroEffects,
   macroForPerson,
@@ -146,8 +147,17 @@ export type V4AdvanceDiagnostics = {
   eventsCreated: number;
   deaths: Id[];
   statistical: { deaths: number; infections: number; recoveries: number; materialized: number };
+  /** Why a background person became named; used by population/social audits. */
+  materializations: {
+    personId: Id;
+    role: string;
+    kind: string;
+    regionId: string;
+    reason: string;
+  }[];
   economy: V4EconomyDiagnostics;
   warnings: V4Warning[];
+  timings?: Record<string, number>;
 };
 
 export type V4AdvanceResult = {
@@ -304,6 +314,13 @@ export function advanceV4Year(
   const from = { ...world.date };
   const target = addMonths(from, 12);
   const normalized = normalizeOptions(options);
+  const startedAt = Date.now();
+  let phaseStarted = startedAt;
+  const timings: Record<string, number> = {};
+  const mark = (name: string) => {
+    timings[name] = Date.now() - phaseStarted;
+    phaseStarted = Date.now();
+  };
   const diagnostics: V4AdvanceDiagnostics = {
     from,
     to: target,
@@ -314,6 +331,7 @@ export function advanceV4Year(
     eventsCreated: 0,
     deaths: [],
     statistical: { deaths: 0, infections: 0, recoveries: 0, materialized: 0 },
+    materializations: [],
     economy: {
       months: 0,
       wagesPaid: 0,
@@ -332,6 +350,7 @@ export function advanceV4Year(
 
   const draft = structuredClone(world);
   assertWorldV4(draft);
+  mark('clone');
 
   if (draft.status !== 'running') {
     warn(diagnostics, 'world_not_running', `world status is ${draft.status}; year not advanced`);
@@ -385,14 +404,24 @@ export function advanceV4Year(
       const date = addMonths(from, month);
       draft.date = date;
       settleEconomyMonth(context, date);
+      if (normalized.statisticalModel && draft.macro) applyStatisticalMonth(context, date);
       reapVitalityZero(context, date);
       diagnostics.economy.months += 1;
       assertWorldV4(draft);
     }
+  } else if (normalized.statisticalModel && draft.macro) {
+    for (let month = 1; month <= 12; month += 1) {
+      const date = addMonths(from, month);
+      draft.date = date;
+      applyStatisticalMonth(context, date);
+      reapVitalityZero(context, date);
+    }
   }
 
+  mark('scenes');
   draft.date = target;
   if (normalized.statisticalModel && draft.macro) applyStatisticalYear(context, target);
+  mark('statistics');
   reapVitalityZero(context, target);
   if (draft.macro && normalized.statisticalModel) {
     draft.macro = updateMacroPopulation(draft.macro, draft, target);
@@ -409,8 +438,12 @@ export function advanceV4Year(
   } else {
     runScenes(context, definitions, target, resolvedCounts, false);
   }
+  mark('events');
   reapVitalityZero(context, target);
-  if (draft.macro) draft.macro = refreshNamedPopulation(draft.macro, draft);
+  if (draft.macro) {
+    draft.macro = advanceDevelopmentLifecycle(draft, draft.macro, target);
+    draft.macro = refreshNamedPopulation(draft.macro, draft);
+  }
   draft.date = target;
 
   diagnostics.personsConsidered = Object.keys(draft.persons).filter(
@@ -422,6 +455,9 @@ export function advanceV4Year(
   diagnostics.eventsCreated = context.newEvents.length;
 
   assertWorldV4(draft);
+  timings.assert = Date.now() - phaseStarted;
+  timings.total = Date.now() - startedAt;
+  diagnostics.timings = timings;
 
   return {
     world: draft,
@@ -606,15 +642,12 @@ function nextFreeSceneOrdinal(world: WorldState): number {
 }
 
 function nextSceneId(context: EngineContext): Id {
-  const prefix = `scn:${context.world.id}:`;
-  let ordinal = context.nextSceneOrdinal;
-  let id = `${prefix}${String(ordinal).padStart(6, '0')}`;
-  while (context.world.scenes.some((scene) => scene.id === id)) {
-    ordinal += 1;
-    id = `${prefix}${String(ordinal).padStart(6, '0')}`;
-  }
+  // nextFreeSceneOrdinal already found the highest existing ordinal at the
+  // start of the tick. Scanning every previous scene here is O(n²) on long
+  // runs with many resolved scenes.
+  const ordinal = context.nextSceneOrdinal;
   context.nextSceneOrdinal = ordinal + 1;
-  return id;
+  return `scn:${context.world.id}:${String(ordinal).padStart(6, '0')}`;
 }
 
 function appendScene(context: EngineContext, scene: SceneInstance): void {
@@ -824,6 +857,14 @@ function sceneEligible(
     !definition.subjectProvenance.includes(subject.provenance.kind)
   )
     return false;
+  // An asynchronous birth contract must be compiled before a capability-gated
+  // event can be offered. Otherwise the child could pass/fail an ability check
+  // before the contract response arrives.
+  if (
+    !subject.lifeContract?.compiledAt &&
+    definition.conditions.some((condition) => condition.kind === 'capability')
+  )
+    return false;
   const age = ageAt(subject, date);
   if (stageForAge(age) !== definition.stage) return false;
   if (age < definition.ageWindow.min || age > definition.ageWindow.max) return false;
@@ -960,9 +1001,18 @@ function organizationMatchesRole(
 }
 
 function personIdsWithRole(world: WorldState, role: string): Id[] {
-  return Object.keys(world.persons)
-    .filter((id) => world.persons[id]?.roles.includes(role))
-    .sort();
+  return sortedPeople(world).filter((id) => world.persons[id]?.roles.includes(role));
+}
+
+const sortedPeopleCache = new WeakMap<WorldState, { length: number; people: Id[] }>();
+
+function sortedPeople(world: WorldState): Id[] {
+  const cached = sortedPeopleCache.get(world);
+  const length = Object.keys(world.persons).length;
+  if (cached && cached.length === length) return cached.people;
+  const people = Object.keys(world.persons).sort();
+  sortedPeopleCache.set(world, { length, people });
+  return people;
 }
 
 function roleCandidates(
@@ -970,14 +1020,12 @@ function roleCandidates(
   subject: Person,
   requirement: SceneDefinition['roles'][number],
 ): Id[] {
-  const people = Object.keys(world.persons).sort();
+  if (requirement.kind === 'subject') return [subject.id];
+  const people = sortedPeople(world);
   const organizations = Object.keys(world.organizations).sort();
   const candidates = new Set<Id>();
 
   switch (requirement.kind) {
-    case 'subject':
-      candidates.add(subject.id);
-      break;
     case 'parent':
       for (const id of subject.parentIds) if (world.persons[id]) candidates.add(id);
       break;
@@ -1172,7 +1220,7 @@ function candidateFits(
   return personMatchesRole(world, subject, person, requirement, date);
 }
 
-const MATERIALIZABLE_ROLES = new Set(['neighbor', 'worker', 'teacher', 'official', 'partner']);
+const MATERIALIZABLE_ROLES = new Set(['neighbor', 'worker']);
 
 const MATERIALIZED_SURNAMES = [
   'Huber',
@@ -1204,12 +1252,17 @@ function materializeRoleCandidate(
     sex?: Person['sex'] | 'opposite';
   },
   date: WorldDate,
+  allowPartner = false,
 ): Id | undefined {
   if (!context.options.materializePopulation || !context.world.macro) return undefined;
   // A scene may need a shopkeeper/neighbour/partner, but the annual audit and
   // gameplay must not turn every missing role into a new named person.
   if (context.materializedCount >= 4) return undefined;
-  if (!MATERIALIZABLE_ROLES.has(requirement.kind)) return undefined;
+  if (
+    !MATERIALIZABLE_ROLES.has(requirement.kind) &&
+    !(allowPartner && requirement.kind === 'partner')
+  )
+    return undefined;
   const regionId = regionIdForPerson(context.world, subject);
   const population = context.world.macro.population[regionId];
   if (!population) return undefined;
@@ -1247,10 +1300,26 @@ function materializeRoleCandidate(
   const homes = Object.values(context.world.places).filter(
     (place) => place.kind === 'home' && (place.regionId ?? 'region-lower-austria') === regionId,
   );
-  const residence = homes[Math.floor(rng() * homes.length)] ?? homes[0];
+  const subjectHomeId = context.world.households[subject.householdId]?.residenceId;
+  const subjectHome = subjectHomeId ? context.world.places[subjectHomeId] : undefined;
+  const workplaces = Object.values(context.world.places).filter(
+    (place) => place.kind === 'factory' && (place.regionId ?? 'region-lower-austria') === regionId,
+  );
+  const workplace = context.world.places[subject.employment?.workplaceId ?? ''] ?? workplaces[0];
+  const residence =
+    requirement.kind === 'neighbor' && subjectHome?.kind === 'home'
+      ? subjectHome
+      : (homes[Math.floor(rng() * homes.length)] ?? homes[0]);
   if (!residence) {
     // Put the cohort back if the region has no usable home; never create a
     // person without a valid place/household.
+    population.unnamedByAgeSex![cohortSex][Math.min(100, age)] += 1;
+    population.namedAlive = Math.max(0, population.namedAlive - 1);
+    return undefined;
+  }
+  if (requirement.kind === 'worker' && !workplace) {
+    // A worker role without a workplace is a fake institution; keep the scene
+    // blocked rather than naming an unemployed person as a colleague.
     population.unnamedByAgeSex![cohortSex][Math.min(100, age)] += 1;
     population.namedAlive = Math.max(0, population.namedAlive - 1);
     return undefined;
@@ -1278,7 +1347,7 @@ function materializeRoleCandidate(
     name,
     sex,
     born: { year: date.year - age, month: 1 },
-    locationId: residence.id,
+    locationId: requirement.kind === 'worker' && workplace ? workplace.id : residence.id,
     householdId,
     parentIds: [],
     guardianIds: [],
@@ -1309,6 +1378,17 @@ function materializeRoleCandidate(
     },
     provenance: { kind: 'materialized_population', sourceId: regionId },
   };
+  if (requirement.kind === 'worker' && workplace && subject.employment) {
+    person.employment = {
+      organizationId: subject.employment.organizationId,
+      occupation: 'worker',
+      wage: Math.max(0, subject.employment.wage * 0.9),
+      since: { ...date },
+      workplaceId: workplace.id,
+    };
+    const organization = context.world.organizations[subject.employment.organizationId];
+    if (organization && !organization.memberIds.includes(id)) organization.memberIds.push(id);
+  }
   context.world.persons[id] = person;
   context.world.households[householdId] = {
     id: householdId,
@@ -1325,6 +1405,13 @@ function materializeRoleCandidate(
   };
   context.materializedCount += 1;
   context.diagnostics.statistical.materialized += 1;
+  context.diagnostics.materializations.push({
+    personId: id,
+    role: requirement.key,
+    kind: requirement.kind,
+    regionId,
+    reason: `missing required ${requirement.kind} role on ${date.year}-${date.month}`,
+  });
   return id;
 }
 
@@ -1376,7 +1463,15 @@ function castSceneRoles(
     const pool = unused.length > 0 ? unused : candidates;
     if (pool.length === 0) {
       if (required) {
-        const materialized = materializeRoleCandidate(context, subject, requirement, date);
+        const materialized = materializeRoleCandidate(
+          context,
+          subject,
+          requirement,
+          date,
+          requirement.kind === 'partner' &&
+            (definition.tags.includes('courtship') ||
+              definition.id.startsWith('vienna-family-courtship')),
+        );
         if (materialized) {
           roles[requirement.key] = materialized;
           usedPeople.add(materialized);
@@ -2844,6 +2939,13 @@ function applyFood(
   return { ...effect };
 }
 
+function personCapability(person: Person): string | undefined {
+  return (
+    person.lifeContract?.capability ??
+    person.life?.flags.find((flag) => flag.startsWith('capability:'))?.slice(11)
+  );
+}
+
 function applyHealth(
   context: EngineContext,
   effect: Extract<EventEffect, { type: 'health' }>,
@@ -2863,7 +2965,14 @@ function applyHealth(
   // explicit `death` effect. Ordinary health damage cannot silently create a
   // second, untyped mortality path by reaching exactly zero.
   const floor = context.world.macro ? 0.01 : 0;
-  const after = clamp(before + effect.amount, floor, 1);
+  const capability = personCapability(person);
+  const amount =
+    effect.amount < 0 && capability === 'frail_body'
+      ? effect.amount * 1.2
+      : effect.amount > 0 && capability === 'frail_body'
+        ? effect.amount * 0.85
+        : effect.amount;
+  const after = clamp(before + amount, floor, 1);
   const delta = after - before;
   if (Math.abs(delta) < 1e-9) return undefined;
   person.health.vitality = after;
@@ -3138,11 +3247,11 @@ function applyRelation(
       (undirected
         ? (candidate.a === effect.a && candidate.b === effect.b) ||
           (candidate.a === effect.b && candidate.b === effect.a)
-        : (candidate.a === effect.a && candidate.b === effect.b) ||
-          (candidate.a === effect.b && candidate.b === effect.a)),
+        : candidate.a === effect.a && candidate.b === effect.b),
   );
   const id = existing?.id ?? `rel:${effect.a}:${effect.b}:${effect.kind}`;
   let relation = existing ?? context.world.relations[id];
+  let created = false;
   // Existing bonds survive death (funerals, memory, obligations). Creating a
   // brand-new relation with a dead person is not allowed.
   if (!relation && (a.died || b.died)) return undefined;
@@ -3154,6 +3263,7 @@ function applyRelation(
   }
   if (relation?.end) return undefined;
   if (!relation) {
+    created = true;
     relation = {
       id,
       a: effect.a,
@@ -3168,6 +3278,7 @@ function applyRelation(
       sharedEventIds: [],
     };
     context.world.relations[id] = relation;
+    rememberRelation(context.world, relation);
     if (!a.relationshipIds.includes(id)) a.relationshipIds.push(id);
     if (!b.relationshipIds.includes(id)) b.relationshipIds.push(id);
   }
@@ -3181,6 +3292,12 @@ function applyRelation(
   applyDelta('obligation');
   applyDelta('fear');
   applyDelta('respect');
+  if (created && personCapability(a) === 'social_insight') {
+    relation.trust = clamp(relation.trust + 0.03, -1, 1);
+  }
+  if (created && personCapability(b) === 'social_insight') {
+    relation.respect = clamp(relation.respect + 0.02, -1, 1);
+  }
   if (!relation.sharedEventIds.includes(binding.eventId)) {
     relation.sharedEventIds.push(binding.eventId);
   }
@@ -3378,8 +3495,31 @@ function applyMove(
     });
     return undefined;
   }
-  if (!context.world.places[effect.locationId]) return undefined;
+  const destination = context.world.places[effect.locationId];
+  if (!destination) return undefined;
   if (person.locationId === effect.locationId) return undefined;
+  const oldRegion = regionIdForPerson(context.world, person);
+  const newRegion = destination.regionId ?? 'region-lower-austria';
+  const household = context.world.households[person.householdId];
+  if (oldRegion !== newRegion && household) {
+    const destinationHome =
+      destination.kind === 'home'
+        ? destination
+        : Object.values(context.world.places).find(
+            (place) =>
+              place.kind === 'home' && (place.regionId ?? 'region-lower-austria') === newRegion,
+          );
+    if (destinationHome) {
+      // A named migration moves the household's registered residence with the
+      // person; otherwise the macro named count and the household address
+      // would disagree across regions.
+      household.residenceId = destinationHome.id;
+      for (const memberId of household.memberIds) {
+        const member = context.world.persons[memberId];
+        if (member && !member.died) member.locationId = destinationHome.id;
+      }
+    }
+  }
   person.locationId = effect.locationId;
   return { ...effect };
 }
@@ -3755,7 +3895,8 @@ function commitStatisticalDeath(
  * external events (accidents, war, violence); they cannot double-kill an
  * already dead person because commitEvent/applyDeath checks the person.
  */
-function applyStatisticalYear(context: EngineContext, date: WorldDate): void {
+
+function applyStatisticalMonth(context: EngineContext, date: WorldDate): void {
   const world = context.world;
   if (!world.macro) return;
   const personIds = Object.keys(world.persons).sort();
@@ -3764,18 +3905,20 @@ function applyStatisticalYear(context: EngineContext, date: WorldDate): void {
     if (!person || person.died) continue;
     const region = macroForPerson(world, person);
     if (!region) continue;
+    const params = region.parameters;
     if (
       person.health.postpartumUntil &&
       monthIndex(person.health.postpartumUntil) < monthIndex(date)
     ) {
       delete person.health.postpartumUntil;
     }
-    const age = ageAt(person, date) - (date.month < person.born.month ? 1 : 0);
-    const params = region.parameters;
+    const age = Math.max(0, ageAt(person, date));
     if (person.health.lastIllness) {
       const name = person.health.lastIllness.name;
-      const rng = seededRng(world.seed, 'illness-progress', person.id, date.year);
-      if (rng() < recoveryRisk(age, params)) {
+      const rng = seededRng(world.seed, 'illness-month', person.id, date.year, date.month);
+      const annualRecovery = recoveryRisk(age, params);
+      const monthlyRecovery = 1 - Math.pow(1 - annualRecovery, 1 / 12);
+      if (rng() < monthlyRecovery) {
         delete person.health.lastIllness;
         context.diagnostics.statistical.recoveries += 1;
         commitEvent(
@@ -3796,44 +3939,58 @@ function applyStatisticalYear(context: EngineContext, date: WorldDate): void {
           { roleIds: { subject: person.id }, fundingOrganizationIds: [] },
           true,
         );
-      } else {
-        person.health.lastIllness.severity = clamp(person.health.lastIllness.severity + 0.08, 0, 1);
-        const deathChance =
-          0.015 + person.health.lastIllness.severity * 0.16 + (1 - params.healthcare) * 0.03;
-        const deathRng = seededRng(world.seed, 'illness-death', person.id, date.year);
-        if (deathRng() < deathChance) {
-          if (commitStatisticalDeath(context, person, illnessCause(name), date)) {
-            context.diagnostics.statistical.deaths += 1;
-          }
-        } else {
-          commitEvent(
-            context,
-            {
-              date: { ...date },
-              placeId: person.locationId,
-              subjectId: person.id,
-              participants: [{ personId: person.id, role: 'subject' }],
-              action: 'statistical_illness_worsened',
-              causes: [],
-              effects: [],
-              immediateText: `${person.name}的${illnessLabel(name)}没有好转，咳嗽和发热拖了更久，家里人轮流守着。`,
-              significance: 0.4,
-              visibility: 'participants',
-              provenance: { kind: 'system', sourceId: 'statistics:worsening' },
-            },
-            { roleIds: { subject: person.id }, fundingOrganizationIds: [] },
-            true,
-          );
+        continue;
+      }
+      person.health.lastIllness.severity = clamp(person.health.lastIllness.severity + 0.02, 0, 1);
+      const annualDeath =
+        0.015 + person.health.lastIllness.severity * 0.16 + (1 - params.healthcare) * 0.03;
+      const deathRng = seededRng(
+        world.seed,
+        'illness-death-month',
+        person.id,
+        date.year,
+        date.month,
+      );
+      if (deathRng() < Math.min(0.08, annualDeath / 12)) {
+        if (commitStatisticalDeath(context, person, illnessCause(name), date)) {
+          context.diagnostics.statistical.deaths += 1;
         }
+      } else if (date.month % 3 === 0) {
+        commitEvent(
+          context,
+          {
+            date: { ...date },
+            placeId: person.locationId,
+            subjectId: person.id,
+            participants: [{ personId: person.id, role: 'subject' }],
+            action: 'statistical_illness_worsened',
+            causes: [],
+            effects: [],
+            immediateText: `${person.name}的${illnessLabel(name)}没有完全好转，咳嗽和发热又拖了一个月，家里人轮流守着。`,
+            significance: 0.35,
+            visibility: 'participants',
+            provenance: { kind: 'system', sourceId: 'statistics:worsening' },
+          },
+          { roleIds: { subject: person.id }, fundingOrganizationIds: [] },
+          true,
+        );
       }
       continue;
     }
     if (age >= 1) {
-      const infectionRng = seededRng(world.seed, 'infection', person.id, date.year);
-      if (infectionRng() < annualInfectionRisk(person, age, params)) {
+      const infectionRng = seededRng(
+        world.seed,
+        'infection-month',
+        person.id,
+        date.year,
+        date.month,
+      );
+      const annual = annualInfectionRisk(person, age, params);
+      const monthly = 1 - Math.pow(1 - annual, 1 / 12);
+      if (infectionRng() < monthly) {
         const name = infectionNameForAge(
           age,
-          seededRng(world.seed, 'infection-name', person.id, date.year),
+          seededRng(world.seed, 'infection-name-month', person.id, date.year, date.month),
         );
         person.health.lastIllness = { name, since: { ...date }, severity: 0.25 };
         context.diagnostics.statistical.infections += 1;
@@ -3858,7 +4015,40 @@ function applyStatisticalYear(context: EngineContext, date: WorldDate): void {
         continue;
       }
     }
-    const risks = estimateAnnualRisks(person, date, region);
+    if (
+      person.health.postpartumUntil &&
+      monthIndex(person.health.postpartumUntil) >= monthIndex(date)
+    ) {
+      const maternalRng = seededRng(world.seed, 'maternal-month', person.id, date.year, date.month);
+      if (maternalRng() < 0.015 / 12) {
+        if (commitStatisticalDeath(context, person, 'childbirth', date)) {
+          context.diagnostics.statistical.deaths += 1;
+        }
+      }
+    }
+  }
+}
+
+function applyStatisticalYear(context: EngineContext, date: WorldDate): void {
+  const world = context.world;
+  if (!world.macro) return;
+  const personIds = Object.keys(world.persons).sort();
+  for (const personId of personIds) {
+    const person = world.persons[personId];
+    if (!person || person.died) continue;
+    const region = macroForPerson(world, person);
+    if (!region) continue;
+    if (
+      person.health.postpartumUntil &&
+      monthIndex(person.health.postpartumUntil) < monthIndex(date)
+    ) {
+      delete person.health.postpartumUntil;
+    }
+    const age = ageAt(person, date) - (date.month < person.born.month ? 1 : 0);
+    const params = region.parameters;
+    const risks = estimateAnnualRisks(person, date, region, {
+      excludeCauses: ['pneumonia', 'tuberculosis', 'infant_diarrhoea', 'childbirth'],
+    });
     const cause = sampleDeathCause(risks, seededRng(world.seed, 'mortality', person.id, date.year));
     if (cause && commitStatisticalDeath(context, person, cause, date)) {
       context.diagnostics.statistical.deaths += 1;

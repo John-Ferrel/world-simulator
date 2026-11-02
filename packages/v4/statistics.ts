@@ -206,7 +206,7 @@ export function estimateAnnualRisks(
   person: Person,
   date: WorldDate,
   region: MacroRegion | undefined,
-  options: { soldier?: boolean } = {},
+  options: { soldier?: boolean; excludeCauses?: DeathCause[] } = {},
 ): RiskBreakdown {
   const parameters = region?.parameters ?? MACRO_DEFAULT_PARAMETERS;
   const age = ageAt(person, date);
@@ -243,7 +243,13 @@ export function estimateAnnualRisks(
   if (typhus > 0) causes.other += typhus * 0.02 * (0.6 + (1 - parameters.sanitation));
   const tb = clamp(parameters.epidemicTuberculosis, 0, 1);
   if (tb > 0 && age >= 15 && age < 65) causes.tuberculosis += tb * 0.006;
-  const totalHazard = Object.values(causes).reduce((sum, value) => sum + value, 0);
+  const capability =
+    person.lifeContract?.capability ??
+    person.life?.flags.find((flag) => flag.startsWith('capability:'))?.slice(11);
+  for (const cause of options.excludeCauses ?? []) causes[cause] = 0;
+  const totalHazard =
+    Object.values(causes).reduce((sum, value) => sum + value, 0) *
+    (capability === 'frail_body' ? 1.15 : 1);
   return {
     age,
     ageBand: band,

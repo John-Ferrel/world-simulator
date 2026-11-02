@@ -172,6 +172,8 @@ export type WorldDevelopment = {
       | 'other';
     placeId?: string;
   };
+  lastAssessed?: WorldDate;
+  inactiveYears?: number;
   source: string;
 };
 
@@ -972,6 +974,50 @@ export function materializeDevelopments(
       };
     }
     development.organizationId = organizationId;
+  }
+  return next;
+}
+
+/**
+ * Advance supported development lifecycles using existing Organization state.
+ * No new political system: members, dues, inactivity and survival are enough
+ * to let an organization grow, decline or end over several years.
+ */
+export function advanceDevelopmentLifecycle(
+  world: WorldState,
+  state: MacroState,
+  date: WorldDate,
+): MacroState {
+  const next = structuredClone(state);
+  for (const development of Object.values(next.developments ?? {})) {
+    if (development.status === 'ended' || development.status === 'blocked') continue;
+    const organization = development.organizationId
+      ? world.organizations[development.organizationId]
+      : undefined;
+    if (!organization || organization.status !== 'active') {
+      development.status = 'ended';
+      development.lastAssessed = { ...date };
+      continue;
+    }
+    const members = organization.memberIds.filter(
+      (id) => world.persons[id] && !world.persons[id]!.died,
+    );
+    if (members.length === 0) {
+      development.inactiveYears = (development.inactiveYears ?? 0) + 1;
+      development.status = development.inactiveYears >= 2 ? 'ended' : 'declining';
+    } else {
+      development.inactiveYears = 0;
+      development.status = 'active';
+      // Small membership dues are a real resource transfer, not conjured money.
+      for (const memberId of members) {
+        const person = world.persons[memberId];
+        const household = person ? world.households[person.householdId] : undefined;
+        if (!household || household.cash < 0.1) continue;
+        household.cash = Math.round((household.cash - 0.1) * 100) / 100;
+        organization.treasury = Math.round((organization.treasury + 0.1) * 100) / 100;
+      }
+    }
+    development.lastAssessed = { ...date };
   }
   return next;
 }

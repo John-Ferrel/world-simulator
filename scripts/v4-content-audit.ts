@@ -41,6 +41,14 @@ const scenes = [
 const events: EventFact[] = [];
 const sceneInstances: SceneInstance[] = [];
 const warnings: { code: string; message: string; personId?: string; sceneId?: string }[] = [];
+const materializations: {
+  year: number;
+  personId: string;
+  role: string;
+  kind: string;
+  regionId: string;
+  reason: string;
+}[] = [];
 const scenesByYear: number[] = [];
 for (let i = 0; i < years; i += 1) {
   const yearStarted = Date.now();
@@ -57,6 +65,8 @@ for (let i = 0; i < years; i += 1) {
   events.push(...result.events);
   sceneInstances.push(...result.scenes);
   warnings.push(...result.diagnostics.warnings);
+  for (const materialization of result.diagnostics.materializations)
+    materializations.push({ year: world.date.year, ...materialization });
   scenesByYear.push(result.events.length);
   if (process.env.V4_AUDIT_VERBOSE) {
     console.error(
@@ -233,6 +243,22 @@ const report = {
     .sort((a, b) => b.count - a.count || a.cause.localeCompare(b.cause)),
   population,
   zeroEventYears: scenesByYear.filter((count) => count === 0).length,
+  materializations: {
+    total: materializations.length,
+    byRole: [...new Set(materializations.map((entry) => entry.role))]
+      .map((role) => ({
+        role,
+        count: materializations.filter((entry) => entry.role === role).length,
+      }))
+      .sort((a, b) => b.count - a.count || a.role.localeCompare(b.role)),
+    byKind: [...new Set(materializations.map((entry) => entry.kind))]
+      .map((kind) => ({
+        kind,
+        count: materializations.filter((entry) => entry.kind === kind).length,
+      }))
+      .sort((a, b) => b.count - a.count || a.kind.localeCompare(b.kind)),
+    samples: materializations.slice(0, 20),
+  },
   generated: {
     packs: GENERATED_PACKS.length,
     scenes: GENERATED_SCENES.length,
