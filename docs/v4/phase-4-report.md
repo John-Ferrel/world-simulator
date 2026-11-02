@@ -1,5 +1,7 @@
 # v4 Phase 4 实现与验收报告：自主演化、具名化与运行时内容
 
+> 从 Phase 2 到 Phase 4 的完整复盘、偏差和用户问题见 [phase-3-4-retrospective.md](phase-3-4-retrospective.md)。
+
 日期：2026-11-02  
 基线：Phase 3 提交 `03d072b`  
 原则：明确区分已实现、测试验证、模型假设、未完成。本轮不是全球历史数字孪生。

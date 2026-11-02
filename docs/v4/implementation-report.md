@@ -4,7 +4,7 @@
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
 
-> 2026-11-02 Phase 4 更新：单岁×性别人口队列、背景人口具名化、WorldDevelopment→真实组织、宏观 effect 到期、运行时 Content Author、capability 场景门控和固定 seed 反事实已接入。Phase 4 验收见 [phase-4-report.md](phase-4-report.md)；Phase 3 见 [phase-3-report.md](phase-3-report.md)。全量 375 项通过，构建和浏览器通过。
+> 2026-11-02 Phase 4 更新：完整复盘见 [phase-3-4-retrospective.md](phase-3-4-retrospective.md)。单岁×性别人口队列、背景人口具名化、WorldDevelopment→真实组织、宏观 effect 到期、运行时 Content Author、capability 场景门控和固定 seed 反事实已接入。Phase 4 验收见 [phase-4-report.md](phase-4-report.md)；Phase 3 见 [phase-3-report.md](phase-3-report.md)。全量 375 项通过，构建和浏览器通过。
 
 > 复盘与偏差分析见 [phase-2-retrospective.md](phase-2-retrospective.md)。Phase 2 的工程交付通过测试，但人口/历史模型未成立；该文记录了原因与 Phase 3 方案。
 
