@@ -151,7 +151,7 @@ pnpm test
 
 - 旧活动世界 `world-vienna-1912-vmvyrtquw` 已于 2001 年自然到达 horizon，状态 `archived`，实体与事件保留。
 - 自动启动的无玩家世界 `world-vienna-1912-vmvytn6cs` 已归档，原因写明“无观察者角色，保留实体与事件”。
-- 最终世界 `world-vienna-1912-playable-mvytzmqe` 从 1912 年 1 月开始；由 `pnpm dev` 启动后每 30 秒推进一年。验收时已推进到 1918 年，并已通过真实 DeepSeek Macro Director 提案（3,329 tokens，revision 4）应用了 1915 年战争动员、配给与稳定度变化；运行时内容 worker 又真实生成了 11,476-token 的 `vienna-social-movement` 包并发布。
+- 最终世界 `world-vienna-1912-playable-mvytzmqe` 从 1912 年 1 月开始；由 `pnpm dev` 启动后每 30 秒推进一年。验收时已推进到 1918 年，交付检查时为 1923 年（40 人在世）；已通过真实 DeepSeek Macro Director 提案（3,329 tokens，revision 4）应用了 1915 年战争动员、配给与稳定度变化；运行时内容 worker 又真实生成了 11,476-token 的 `vienna-social-movement` 包并发布。
 - 启动后打开 <http://localhost:5173>。
 
 ## 5. 仍未完成
