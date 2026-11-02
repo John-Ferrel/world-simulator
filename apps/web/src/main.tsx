@@ -76,6 +76,7 @@ type PersonDetail = {
       id: string;
       name: string;
       age: number;
+      born?: Date4;
       occupation?: string;
       relation: string;
       died?: Date4;
@@ -150,6 +151,48 @@ const educationText: Record<string, string> = {
   apprenticeship: '学徒',
   higher: '高等教育',
 };
+
+/**
+ * Mirrors the simulator's age rule, but lets the observer pin a dead person to
+ * their age at death. The API normally supplies `age`; this is defensive so an
+ * in-flight or older response can never make a dead person keep ageing.
+ */
+function ageAtDate(person: { born: Date4 }, date: Date4): number {
+  return Math.max(
+    0,
+    Math.floor(date.year - person.born.year + (date.month - person.born.month) / 12),
+  );
+}
+
+function displayAge(person: { born: Date4; died?: Date4; age?: number }, worldDate: Date4): number {
+  if (person.died) {
+    const atDeath = ageAtDate(person, person.died);
+    return typeof person.age === 'number' && Number.isFinite(person.age)
+      ? Math.min(person.age, atDeath)
+      : atDeath;
+  }
+  return typeof person.age === 'number' && Number.isFinite(person.age)
+    ? person.age
+    : ageAtDate(person, worldDate);
+}
+
+function lifeSpanText(person: Pick<PersonSummary, 'born' | 'died'>): string {
+  return `${shortDate(person.born)} — ${person.died ? shortDate(person.died) : '至今'}`;
+}
+
+/**
+ * Household payloads currently carry the age at world date and sometimes no
+ * birth date. Prefer a real age at death when we can reconstruct it; otherwise
+ * show the death year instead of an age that would keep increasing.
+ */
+function householdMemberAge(
+  member: { id: string; age: number; born?: Date4; died?: Date4 },
+  world: World,
+): number | null {
+  if (!member.died) return member.age;
+  const born = member.born ?? world.people.find((person) => person.id === member.id)?.born;
+  return born ? ageAtDate({ born }, member.died) : null;
+}
 
 /**
  * The world endpoint now returns one page of person summaries. A background
@@ -876,22 +919,20 @@ function PersonPane({
       </aside>
     );
   const household = detail?.household;
-  const years = person.died
-    ? `${person.born.year} — ${person.died.year}`
-    : `${person.born.year} — `;
+  const age = displayAge(person, world.date);
   return (
     <aside className="pane person-pane">
       <div className="pane-label">人物</div>
       <div className={`portrait ${person.died ? 'dead' : ''}`}>
-        <PaperDoll person={person} direction={2} motion />
-        <div className="portrait-years">{years}</div>
+        <PaperDoll person={{ ...person, age }} direction={2} motion />
+        <div className="portrait-years">{lifeSpanText(person)}</div>
         {person.died && <div className="death-stamp">卒</div>}
       </div>
       <div className="person-heading">
         <h2>{person.name}</h2>
+        <div className="person-dates">{lifeSpanText(person)}</div>
         <div className="person-sub">
-          {sexText(person.sex)} ·{' '}
-          {person.died ? `享年 ${person.died.year - person.born.year} 岁` : `${person.age} 岁`}
+          {sexText(person.sex)} · {person.died ? `享年 ${age} 岁` : `${age} 岁`}
           {person.owner && <span className="own-badge">你的人物</span>}
         </div>
       </div>
@@ -931,21 +972,32 @@ function PersonPane({
       )}
       {household && (
         <section className="side-section">
-          <h3>家庭</h3>
+          <h3>
+            家庭 · {household.members.filter((member) => !member.died).length} 人在世 /{' '}
+            {household.members.length} 条成员记录
+          </h3>
           <div className="member-list">
-            {household.members.map((member) => (
-              <button
-                key={member.id}
-                className={`member ${member.id === person.id ? 'current' : ''} ${member.died ? 'gone' : ''}`}
-                onClick={() => onSelect(member.id)}
-              >
-                <span>{member.name}</span>
-                <small>
-                  {member.relation} · {member.died ? '已故' : `${member.age} 岁`}
-                  {member.occupation ? ` · ${member.occupation}` : ''}
-                </small>
-              </button>
-            ))}
+            {household.members.map((member) => {
+              const memberAge = householdMemberAge(member, world);
+              return (
+                <button
+                  key={member.id}
+                  className={`member ${member.id === person.id ? 'current' : ''} ${member.died ? 'gone' : ''}`}
+                  onClick={() => onSelect(member.id)}
+                >
+                  <span>{member.name}</span>
+                  <small>
+                    {member.relation} ·{' '}
+                    {member.died
+                      ? memberAge !== null
+                        ? `已故 · 享年 ${memberAge} 岁`
+                        : `已故 · 卒于 ${member.died.year} 年`
+                      : `${memberAge ?? member.age} 岁`}
+                    {member.occupation ? ` · ${member.occupation}` : ''}
+                  </small>
+                </button>
+              );
+            })}
           </div>
         </section>
       )}
@@ -972,10 +1024,19 @@ function PersonPane({
           <select value={person.id} onChange={(event) => onSelect(event.target.value)}>
             {world.people
               .slice()
-              .sort((a, b) => Number(a.died) - Number(b.died) || b.age - a.age)
+              .sort((a, b) => {
+                if (Boolean(a.died) !== Boolean(b.died)) return a.died ? 1 : -1;
+                if (a.died && b.died)
+                  return b.died.year - a.died.year || b.died.month - a.died.month;
+                return displayAge(b, world.date) - displayAge(a, world.date);
+              })
               .map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.name}（{item.died ? '已故' : `${item.age} 岁`}）
+                  {item.name}（
+                  {item.died
+                    ? `已故 · 享年 ${displayAge(item, world.date)} 岁`
+                    : `${displayAge(item, world.date)} 岁`}
+                  ）
                 </option>
               ))}
           </select>
@@ -1053,7 +1114,7 @@ function LogPane({
         </div>
       </div>
       {years.length > 1 && (
-        <div className="year-jumps">
+        <div className="year-jumps" aria-label="按年份筛选日志">
           <button
             className={yearFilter === null ? 'active' : ''}
             onClick={() => setYearFilter(null)}
@@ -1072,15 +1133,25 @@ function LogPane({
         </div>
       )}
       <div className="log-scroll" ref={scroller}>
-        {!detail && <p className="muted pad">正在读日志……</p>}
+        {!detail && <p className="muted pad">正在读取已提交的人生记录……</p>}
         {detail && !detail.canReadLog && (
           <div className="log-locked">
             <h3>这是另一个人的人生</h3>
             <p>你可以看到他的公开身份与家庭，但不能读另一位玩家的私人日志。</p>
           </div>
         )}
-        {detail && detail.canReadLog && shown.length === 0 && (
-          <p className="muted pad">还没有已经发生的事情。下一年会带来新的场景。</p>
+        {detail && detail.canReadLog && shown.length === 0 && events.length === 0 && (
+          <div className="log-empty">
+            <h3>{person.died ? '没有留下日志' : '这份人生刚刚开始'}</h3>
+            <p>
+              {person.died
+                ? '这个世界没有为这个人提交可读的个人事件；身份、家庭与死亡信息仍然来自世界状态。'
+                : '出生登记和之后每一年的经历都会按提交顺序写在这里。世界时钟继续走，新的年份会带来新的记录。'}
+            </p>
+          </div>
+        )}
+        {detail && detail.canReadLog && shown.length === 0 && events.length > 0 && (
+          <p className="muted pad">这一年没有留下记录。选择“全部”查看其他年份。</p>
         )}
         {detail?.canReadLog &&
           shown.map((event, index) => {
@@ -1097,10 +1168,19 @@ function LogPane({
               </React.Fragment>
             );
           })}
+        {detail?.canReadLog &&
+          !person.died &&
+          events.length === 1 &&
+          events[0]?.action === 'birth' && (
+            <p className="log-awaiting">出生已经记录。接下来的年份会在这里加入新的经历。</p>
+          )}
       </div>
       <div className="log-foot">
         <span>
-          {person.name} · {person.died ? '一生已结束' : '仍在生活'}
+          {person.name} ·{' '}
+          {person.died
+            ? `一生已结束 · ${lifeSpanText(person)}`
+            : `仍在生活 · ${displayAge(person, world.date)} 岁`}
         </span>
         <span>{world.date.year} 年 · 历史仍在推进</span>
       </div>
@@ -1108,17 +1188,47 @@ function LogPane({
   );
 }
 
+const actionTitleFallback: Record<string, string> = {
+  birth: '出生',
+  death: '死亡',
+  statistical_death: '离世',
+  statistical_infection: '染病',
+  statistical_recovery: '康复',
+  statistical_illness_worsened: '病情加重',
+  interaction_response: '交往',
+};
+
+/**
+ * Titles come from the API and may be absent, or may leak a raw action ID or
+ * an internal enum. Players only ever see prose, so unknown tokens fall back to
+ * a neutral label instead of the action name.
+ */
+function readableLogTitle(event: LogEvent): string {
+  const fallback = actionTitleFallback[event.action] ?? '生活记录';
+  const title = typeof event.title === 'string' ? event.title.trim() : '';
+  if (!title) return fallback;
+  if (/^(none|null|undefined|nan)$/i.test(title)) return fallback;
+  if (title === event.action) return fallback;
+  if (/^[A-Za-z][A-Za-z0-9_-]*$/.test(title)) return fallback;
+  return title;
+}
+
+function readableLogText(event: LogEvent): string {
+  const text = typeof event.immediateText === 'string' ? event.immediateText.trim() : '';
+  if (!text || /^(none|null|undefined|nan)$/i.test(text)) return '这件事实没有留下文字记录。';
+  return text;
+}
+
 function LogEntry({ event }: { event: LogEvent }) {
-  const title =
-    event.title ?? (event.action === 'death' ? '死亡' : event.action === 'birth' ? '出生' : null);
+  const title = readableLogTitle(event);
+  const isDeath = event.action === 'death' || event.action === 'statistical_death';
   return (
-    <article className={`log-entry ${event.action === 'death' ? 'death' : ''}`}>
+    <article className={`log-entry ${isDeath ? 'death' : ''}`}>
       <div className="log-meta">
         <time>{shortDate(event.date)}</time>
-        {title && <span className="log-title">{title}</span>}
-        {!title && <span className="log-title subtle">已记录</span>}
+        <span className="log-title">{title}</span>
       </div>
-      <p>{event.immediateText || '这件事实没有留下文字记录。'}</p>
+      <p>{readableLogText(event)}</p>
       {(event.placeName || event.people.length > 0) && (
         <div className="log-where">
           {event.placeName && <span>{event.placeName}</span>}
@@ -1213,7 +1323,11 @@ function WorldPane({
           {here.map((person) => (
             <button key={person.id} className="place-person" onClick={() => onSelect(person.id)}>
               <span>{person.name}</span>
-              <small>{person.died ? '已故' : `${person.age} 岁 · ${person.occupation}`}</small>
+              <small>
+                {person.died
+                  ? `已故 · 享年 ${displayAge(person, world.date)} 岁`
+                  : `${displayAge(person, world.date)} 岁 · ${person.occupation}`}
+              </small>
             </button>
           ))}
         </div>

@@ -8,6 +8,7 @@ import { defaultMacroState } from '../../packages/v4/macro.js';
 import { enqueueV4MacroProposal } from '../../packages/v4/macro-store.js';
 import { loadPublishedV4Scenes } from '../../packages/v4/content-runtime-store.js';
 import { VIENNA_LIFE_SCENES } from '../../packages/v4/content/vienna-life.js';
+import { VIENNA_POSTWAR_SCENES } from '../../packages/v4/content/vienna-postwar.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../../packages/v4/content/vienna-developments.js';
 import {
   activeV4WorldMeta,
@@ -130,6 +131,7 @@ while (!stopped) {
         [
           ...VIENNA_1912_SCENES,
           ...VIENNA_LIFE_SCENES,
+          ...VIENNA_POSTWAR_SCENES,
           ...VIENNA_DEVELOPMENT_SCENES,
           ...VIENNA_FAMILY_RUNTIME_SCENES,
           ...GENERATED_SCENES,

@@ -7,6 +7,7 @@ import { defaultMacroState, syncMacroPressures } from '../packages/v4/macro.js';
 import { applyScenarioToMacro, type MacroScenarioName } from '../packages/v4/macro-scenarios.js';
 import { populationSummary } from '../packages/v4/statistics.js';
 import { VIENNA_LIFE_SCENES } from '../packages/v4/content/vienna-life.js';
+import { VIENNA_POSTWAR_SCENES } from '../packages/v4/content/vienna-postwar.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../packages/v4/content/vienna-developments.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
 import { GENERATED_PACKS, GENERATED_SCENES } from '../packages/v4/content/generated/index.js';
@@ -34,6 +35,7 @@ world = birth.world;
 const scenes = [
   ...VIENNA_1912_SCENES,
   ...VIENNA_LIFE_SCENES,
+  ...VIENNA_POSTWAR_SCENES,
   ...VIENNA_DEVELOPMENT_SCENES,
   ...VIENNA_FAMILY_RUNTIME_SCENES,
   ...GENERATED_SCENES,

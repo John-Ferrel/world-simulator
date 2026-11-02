@@ -6,20 +6,12 @@
     "min": 18,
     "max": 70
   },
-  "tags": [
-    "housing",
-    "home",
-    "rent",
-    "family",
-    "money"
-  ],
+  "tags": ["housing", "home", "rent", "family", "money"],
   "baseRate": 0.28,
   "conditions": [
     {
       "kind": "placeKind",
-      "in": [
-        "home"
-      ]
+      "in": ["home"]
     }
   ],
   "nodes": [
@@ -31,9 +23,7 @@
       "conditions": [
         {
           "kind": "placeKind",
-          "in": [
-            "home"
-          ]
+          "in": ["home"]
         }
       ],
       "roles": [
@@ -82,17 +72,13 @@
               "id": "default",
               "key": "rent-notice-pay",
               "text": "{subject}把通知念给{neighbor}听，{neighbor}摇头说是楼梯间那几块新玻璃的账。{subject}去楼下杂货铺换开一张五克朗的纸币，回屋一枚一枚摆开数，煤箱底多留了二十赫勒。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "rent-notice-pay",
               "text": "纸上的字是看门人代写的，墨水还没干透。{subject}把裁好的旧报纸摞好，腾出钱来先付房租，自己那份晚饭由土豆改成稀汤。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -128,17 +114,13 @@
               "id": "default",
               "key": "rent-notice-demand-repair",
               "text": "{subject}领{neighbor}绕墙角走了一圈，手指按在潮软发黑的墙纸上。看门人低着头说楼梯间的窗是房东亲自吩咐的，{subject}便把话原样托他带上去，纸仍压在煤箱上没动。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "rent-notice-demand-repair",
               "text": "楼道里正晾着几家洗过的衣服，{subject}和{neighbor}站在水滴下面说话，声音压得低。{neighbor}说这栋楼里的住户不是头一回被这样要钱，先凑个口信比一个人硬顶强。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -175,21 +157,18 @@
               "id": "default",
               "key": "rent-notice-neighbors-together",
               "text": "窗口的纸传回{subject}手里时边角已经卷了。{neighbor}把礼拜三的字样描粗，另外两家各报出自家漏风的门缝。看门人拎着煤铲路过，只说了句别把事闹大。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "rent-notice-neighbors-together",
               "text": "{subject}借着窗外的光把克朗一枚枚点清，{neighbor}在旁边记人情名单，谁家先垫、谁家月底还，都用炭笔写在一张包糖纸上。楼道深处传来别家的关门声，事情算是说定了。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         }
-      ]
+      ],
+      "cooldownYears": 2
     },
     {
       "id": "vienna-housing-move.flat-viewing",
@@ -199,9 +178,7 @@
       "conditions": [
         {
           "kind": "placeKind",
-          "in": [
-            "home"
-          ]
+          "in": ["home"]
         },
         {
           "kind": "householdSize",
@@ -254,17 +231,13 @@
               "id": "default",
               "key": "flat-viewing-deposit",
               "text": "窗子推开只有一线天光，墙纸边角翘起，{subject}用指甲一刮便掉下一层湿粉。看门人揣好定金，说这间是朝北的，冬天火炉要添得勤些。{neighbor}站在楼梯口没进屋，只替{subject}看着箱子。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "flat-viewing-deposit",
               "text": "{subject}把定金摊在窗台上数清，赫勒没有被克朗盖住。通风井里孩子的哭声混着洗衣水声落下来，倒像是寻常日子。租低了三克朗，加上原来的煤钱勉强能接上。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -300,17 +273,13 @@
               "id": "default",
               "key": "flat-viewing-too-damp",
               "text": "看门人又打开一道锁，门轴响得刺耳。{subject}走到窗边，见分明是通风井的砖墙，几乎没有天。{neighbor}在走廊尽头等着，只说了一句这屋子晒不着太阳。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "flat-viewing-too-damp",
               "text": "看门人拍着胸口保证冬天不漏水，{subject}却忽然觉得喉咙发紧。定金在衣袋里捏了又放下。出了门，楼下的面包还热着，租省下的钱也换不回一个干爽的铺位。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -345,21 +314,18 @@
               "id": "default",
               "key": "flat-viewing-bed-only",
               "text": "顶楼那间屋里有三张床，靠墙一张空着，床板上留着上一个住客的煤灰印。{subject}把铺盖卷放下，试了试窗上的插销，外面是通风井。{neighbor}帮着把一只小箱子搁在床头，说这地方不要指望晒到太阳。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "flat-viewing-bed-only",
               "text": "看门人收下三克朗，把一把磨得发亮的钥匙交到{subject}手里。厨房角落的炉子上还坐着别人的锅，水汽混着霉味。{subject}把钥匙挂在脖子上，打算明日一早再回旧处取剩下的东西。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         }
-      ]
+      ],
+      "cooldownYears": 3
     },
     {
       "id": "vienna-housing-move.moving-day",
@@ -369,9 +335,7 @@
       "conditions": [
         {
           "kind": "placeKind",
-          "in": [
-            "home"
-          ]
+          "in": ["home"]
         }
       ],
       "roles": [
@@ -422,17 +386,13 @@
               "id": "default",
               "key": "moving-day-cart",
               "text": "{subject}把铁盒抱在怀里，其余东西都交给{neighbor}和车夫。楼道里挡路的自行车被挪到墙边，锅沿碰上车挡板，咣的一声。新住处门前没有台阶，省得再抬。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "moving-day-cart",
               "text": "车夫把价钱咬得很死，{subject}还到五克朗又添了二十赫勒，才说定跑一趟。{neighbor}扶着床架，车过路口时煤箱歪了一下，细灰撒在路面上。到了地方，东西卸在门厅，天已经大亮。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -468,17 +428,13 @@
               "id": "default",
               "key": "moving-day-handcart",
               "text": "第一趟过街口时车上的煤箱差点翻下来，{neighbor}用膝盖顶住，{subject}把绳子又收了一道。第三趟回来，两人靠在门框上喘气，鞋底都是灰，省下的钱还揣在围裙里。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "moving-day-handcart",
               "text": "手推车每走十几步就要停一下，楼道里的门半开着，有人探头看热闹。{subject}把照片铁盒交给{neighbor}抱着，自己低头把最后一箱锅具拖上楼。天擦黑时，新屋里才勉强归置出下脚的地方。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -513,21 +469,18 @@
               "id": "default",
               "key": "moving-day-sell-up",
               "text": "收破烂的把两克朗数在门槛上，顺手敲了敲桌板看木料。{subject}把铁盒扣好，那里面只有照片和几封旧信。{neighbor}替{subject}扶着门，说旧床架值不了几个钱，能脱手就不亏。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "moving-day-sell-up",
               "text": "床架从楼梯上拖下来时油漆蹭掉了好几块，{subject}站在旁边没作声。收破烂的走后，屋里空得回声都变大了，{subject}抱着铁盒出门，只把门锁好，钥匙从看门人手里交出去。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         }
-      ]
+      ],
+      "cooldownYears": 3
     },
     {
       "id": "vienna-housing-move.sublet-room",
@@ -537,9 +490,7 @@
       "conditions": [
         {
           "kind": "placeKind",
-          "in": [
-            "home"
-          ]
+          "in": ["home"]
         },
         {
           "kind": "overcrowded",
@@ -601,17 +552,13 @@
               "id": "default",
               "key": "sublet-full",
               "text": "{subject}把床上的旧褥子重新铺平，{worker}放下自己的铺盖卷，从怀里掏出一把钥匙看了看。厨房里多了一口人的碗，灶边的煤省着烧也够。{neighbor}在门口看了一眼，没多话。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "sublet-full",
               "text": "{worker}先付了四克朗，{subject}收好钱，又把作息讲清楚：早班时锅归谁先使，夜里的门几时落栓。{neighbor}笑说这屋里像多了个自家人，随即又提醒名声要紧。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -646,17 +593,13 @@
               "id": "default",
               "key": "sublet-daylight-only",
               "text": "{worker}午间回来时，{subject}把床铺理好留给他，傍晚再把褥子收回柜里。两克朗按月压在烛台底下。{neighbor}从自家门口经过，看了一眼床的位置，什么也没说。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "sublet-daylight-only",
               "text": "白天屋里多一个人，厨房的水烧得更勤。{subject}把下午要用的家伙都摆在床尾，{worker}午睡起来便走。到了夜里，门照样上栓，几口人还是挤在原来的铺位上。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -693,21 +636,18 @@
               "id": "default",
               "key": "sublet-declined",
               "text": "{neighbor}说得很慢，提到失钥匙那家最后连门锁都换了。{subject}把烛台上的几枚克朗又数了一遍，{worker}站在门口，听见了多半，拎起铺盖卷说另想办法。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "sublet-declined",
               "text": "晚饭的锅还冒着气，{subject}却把留给{worker}的那一份倒回锅里。楼道的灯要省着点，只剩门框里一线亮。{neighbor}点头，说空一张床总比夜里不踏实强。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         }
-      ]
+      ],
+      "cooldownYears": 4
     }
   ]
 }

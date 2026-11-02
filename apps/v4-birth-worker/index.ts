@@ -1,6 +1,10 @@
 import '../../packages/model/config.js';
 import { ageAt, type Person } from '../../packages/v4/domain.js';
 import { compileBirthContract } from '../../packages/v4/wish.js';
+import {
+  fallbackBirthContract,
+  type BirthContractInput,
+} from '../../packages/v4/birth-contract.js';
 import { applyV4BirthContract } from '../../packages/v4/birth-contract-store.js';
 import {
   claimV4BirthContract,
@@ -30,6 +34,7 @@ while (!stopped) {
     await new Promise((resolve) => setTimeout(resolve, 2000));
     continue;
   }
+  let fallbackInput: BirthContractInput | undefined;
   try {
     const world = await loadV4World(job.world_id);
     if (!world) throw new Error('world missing');
@@ -59,7 +64,7 @@ while (!stopped) {
                   ? '子女'
                   : '同住',
       }));
-    const compiled = await compileBirthContract({
+    fallbackInput = {
       name: person.name,
       sex: person.sex,
       health: person.health.vitality,
@@ -69,7 +74,11 @@ while (!stopped) {
       date: world.date,
       placeName: place?.name,
       household: { members },
-    });
+    };
+    const compiled = await compileBirthContract(fallbackInput);
+    // Once the model produced a valid contract, a later persistence failure is
+    // not a model failure and must not be silently replaced by fallback text.
+    fallbackInput = undefined;
     await applyV4BirthContract(job.world_id, job.person_id, compiled.contract, compiled.model);
     await finishV4BirthContract(job.id, 'done', { model: compiled.model });
     console.log(
@@ -83,6 +92,26 @@ while (!stopped) {
     );
   } catch (error) {
     const message = (error as Error).message.slice(0, 500);
+    if (fallbackInput && job.attempts >= 3) {
+      try {
+        const fallback = fallbackBirthContract(fallbackInput);
+        await applyV4BirthContract(job.world_id, job.person_id, fallback, 'deterministic-fallback');
+        await finishV4BirthContract(job.id, 'done', { model: 'deterministic-fallback' });
+        console.log(
+          JSON.stringify({
+            kind: 'v4-wish',
+            person: job.person_id,
+            model: 'deterministic-fallback',
+            tokens: 0,
+            focus: fallback.focus,
+            capability: fallback.capability,
+          }),
+        );
+        continue;
+      } catch (fallbackError) {
+        console.error('v4 birth fallback failed', (fallbackError as Error).message);
+      }
+    }
     const retry = job.attempts < 3;
     await finishV4BirthContract(job.id, retry ? 'pending' : 'failed', {
       error: message,

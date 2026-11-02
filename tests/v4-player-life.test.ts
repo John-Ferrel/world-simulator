@@ -92,4 +92,42 @@ describe('player-born Vienna life', () => {
     }
     assertWorldV4(world);
   });
+
+  it('births into a living family with capacity instead of the first household', () => {
+    const seed = structuredClone(VIENNA_1912_SEED);
+    // Force the alphabetically first household out of the candidate pool; the
+    // child must still find a real living family elsewhere.
+    for (const id of ['person-josef-bauer', 'person-katharina-bauer']) {
+      const person = seed.persons[id]!;
+      person.died = { year: 1912, month: 1 };
+      person.health.vitality = 0;
+    }
+    const birth = createV4Birth(
+      seed,
+      {
+        name: 'Family check',
+        sex: 'female',
+        health: 0.8,
+        wish: '有一个能住下的家。',
+        lifeMode: 'ordinary',
+        appearance: { skin: 1, hair: 0, clothes: 2 },
+      },
+      'family-choice',
+      'owner-family-choice',
+    );
+    const child = birth.world.persons[birth.childId]!;
+    const household = birth.world.households[child.householdId]!;
+    const living = household.memberIds.filter((id) => {
+      const person = birth.world.persons[id];
+      return Boolean(person && !person.died);
+    });
+    const place = birth.world.places[household.residenceId]!;
+    expect(child.householdId).not.toBe('hh-bauer');
+    expect(child.parentIds.length).toBeGreaterThan(0);
+    expect(child.parentIds.every((id) => !birth.world.persons[id]?.died)).toBe(true);
+    expect(living.length).toBeLessThanOrEqual(place.capacity ?? 8);
+    expect(living).toContain(child.id);
+    expect(birth.event.immediateText).toContain('口人');
+    expect(birth.event.immediateText).not.toContain('85口人');
+  });
 });

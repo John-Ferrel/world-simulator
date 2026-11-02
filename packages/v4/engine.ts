@@ -791,9 +791,15 @@ function conditionPasses(
       return relationsFor(world, subject.id).some((relation) => {
         if (relation.kind !== condition.relationKind) return false;
         if (relation.end !== undefined) return false;
-        if (condition.sameHousehold) {
-          const otherId = relation.a === subject.id ? relation.b : relation.a;
-          if (world.persons[otherId]?.householdId !== subject.householdId) return false;
+        const otherId = relation.a === subject.id ? relation.b : relation.a;
+        // A dead spouse is not a current partner. This also repairs old saves
+        // where death did not explicitly close the relation.
+        if (!world.persons[otherId] || world.persons[otherId]!.died) return false;
+        if (
+          condition.sameHousehold &&
+          world.persons[otherId]!.householdId !== subject.householdId
+        ) {
+          return false;
         }
         if (typeof condition.minTrust !== 'number') return true;
         return relation.trust >= condition.minTrust;
@@ -802,9 +808,13 @@ function conditionPasses(
       return !relationsFor(world, subject.id).some((relation) => {
         if (relation.kind !== condition.relationKind) return false;
         if (relation.end !== undefined) return false;
-        if (condition.sameHousehold) {
-          const otherId = relation.a === subject.id ? relation.b : relation.a;
-          return world.persons[otherId]?.householdId === subject.householdId;
+        const otherId = relation.a === subject.id ? relation.b : relation.a;
+        if (!world.persons[otherId] || world.persons[otherId]!.died) return false;
+        if (
+          condition.sameHousehold &&
+          world.persons[otherId]!.householdId !== subject.householdId
+        ) {
+          return false;
         }
         return true;
       });
@@ -2068,9 +2078,14 @@ function scheduleFactTriggers(context: EngineContext, event: EventFact, depth: n
   for (const tag of tags) {
     for (const definition of context.triggerIndex.get(tag) ?? []) subscribed.add(definition);
   }
+  const sourceSceneId = event.provenance.kind === 'scene' ? event.provenance.sourceId : undefined;
   for (const definition of subscribed) {
     const subject = context.world.persons[event.subjectId];
     if (!subject || subject.died) continue;
+    // A scene may produce an effect tagged `injury` while itself subscribing to
+    // injury facts (e.g. wound care worsening the wound). Without this guard it
+    // schedules itself forever, and the log repeats the same recovery every year.
+    if (definition.id === sourceSceneId || event.action.startsWith(`${definition.id}/`)) continue;
     const due = { year: event.date.year + 1, month: 1 };
     if (!sceneEligible(context, definition, subject, due)) continue;
     const id = `queue:fact:${event.id}:${definition.id}:${subject.id}`;
@@ -2428,6 +2443,26 @@ function hasRelationBetween(world: WorldState, a: Id, b: Id): boolean {
   );
 }
 
+/** Current residents only; memberIds is retained as a historical roster. */
+function livingHouseholdMemberCount(world: WorldState, householdId: Id): number {
+  const household = world.households[householdId];
+  if (!household) return 0;
+  return household.memberIds.filter((id) => {
+    const person = world.persons[id];
+    return Boolean(person && !person.died);
+  }).length;
+}
+
+function householdCapacity(world: WorldState, householdId: Id): number {
+  const household = world.households[householdId];
+  if (!household) return 0;
+  const declared = world.places[household.residenceId]?.capacity ?? 4;
+  // Capacity is a crowding threshold, not a magical wall. Early Vienna flats
+  // were genuinely overcrowded; allow up to twice the declared capacity but
+  // never the pathological 60+ member household observed in the old world.
+  return Math.max(10, Math.min(12, Math.ceil(declared * 2)));
+}
+
 function materializedContactEffects(
   context: EngineContext,
   subject: Person,
@@ -2547,7 +2582,7 @@ function resolveScene(
           .map((parent) => parent.name)
           .join(
             '、',
-          )}在场；家里现在有${context.world.households[child.householdId]?.memberIds.length ?? 0}口人。`,
+          )}在场；家里现在有${livingHouseholdMemberCount(context.world, child.householdId)}口人。`,
         significance: 0.95,
         visibility: 'public',
         provenance: { kind: 'birth', sourceId: event.id },
@@ -2557,6 +2592,11 @@ function resolveScene(
     );
   }
 
+  // If a birth effect was rejected by a full household or another invariant,
+  // the parent scene must not leak its template token into the committed log.
+  if (event.immediateText.includes('{child}')) {
+    event.immediateText = event.immediateText.replaceAll('{child}', '孩子');
+  }
   scheduleFollowups(context, definition, outcome, subject, roles, event, date, depth);
 
   const instance: SceneInstance = {
@@ -3255,6 +3295,16 @@ function applyRelation(
   // Existing bonds survive death (funerals, memory, obligations). Creating a
   // brand-new relation with a dead person is not allowed.
   if (!relation && (a.died || b.died)) return undefined;
+  if (!relation && effect.kind === 'partner') {
+    const hasOtherPartner = (personId: Id): boolean =>
+      relationsFor(context.world, personId).some(
+        (candidate) => candidate.kind === 'partner' && candidate.end === undefined,
+      );
+    // One active partnership at a time. Without this, two scenes can create a
+    // triad (e.g. a same-sex cohabitation and a courtship in the same year),
+    // and later childbirth has no unambiguous partner role.
+    if (hasOtherPartner(a.id) || hasOtherPartner(b.id)) return undefined;
+  }
   if (
     relation &&
     (relation.a !== effect.a || relation.b !== effect.b || relation.kind !== effect.kind)
@@ -3533,6 +3583,31 @@ function applyHousehold(
   const household = context.world.households[effect.householdId];
   if (!person || person.died || !household) return undefined;
   if (person.householdId === household.id) return undefined;
+  if (
+    livingHouseholdMemberCount(context.world, household.id) >=
+    householdCapacity(context.world, household.id)
+  ) {
+    const subject = context.world.persons[binding.subjectId];
+    const partnered =
+      subject &&
+      subject.id !== person.id &&
+      relationsFor(context.world, subject.id).some(
+        (relation) =>
+          relation.kind === 'partner' &&
+          relation.end === undefined &&
+          ((relation.a === subject.id && relation.b === person.id) ||
+            (relation.a === person.id && relation.b === subject.id)),
+      );
+    if (subject && partnered) {
+      const overflow = splitOverflowHousehold(context, subject, person);
+      if (overflow) return { ...effect };
+    }
+    warnContext(context, 'household_full', 'household move skipped because the target is full', {
+      personId: person.id,
+      eventId: binding.eventId,
+    });
+    return undefined;
+  }
   const previous = context.world.households[person.householdId];
   if (previous) previous.memberIds = previous.memberIds.filter((id) => id !== person.id);
   if (!household.memberIds.includes(person.id)) household.memberIds.push(person.id);
@@ -3592,6 +3667,53 @@ function averageTraits(parents: Person[]): Person['traits'] {
   return result;
 }
 
+/**
+ * A full household splits instead of growing without bound. The new household
+ * uses a real shared-tenement (or another home) and moves the parents and the
+ * new child there. This is a simplified housing market, not a new subsystem: it
+ * preserves a concrete address, rent obligation and member list.
+ */
+function splitOverflowHousehold(
+  context: EngineContext,
+  mother: Person,
+  father: Person | undefined,
+): Household | undefined {
+  const world = context.world;
+  const old = world.households[mother.householdId];
+  const preferred =
+    world.places['place-wien-leopoldstadt-tenement'] ??
+    Object.values(world.places).find((place) => place.kind === 'home' && place.capacity);
+  if (!old || !preferred) return undefined;
+  const id = `household-overflow-${world.id}-${Object.keys(world.households).length + 1}`;
+  const members = [mother, ...(father ? [father] : [])].filter(
+    (person, index, list) => list.findIndex((candidate) => candidate.id === person.id) === index,
+  );
+  for (const person of members) {
+    const previous = world.households[person.householdId];
+    if (previous) previous.memberIds = previous.memberIds.filter((entry) => entry !== person.id);
+    person.householdId = id;
+    person.locationId = preferred.id;
+  }
+  const household: Household = {
+    id,
+    residenceId: preferred.id,
+    memberIds: members.map((person) => person.id),
+    guardianIds: members.filter((person) => !person.died).map((person) => person.id),
+    cash: 0,
+    food: 0,
+    debt: 0,
+    rent: 12,
+    obligations: [
+      { id: `${id}-rent`, kind: 'rent', amount: 12 },
+      { id: `${id}-food`, kind: 'food', amount: 12 },
+    ],
+    assets: [],
+    sharingRules: 'pooled',
+  };
+  world.households[id] = household;
+  return household;
+}
+
 function applyBirth(
   context: EngineContext,
   effect: Extract<EventEffect, { type: 'birth' }>,
@@ -3607,8 +3729,27 @@ function applyBirth(
     return undefined;
   }
   const mother = parents.find((parent) => parent.sex === 'female') ?? parents[0]!;
-  const household = context.world.households[mother.householdId];
-  if (!household) return undefined;
+  const originalHousehold = context.world.households[mother.householdId];
+  if (!originalHousehold) return undefined;
+  const father = parents.find((parent) => parent.sex === 'male' && parent.id !== mother.id);
+  let household = originalHousehold;
+  // A birth cannot silently cram another Person into a flat that is already at
+  // its declared capacity. A full household splits into a new rented household
+  // at a real shared tenement; the child is never created without a household.
+  if (
+    livingHouseholdMemberCount(context.world, household.id) >=
+    householdCapacity(context.world, household.id)
+  ) {
+    const overflow = splitOverflowHousehold(context, mother, father);
+    if (!overflow) {
+      warnContext(context, 'birth_household_full', 'birth skipped because the household is full', {
+        eventId: binding.eventId,
+        personId: mother.id,
+      });
+      return undefined;
+    }
+    household = overflow;
+  }
   const childId = `person:${binding.eventId}:child`;
   if (context.world.persons[childId]) return undefined;
   const rng = seededRng(context.world.seed, 'birth', binding.eventId, childId);
@@ -3665,6 +3806,22 @@ function applyBirth(
   };
   context.world.persons[child.id] = child;
   household.memberIds.push(child.id);
+  if (father && father.householdId !== household.id) {
+    const previous = context.world.households[father.householdId];
+    if (
+      previous &&
+      livingHouseholdMemberCount(context.world, household.id) <
+        householdCapacity(context.world, household.id)
+    ) {
+      // A birth is a concrete household change: the father joins the mother's
+      // household when there is room, instead of leaving a real partner in a
+      // different flat and making later family scenes impossible.
+      previous.memberIds = previous.memberIds.filter((id) => id !== father.id);
+      household.memberIds.push(father.id);
+      father.householdId = household.id;
+      father.locationId = household.residenceId;
+    }
+  }
   // The annual statistical pass runs after scenes; keep the postpartum window
   // open until the next annual pass so maternal risk is actually evaluated.
   mother.health.postpartumUntil = addMonths(binding.date, 13);
@@ -3728,6 +3885,69 @@ function settleExtinctHousehold(
   return { heirHouseholdId: target.id, amount };
 }
 
+/**
+ * Keep minors attached to a living adult after a guardian dies. This is not a
+ * new welfare system: it only promotes an existing adult in the same residence
+ * and records a real guardian relation. If no adult exists, the child remains
+ * without a guardian until a later move or institution event; the engine does
+ * not invent a parent.
+ */
+function repairGuardiansAfterDeath(world: WorldState, deceased: Person, date: WorldDate): void {
+  const household = world.households[deceased.householdId];
+  if (!household) return;
+  household.guardianIds = household.guardianIds.filter((id) => {
+    const person = world.persons[id];
+    return Boolean(person && !person.died);
+  });
+  const livingAdults = household.memberIds
+    .map((id) => world.persons[id])
+    .filter(
+      (person): person is Person => Boolean(person) && !person.died && ageAt(person, date) >= 18,
+    )
+    .sort((a, b) => a.id.localeCompare(b.id));
+  if (livingAdults.length === 0) return;
+  for (const memberId of household.memberIds) {
+    const child = world.persons[memberId];
+    if (!child || child.died || ageAt(child, date) >= 18) continue;
+    const hasLivingGuardian = child.guardianIds.some((id) => {
+      const guardian = world.persons[id];
+      return Boolean(guardian && !guardian.died);
+    });
+    if (hasLivingGuardian) continue;
+    const guardian = livingAdults[0]!;
+    child.guardianIds = [
+      ...new Set([
+        ...child.guardianIds.filter((id) => {
+          const person = world.persons[id];
+          return Boolean(person && !person.died);
+        }),
+        guardian.id,
+      ]),
+    ];
+    if (!household.guardianIds.includes(guardian.id)) household.guardianIds.push(guardian.id);
+    if (!guardian.roles.includes('guardian')) guardian.roles.push('guardian');
+    const relationId = `v4-rel-${child.id}-${guardian.id}-guardian`;
+    if (!world.relations[relationId]) {
+      const relation: Relation = {
+        id: relationId,
+        a: child.id,
+        b: guardian.id,
+        kind: 'guardian',
+        trust: 0.5,
+        affection: 0.45,
+        obligation: 0.7,
+        fear: 0,
+        respect: 0.5,
+        start: { ...date },
+        sharedEventIds: [],
+      };
+      world.relations[relationId] = relation;
+      if (!child.relationshipIds.includes(relationId)) child.relationshipIds.push(relationId);
+      if (!guardian.relationshipIds.includes(relationId)) guardian.relationshipIds.push(relationId);
+    }
+  }
+}
+
 function applyDeath(
   context: EngineContext,
   effect: Extract<EventEffect, { type: 'death' }>,
@@ -3761,6 +3981,12 @@ function applyDeath(
   for (const organization of Object.values(context.world.organizations)) {
     organization.memberIds = organization.memberIds.filter((id) => id !== person.id);
   }
+  for (const relation of Object.values(context.world.relations)) {
+    if (relation.end !== undefined) continue;
+    if (relation.a !== person.id && relation.b !== person.id) continue;
+    if (relation.kind === 'partner') relation.end = { ...binding.date };
+  }
+  repairGuardiansAfterDeath(context.world, person, binding.date);
 
   // Death closes projects instead of leaving them open on a corpse.
   for (const projectId of Object.keys(context.world.projects).sort()) {
@@ -3915,6 +4141,49 @@ function applyStatisticalMonth(context: EngineContext, date: WorldDate): void {
     const age = Math.max(0, ageAt(person, date));
     if (person.health.lastIllness) {
       const name = person.health.lastIllness.name;
+      const since = person.health.lastIllness.since;
+      const durationMonths = Math.max(0, monthIndex(date) - monthIndex(since));
+      // Acute illness is not a permanent status. Without a resolution window a
+      // single pneumonia could emit "still not better" every quarter for years.
+      // Resolve at six months: most recover, a minority die, and the log closes.
+      if (durationMonths >= 6) {
+        const resolution = seededRng(
+          world.seed,
+          'illness-resolution',
+          person.id,
+          date.year,
+          date.month,
+        );
+        const deathChance = Math.min(
+          0.35,
+          0.06 + (age >= 60 ? 0.12 : 0) + (1 - person.health.vitality) * 0.2,
+        );
+        if (resolution() >= deathChance) {
+          delete person.health.lastIllness;
+          context.diagnostics.statistical.recoveries += 1;
+          commitEvent(
+            context,
+            {
+              date: { ...date },
+              placeId: person.locationId,
+              subjectId: person.id,
+              participants: [{ personId: person.id, role: 'subject' }],
+              action: 'statistical_recovery',
+              causes: [],
+              effects: [],
+              immediateText: `${person.name}熬过了这场${illnessLabel(name)}，能坐起来喝一点汤，但身体还很虚。`,
+              significance: 0.45,
+              visibility: 'participants',
+              provenance: { kind: 'system', sourceId: 'statistics:recovery' },
+            },
+            { roleIds: { subject: person.id }, fundingOrganizationIds: [] },
+            true,
+          );
+        } else if (commitStatisticalDeath(context, person, illnessCause(name), date)) {
+          context.diagnostics.statistical.deaths += 1;
+        }
+        continue;
+      }
       const rng = seededRng(world.seed, 'illness-month', person.id, date.year, date.month);
       const annualRecovery = recoveryRisk(age, params);
       const monthlyRecovery = 1 - Math.pow(1 - annualRecovery, 1 / 12);
@@ -4346,7 +4615,19 @@ function expireDueInteractions(context: EngineContext): void {
       counterparty.id,
       context.target.year,
     );
-    const accepted = (relation?.trust ?? 0) >= threshold && rng() < chance;
+    const hasActivePartner = (personId: Id): boolean =>
+      relationsFor(world, personId).some(
+        (candidate) =>
+          candidate.kind === 'partner' &&
+          candidate.end === undefined &&
+          candidate.a !== candidate.b,
+      );
+    let accepted = (relation?.trust ?? 0) >= threshold && rng() < chance;
+    if (hasActivePartner(initiator.id) || hasActivePartner(counterparty.id)) {
+      // A pending proposal cannot create a second partnership after the world
+      // has already given one of the parties a partner.
+      accepted = false;
+    }
     const response = accepted ? 'accepted' : 'rejected';
     const updated: Interaction = {
       ...structuredClone(interaction),

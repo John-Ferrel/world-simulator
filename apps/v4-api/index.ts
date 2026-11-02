@@ -38,6 +38,10 @@ import {
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../../packages/v4/content/vienna-family.js';
 import { GENERATED_SCENES } from '../../packages/v4/content/generated/index.js';
 import { VIENNA_LIFE_SCENES } from '../../packages/v4/content/vienna-life.js';
+import {
+  VIENNA_POSTWAR_CHRONICLE,
+  VIENNA_POSTWAR_SCENES,
+} from '../../packages/v4/content/vienna-postwar.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../../packages/v4/content/vienna-developments.js';
 
 const sha = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -264,7 +268,9 @@ export function makeV4Api() {
       peopleNextCursor: page.nextCursor ?? null,
       peopleHasMore: Boolean(page.nextCursor),
       recentEvents: publicEvents.map((event) => projectEvent(event, lookups)),
-      chronicle: VIENNA_1912_CHRONICLE.filter((entry) => entry.date.year <= meta.date.year),
+      chronicle: [...VIENNA_1912_CHRONICLE, ...VIENNA_POSTWAR_CHRONICLE]
+        .filter((entry) => entry.date.year <= meta.date.year)
+        .sort((a, b) => a.date.year - b.date.year || a.date.month - b.date.month),
       macro: meta.macro
         ? {
             version: meta.macro.version,
@@ -318,7 +324,8 @@ export function makeV4Api() {
               .map((member) => ({
                 id: member.id,
                 name: member.name,
-                age: ageAt(member, meta.date),
+                born: member.born,
+                age: ageAtDeathOrNow(member, meta.date),
                 occupation: member.employment?.occupation,
                 relation:
                   member.id === detail.person.id
@@ -479,24 +486,79 @@ const sceneTitles = new Map(
   [
     ...VIENNA_1912_SCENES,
     ...VIENNA_LIFE_SCENES,
+    ...VIENNA_POSTWAR_SCENES,
     ...VIENNA_DEVELOPMENT_SCENES,
     ...VIENNA_FAMILY_RUNTIME_SCENES,
     ...GENERATED_SCENES,
   ].map((scene) => [scene.id, scene.title]),
 );
 
+const ACTION_TITLES: Record<string, string> = {
+  birth: '出生',
+  death: '死亡',
+  statistical_death: '死亡',
+  statistical_infection: '病倒',
+  statistical_recovery: '康复',
+  statistical_illness_worsened: '病情反复',
+  interaction_response: '回应',
+};
+
+/**
+ * Stored causes may come from authored English content, statistical Chinese
+ * causes, or legacy saves. The log should read in the world's language without
+ * rewriting the authoritative event/person record.
+ */
+const DEATH_CAUSE_LABELS: Record<string, string> = {
+  tuberculosis: '肺结核',
+  pneumonia: '肺炎',
+  'childbirth complications': '产后并发症',
+  'postpartum haemorrhage': '产后出血',
+  'infant fever and dehydration': '婴儿发热与脱水',
+  'fever and dehydration': '发热与脱水',
+  violence: '暴力',
+  accident: '意外事故',
+  war: '战争创伤',
+  famine: '饥饿与衰竭',
+  old_age: '老年衰竭',
+  'old age': '老年衰竭',
+  vitality_exhausted: '衰竭',
+  'vitality exhausted': '衰竭',
+  childbirth: '产后感染与出血',
+  infant_diarrhoea: '婴幼儿腹泻与脱水',
+  'acute illness': '急性疾病',
+};
+
+function deathCauseLabel(cause: string | undefined): string | undefined {
+  if (!cause) return undefined;
+  return DEATH_CAUSE_LABELS[cause] ?? cause;
+}
+
+function ageAtDate(
+  born: { year: number; month: number },
+  date: { year: number; month: number },
+): number {
+  const age = date.year - born.year - (date.month < born.month ? 1 : 0);
+  return Math.max(0, age);
+}
+
+function ageAtDeathOrNow(person: Pick<Person, 'born' | 'died'>, date: WorldState['date']): number {
+  return ageAtDate(person.born, person.died ?? date);
+}
+
 function projectEvent(event: EventFact, lookups: V4EventLookups) {
   const sceneId = event.sceneId ? lookups.sceneIdByInstance[event.sceneId] : undefined;
+  const sceneTitle = sceneId ? sceneTitles.get(sceneId) : undefined;
+  const title =
+    sceneTitle ??
+    event.title ??
+    ACTION_TITLES[event.action] ??
+    (event.provenance.kind === 'birth' ? '出生' : undefined) ??
+    (event.provenance.kind === 'scene' || event.provenance.kind === 'system'
+      ? '生活记录'
+      : undefined);
   return {
     ...event,
-    title:
-      sceneId && sceneTitles.get(sceneId)
-        ? sceneTitles.get(sceneId)
-        : event.provenance.kind === 'birth'
-          ? '出生'
-          : event.action === 'death'
-            ? '死亡'
-            : undefined,
+    title,
     placeName: event.placeId ? lookups.placeNames[event.placeId] : undefined,
     people: event.participants.map((participant) => ({
       id: participant.personId,
@@ -513,7 +575,9 @@ function publicPerson(
   placeName?: string,
 ) {
   const employment = person.employment;
-  const age = ageAt(person, date);
+  // Dead people keep the age at which they died. The world clock must not turn
+  // a 1927 death into a 129-year-old in 1980.
+  const age = ageAtDeathOrNow(person, date);
   const occupation =
     employment?.occupation ??
     (age < 6
@@ -531,7 +595,7 @@ function publicPerson(
     ownedByAnother: Boolean(ownerId && person.ownerId && person.ownerId !== ownerId),
     born: person.born,
     died: person.died,
-    deathCause: person.deathCause,
+    deathCause: deathCauseLabel(person.deathCause),
     age,
     locationId: person.locationId,
     locationName: placeName ?? person.placeName,

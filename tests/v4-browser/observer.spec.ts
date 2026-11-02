@@ -32,9 +32,17 @@ test('register, give birth, read a concrete log and inspect the map', async ({ p
   await expect(page.locator('.log-pane')).toContainText('出生');
   await expect(page.locator('.topbar')).toContainText(username);
 
+  await page.locator('.person-switch select').selectOption('person-anton-huber');
+  await expect(page.locator('.person-heading h2')).toHaveText('Anton Huber');
+  await expect(page.locator('.person-sub')).toContainText('享年');
+  await expect(page.locator('.person-dates')).toContainText('1910');
+
   await page.locator('.person-switch select').selectOption('person-anna-bauer');
   await expect(page.locator('.person-heading h2')).toHaveText('Anna Bauer');
+  await expect(page.locator('.log-entry').first()).toBeVisible({ timeout: 30000 });
   await expect(page.locator('.log-pane')).toContainText(/Anna|Bauer|印刷|学校|房租/);
+  await expect(page.locator('.log-title', { hasText: 'None' })).toHaveCount(0);
+  await expect(page.locator('.log-title', { hasText: /^[a-z][a-z0-9_]*$/ })).toHaveCount(0);
 
   const pins = page.locator('.map-pin');
   await expect(pins.first()).toBeVisible();

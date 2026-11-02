@@ -449,6 +449,132 @@ export function validateBirthContract(value: unknown): BirthContract {
   return parsed.data;
 }
 
+/**
+ * Deterministic fallback for environments without a working model. It is not a
+ * second interpretation system: it only recognizes a few explicit keywords and
+ * emits the same bounded, validated contract shape as the model. If no keyword
+ * matches, the contract is deliberately empty and the world keeps running.
+ */
+export function fallbackBirthContract(input: BirthContractInput): BirthContract {
+  const wish = input.wish;
+  const rules: Array<{
+    capability: Exclude<BirthCapability, 'none'>;
+    focus: BirthFocus;
+    pattern: RegExp;
+    tags: [BirthEventTag, ...BirthEventTag[]];
+    cost: CostKind;
+    skill?: keyof BirthSkillDeltas;
+    reading: string;
+    goal: string;
+  }> = [
+    {
+      capability: 'literacy',
+      focus: 'education',
+      pattern: /识字|读书|写字|读信|看书|literacy|read|write|book/i,
+      tags: ['education', 'school'],
+      cost: 'attention_cost',
+      skill: 'literacy',
+      reading:
+        '模型不可用时，按识字倾向解释：她更容易接触字母、课本和需要阅读的场合，但这只是机会。',
+      goal: '在能接触到文字时学会读懂一张纸。',
+    },
+    {
+      capability: 'numeracy',
+      focus: 'work',
+      pattern: /算术|算账|数字|记账|钱数|number|math|account|count/i,
+      tags: ['work', 'market'],
+      cost: 'attention_cost',
+      skill: 'numeracy',
+      reading:
+        '模型不可用时，按数字倾向解释：她更容易理解工钱、账目和数量，但仍受学校与工作机会限制。',
+      goal: '在工钱和账目上少被人糊弄。',
+    },
+    {
+      capability: 'social_insight',
+      focus: 'family',
+      pattern: /看透|洞察|说服|人心|社交|交朋友|social|insight|persuad|friend/i,
+      tags: ['social', 'family'],
+      cost: 'attention_cost',
+      skill: 'social',
+      reading:
+        '模型不可用时，按社会洞察倾向解释：她更容易读懂别人的态度，但关系仍要由真实接触建立。',
+      goal: '在家庭和邻里之间看懂别人没有说出口的话。',
+    },
+    {
+      capability: 'craft_affinity',
+      focus: 'craft',
+      pattern: /手艺|木工|机械|印刷|修理|craft|build|repair|machine/i,
+      tags: ['craft', 'work', 'apprentice'],
+      cost: 'vitality_cost',
+      skill: 'craft',
+      reading:
+        '模型不可用时，按手艺倾向解释：她更容易在作坊里学会工具和材料，但练习会消耗身体和时间。',
+      goal: '在作坊里学会一门能换饭钱的手艺。',
+    },
+    {
+      capability: 'frail_body',
+      focus: 'health',
+      pattern: /虚弱|体弱|病|残疾|早产|frail|sick|weak|illness|fragile/i,
+      tags: ['health', 'infancy', 'care'],
+      cost: 'vitality_cost',
+      reading:
+        '模型不可用时，按虚弱体质解释：她的身体更容易受伤和生病，需要更多照护，但这不是命运判决。',
+      goal: '在身体允许的范围内找到能长期做下去的事。',
+    },
+  ];
+  const match = rules.find((rule) => rule.pattern.test(wish));
+  if (!match) {
+    return validateBirthContract({
+      interpretation:
+        '模型不可用时，出生愿望已保存，但没有匹配到可执行的能力倾向；人生仍由世界经历决定。',
+      privateGoal: '在现有家庭与时代条件下生活下去。',
+      focus: 'none',
+      traitDeltas: {},
+      skillDeltas: {},
+      capability: 'none',
+      taboo: null,
+      conditions: [],
+      limits: [],
+      costs: [],
+    });
+  }
+  const profile = CAPABILITY_PROFILES[match.capability];
+  const tags = [...profile.tags];
+  return validateBirthContract({
+    interpretation: match.reading,
+    privateGoal: match.goal,
+    focus: match.focus,
+    traitDeltas: {},
+    skillDeltas: match.skill ? { [match.skill]: 0.08 } : {},
+    capability: match.capability,
+    taboo: null,
+    conditions: [
+      {
+        kind: 'eligibility',
+        text: `只有在与 ${match.tags.join(' / ')} 有关的真实生活场合，这条倾向才可能被触发。`,
+        tags: match.tags,
+        maxEffect: 0.1,
+      },
+    ],
+    limits: [
+      {
+        kind: 'ceiling',
+        text: '它只提高相关场合出现或被认真对待的机会，不保证成功，也不改写已经发生的事实。',
+        tags: match.tags,
+        maxEffect: 0.15,
+      },
+    ],
+    costs: [
+      {
+        kind: match.cost,
+        text: '维持这条倾向需要持续付出注意力、时间或身体代价。',
+        tags: match.tags,
+        maxEffect: 0.08,
+      },
+    ],
+  });
+}
+
 /** Parse model text (optionally wrapped in a JSON code fence) and validate it. */
 export function parseBirthContract(text: string): BirthContract {
   let value: unknown;

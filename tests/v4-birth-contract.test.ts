@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   birthContractMessages,
+  fallbackBirthContract,
   parseBirthContract,
   validateBirthContract,
   type BirthContract,
@@ -202,5 +203,30 @@ describe('Birth Contract 2.0 schema', () => {
     );
     expect(contract.traitDeltas).toEqual({ openness: 0.05 });
     expect(contract.skillDeltas).toEqual({ literacy: 0.1 });
+  });
+
+  it('builds a bounded deterministic fallback when the model is unavailable', () => {
+    const input = {
+      name: 'Klara',
+      sex: 'female',
+      health: 0.7,
+      wish: '我希望她识字，能自己读懂药瓶上的字。',
+      mode: 'ordinary' as const,
+      date: { year: 1912, month: 1 },
+      placeName: 'Vienna',
+      household: { members: [{ name: 'Katharina', age: 33, relation: '母亲' }] },
+    };
+    const contract = fallbackBirthContract(input);
+    expect(contract.capability).toBe('literacy');
+    expect(contract.focus).toBe('education');
+    expect(contract.conditions.length).toBeGreaterThan(0);
+    expect(contract.limits.length).toBeGreaterThan(0);
+    expect(contract.costs.length).toBeGreaterThan(0);
+    expect(contract.skillDeltas.literacy).toBeGreaterThan(0);
+    expect(validateBirthContract(contract).capability).toBe('literacy');
+
+    const empty = fallbackBirthContract({ ...input, wish: '我希望她平安。' });
+    expect(empty.capability).toBe('none');
+    expect(empty.conditions).toHaveLength(0);
   });
 });

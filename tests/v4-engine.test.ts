@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { advanceV4Year, v4EventRate, type V4AdvanceOptions } from '../packages/v4/engine.js';
 import {
   assertWorldV4,
+  type EventFact,
   type Interaction,
   type Organization,
   type Person,
@@ -1795,5 +1796,126 @@ describe('v4 annual engine', () => {
       (candidate) => candidate.a === 'person:anna' && candidate.b === 'person:josef',
     );
     expect(relation?.trust).toBeCloseTo(0.13, 5);
+  });
+
+  it('promotes a living same-household adult when a guardian dies', () => {
+    const world = vienna();
+    world.persons['person:maria'] = {
+      ...structuredClone(world.persons['person:josef']!),
+      id: 'person:maria',
+      name: 'Maria Huber',
+      sex: 'female',
+      born: { year: 1882, month: 2 },
+      parentIds: [],
+      guardianIds: [],
+      roles: [],
+      employment: undefined,
+    };
+    world.households['household:huber']!.memberIds.push('person:maria');
+    world.relations['rel:josef:maria'] = {
+      id: 'rel:josef:maria',
+      a: 'person:josef',
+      b: 'person:maria',
+      kind: 'partner',
+      trust: 0.6,
+      affection: 0.6,
+      obligation: 0.5,
+      fear: 0,
+      respect: 0.5,
+      start: { year: 1910, month: 1 },
+      sharedEventIds: [],
+    };
+    world.persons['person:josef']!.relationshipIds.push('rel:josef:maria');
+    world.persons['person:maria']!.relationshipIds.push('rel:josef:maria');
+    const deathScene = scene({
+      id: 'test:guardian-death',
+      stage: 'adulthood',
+      ageWindow: { min: 20, max: 70 },
+      rate: 1,
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 20, maxAge: 70 }],
+      conditions: [{ kind: 'age', min: 20, max: 70 }],
+      outcomes: [
+        {
+          id: 'fatal',
+          weight: 1,
+          immediateText: 'Josef died.',
+          effects: [
+            { type: 'death', personId: 'person:josef', cause: 'pneumonia', reason: 'test' },
+          ],
+        },
+      ],
+    });
+    const result = advanceV4Year(world, [deathScene], {
+      eventRuntime: true,
+      statisticalModel: false,
+      economy: { enabled: false },
+      maxScenesPerPerson: 1,
+    });
+    const anna = result.world.persons['person:anna']!;
+    const household = result.world.households['household:huber']!;
+    expect(anna.guardianIds).toContain('person:maria');
+    expect(household.guardianIds).not.toContain('person:josef');
+    expect(household.guardianIds).toContain('person:maria');
+    expect(
+      Object.values(result.world.relations).some(
+        (relation) =>
+          relation.kind === 'guardian' &&
+          ((relation.a === 'person:anna' && relation.b === 'person:maria') ||
+            (relation.a === 'person:maria' && relation.b === 'person:anna')),
+      ),
+    ).toBe(true);
+    expect(result.world.relations['rel:josef:maria']!.end).toMatchObject({ year: 1913 });
+  });
+
+  it('does not let an injury-recovery scene schedule itself forever', () => {
+    const world = vienna();
+    const cut = scene({
+      id: 'test:cut',
+      stage: 'adulthood',
+      ageWindow: { min: 18, max: 60 },
+      oncePerPerson: true,
+      rate: 1,
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 60 }],
+      conditions: [{ kind: 'age', min: 18, max: 60 }],
+      outcomes: [
+        {
+          id: 'cut-hand',
+          weight: 1,
+          immediateText: 'A hand was cut.',
+          effects: [{ type: 'health', personId: '$subject', amount: -0.1, reason: 'cut' }],
+        },
+      ],
+    });
+    const recovery = scene({
+      id: 'test:recovery-loop',
+      stage: 'adulthood',
+      ageWindow: { min: 18, max: 60 },
+      rate: 0,
+      triggerTags: ['injury'],
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 60 }],
+      conditions: [{ kind: 'age', min: 18, max: 60 }],
+      outcomes: [
+        {
+          id: 'wound-worse',
+          weight: 1,
+          immediateText: 'The wound worsened.',
+          effects: [{ type: 'health', personId: '$subject', amount: -0.05, reason: 'infection' }],
+        },
+      ],
+    });
+    let current = world;
+    const events: EventFact[] = [];
+    for (let year = 0; year < 4; year += 1) {
+      const result = advanceV4Year(current, [cut, recovery], {
+        eventRuntime: true,
+        statisticalModel: false,
+        economy: { enabled: false },
+        maxScenesPerPerson: 4,
+      });
+      current = result.world;
+      events.push(...result.events);
+    }
+    const recoveryEvents = events.filter((event) => event.action.startsWith('test:recovery-loop/'));
+    expect(recoveryEvents).toHaveLength(1);
   });
 });

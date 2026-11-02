@@ -77,21 +77,52 @@ export function createV4Birth(
 ): { world: WorldState; childId: string; event: EventFact } {
   if (world.status !== 'running') throw new Error('世界不在运行中');
   const draft = structuredClone(world);
-  const family = Object.values(draft.households)
-    .filter((household) => {
+  const living = (household: (typeof draft.households)[string]): Person[] =>
+    household.memberIds
+      .map((id) => draft.persons[id])
+      .filter((person): person is Person => Boolean(person) && !person.died);
+  const candidates = Object.values(draft.households)
+    .map((household) => {
+      const place = draft.places[household.residenceId];
+      if (!place) return undefined;
       const adults = household.guardianIds
         .map((id) => draft.persons[id])
         .filter(
           (person): person is Person =>
             Boolean(person) && !person.died && ageAt(person, draft.date) >= 18,
         );
-      return adults.length > 0 && Boolean(draft.places[household.residenceId]);
+      if (adults.length === 0) return undefined;
+      const residents = living(household);
+      const capacity = Math.max(12, Math.min(16, Math.ceil((place.capacity ?? 4) * 2)));
+      if (residents.length >= capacity) return undefined;
+      const mother =
+        adults.find((person) => person.sex === 'female' && ageAt(person, draft.date) <= 45) ??
+        adults.find((person) => person.sex === 'female') ??
+        adults[0]!;
+      const father = adults.find(
+        (person) =>
+          person.sex === 'male' && person.id !== mother.id && ageAt(person, draft.date) <= 55,
+      );
+      const motherAge = ageAt(mother, draft.date);
+      // A child should enter a living family, not the alphabetically first
+      // household. Prefer a mother of childbearing age, then a father, then a
+      // household with room and existing children. The sort is deterministic.
+      const score =
+        (mother.sex === 'female' ? 0 : 10) +
+        (motherAge >= 18 && motherAge <= 42 ? 0 : 2) +
+        (father ? 0 : 1) +
+        residents.length * 0.05 +
+        (residents.some((person) => ageAt(person, draft.date) < 18) ? 0 : 0.2);
+      return { family: household, mother, father, residents, score };
     })
-    .sort((a, b) => a.id.localeCompare(b.id))[0];
-  if (!family) throw new Error('当前没有能够接纳新生儿的真实家庭');
-  const guardians = family.guardianIds
-    .map((id) => draft.persons[id])
-    .filter((person): person is Person => Boolean(person) && !person.died);
+    .filter((candidate): candidate is NonNullable<typeof candidate> => Boolean(candidate))
+    .sort((a, b) => a.score - b.score || a.family.id.localeCompare(b.family.id));
+  const selected = candidates[0];
+  if (!selected) throw new Error('当前没有能够接纳新生儿的真实家庭');
+  const family = selected.family;
+  const guardians = [selected.mother, selected.father]
+    .filter((person): person is Person => Boolean(person))
+    .filter((person, index, list) => list.findIndex((other) => other.id === person.id) === index);
   if (guardians.length === 0) throw new Error('真实家庭没有在世的监护人');
   const place = draft.places[family.residenceId]!;
   const childId = `person-${requestId.replace(/[^a-zA-Z0-9_-]/g, '-').slice(-80)}`;
@@ -157,7 +188,7 @@ export function createV4Birth(
     effects: [],
     immediateText: `${child.name}在${place.name}出生。${
       guardians.find((person) => person.sex === 'female')?.name ?? guardians[0]!.name
-    }在生产后抱着孩子；这间住处现在住了${family.memberIds.length}口人。`,
+    }在生产后抱着孩子；这间住处现在住了${living(family).length}口人。`,
     significance: 0.95,
     visibility: 'public',
     provenance: { kind: 'birth', sourceId: requestId },

@@ -10,6 +10,7 @@ import type { WorldState } from './domain.js';
 import { GENERATED_PACKS } from './content/generated/index.js';
 import { VIENNA_1912_SCENES } from './content/vienna-1912.js';
 import { VIENNA_LIFE_SCENES } from './content/vienna-life.js';
+import { VIENNA_POSTWAR_SCENES } from './content/vienna-postwar.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from './content/vienna-family.js';
 import { PHASE4_FAMILY_BRIEFS } from './content-author/phase4-briefs.js';
 
@@ -24,6 +25,7 @@ export function knownMacroFamilyIds(): string[] {
   for (const scene of [
     ...VIENNA_1912_SCENES,
     ...VIENNA_LIFE_SCENES,
+    ...VIENNA_POSTWAR_SCENES,
     ...VIENNA_FAMILY_RUNTIME_SCENES,
   ]) {
     ids.add(scene.familyId ?? scene.id);

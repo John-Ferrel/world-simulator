@@ -23,7 +23,7 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     title: '订婚与搬进同一间住处',
     stage: 'adulthood',
     ageWindow: { min: 18, max: 35 },
-    subjectProvenance: ['birth', 'initial'],
+    subjectProvenance: ['birth', 'initial', 'materialized_population'],
     cooldownYears: 2,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 35, sex: 'female' },
@@ -112,7 +112,7 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     title: '男人的婚事',
     stage: 'adulthood',
     ageWindow: { min: 18, max: 40 },
-    subjectProvenance: ['birth', 'initial'],
+    subjectProvenance: ['birth', 'initial', 'materialized_population'],
     oncePerPerson: true,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 60, sex: 'male' },
@@ -188,9 +188,9 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     title: '产床与借来的摇篮',
     stage: 'adulthood',
     ageWindow: { min: 19, max: 40 },
-    subjectProvenance: ['birth', 'initial'],
-    rate: 1,
-    cooldownYears: 1,
+    subjectProvenance: ['birth', 'initial', 'materialized_population'],
+    rate: 0.25,
+    cooldownYears: 3,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 19, maxAge: 40, sex: 'female' },
       {
@@ -200,7 +200,6 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
         minAge: 18,
         maxAge: 65,
         sex: 'male',
-        sameHousehold: true,
       },
       {
         key: 'midwife',
@@ -215,6 +214,7 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
       { kind: 'age', min: 19, max: 40 },
       { kind: 'stage', in: ['adulthood'] },
       { kind: 'hasRelation', relationKind: 'partner', minTrust: 0.05 },
+      { kind: 'householdSize', max: 12 },
     ],
     outcomes: [
       {
@@ -305,8 +305,8 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     title: '产房外的男人',
     stage: 'adulthood',
     ageWindow: { min: 19, max: 45 },
-    subjectProvenance: ['birth', 'initial'],
-    rate: 0.12,
+    subjectProvenance: ['birth', 'initial', 'materialized_population'],
+    rate: 0.08,
     cooldownYears: 3,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 19, maxAge: 45, sex: 'male' },
@@ -324,6 +324,7 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
       { kind: 'age', min: 19, max: 45 },
       { kind: 'stage', in: ['adulthood'] },
       { kind: 'hasRelation', relationKind: 'partner', minTrust: 0.05 },
+      { kind: 'householdSize', max: 12 },
     ],
     outcomes: [
       {
@@ -405,9 +406,9 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     title: '提出共同生活',
     stage: 'adulthood',
     ageWindow: { min: 18, max: 35 },
-    subjectProvenance: ['birth', 'initial'],
-    rate: 0.35,
-    cooldownYears: 2,
+    subjectProvenance: ['birth', 'initial', 'materialized_population'],
+    rate: 0.55,
+    cooldownYears: 3,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 35 },
       { key: 'partner', kind: 'partner', required: true, minAge: 18, maxAge: 45, sex: 'opposite' },
@@ -415,7 +416,9 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     conditions: [
       { kind: 'age', min: 18, max: 35 },
       { kind: 'stage', in: ['adulthood'] },
-      { kind: 'notHasRelation', relationKind: 'partner', sameHousehold: true },
+      // Any living partner blocks courtship; a separated or non-cohabiting
+      // partner is still a relationship, not an invitation to shop for a new one.
+      { kind: 'notHasRelation', relationKind: 'partner' },
       { kind: 'health', min: 0.2 },
     ],
     outcomes: [
@@ -520,9 +523,13 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     title: '共同生活走到尽头',
     stage: 'adulthood',
     ageWindow: { min: 20, max: 55 },
-    subjectProvenance: ['birth', 'initial'],
-    rate: 0.08,
-    cooldownYears: 5,
+    subjectProvenance: ['birth', 'initial', 'materialized_population'],
+    rate: 0.12,
+    cooldownYears: 10,
+    // One separation per person is enough for this slice. Without this, two
+    // spouses can alternate as subjects and dissolve every new household within
+    // a year or two, preventing any stable birth window.
+    oncePerPerson: true,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 20, maxAge: 55 },
       {
@@ -628,9 +635,9 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     title: '两个女人的共同生活',
     stage: 'adulthood',
     ageWindow: { min: 18, max: 40 },
-    subjectProvenance: ['birth', 'initial'],
+    subjectProvenance: ['birth', 'initial', 'materialized_population'],
     rate: 0.12,
-    cooldownYears: 3,
+    cooldownYears: 4,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 40, sex: 'female' },
       { key: 'partner', kind: 'partner', required: true, minAge: 18, maxAge: 40, sex: 'female' },
@@ -638,7 +645,7 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     conditions: [
       { kind: 'age', min: 18, max: 40 },
       { kind: 'stage', in: ['adulthood'] },
-      { kind: 'notHasRelation', relationKind: 'partner', sameHousehold: true },
+      { kind: 'notHasRelation', relationKind: 'partner' },
     ],
     outcomes: [
       {
@@ -711,9 +718,9 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     title: '不能见光的同住',
     stage: 'adulthood',
     ageWindow: { min: 18, max: 45 },
-    subjectProvenance: ['birth', 'initial'],
+    subjectProvenance: ['birth', 'initial', 'materialized_population'],
     rate: 0.1,
-    cooldownYears: 3,
+    cooldownYears: 4,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 45, sex: 'male' },
       { key: 'partner', kind: 'partner', required: true, minAge: 18, maxAge: 45, sex: 'male' },
@@ -721,7 +728,7 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     conditions: [
       { kind: 'age', min: 18, max: 45 },
       { kind: 'stage', in: ['adulthood'] },
-      { kind: 'notHasRelation', relationKind: 'partner', sameHousehold: true },
+      { kind: 'notHasRelation', relationKind: 'partner' },
     ],
     outcomes: [
       {

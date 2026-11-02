@@ -1933,6 +1933,9 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
     ageWindow: { min: 18, max: 60 },
     subjectProvenance: ['birth', 'initial'],
     triggerTags: ['injury'],
+    // A person can be injured more than once, but the same recovery vignette
+    // should not appear every single year of a long working life.
+    cooldownYears: 3,
     rate: 0,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 60 },

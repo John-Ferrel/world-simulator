@@ -573,4 +573,29 @@ describe('v4 statistical engine', () => {
     state = advanceDevelopmentLifecycle(w, state, { year: 1913, month: 1 });
     expect(state.developments!['development:test']!.status).toBe('ended');
   });
+
+  it('closes a persistent acute illness instead of logging worsening forever', () => {
+    const w = world();
+    w.macro = defaultMacroState(w);
+    w.persons['person:test']!.born = { year: 1872, month: 1 };
+    w.persons['person:test']!.health.vitality = 0.8;
+    w.persons['person:test']!.health.lastIllness = {
+      name: 'pneumonia',
+      since: { year: 1912, month: 1 },
+      severity: 0.5,
+    };
+    const result = advanceV4Year(w, [], {
+      eventRuntime: false,
+      economy: { enabled: false },
+      maxScenesPerPerson: 0,
+    });
+    const personal = result.events.filter((event) => event.subjectId === 'person:test');
+    const worsening = personal.filter((event) => event.action === 'statistical_illness_worsened');
+    const resolved = personal.filter(
+      (event) => event.action === 'statistical_recovery' || event.action === 'statistical_death',
+    );
+    expect(worsening.length).toBeLessThanOrEqual(2);
+    expect(resolved.length).toBe(1);
+    expect(result.world.persons['person:test']!.health.lastIllness).toBeUndefined();
+  });
 });

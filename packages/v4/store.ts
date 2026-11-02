@@ -3,7 +3,7 @@ import { migrate as migrateBase, pool } from '../storage/index.js';
 import type { EventFact, Household, Person, Place, Relation, WorldState } from './domain.js';
 import { defaultMacroState, type MacroState } from './macro.js';
 
-const V4_MIGRATION_VERSION = 6;
+const V4_MIGRATION_VERSION = 7;
 
 /**
  * Apply the v4 schema. The schema is additive and independent of the archived
@@ -29,6 +29,7 @@ export async function migrateV4(): Promise<void> {
       4: '004_v4_birth_contracts.sql',
       5: '005_v4_macro.sql',
       6: '006_v4_runtime_content.sql',
+      7: '007_v4_macro_world_year.sql',
     };
     for (let version = Math.max(3, latest + 1); version <= V4_MIGRATION_VERSION; version += 1) {
       const file = migrationFiles[version];
@@ -654,6 +655,18 @@ export async function v4PersonDetail(
     v4EventLookups(worldId, [...events, ...worldEvents]),
     v4PlacesByIds(worldId, [...placeIds]),
   ]);
+  // Events are assigned months when the year is settled; a later-resolved death
+  // can therefore be dated earlier than an already-committed ordinary event.
+  // Keep the canonical facts untouched but never show a dead person an event
+  // dated after their death.
+  const atOrBeforeDeath = (event: EventFact): boolean => {
+    if (!person.died) return true;
+    return (
+      event.date.year < person.died.year ||
+      (event.date.year === person.died.year && event.date.month <= person.died.month)
+    );
+  };
+  const visibleEvents = events.filter(atOrBeforeDeath);
   const placeById = Object.fromEntries(places.map((place) => [place.id, place]));
   return {
     person,
@@ -661,7 +674,7 @@ export async function v4PersonDetail(
     place: placeById[person.locationId],
     residence: household ? placeById[household.residenceId] : undefined,
     relations,
-    events,
+    events: visibleEvents,
     worldEvents,
     people,
     lookups,

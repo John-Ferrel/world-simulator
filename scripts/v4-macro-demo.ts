@@ -11,6 +11,7 @@ import { pool } from '../packages/storage/index.js';
 import { advanceV4Year } from '../packages/v4/engine.js';
 import { VIENNA_1912_SEED, VIENNA_1912_SCENES } from '../packages/v4/content/vienna-1912.js';
 import { VIENNA_LIFE_SCENES } from '../packages/v4/content/vienna-life.js';
+import { VIENNA_POSTWAR_SCENES } from '../packages/v4/content/vienna-postwar.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../packages/v4/content/vienna-developments.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
 import { GENERATED_SCENES } from '../packages/v4/content/generated/index.js';
@@ -76,6 +77,7 @@ try {
   const scenes = [
     ...VIENNA_1912_SCENES,
     ...VIENNA_LIFE_SCENES,
+    ...VIENNA_POSTWAR_SCENES,
     ...VIENNA_DEVELOPMENT_SCENES,
     ...VIENNA_FAMILY_RUNTIME_SCENES,
     ...GENERATED_SCENES,
