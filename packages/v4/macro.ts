@@ -1,8 +1,10 @@
 import { z } from 'zod';
+import { applyHistoricalMoves, ensureHistoricalProcess, type HistoricalMove } from './history.js';
 import {
   addMonths,
   ageAt,
   type Person,
+  type HistoricalProcess,
   type SceneStage,
   type WorldDate,
   type WorldState,
@@ -139,6 +141,7 @@ export type MacroHistoryEntry = {
   proposalId: string;
   parameterChanges: Partial<Record<MacroParamKey, number>>;
   eventPoolChanges: number;
+  historicalMoves?: number;
   unmappedDevelopments: string[];
   effectiveFrom: WorldDate;
   durationMonths: number;
@@ -174,6 +177,8 @@ export type WorldDevelopment = {
   };
   lastAssessed?: WorldDate;
   inactiveYears?: number;
+  /** Optional living-history state. The development ID is the process ID. */
+  historical?: HistoricalProcess;
   source: string;
 };
 
@@ -241,6 +246,8 @@ export type MacroProposal = {
   developments: MacroDevelopment[];
   parameterChanges: Partial<Record<MacroParamKey, number>>;
   eventPoolChanges: EventPoolChange[];
+  /** Bounded intents about existing historical processes; never a phase command. */
+  historicalMoves?: HistoricalMove[];
 };
 
 export type MacroSnapshot = {
@@ -276,6 +283,26 @@ export type MacroSnapshot = {
     severity: number;
     status: DevelopmentStatus;
     organizationId?: string;
+    historical?: {
+      kind: string;
+      phase: string;
+      phaseStarted: WorldDate;
+      metrics: Record<string, number>;
+      objectives: string[];
+      organizations: { id: string; name?: string; roles: string[] }[];
+      participants: { id: string; name: string; roles: string[]; influence: number }[];
+      recentHistory: { date: WorldDate; phase: string; note: string }[];
+      outcome?: string;
+    };
+  }[];
+  historicalPeople: {
+    id: string;
+    name: string;
+    historicalId: string;
+    occupation: string;
+    publicRole: string;
+    locationId: string;
+    roles: string[];
   }[];
   availableFamilies: string[];
 };
@@ -351,6 +378,17 @@ const MacroProposalSchema = z.object({
   developments: z.array(MacroDevelopmentSchema).max(8),
   parameterChanges: z.record(z.string(), z.number()).default({}),
   eventPoolChanges: z.array(EventPoolChangeSchema).max(16).default([]),
+  historicalMoves: z
+    .array(
+      z.object({
+        processId: z.string().trim().min(1).max(160),
+        intent: z.enum(['support', 'oppose', 'escalate', 'deescalate']),
+        magnitude: z.number().finite().min(0).max(0.2),
+        note: z.string().trim().max(240).default(''),
+      }),
+    )
+    .max(6)
+    .default([]),
 });
 
 export class MacroContractError extends Error {
@@ -654,10 +692,11 @@ export function validateMacroProposal(
   if (
     Object.keys(changes).length === 0 &&
     proposal.eventPoolChanges.length === 0 &&
+    (proposal.historicalMoves?.length ?? 0) === 0 &&
     !hasExecutableDevelopment &&
     !proposal.maintainStatus
   ) {
-    throw new MacroContractError('宏观提案没有可执行的参数、事件池或发展对象');
+    throw new MacroContractError('宏观提案没有可执行的参数、事件池、历史进程或发展对象');
   }
   const knownTypes = new Set([
     'war',
@@ -692,9 +731,14 @@ export function validateMacroProposal(
     }
     return true;
   });
+  const validHistoricalMoves = (proposal.historicalMoves ?? []).filter((move) => {
+    const development = context.state.developments?.[move.processId];
+    return Boolean(development?.historical);
+  });
   if (
     Object.keys(changes).length === 0 &&
     validEventPoolChanges.length === 0 &&
+    validHistoricalMoves.length === 0 &&
     !normalizedDevelopments.some(
       (development) => development.organization || development.eventFamilyIds.length > 0,
     ) &&
@@ -707,6 +751,7 @@ export function validateMacroProposal(
     developments: normalizedDevelopments,
     parameterChanges: changes,
     eventPoolChanges: validEventPoolChanges,
+    historicalMoves: validHistoricalMoves,
   };
 }
 
@@ -824,7 +869,7 @@ export function applyMacroProposal(
       return;
     const id = `development:${proposalId}:${index}`;
     const end = addMonths(effectiveFrom, proposal.durationMonths);
-    next.developments![id] = {
+    const created: WorldDevelopment = {
       id,
       type: development.type,
       regionId: proposal.regionId,
@@ -837,7 +882,12 @@ export function applyMacroProposal(
       organization: development.organization,
       source: `macro-proposal:${proposalId}`,
     };
+    created.historical = ensureHistoricalProcess(created, date);
+    next.developments![id] = created;
   });
+  const withMoves = applyHistoricalMoves(next, proposal.historicalMoves ?? [], date);
+  next.developments = withMoves.developments;
+  next.updatedAt = withMoves.updatedAt;
   const mappedDevelopmentTypes = new Set([
     'war',
     'peace',
@@ -863,6 +913,7 @@ export function applyMacroProposal(
     proposalId,
     parameterChanges: { ...proposal.parameterChanges },
     eventPoolChanges: proposal.eventPoolChanges.length,
+    historicalMoves: proposal.historicalMoves?.length ?? 0,
     unmappedDevelopments,
     effectiveFrom,
     durationMonths: proposal.durationMonths,
@@ -872,6 +923,13 @@ export function applyMacroProposal(
   next.updatedAt = cloneDate(date);
   next.version += 1;
   return next;
+}
+
+function dateWithinIdentity(from: WorldDate, to: WorldDate | undefined, date: WorldDate): boolean {
+  const month = date.year * 12 + date.month;
+  const start = from.year * 12 + from.month;
+  const end = to ? to.year * 12 + to.month : Number.POSITIVE_INFINITY;
+  return month >= start && month <= end;
 }
 
 export function macroSnapshot(
@@ -912,14 +970,66 @@ export function macroSnapshot(
       enabled: policy.enabled,
       weightMultiplier: policy.weightMultiplier,
     })),
-    developments: Object.values(state.developments ?? {}).map((development) => ({
-      id: development.id,
-      type: development.type,
-      description: development.description,
-      severity: development.severity,
-      status: development.status,
-      organizationId: development.organizationId,
-    })),
+    developments: Object.values(state.developments ?? {}).map((development) => {
+      const h = development.historical;
+      return {
+        id: development.id,
+        type: development.type,
+        description: development.description,
+        severity: development.severity,
+        status: development.status,
+        organizationId: development.organizationId,
+        ...(h
+          ? {
+              historical: {
+                kind: h.kind,
+                phase: h.phase,
+                phaseStarted: h.phaseStarted,
+                metrics: { ...h.metrics },
+                objectives: h.objectives.slice(0, 6),
+                organizations: Object.entries(h.organizationRoles).map(([id, roles]) => ({
+                  id,
+                  name: world.organizations[id]?.name,
+                  roles,
+                })),
+                participants: Object.entries(h.participants)
+                  .sort((a, b) => b[1].influence - a[1].influence)
+                  .slice(0, 8)
+                  .map(([id, entry]) => ({
+                    id,
+                    name: world.persons[id]?.name ?? '已故参与者',
+                    roles: entry.roles,
+                    influence: entry.influence,
+                  })),
+                recentHistory: h.history.slice(-4),
+                outcome: h.outcome,
+              },
+            }
+          : {}),
+      };
+    }),
+    historicalPeople: Object.values(world.persons)
+      .filter(
+        (person) =>
+          !person.died &&
+          person.historicalIdentity &&
+          dateWithinIdentity(
+            person.historicalIdentity.activeFrom,
+            person.historicalIdentity.activeTo,
+            world.date,
+          ),
+      )
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .slice(0, 60)
+      .map((person) => ({
+        id: person.id,
+        name: person.name,
+        historicalId: person.historicalIdentity!.id,
+        occupation: person.historicalIdentity!.occupation,
+        publicRole: person.historicalIdentity!.publicRole,
+        locationId: person.locationId,
+        roles: person.roles,
+      })),
     availableFamilies: [...knownFamilies].sort(),
   };
 }

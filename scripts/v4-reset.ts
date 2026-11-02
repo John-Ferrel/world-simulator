@@ -1,5 +1,6 @@
 import { pool } from '../packages/storage/index.js';
 import { VIENNA_1912_SEED } from '../packages/v4/content/vienna-1912.js';
+import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
 import { activeV4WorldMeta, archiveV4World, migrateV4, seedV4World } from '../packages/v4/store.js';
 
 await migrateV4();
@@ -9,6 +10,8 @@ if (active) {
   console.log(`archived ${active.id}`);
 }
 const id = `${VIENNA_1912_SEED.id}-v${Date.now().toString(36)}`;
-const meta = await seedV4World({ ...structuredClone(VIENNA_1912_SEED), id });
+const meta = await seedV4World(
+  applyViennaHistoricalWorld({ ...structuredClone(VIENNA_1912_SEED), id }),
+);
 console.log(JSON.stringify({ world: meta.id, date: meta.date, status: meta.status }));
 await pool.end();

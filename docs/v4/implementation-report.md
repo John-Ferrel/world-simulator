@@ -4,6 +4,8 @@
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
 
+> 2026-11-02 Phase 6 更新：可参与历史进程 (`WorldDevelopment.historical`)、4 位维也纳真实人物、13 个历史场景、Director historicalMoves、真实 Content Author 历史内容、战争/疫情/反事实测试已接入。88 年审计 381 人/217 在世/87.99 事件每年，历史事件 48 条；真实 Director 4,506 + 8,158 tokens，Content Author 8,744 tokens。验收见 [phase-6-report.md](phase-6-report.md)；这仍不是全球历史/20k 生产验收。
+
 > 2026-11-02 可玩版本更新：家庭容量/分户、死亡后伴侣终止/监护补选、出生愿望确定性回退、已故年龄/死因/标题投影、1946–1999 战后 16 场景与 24 条时代记录已接入。88 年审计 420 人/236 在世/111.26 事件每年；8 人物 88 年试玩 373 人/199 在世/最大在世家庭 12。尚未完成的 canonical 时间顺序、多地区 Director、20k DB/API、通用内容工厂仍明确列出。验收见 [playable-report.md](playable-report.md)。全量测试数字以最后一轮为准。
 > 2026-11-02 Phase 5 更新：具名化审计修复（318→63，不再机械触顶）、20k 分阶段性能（简化内容 0.59s/年）、组织生命周期、月度急性风险、frail_body/social_insight 真实效果已接入。Phase 5 验收见 [phase-5-report.md](phase-5-report.md)；完整复盘见 [phase-3-4-retrospective.md](phase-3-4-retrospective.md)。全量 377 项通过，构建和浏览器通过。
 
@@ -35,6 +37,10 @@
 | 宏观多地区/全球      | 部分               | lower-austria + klosterneuburg 两地区数据/迁移；未做多地区长期真实 Director；不能宣称全球                                                                                    |
 | 内容覆盖审计         | 完成               | 80 年：3,657 事件、279 focal、358 causal、75 出生；零事件年份 0；未解析 token 0；顶层场景占比 7.9%                                                                           |
 | 可玩闭环             | 完成（单世界切片） | 注册→出生→家庭/关系/工作/死亡→2000 horizon；浏览器 e2e 通过；88 年试玩报告见 [playable-report.md](playable-report.md)                                                        |
+| Historical Process   | 完成（通用最小）   | `WorldDevelopment.historical`；阶段/参与/metrics/组织/结果；战争 18 参与者、疫情 13 参与者                                                                                   |
+| 真实历史人物         | 完成（4 人）       | Freud/Adler/Kraus/Schnitzler；稳定 Person/QID/来源/活动窗口；真实死亡只作参考                                                                                                |
+| 历史参与与因果       | 完成（垂直）       | 地点/组织/费用/关系渠道；participation/influence/knowledge effects；反事实 mobilizing→institutionalizing                                                                     |
+| 历史 Director/内容   | 完成（真实调用）   | 4,506 + 8,158 tokens、historicalMoves；Content Author 8,744 tokens、4/12/24、实际触发 2 条生成历史事件                                                                       |
 | 战后生活内容         | 完成（16 场景）    | 1946–1999 战后场景与 24 条时代记录；独立内容测试通过                                                                                                                         |
 | 出生无模型回退       | 完成               | 五种白名单能力关键词回退；`deterministic-fallback` 设置 compiledAt，不伪造异能                                                                                               |
 | Birth Contract 写入  | 完成               | `birth-contract-store.ts` 事务锁 + revision；`compiledAt` 防止重复应用；worker 已切到完整 contract                                                                           |

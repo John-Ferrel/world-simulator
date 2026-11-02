@@ -256,6 +256,7 @@ export type V4PersonSummaryRecord = {
   roles: string[];
   appearance?: Person['appearance'];
   lifeContract?: Person['lifeContract'];
+  historicalIdentity?: Person['historicalIdentity'];
   /** Resolved in SQL so the API does not need the whole place table. */
   placeName?: string;
 };
@@ -381,6 +382,7 @@ const PERSON_SUMMARY_COLUMNS = `
   p.payload->'roles' AS roles,
   p.payload->'appearance' AS appearance,
   p.payload->'lifeContract' AS life_contract,
+  p.payload->'historicalIdentity' AS historical_identity,
   pl.payload->>'name' AS place_name,
   lower(p.payload->>'name') AS sort_name,
   CASE WHEN p.payload->>'ownerId' IS NOT NULL THEN 0 ELSE 1 END AS owned
@@ -416,6 +418,7 @@ function personSummaryFromRow(row: any): V4PersonSummaryRecord {
     roles: Array.isArray(row.roles) ? row.roles : [],
     appearance: row.appearance ?? undefined,
     lifeContract: row.life_contract ?? undefined,
+    historicalIdentity: row.historical_identity ?? undefined,
     placeName: row.place_name ?? undefined,
   };
 }

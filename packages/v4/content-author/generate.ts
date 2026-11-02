@@ -85,6 +85,7 @@ const CONDITION_NAMES = [
   'notHasRelation',
   'worldYear',
   'pressure',
+  'historicalProcess',
 ].join(', ');
 
 function schemaExample(brief: GenerationBrief) {
@@ -104,12 +105,10 @@ function schemaExample(brief: GenerationBrief) {
         weight: node?.weight ?? 1,
         rate: Number((brief.baseRate / Math.max(1, brief.nodeBriefs?.length ?? 4)).toFixed(4)),
         conditions: node?.conditions ?? [],
-        roles:
-          node?.roles ??
-          [
-            { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 60 },
-            { key: 'neighbor', kind: 'neighbor', required: true, minAge: 25, maxAge: 75 },
-          ],
+        roles: node?.roles ?? [
+          { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 60 },
+          { key: 'neighbor', kind: 'neighbor', required: true, minAge: 25, maxAge: 75 },
+        ],
         outcomes: [
           {
             id: 'concrete-outcome',

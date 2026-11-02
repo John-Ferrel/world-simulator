@@ -15,6 +15,7 @@ import {
   type MacroParameters,
   type MacroProposal,
   type RegionalPopulation,
+  type WorldDevelopment,
 } from '../packages/v4/macro.js';
 import {
   advanceAggregatePopulation,
@@ -22,6 +23,7 @@ import {
   type DeathCause,
 } from '../packages/v4/statistics.js';
 import { advanceV4Year } from '../packages/v4/engine.js';
+import { ensureHistoricalProcess } from '../packages/v4/history.js';
 import { VIENNA_1912_SEED } from '../packages/v4/content/vienna-1912.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../packages/v4/content/vienna-developments.js';
 
@@ -597,5 +599,54 @@ describe('v4 statistical engine', () => {
     expect(worsening.length).toBeLessThanOrEqual(2);
     expect(resolved.length).toBe(1);
     expect(result.world.persons['person:test']!.health.lastIllness).toBeUndefined();
+  });
+
+  it('validates and applies bounded historical intents without setting the phase', () => {
+    const w = world();
+    const state = defaultMacroState(w);
+    const development: WorldDevelopment = {
+      id: 'development:test-history',
+      type: 'social_change',
+      regionId: 'region-lower-austria',
+      description: 'test movement',
+      severity: 0.5,
+      start: date,
+      end: { year: 1920, month: 1 },
+      status: 'active' as const,
+      eventFamilyIds: ['test-history'],
+      source: 'test',
+    };
+    development.historical = ensureHistoricalProcess(development, date);
+    development.historical.metrics.support = 0.3;
+    state.developments = { [development.id]: development };
+    const proposal: MacroProposal = {
+      version: 1,
+      regionId: 'region-lower-austria',
+      effectiveFrom: date,
+      durationMonths: 12,
+      summary: '支持现有历史进程',
+      confidence: 0.6,
+      maintainStatus: false,
+      developments: [],
+      parameterChanges: {},
+      eventPoolChanges: [],
+      historicalMoves: [
+        {
+          processId: development.id,
+          intent: 'support',
+          magnitude: 0.1,
+          note: 'more public support',
+        },
+      ],
+    };
+    const safe = validateMacroProposal(proposal, {
+      world: w,
+      state,
+      knownFamilies: new Set(['test-history']),
+    });
+    expect(safe.historicalMoves).toHaveLength(1);
+    const next = applyMacroProposal(state, safe, date, 'test-model', 'proposal-test');
+    expect(next.developments![development.id]!.historical!.metrics.support).toBeCloseTo(0.4, 6);
+    expect(next.developments![development.id]!.historical!.phase).toBe('emerging');
   });
 });

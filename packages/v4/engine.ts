@@ -24,6 +24,7 @@ import {
   type Household,
   type Id,
   type Interaction,
+  type Knowledge,
   type NarrationVariant,
   type Organization,
   type Person,
@@ -51,7 +52,18 @@ import {
   takeBackgroundPerson,
   syncMacroPressures,
   type MacroState,
+  type WorldDevelopment,
 } from './macro.js';
+import {
+  advanceHistoricalProcesses,
+  ensureHistoricalProcess,
+  HISTORICAL_METRIC_KEYS,
+  HISTORICAL_PROCESS_KINDS,
+  historicalPersonAvailable,
+  recordHistoricalInfluence,
+  recordHistoricalParticipation,
+  type HistoricalTransition,
+} from './history.js';
 import {
   DEATH_CAUSE_TEXT,
   annualInfectionRisk,
@@ -300,6 +312,7 @@ const ROLE_KINDS = new Set([
   'neighbor',
   'official',
   'organization',
+  'historical',
 ]);
 
 /**
@@ -442,6 +455,55 @@ export function advanceV4Year(
   reapVitalityZero(context, target);
   if (draft.macro) {
     draft.macro = advanceDevelopmentLifecycle(draft, draft.macro, target);
+    const historical = advanceHistoricalProcesses(draft, draft.macro, target);
+    draft.macro = historical.state;
+    for (const transition of historical.transitions) {
+      const development = draft.macro.developments?.[transition.developmentId];
+      const process = development?.historical;
+      if (!process) continue;
+      const livingParticipants = Object.entries(process.participants)
+        .filter(([id]) => draft.persons[id] && !draft.persons[id]!.died)
+        .sort((a, b) => b[1].influence - a[1].influence)
+        .slice(0, 8);
+      const actorId =
+        transition.actorId &&
+        draft.persons[transition.actorId] &&
+        !draft.persons[transition.actorId]!.died
+          ? transition.actorId
+          : livingParticipants[0]?.[0];
+      if (!actorId) continue;
+      const phaseEvent = commitEvent(
+        context,
+        {
+          date: { ...target },
+          placeId: draft.persons[actorId]!.locationId,
+          subjectId: actorId,
+          participants: livingParticipants.map(([personId]) => ({
+            personId,
+            role: 'historical_participant',
+          })),
+          action: 'historical_phase',
+          title: '历史进程转折',
+          causes: transition.causeEventId ? [transition.causeEventId] : [],
+          effects: [],
+          immediateText: transition.note,
+          significance: 0.9,
+          visibility: 'public',
+          provenance: { kind: 'system', sourceId: transition.processId },
+        },
+        { roleIds: {}, fundingOrganizationIds: [] },
+        true,
+      );
+      if (phaseEvent) {
+        const currentProcess = draft.macro.developments?.[transition.developmentId]?.historical;
+        if (currentProcess) {
+          currentProcess.lastEventId = phaseEvent.id;
+          const lastTurn = currentProcess.history[currentProcess.history.length - 1];
+          if (lastTurn && lastTurn.eventId === transition.causeEventId)
+            lastTurn.eventId = phaseEvent.id;
+        }
+      }
+    }
     draft.macro = refreshNamedPopulation(draft.macro, draft);
   }
   draft.date = target;
@@ -787,6 +849,46 @@ function conditionPasses(
           development.end.year * 12 + development.end.month >= now,
       );
     }
+    case 'historicalProcess': {
+      const process = world.macro?.developments;
+      if (!process) return false;
+      const regionId = regionIdForPerson(world, subject);
+      return Object.values(process).some((development) => {
+        const historical = development.historical;
+        if (!historical) return false;
+        if (condition.id !== undefined && development.id !== condition.id) return false;
+        if (condition.processKind !== undefined && historical.kind !== condition.processKind)
+          return false;
+        if (condition.phases && !condition.phases.includes(historical.phase)) return false;
+        if (condition.sameRegion !== false && !historical.regionIds.includes(regionId))
+          return false;
+        if (condition.roles || condition.minInfluence !== undefined) {
+          const participation = historical.participants[subject.id];
+          if (!participation) return false;
+          if (
+            condition.roles &&
+            !condition.roles.some((role) => participation.roles.includes(role))
+          )
+            return false;
+          if (
+            condition.minInfluence !== undefined &&
+            participation.influence < condition.minInfluence
+          )
+            return false;
+        }
+        return true;
+      });
+    }
+    case 'hasRelationWith':
+      return relationsFor(world, subject.id).some((relation) => {
+        if (relation.end !== undefined) return false;
+        if (relation.a !== subject.id && relation.b !== subject.id) return false;
+        const otherId = relation.a === subject.id ? relation.b : relation.a;
+        if (otherId !== condition.personId) return false;
+        if (condition.relationKind && relation.kind !== condition.relationKind) return false;
+        if (condition.minTrust !== undefined && relation.trust < condition.minTrust) return false;
+        return true;
+      });
     case 'hasRelation':
       return relationsFor(world, subject.id).some((relation) => {
         if (relation.kind !== condition.relationKind) return false;
@@ -927,6 +1029,13 @@ function personMatchesRole(
 ): boolean {
   if (person.died || !aliveAt(person, date)) return false;
   if (!ageFits(person, requirement, date)) return false;
+  if (
+    requirement.kind === 'historical' &&
+    requirement.historicalId !== undefined &&
+    person.historicalIdentity?.id !== requirement.historicalId
+  ) {
+    return false;
+  }
   const expectedSex =
     requirement.sex === 'opposite' ? (subject.sex === 'male' ? 'female' : 'male') : requirement.sex;
   if (expectedSex !== undefined && person.sex !== expectedSex) return false;
@@ -1187,6 +1296,19 @@ function roleCandidates(
       }
       break;
     }
+    case 'historical':
+      for (const id of people) {
+        if (id === subject.id) continue;
+        const person = world.persons[id]!;
+        if (!historicalPersonAvailable(person, world.date)) continue;
+        if (
+          requirement.historicalId !== undefined &&
+          person.historicalIdentity?.id !== requirement.historicalId
+        )
+          continue;
+        candidates.add(id);
+      }
+      break;
     case 'official':
       for (const id of people) {
         if (id === subject.id) continue;
@@ -2252,6 +2374,23 @@ function runEventYear(
     for (const definition of stageDefinitionsForMilestone) {
       if (!definition.oncePerPerson || used.has(definition.id)) continue;
       if (!sceneEligible(context, definition, subject, date)) continue;
+      // Once-per-person milestones normally fire on the first eligible year,
+      // but an authored low-rate milestone (e.g. a rare historical contact)
+      // must still respect its rate. Without this check a 1.5%-per-year
+      // historical encounter fires for every eligible adult in the first year.
+      const milestoneRate = v4EventRate(context, definition, subject, date);
+      if (
+        milestoneRate < 1 &&
+        seededRng(
+          context.world.seed,
+          'milestone-rate',
+          definition.id,
+          subject.id,
+          date.year,
+          date.month,
+        )() >= milestoneRate
+      )
+        continue;
       const cast = castSceneRoles(context, definition, subject, date);
       if (cast.missing.length > 0) {
         recordBlocked(
@@ -2513,7 +2652,10 @@ function resolveScene(
       : subject.id;
   const draft: EventDraft = {
     date: { ...date },
-    placeId: subject.locationId,
+    placeId:
+      definition.placeId && context.world.places[definition.placeId]
+        ? definition.placeId
+        : subject.locationId,
     subjectId: subject.id,
     participants: buildParticipants(context.world, subject, roles),
     action: `${definition.id}/${outcome.id}`,
@@ -2745,6 +2887,30 @@ function resolveEffectRef(value: unknown, binding: EffectBinding, world: WorldSt
   });
 }
 
+function resolveHistoricalProcessRef(
+  world: WorldState,
+  subjectId: Id,
+  value: string,
+): string | undefined {
+  if (!value.startsWith('historical:')) return undefined;
+  const kind = value.slice('historical:'.length);
+  const subject = world.persons[subjectId];
+  if (!subject) return undefined;
+  const regionId = regionIdForPerson(world, subject);
+  const candidates = Object.values(world.macro?.developments ?? {})
+    .filter(
+      (development) =>
+        development.historical?.kind === kind &&
+        development.status !== 'ended' &&
+        development.status !== 'blocked' &&
+        development.historical.regionIds.includes(regionId),
+    )
+    .sort(
+      (a, b) => b.severity - a.severity || a.start.year - b.start.year || a.id.localeCompare(b.id),
+    );
+  return candidates[0]?.id;
+}
+
 function resolveEffectRefs(
   effect: EventEffect,
   binding: EffectBinding,
@@ -2776,6 +2942,10 @@ function resolveEffectRefs(
     }
     bound.interaction = interaction;
   }
+  if (typeof bound.processId === 'string') {
+    const resolved = resolveHistoricalProcessRef(world, binding.subjectId, bound.processId);
+    if (resolved) bound.processId = resolved;
+  }
   for (const key of [
     'personId',
     'householdId',
@@ -2784,6 +2954,7 @@ function resolveEffectRefs(
     'organizationId',
     'a',
     'b',
+    'holderId',
   ]) {
     if (typeof bound[key] === 'string') {
       const resolved = resolveEffectRef(bound[key], binding, world);
@@ -2812,6 +2983,8 @@ function applyEffect(
     'a',
     'b',
     'heirHouseholdId',
+    'holderId',
+    'processId',
   ];
   const unresolved = refKeys.find((key) => {
     const value = (effect as unknown as Record<string, unknown>)[key];
@@ -2873,6 +3046,14 @@ function applyEffect(
       return applyBirth(context, effect, binding);
     case 'death':
       return applyDeath(context, effect, binding);
+    case 'knowledge':
+      return applyKnowledge(context, effect, binding);
+    case 'historical_participation':
+      return applyHistoricalParticipation(context, effect, binding);
+    case 'historical_influence':
+      return applyHistoricalInfluence(context, effect, binding);
+    case 'historical_process':
+      return applyHistoricalProcess(context, effect, binding);
     case 'estate':
       return applyEstate(context, effect, binding);
     default: {
@@ -3147,6 +3328,158 @@ function applyResidence(
   for (const memberId of household.memberIds) {
     const member = context.world.persons[memberId];
     if (member && !member.died) member.locationId = place.id;
+  }
+  return { ...effect };
+}
+
+function applyKnowledge(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'knowledge' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const holder = context.world.persons[effect.holderId];
+  if (!holder || holder.died) return undefined;
+  const proposition = effect.proposition.trim();
+  if (proposition.length < 3 || proposition.length > 280) return undefined;
+  const confidence = Math.max(0, Math.min(1, effect.confidence));
+  if (!Number.isFinite(confidence)) return undefined;
+  const id = `knowledge:${context.world.id}:${binding.eventId}:${effect.holderId}`;
+  if (context.world.knowledge[id]) return undefined;
+  const knowledge: Knowledge = {
+    id,
+    holderId: effect.holderId,
+    proposition,
+    confidence,
+    source: {
+      kind: effect.sourceKind,
+      eventId: binding.eventId,
+      personId: effect.personId,
+    },
+    observed: { ...binding.date },
+    visibility: effect.visibility,
+    trueInWorld: effect.trueInWorld,
+  };
+  context.world.knowledge[id] = knowledge;
+  if (!holder.knowledgeIds.includes(id)) holder.knowledgeIds.push(id);
+  return { ...effect };
+}
+
+function applyHistoricalParticipation(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'historical_participation' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const state = context.world.macro;
+  if (!state) return undefined;
+  const process = recordHistoricalParticipation(context.world, state, {
+    processId: effect.processId,
+    personId: effect.personId,
+    role: effect.role,
+    influence: effect.influence,
+    eventId: binding.eventId,
+    date: binding.date,
+  });
+  return process ? { ...effect } : undefined;
+}
+
+function applyHistoricalInfluence(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'historical_influence' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const state = context.world.macro;
+  if (!state) return undefined;
+  if (!HISTORICAL_METRIC_KEYS.includes(effect.dimension)) return undefined;
+  const process = recordHistoricalInfluence(state, {
+    processId: effect.processId,
+    dimension: effect.dimension,
+    amount: effect.amount,
+    eventId: binding.eventId,
+    date: binding.date,
+  });
+  return process ? { ...effect } : undefined;
+}
+
+function applyHistoricalProcess(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'historical_process' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const input = effect.process;
+  if (!input || !isRecord(input)) return undefined;
+  if (typeof input.id !== 'string' || !/^[a-zA-Z0-9:_-]{1,160}$/.test(input.id)) return undefined;
+  if (context.world.macro?.developments?.[input.id]) return undefined;
+  if (
+    !input.kind ||
+    !HISTORICAL_PROCESS_KINDS.includes(input.kind) ||
+    typeof input.title !== 'string' ||
+    typeof input.description !== 'string'
+  )
+    return undefined;
+  if (input.description.length < 8 || input.description.length > 500) return undefined;
+  if (
+    input.organizationId !== undefined &&
+    (!context.world.organizations[input.organizationId] ||
+      context.world.organizations[input.organizationId]!.status !== 'active')
+  )
+    return undefined;
+  const regionId = input.regionId ?? 'region-lower-austria';
+  if (!context.world.macro?.regions[regionId]) return undefined;
+  const eventFamilyIds = Array.isArray(input.eventFamilyIds)
+    ? input.eventFamilyIds.filter(
+        (id): id is string => typeof id === 'string' && id.length > 0 && id.length <= 160,
+      )
+    : [];
+  const sourceIds = Array.isArray(input.sourceIds)
+    ? input.sourceIds.filter(
+        (id): id is string => typeof id === 'string' && id.length > 0 && id.length <= 160,
+      )
+    : [];
+  const development: WorldDevelopment = {
+    id: input.id,
+    type:
+      input.kind === 'war_mobilization'
+        ? 'war'
+        : input.kind === 'public_health_crisis'
+          ? 'epidemic'
+          : input.kind === 'social_movement'
+            ? 'social_change'
+            : input.kind === 'political_repression'
+              ? 'political_unrest'
+              : input.kind === 'economic_crisis'
+                ? 'economic_change'
+                : 'other',
+    regionId,
+    description: input.description,
+    severity: 0.5,
+    start: { ...binding.date },
+    end: addMonths(binding.date, 120),
+    status: 'active' as const,
+    eventFamilyIds,
+    organizationId: input.organizationId,
+    source: `event:${binding.eventId}`,
+  };
+  const historical = ensureHistoricalProcess(development, binding.date);
+  historical.source = 'event';
+  historical.kind = input.kind;
+  historical.phase = 'emerging';
+  historical.phaseStarted = { ...binding.date };
+  historical.objectives = (input.objectives ?? [])
+    .filter((item): item is string => typeof item === 'string' && item.length > 0)
+    .slice(0, 6)
+    .map((item) => item.slice(0, 200));
+  historical.sourceIds = sourceIds.slice(0, 8);
+  development.historical = historical;
+  context.world.macro.developments![input.id] = development;
+  for (const familyId of eventFamilyIds.slice(0, 8)) {
+    const existing = context.world.macro.eventPool[familyId];
+    context.world.macro.eventPool[familyId] = {
+      familyId,
+      enabled: true,
+      weightMultiplier: Math.max(existing?.weightMultiplier ?? 1, 1.15),
+      source: `historical-event:${binding.eventId}`,
+      updatedAt: { ...binding.date },
+    };
   }
   return { ...effect };
 }

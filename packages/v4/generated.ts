@@ -79,6 +79,7 @@ const VALID_ROLE_KINDS = new Set<RoleRequirement['kind']>([
   'neighbor',
   'official',
   'organization',
+  'historical',
 ]);
 const VALID_EFFECTS = new Set<EventEffect['type']>([
   'cash',
@@ -102,6 +103,10 @@ const VALID_EFFECTS = new Set<EventEffect['type']>([
   'birth',
   'death',
   'estate',
+  'knowledge',
+  'historical_participation',
+  'historical_influence',
+  'historical_process',
 ]);
 const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
   'age',
@@ -122,6 +127,8 @@ const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
   'notHasRelation',
   'worldYear',
   'pressure',
+  'historicalProcess',
+  'hasRelationWith',
 ]);
 
 export type GeneratedValidation = {
@@ -303,6 +310,56 @@ function validateEffect(nodeId: string, outcomeId: string, effect: EventEffect, 
     case 'estate':
       if (!ref(effect.personId) || !ref(effect.heirHouseholdId))
         errors.push(`${label}: bad estate`);
+      break;
+    case 'knowledge':
+      if (
+        !ref(effect.holderId) ||
+        typeof effect.proposition !== 'string' ||
+        effect.proposition.length < 3 ||
+        effect.proposition.length > 280 ||
+        !Number.isFinite(effect.confidence)
+      )
+        errors.push(`${label}: bad knowledge`);
+      break;
+    case 'historical_participation':
+      if (
+        !ref(effect.processId) ||
+        !ref(effect.personId) ||
+        typeof effect.role !== 'string' ||
+        ![
+          'participant',
+          'organizer',
+          'leader',
+          'executor',
+          'supporter',
+          'opponent',
+          'perpetrator',
+          'victim',
+          'witness',
+          'rescuer',
+          'affected',
+        ].includes(effect.role)
+      )
+        errors.push(`${label}: bad historical participation`);
+      break;
+    case 'historical_influence':
+      if (
+        !ref(effect.processId) ||
+        !ref(effect.personId) ||
+        !['support', 'opposition', 'resources', 'legitimacy', 'escalation', 'information'].includes(
+          effect.dimension,
+        ) ||
+        !Number.isFinite(effect.amount)
+      )
+        errors.push(`${label}: bad historical influence`);
+      break;
+    case 'historical_process':
+      if (
+        !effect.process ||
+        !/^[a-zA-Z0-9:_-]{1,160}$/.test(effect.process.id) ||
+        typeof effect.process.description !== 'string'
+      )
+        errors.push(`${label}: bad historical process`);
       break;
     default:
       break;

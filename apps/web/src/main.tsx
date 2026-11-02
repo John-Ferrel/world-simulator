@@ -2,10 +2,68 @@ import '@fontsource/noto-sans-sc/400.css';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import PaperDoll, { CompactDollEditor } from './PaperDoll';
+import {
+  historicalPhaseLabel,
+  historicalRoleLabel,
+  influencePercent,
+  relationScoreText,
+} from './historicalLabels';
 import './style.css';
 
 type Date4 = { year: number; month: number };
 type Appearance = { skin: number; hair: number; clothes: number; doll?: Record<string, unknown> };
+type HistoricalIdentity = {
+  id: string;
+  sourceIds: string[];
+  birthPrecision: 'year' | 'day';
+  occupation: string;
+  publicRole: string;
+  activityRegionIds: string[];
+  activeFrom: Date4;
+  activeTo?: Date4;
+  realWorldDeath?: { year: number; month?: number; day?: number };
+  biographyIsNotFate: boolean;
+  notes?: string;
+};
+type PersonHistoricalProcess = {
+  id: string;
+  description: string;
+  kind: string;
+  phase: string;
+  outcome?: string;
+  roles: string[];
+  influence: number;
+  joinedAt: Date4;
+  lastEventId: string;
+};
+type HistoricalContact = {
+  id: string;
+  name: string;
+  kind: string;
+  trust: number;
+  respect: number;
+  historicalId: string;
+  publicRole: string;
+};
+type WorldHistoricalDevelopment = {
+  id: string;
+  type: string;
+  description: string;
+  status: string;
+  severity: number;
+  organizationId?: string;
+  historical?: {
+    kind: string;
+    phase: string;
+    phaseStarted: Date4;
+    metrics: Record<string, number>;
+    objectives: string[];
+    participantCount: number;
+    organizations: { id: string; roles: string[] }[];
+    outcome?: string;
+    recentHistory: { date: Date4; phase: string; note: string }[];
+  };
+};
 type PersonSummary = {
   id: string;
   name: string;
@@ -19,6 +77,7 @@ type PersonSummary = {
   locationId: string;
   locationName?: string;
   occupation: string;
+  historical?: HistoricalIdentity;
   householdId: string;
   roles: string[];
   education: { status: string; level: number; placeId?: string };
@@ -64,6 +123,7 @@ type World = {
   organizations: { id: string; name: string; kind: string }[];
   recentEvents: LogEvent[];
   chronicle: Chronicle[];
+  macro?: { developments?: WorldHistoricalDevelopment[] } | null;
 };
 type PersonDetail = {
   person: PersonSummary;
@@ -94,6 +154,8 @@ type PersonDetail = {
   }[];
   events: LogEvent[];
   worldEvents: LogEvent[];
+  historicalProcesses?: PersonHistoricalProcess[];
+  historicalContacts?: HistoricalContact[];
 };
 type AuthState = {
   user: { id: string; username: string } | null;
@@ -919,6 +981,8 @@ function PersonPane({
       </aside>
     );
   const household = detail?.household;
+  const historicalProcesses = detail?.historicalProcesses ?? [];
+  const historicalContacts = detail?.historicalContacts ?? [];
   const age = displayAge(person, world.date);
   return (
     <aside className="pane person-pane">
@@ -934,10 +998,17 @@ function PersonPane({
         <div className="person-sub">
           {sexText(person.sex)} · {person.died ? `享年 ${age} 岁` : `${age} 岁`}
           {person.owner && <span className="own-badge">你的人物</span>}
+          {person.historical && <span className="historical-badge">历史人物</span>}
         </div>
       </div>
       <div className="person-facts">
         <Fact label="身份" value={person.occupation} />
+        {person.historical && (
+          <Fact
+            label="历史身份"
+            value={person.historical.publicRole || person.historical.occupation}
+          />
+        )}
         <Fact
           label="住处"
           value={person.locationName ?? '维也纳'}
@@ -969,6 +1040,35 @@ function PersonPane({
             </div>
           )}
         </div>
+      )}
+      {historicalProcesses.length > 0 && (
+        <section className="side-section historical-participation">
+          <h3>历史参与</h3>
+          <div className="historical-list">
+            {historicalProcesses.map((process) => {
+              const outcome = process.outcome?.trim();
+              return (
+                <article key={process.id} className="historical-card">
+                  <div className="historical-card-head">
+                    <span className="phase-pill">{historicalPhaseLabel(process.phase)}</span>
+                    <span className="influence-note">
+                      影响 {influencePercent(process.influence)}%
+                    </span>
+                  </div>
+                  <p>{process.description}</p>
+                  {process.roles.length > 0 && (
+                    <div className="role-tags">
+                      {process.roles.map((role) => (
+                        <span key={`${process.id}-${role}`}>{historicalRoleLabel(role)}</span>
+                      ))}
+                    </div>
+                  )}
+                  {outcome && <p className="historical-outcome">结果：{outcome}</p>}
+                </article>
+              );
+            })}
+          </div>
+        </section>
       )}
       {household && (
         <section className="side-section">
@@ -1015,6 +1115,22 @@ function PersonPane({
                   <small>{relationText[relation.kind] ?? relation.kind}</small>
                 </button>
               ))}
+          </div>
+        </section>
+      )}
+      {historicalContacts.length > 0 && (
+        <section className="side-section historical-contacts">
+          <h3>历史人物关系</h3>
+          <div className="historical-contact-list">
+            {historicalContacts.map((contact) => (
+              <button key={contact.id} onClick={() => onSelect(contact.id)}>
+                <span>{contact.name}</span>
+                <small>
+                  {contact.publicRole} · {relationText[contact.kind] ?? contact.kind} · 信任{' '}
+                  {relationScoreText(contact.trust)} · 尊重 {relationScoreText(contact.respect)}
+                </small>
+              </button>
+            ))}
           </div>
         </section>
       )}
@@ -1269,6 +1385,16 @@ const PLACE_POINTS: Record<string, { x: number; y: number; major?: boolean }> = 
 };
 const HIDDEN_MAP_PLACES = new Set(['place-wien', 'place-klosterneuburg']);
 
+type ActiveHistoricalDevelopment = WorldHistoricalDevelopment & {
+  historical: NonNullable<WorldHistoricalDevelopment['historical']>;
+};
+
+function isActiveHistoricalDevelopment(
+  development: WorldHistoricalDevelopment,
+): development is ActiveHistoricalDevelopment {
+  return development.status === 'active' && Boolean(development.historical);
+}
+
 function WorldPane({
   world,
   activePlace,
@@ -1294,6 +1420,9 @@ function WorldPane({
     () => Object.fromEntries(world.places.map((place) => [place.id, place])),
     [world.places],
   );
+  const activeDevelopments = (world.macro?.developments ?? [])
+    .filter(isActiveHistoricalDevelopment)
+    .slice(0, 4);
   return (
     <aside className="pane world-pane">
       <div className="pane-label">维也纳 · 世界</div>
@@ -1352,6 +1481,37 @@ function WorldPane({
           </button>
         )}
       </section>
+      {activeDevelopments.length > 0 && (
+        <section className="historical-processes">
+          <div className="section-head">
+            <h3>历史进程</h3>
+            <span>{activeDevelopments.length} 项进行中</span>
+          </div>
+          {activeDevelopments.map((development) => {
+            const objectives = (development.historical.objectives ?? []).slice(0, 2);
+            return (
+              <article key={development.id} className="historical-process">
+                <div className="historical-process-head">
+                  <span className="phase-pill">
+                    {historicalPhaseLabel(development.historical.phase)}
+                  </span>
+                  <span className="participant-count">
+                    {development.historical.participantCount} 人参与
+                  </span>
+                </div>
+                <p>{development.description}</p>
+                {objectives.length > 0 && (
+                  <ul className="historical-objectives">
+                    {objectives.map((objective, index) => (
+                      <li key={`${development.id}-objective-${index}`}>{objective}</li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            );
+          })}
+        </section>
+      )}
       <section className="public-events">
         <div className="section-head">
           <h3>公开事件</h3>

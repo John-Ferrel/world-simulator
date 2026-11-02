@@ -2,7 +2,7 @@
 
 1900 年前后的真实地球，历史尚未确定。玩家创造一个新生儿：名字、性别、身体条件、外貌和一段自由祝愿。孩子进入一个已经存在的家庭，之后基本不再受玩家指挥；家庭、学校、工作、疾病、战争与制度会共同改变他的一生。
 
-当前交付是一个 **v4 断代重写**，不是旧 v1–v3 的补丁。旧世界已经归档，旧日志/旧出生流程不再由开发服务器启动。当前唯一可玩的垂直切片是 **维也纳 1912–2000 及其后的通用人生线**。Phase 3 已加入可版本化的宏观状态、统计死亡/感染风险、真实 LLM Macro Director 和 macro-driven 事件池。Phase 4 又接入了单岁×性别人口队列、背景人口具名化、WorldDevelopment→组织、运行时 Content Author 和回归式事件内容。Phase 5 进一步修正了具名化机械触顶、20k 性能、组织生命周期、月度急性风险和两种真实出生能力。
+当前交付是一个 **v4 断代重写**，不是旧 v1–v3 的补丁。旧世界已经归档，旧日志/旧出生流程不再由开发服务器启动。当前唯一可玩的垂直切片是 **维也纳 1912–2000 及其后的通用人生线**。Phase 3 已加入可版本化的宏观状态、统计死亡/感染风险、真实 LLM Macro Director 和 macro-driven 事件池。Phase 4 又接入了单岁×性别人口队列、背景人口具名化、WorldDevelopment→组织、运行时 Content Author 和回归式事件内容。Phase 5 进一步修正了具名化机械触顶、20k 性能、组织生命周期、月度急性风险和两种真实出生能力。Phase 6 接入了可参与历史进程、4 位维也纳真实历史人物、战争/疫情/社会运动多角色场景、Director historicalMoves 和真实 Content Author 历史内容生成。
 
 ## 现在实际能做什么
 
@@ -18,7 +18,15 @@
 - 年度事件运行时不再“一年只选一个场景”：按年龄/身份/地点的发生率抽样多个普通事件，事实/后续事件进入队列，人物请求由对方独立回应。
 - 每个事件有真实参与角色、年龄、地点、类型化效果和后续记录；文本来自场景 outcome，不由日志模板生成。
 
-**尚未完成**：完整多地区长期 Director、具名人口迁出/迁入账本、联合分布具名化、20k 完整持久化/并发压测、公网部署。可玩版本仍存在年度事件月份分配导致的少量“死亡后日期”原始事实（API 个人日志已过滤）和 1946–2000 内容仍偏少。内容工厂已有 runtime job → 真实生成 → 验证 → DB 发布 → 下一 tick 动态加载链路，但只有 social_change 自动触发，且不是无限/无人值守内容生产。当前运行世界已验证一次真实 DeepSeek Macro Director 调用（3,329 tokens）和一次运行时内容生成（11,476 tokens，published，0 errors），并写入 1915 年战争动员/配给参数与 `Vienna War Welfare Committees` 组织。婚姻/生育仍是自动场景，不是玩家选择或完整婚配系统。Phase 5 证据见 [phase-5-report.md](docs/v4/phase-5-report.md)；本轮可玩闭环、实际世界状态、88 年试玩与未完成项见 [playable-report.md](docs/v4/playable-report.md)。
+### Phase 6 Living History 现在实际可读
+
+- 1912 维也纳世界中存在 `Sigmund Freud`（Q9215）、`Victor Adler`（Q366845）、`Karl Kraus`（Q44328）、`Arthur Schnitzler`（Q44331）四个稳定 Person；他们有真实来源、组织/住址和活动窗口，真实死亡日期只作参考，不自动成为模拟死亡。
+- 两个 1912 年已存在的历史进程：社会民主党动员、弗洛伊德心理分析圈。进程有阶段、参与者、组织、资源/支持/反对/合法性/升级/信息指标和阶段历史。
+- 普通人可以通过公开集会、印刷工会、Berggasse 19 的来信/会诊、Café Central 朗读、Burgtheater 演出、战争动员、医院和 1918 流感照护进入历史；参与角色和知识来自已提交事件，不是把同一条世界新闻复制到所有日志。
+- 战争/疫情内容只有在实际存在对应 `historicalProcess` 时才触发；1914 场景不会因现实年表自动强推。Engine 结算阶段，Director 只能提出有界 `historicalMoves`。
+- 真实模型证据：两轮 Director 4,506 + 8,158 tokens 读取已有进程；Content Author 生成 8,744-token 历史内容包（4 nodes/12 outcomes/24 narrations），实际触发。
+
+**尚未完成**：完整多地区长期 Director、具名人口迁出/迁入账本、联合分布具名化、20k 完整持久化/并发压测、公网部署。可玩版本仍存在年度事件月份分配导致的少量“死亡后日期”原始事实（API 个人日志已过滤）和 1946–2000 内容仍偏少。内容工厂已有 runtime job → 真实生成 → 验证 → DB 发布 → 下一 tick 动态加载链路，但只有 social_change 自动触发，且不是无限/无人值守内容生产。当前活动世界 `world-vienna-1912-v45-mvz8uwrz` 于 1912 年启动，已带 4 位真实历史人物和两个历史进程；启动后的 Macro Director 真实调用为 5,289 tokens，明确没有在 1913 年强推战争。Phase 6 另有 4,506 + 8,158 tokens 的测试库多轮 Director 证据。婚姻/生育仍是自动场景，不是玩家选择或完整婚配系统。Phase 5 证据见 [phase-5-report.md](docs/v4/phase-5-report.md)；可玩闭环见 [playable-report.md](docs/v4/playable-report.md)；Phase 6 验收见 [phase-6-report.md](docs/v4/phase-6-report.md)。
 
 ## 启动
 
@@ -62,6 +70,8 @@ pnpm v4:multi-cycle                        # 两次真实 LLM 历史决策
 pnpm v4:phase4-demo                        # development→组织→运行时内容→具名事件；需测试库
 pnpm v4:runtime-benchmark 20000 1          # 20k 具名 in-memory 分阶段计时
 pnpm v4:playtest                          # 8 个玩家人物、88 年无头试玩与异常审计
+pnpm v4:history-scenarios                 # 战争/疫情/历史接触/反事实四组证据
+pnpm v4:history-director-demo             # 真实 LLM 两轮历史 Director；需 *_test 数据库
 pnpm v4:migrate                           # 应用 007：为旧 DB 补 v4_macro_proposals.world_year
 pnpm exec tsx scripts/v4-content-author.ts
 pnpm v4:macro-demo                         # 需独立 *_test/_e2e 数据库和模型 key
@@ -124,6 +134,7 @@ infra/migrations/005_v4_macro.sql
 - **内容范围**：静态运行时 138 个场景（含 92 个生成场景、447 条生成叙事变体）；另有运行时 content pack 机制，发布后动态加载，仍只是维也纳切片，不是完整 1900 地球人生。离婚、再婚、同性关系、继承和住房容量已有第一版机制，但缺少玩家选择、完整法律程序、再婚/继承分配策略和大规模内容覆盖。
 - **人口与生命周期**：已加入单岁×性别人口队列、背景人口具名化、跨区迁移和具名化审计；具名化不再被 4/年上限机械打满。求偶、生育和死亡现在共享同一家庭生命周期：已有伴侣不能重复求偶，死者的伴侣关系会结束，新生儿进入有真实容量和监护人的家庭，单户在世人数受住址硬上限约束。88 年试玩中最大在世家庭 12 人，不再是单户 60+ 人。仍缺具名人物迁出/迁入的完整工作/关系对账，以及职业/阶层/家庭联合分布。
 - **性能**：20k 简化 in-memory 单年约 0.59s；1k/5k/10k/20k 线性化改善。完整 20k PostgreSQL/API/WAL/内容密度未测。
+- **历史参与**：4 个真实人物、2 个初始历史进程、13 个历史场景是深度垂直切片，不是全球历史名人库。进程阶段目前为通用指标阈值；多地区传播、真实人物主动长期行为和 20k 历史索引仍有限。
 - **可读性**：已故人物年龄固定在死亡时，API 本地化死因，普通事件有中文标题；事件月份是在年度结算后分配的，极少数同年度事件可能在原始记录里晚于死亡，API 个人日志会隐藏这些记录，原始事实仍保留供审计。
 - **组织/历史**：social_change 可创建组织并经历成员/dues/declining/ended；多地区长期 LLM 历史仍只做了两轮单地区真实调用。
 - **WorldDevelopment**：目前支持 `social_change` 创建真实组织、事件池和成员事件；其他类型仍可能只记录为参数/能力缺口，不能凭空创建任意机制。

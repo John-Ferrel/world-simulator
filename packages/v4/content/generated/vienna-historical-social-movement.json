@@ -1,0 +1,756 @@
+{
+  "id": "vienna-historical-social-movement",
+  "title": "历史进程中的街区组织者",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 65
+  },
+  "tags": [
+    "history",
+    "historical_process",
+    "social_movement",
+    "organization",
+    "politics"
+  ],
+  "baseRate": 0.16,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 65
+    },
+    {
+      "kind": "historicalProcess",
+      "processKind": "social_movement",
+      "phases": [
+        "mobilizing",
+        "confrontation"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-historical-social-movement.district-list",
+      "title": "街区名单与一张旧桌子",
+      "weight": 1,
+      "rate": 0.0448,
+      "conditions": [
+        {
+          "kind": "historicalProcess",
+          "processKind": "social_movement",
+          "phases": [
+            "mobilizing",
+            "confrontation"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "organization",
+          "kind": "organization",
+          "required": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "organize-relief-table",
+          "weight": 1,
+          "text": "{subject}把名单按门牌重新抄成互助表，缺煤的、有病人的、男人失业的各用红蓝铅笔标出。{neighbor}报出十七户的实情，连赫勒都算清楚。当晚{subject}在自己屋里划出一个街区，桌面只剩半截蜡烛。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.05,
+              "reason": "逐户核对门牌与欠账"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "obligation": 0.04,
+              "reason": "一起整理出街区互助表"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "名单变成了可执行的表格"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "organize-relief-table",
+              "text": "后屋的桌上摊着旧报纸，{subject}用尺子画格子，一格一户，旁边写清煤价和面包房欠条。{neighbor}指着第三格说那家孩子咳了整夜，先划过去。蜡烛烧到桌沿时，名单终于能看懂了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "organize-relief-table",
+              "text": "{neighbor}从围裙里掏出几张揉皱的收据，{subject}把它们按日期排开。屋外有人上楼，脚步在门口停了一下又走了。{subject}把新表折成四折塞进衣袋，说先管这条街，别的明天再说。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hold-list-and-watch",
+          "weight": 1,
+          "text": "{subject}拒绝把名单交给更大的组织，说名字一旦出了这间屋子就收不回来。{neighbor}起初涨红了脸，随后同意先记下谁最近常去咖啡馆后门。两人守到夜里十一点，只等来送奶工的车轮声。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "fear": 0.03,
+              "reason": "对名单是否外传有分歧后勉强一致"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "整夜提防门外动静"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_district_list_private",
+              "add": true,
+              "reason": "决定名单不出本街区"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hold-list-and-watch",
+              "text": "{neighbor}把会费账本推回去，说外头那个组织答应给煤，只要名单。{subject}把账本合上，用一块旧布包好塞进缝纫机底下，说先看看谁在往外递话。两人都没再提这事。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hold-list-and-watch",
+              "text": "楼梯间的灯泡忽明忽暗，{subject}让{neighbor}记下今晚进出院子的人。名单留在桌上没动，像一件没人认领的活。快到午夜，{neighbor}只说了一句，明早再核一遍。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "demand-open-books",
+          "weight": 1,
+          "text": "{subject}要求当众核对会费账目，说一克朗的去处都该有数。原来的负责人敲着桌沿，问{subject}是不是信不过老同志。{neighbor}夹在中间，把账本翻到中间一页，纸角已卷得发黑。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "fear": 0.05,
+              "reason": "公开质问账目让老成员难堪"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "当众要求核对账目"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "在争执中学会把话讲清楚"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "demand-open-books",
+              "text": "{subject}把账本摊在灯下，一页一页念出日期和克朗数，念到买纸那笔时有人 From 门口咳嗽。{neighbor}低头拨弄围巾穗子，没有替谁说话。桌子上的旧墨水瓶被碰倒，蓝墨慢慢洇进木纹。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "demand-open-books",
+              "text": "负责人说这是不信任，{subject}回说数目对得上才叫信任。{neighbor}把卷角的账页压平，指着一行重复的支出，屋里安静得能听见煤气灯嘶声。最后决定下次集会再报账。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-historical-social-movement.public-meeting",
+      "title": "公开集会上的发言",
+      "weight": 1,
+      "rate": 0.0416,
+      "conditions": [
+        {
+          "kind": "historicalProcess",
+          "processKind": "social_movement",
+          "phases": [
+            "mobilizing",
+            "confrontation"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "organization",
+          "kind": "organization",
+          "required": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "speak-with-rent-numbers",
+          "weight": 1,
+          "text": "{subject}上台只讲本街区：一间套房月租二十六克朗，三个失业的男人挤在一张床上。台下有人点头，有人低头看鞋。{organization}的书记把数字记进小册子，主持人把发言时间多给了一分钟。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "用具体租金和失业数字发言"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.04,
+              "reason": "在挤满人的大厅里讲清数字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "邻居听到本街实情后表示支持"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "speak-with-rent-numbers",
+              "text": "折叠椅缺了一条腿，{subject}站着说话，把粮店赊账的单据举起来念。{neighbor}在第三排跟着报出另一家的房租，两人一唱一和。大厅后头有人喊先谈罢工，主持人敲纸板叫安静。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "speak-with-rent-numbers",
+              "text": "{subject}没有喊口号，只问在场谁家的煤还够烧三天。十几只手举起来，连{neighbor}也举了。书记说这些数字比演说有用，散会时几个人围上来问自己那条街怎么算。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "back-immediate-action",
+          "weight": 1,
+          "text": "{subject}站到主张立即行动的年轻人一边，说市议会的救济表格填到冬天也进不了门。保守派在墙角摇头，{neighbor}拉{subject}的袖子，说别把可谈的人赶走。大厅里的椅子被推得吱响。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "公开支持立即行动"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "fear": 0.02,
+              "reason": "邻居担心集会分裂"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "立场得到年轻工人响应"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "back-immediate-action",
+              "text": "{subject}把帽子捏在手里上台，说救济表格要填三张、盖章两处，煤却今晚就见底。年轻人拍椅子背，{neighbor}在门口皱着眉。主持人记下赞成与反对的人数，纸板上的字越写越小。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "back-immediate-action",
+              "text": "有人喊罢工，有人喊谈判，{subject}站到前排说先动才有得谈。保守派转身去拿大衣，{neighbor}追出去又回来，说外头雪深，别把人推到对面去。会议没散，火气没降。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stay-and-tidy-chairs",
+          "weight": 1,
+          "text": "{subject}整场没上台，散会后留下把折叠椅叠好，扫掉地上的瓜子壳。{neighbor}帮着把借来的煤气灯还给店主，顺手记下谁走得最早。{organization}的人问{subject}为何不发言，{subject}说先把椅子还齐。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "在散场杂务中观察人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "一起收拾会场并交换观察"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "没公开表态又觉得被落在后面"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stay-and-tidy-chairs",
+              "text": "椅子叠到一半，{neighbor}压低声音说今晚有三个人没投票就走了。{subject}把最后一块瓜子壳扫进簸箕，说记住那三张脸，比上台多说一句有用。灯熄时大厅只剩木头发出的轻响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stay-and-tidy-chairs",
+              "text": "店主来收煤气灯，{subject}把铜灯擦净递过去，{neighbor}在门外数着散场的人。有人回头问{subject}下次站哪边，{subject}说等椅子摆回原样再想。夜里风把纸板吹倒了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-historical-social-movement.police-pressure",
+      "title": "名单、门房与便衣",
+      "weight": 1,
+      "rate": 0.0384,
+      "conditions": [
+        {
+          "kind": "historicalProcess",
+          "processKind": "social_movement",
+          "phases": [
+            "confrontation",
+            "repression"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "organization",
+          "kind": "organization",
+          "required": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hide-list-and-stay",
+          "weight": 1,
+          "text": "{subject}把最重要的几页名单折进大衣内袋，塞进缝纫机抽屉的夹层，再把一卷线轴压在上面。{neighbor}从厨房端出冷水，说门外那两个人已经站到换岗。{subject}决定自己留下应对问话。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hid_district_list_in_machine",
+              "add": true,
+              "reason": "把名单藏进缝纫机抽屉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "fear": 0.05,
+              "reason": "共同藏匿名单"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "知道门外有人守着"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hide-list-and-stay",
+              "text": "抽屉拉开时有木头涩响，{subject}用线轴把纸页压住，又把顶针摆回原处。{neighbor}把油印机往厨房角落推，脚上的毡拖鞋没出声。前厅传来敲门，一下，两下，很轻。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hide-list-and-stay",
+              "text": "{neighbor}往炉子里添了一小把煤，让烟囱有点烟，像平常人家。{subject}把名单折得比手掌还小，塞进缝纫机夹层后拍了拍裙面。门外的人影子挪到窗玻璃上，两人都没抬头。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pause-public-work",
+          "weight": 1,
+          "text": "{subject}劝{organization}停两周公开活动，把油印机借出去、口信改由卖菜的女人带。{neighbor}说这样会被人说怕了，{subject}说先保人，名单还在。当晚大门上贴出一张空白的通知。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "fear": -0.03,
+              "reason": "邻居接受暂避风头的做法"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "担心暂停被当成退缩"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "主张暂停公开活动"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pause-public-work",
+              "text": "{subject}在厨房把油印机包进旧毯子，交给{neighbor}送到洗衣房后院。两人约好用菜名作暗号，土豆是集会，卷心菜是延期。街上巡警的马蹄声从石板路那头过来，又过去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pause-public-work",
+              "text": "有人听说暂停就骂，{neighbor}把骂声学给{subject}听，{subject}只是把账本收进盒子。窗台上晾着三双补过的袜子，煤烟味顺着楼道往下沉。通知贴上后，院子里安静得不像话。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hand-over-part-of-list",
+          "weight": 1,
+          "text": "{office?}{official}在门房旁边摊开记事本，说交几页名单就能让其余人回家。{subject}从大衣内袋里抽出一部分，交出去时手指碰到纸角。其余几页重新折好，塞回缝纫机抽屉。当晚有两个人被叫去问话，其余门洞暂时安静。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.12,
+              "fear": 0.06,
+              "reason": "邻居知道部分名单被交出去"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "交出名单后的沉重"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "部分名单落到警察手里"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hand-over-part-of-list",
+              "text": "{official}不提高声音，只把记事本翻到空白页，铅笔尖朝下。{subject}抽出那几页时听见纸角撕裂，像布帛被扯开。{neighbor}站在门房后头看着，嘴唇动了动，最后只把水壶放回灶上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hand-over-part-of-list",
+              "text": "门房的挂钟敲了八下，{subject}把一叠名单压在桌上，说就这些。{official}一页页对过，把其中三页折进自己的封套。院子里的雪还没扫，脚印从大门一直通到楼梯口。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-historical-social-movement.relief-network",
+      "title": "煤、面包与一张借条",
+      "weight": 1,
+      "rate": 0.0352,
+      "conditions": [
+        {
+          "kind": "historicalProcess",
+          "processKind": "social_movement",
+          "phases": [
+            "mobilizing",
+            "confrontation",
+            "institutionalizing"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "organization",
+          "kind": "organization",
+          "required": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "allocate-by-need",
+          "weight": 1,
+          "text": "{subject}按家庭人口和病人优先分煤：两口之家半桶，有咳嗽孩子的多两片面包。{neighbor}把空碗放在桌上，{subject}先给它舀满，再从自己那份里扣。账本上多了一行按了手印的借条。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "优先分给病人和人口多的家庭"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.09,
+              "obligation": 0.05,
+              "reason": "分煤时先照顾了邻居那碗"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "物资虽少但分得清楚"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "allocate-by-need",
+              "text": "煤块在秤盘上碰出闷响，{subject}用粉笔在麻袋上写门牌号，{neighbor}挨户叫名。轮到放空碗那家时，{subject}把面包掰成两半，一半放进碗里，一半留在自己手中，谁也没说话。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "allocate-by-need",
+              "text": "{neighbor}说三号院的老太太咳得直不起腰，{subject}把一个木箱底的碎煤单独拢出来，用报纸包好。借条上写的是两千克朗，其实只值几赫勒的煤，但手印按得很重。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "leave-supplies-for-organization",
+          "weight": 1,
+          "text": "{subject}把能动的煤和面包都留给{organization}的储备，说自家还能撑几天。{neighbor}不肯收那半条面包，{subject}就放在窗台上吹凉。孩子问晚上吃什么，{subject}说粥里多加点盐。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "把自家份额让给组织储备"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "obligation": 0.03,
+              "reason": "邻居看到把物资留给公共储备"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "hunger_weakness",
+              "add": true,
+              "reason": "自家省下口粮后体力不支"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leave-supplies-for-organization",
+              "text": "{subject}把半条黑面包搁回篮子，篮底垫着旧衬衫。{neighbor}问你家孩子怎么办，{subject}说碗橱里还有燕麦。窗台上的雪水化开，沿着砖缝往下淌，屋里比往常冷。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leave-supplies-for-organization",
+              "text": "登记册上又添了一笔，{subject}在借出栏签了名，只借出自己那一份。{neighbor}把最后一小袋煤搬到后屋，回来时手里多出一把碎屑，放进灶膛时火光很短。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "open-the-books-again",
+          "weight": 1,
+          "text": "{subject}要求把分发表贴到墙上，每一块煤、每一片面包都写明去向。负责分发的老人说这是羞辱，把手套拍在桌上。{neighbor}站在门边，看看墙上的纸，又看看老人的脸，慢慢退了出去。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.06,
+              "fear": 0.03,
+              "reason": "公开对账得罪了负责分发的邻居"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "坚持公开物资去向"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "逐笔核对煤与面包的发放"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "open-the-books-again",
+              "text": "墙面粗灰，{subject}用图钉钉上分发清单，纸边被穿堂风吹得直抖。老人说自家也在等煤，{neighbor}把围巾往肩上紧了紧，没接话。有人围上来看，有人转身回屋。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "open-the-books-again",
+              "text": "{subject}把账本摊在面粉袋上，一栏一栏念，念到某笔去向不明时屋里静了。老人把手套戴上又摘下，{neighbor}拿回自己那份登记，说先按墙上的数领。雪还在下，门一直开着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -24,6 +24,8 @@ import { VIENNA_LIFE_SCENES } from '../packages/v4/content/vienna-life.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../packages/v4/content/vienna-developments.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
 import { VIENNA_POSTWAR_SCENES } from '../packages/v4/content/vienna-postwar.js';
+import { VIENNA_HISTORY_SCENES } from '../packages/v4/content/vienna-history.js';
+import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
 import { GENERATED_SCENES } from '../packages/v4/content/generated/index.js';
 
 export type PlaytestOptions = {
@@ -111,6 +113,7 @@ export function playtestScenes() {
     ...VIENNA_1912_SCENES,
     ...VIENNA_LIFE_SCENES,
     ...VIENNA_POSTWAR_SCENES,
+    ...VIENNA_HISTORY_SCENES,
     ...VIENNA_DEVELOPMENT_SCENES,
     ...VIENNA_FAMILY_RUNTIME_SCENES,
     ...GENERATED_SCENES,
@@ -358,8 +361,8 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
   const economyEnabled = options.economy !== false;
   const startedAt = Date.now();
 
-  let world = structuredClone(VIENNA_1912_SEED);
-  world.macro = defaultMacroState(world);
+  let world = applyViennaHistoricalWorld(structuredClone(VIENNA_1912_SEED));
+  if (!world.macro) world.macro = defaultMacroState(world);
   syncMacroPressures(world, world.macro);
   const scenes = playtestScenes();
   const sceneByFamilyAction = new Map<string, string>();

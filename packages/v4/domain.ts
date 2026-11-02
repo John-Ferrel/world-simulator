@@ -19,6 +19,90 @@ export type BirthClause = {
   maxEffect: number;
 };
 
+export type HistoricalProcessKind =
+  | 'war_mobilization'
+  | 'public_health_crisis'
+  | 'social_movement'
+  | 'political_repression'
+  | 'economic_crisis'
+  | 'cultural_movement'
+  | 'other';
+
+export type HistoricalPhase =
+  | 'emerging'
+  | 'mobilizing'
+  | 'confrontation'
+  | 'institutionalizing'
+  | 'repression'
+  | 'declining'
+  | 'ended';
+
+export type HistoricalParticipantRole =
+  | 'participant'
+  | 'organizer'
+  | 'leader'
+  | 'executor'
+  | 'supporter'
+  | 'opponent'
+  | 'perpetrator'
+  | 'victim'
+  | 'witness'
+  | 'rescuer'
+  | 'affected';
+
+export type HistoricalProcessMetrics = {
+  /** 0..1; all are normalized pressure readings, not victory points. */
+  support: number;
+  opposition: number;
+  resources: number;
+  legitimacy: number;
+  escalation: number;
+  information: number;
+};
+
+export type HistoricalParticipation = {
+  roles: HistoricalParticipantRole[];
+  /** Bounded accumulated influence from committed actions. */
+  influence: number;
+  firstEventId: Id;
+  lastEventId: Id;
+  joinedAt: WorldDate;
+};
+
+export type HistoricalProcess = {
+  kind: HistoricalProcessKind;
+  phase: HistoricalPhase;
+  phaseStarted: WorldDate;
+  regionIds: string[];
+  objectives: string[];
+  sourceIds: string[];
+  participants: Record<Id, HistoricalParticipation>;
+  organizationRoles: Record<Id, string[]>;
+  metrics: HistoricalProcessMetrics;
+  outcome?: string;
+  history: { date: WorldDate; phase: HistoricalPhase; note: string; eventId?: Id }[];
+  lastEventId?: Id;
+  lastUpdated?: WorldDate;
+  source: 'seed' | 'director' | 'event';
+  /** Reference only; never a death command. */
+  realWorldReference?: { sourceIds: string[]; note: string };
+};
+
+export type HistoricalIdentity = {
+  /** Stable public identity (Wikidata QID or curated stable id). */
+  id: string;
+  sourceIds: string[];
+  birthPrecision: 'year' | 'day';
+  occupation: string;
+  publicRole: string;
+  activityRegionIds: string[];
+  activeFrom: WorldDate;
+  activeTo?: WorldDate;
+  realWorldDeath?: { year: number; month?: number; day?: number };
+  biographyIsNotFate: true;
+  notes?: string;
+};
+
 export type PersonLife = {
   mood: number;
   reputation: number;
@@ -123,6 +207,8 @@ export type Person = {
   knowledgeIds: Id[];
   /** Mutable life state used by ambient events. Optional for old saves. */
   life?: PersonLife;
+  /** Stable public historical identity; this is metadata, not an alternate actor model. */
+  historicalIdentity?: HistoricalIdentity;
   /** Where the person came from and which record made them named. */
   provenance: {
     kind: 'birth' | 'materialized_population' | 'historical_activation' | 'initial';
@@ -364,6 +450,47 @@ export type EventEffect =
       heirHouseholdId: Id;
       amount: number;
       reason: string;
+    }
+  | {
+      type: 'knowledge';
+      holderId: Id;
+      proposition: string;
+      confidence: number;
+      sourceKind: 'witnessed' | 'told' | 'document' | 'inferred';
+      personId?: Id;
+      visibility: 'private' | 'shared';
+      trueInWorld?: boolean;
+    }
+  | {
+      type: 'historical_participation';
+      processId: string;
+      personId: Id;
+      role: HistoricalParticipantRole;
+      /** Base influence before position/org/skill modifiers. */
+      influence?: number;
+      reason: string;
+    }
+  | {
+      type: 'historical_influence';
+      processId: string;
+      personId: Id;
+      dimension: keyof HistoricalProcessMetrics;
+      amount: number;
+      reason: string;
+    }
+  | {
+      type: 'historical_process';
+      process: {
+        id: string;
+        kind: HistoricalProcessKind;
+        title: string;
+        description: string;
+        regionId?: string;
+        organizationId?: string;
+        eventFamilyIds?: string[];
+        objectives?: string[];
+        sourceIds?: string[];
+      };
     };
 
 /**
@@ -409,7 +536,8 @@ export type RoleRequirement = {
     | 'union_member'
     | 'neighbor'
     | 'official'
-    | 'organization';
+    | 'organization'
+    | 'historical';
   required?: boolean;
   minAge?: number;
   maxAge?: number;
@@ -418,6 +546,8 @@ export type RoleRequirement = {
   samePlaceKind?: Place['kind'];
   occupation?: string;
   organizationKind?: Organization['kind'];
+  /** Restrict a historical role to one stable public identity. */
+  historicalId?: string;
 };
 
 export type SceneCondition =
@@ -435,6 +565,22 @@ export type SceneCondition =
   | { kind: 'development'; id: string }
   | { kind: 'developmentType'; type: string }
   | { kind: 'capability'; capability: string }
+  | {
+      kind: 'historicalProcess';
+      /** Omit to match any process. */
+      id?: string;
+      processKind?: HistoricalProcessKind;
+      phases?: HistoricalPhase[];
+      roles?: HistoricalParticipantRole[];
+      minInfluence?: number;
+      sameRegion?: boolean;
+    }
+  | {
+      kind: 'hasRelationWith';
+      personId: Id;
+      relationKind?: Relation['kind'];
+      minTrust?: number;
+    }
   | {
       kind: 'hasRelation';
       relationKind: Relation['kind'];
@@ -496,6 +642,8 @@ export type SceneDefinition = {
   title: string;
   stage: SceneStage;
   ageWindow: { min: number; max: number };
+  /** Optional concrete event venue; otherwise the subject's current place. */
+  placeId?: Id;
   roles: RoleRequirement[];
   conditions: SceneCondition[];
   /** At least one; if an actor has a choice, the scene creates a PendingInteraction. */

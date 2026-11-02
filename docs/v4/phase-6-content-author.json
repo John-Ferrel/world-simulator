@@ -1,0 +1,23 @@
+{
+  "status": "written",
+  "family": "vienna-historical-social-movement",
+  "file": "packages/v4/content/generated/vienna-historical-social-movement.json",
+  "model": "deepseek-v4.1-flash",
+  "tokens": 8744,
+  "attempts": 1,
+  "nodes": 4,
+  "outcomes": 12,
+  "narrations": 24,
+  "warnings": [],
+  "scenario": {
+    "generatedHistoricalEvents": 2,
+    "note": "在 v4:history-scenarios 的 12 年接触情境中，生成的 historicalProcess 内容实际触发 2 条事件。"
+  },
+  "failedAttemptsBeforeSuccess": [
+    {
+      "tokens": 19713,
+      "errors": ["invalid condition historicalProcess in generated packs"],
+      "reason": "运行时内容生成器发布前使用 strict 校验；historicalProcess 先加入了 runtime validator，但没有同步 content-author strict validator。修复后重试成功。"
+    }
+  ]
+}

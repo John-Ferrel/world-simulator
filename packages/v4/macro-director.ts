@@ -11,6 +11,7 @@ import { GENERATED_PACKS } from './content/generated/index.js';
 import { VIENNA_1912_SCENES } from './content/vienna-1912.js';
 import { VIENNA_LIFE_SCENES } from './content/vienna-life.js';
 import { VIENNA_POSTWAR_SCENES } from './content/vienna-postwar.js';
+import { VIENNA_HISTORY_SCENES } from './content/vienna-history.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from './content/vienna-family.js';
 import { PHASE4_FAMILY_BRIEFS } from './content-author/phase4-briefs.js';
 
@@ -26,6 +27,7 @@ export function knownMacroFamilyIds(): string[] {
     ...VIENNA_1912_SCENES,
     ...VIENNA_LIFE_SCENES,
     ...VIENNA_POSTWAR_SCENES,
+    ...VIENNA_HISTORY_SCENES,
     ...VIENNA_FAMILY_RUNTIME_SCENES,
   ]) {
     ids.add(scene.familyId ?? scene.id);
@@ -70,6 +72,14 @@ function schemaExample(): string {
           weightMultiplier: 1.25,
         },
       ],
+      historicalMoves: [
+        {
+          processId: 'development:example',
+          intent: 'escalate',
+          magnitude: 0.08,
+          note: '继续扩大集会与救济网络。',
+        },
+      ],
     },
     null,
     2,
@@ -96,6 +106,9 @@ export function macroDirectorMessages(
 - 如果当前世界没有发生现实中的战争，不要凭空强制制造 1914 年战争伤亡；世界线可以偏离现实。
 - 如果历史发展是新的组织/社会运动，developments 中可带 organization（名称、类型、可选 placeId）和 eventFamilyIds；organization 会由 Engine 创建为真实 Organization，eventFamilyIds 只能引用 availableFamilies 中的内容族。
 - 如果历史发展无法由现有参数/事件池/组织表达，写进 developments，并在 summary 中说明能力缺口；不要偷偷降级成一句 chronicle。
+- 快照中的 historicalPeople 是真实历史人物；你只能通过 developments/eventFamilyIds 提出他们可能遇到的机会，不能直接写他们的关系、死亡、胜利或失败。历史人物的真实死亡日期不是游戏死亡命令。
+- 快照中的 developments.historical 是已经存在的历史进程。可以用 historicalMoves 对已有进程提出 support/oppose/escalate/deescalate，但绝不能直接指定阶段、胜负或结果；阶段由 Engine 根据参与、组织资源和事件结算。不要为了每年制造新闻而新建进程。
+- 不要因为真实历史中某年发生某事就强制它发生；只有当前世界状态和已提交事实支持时才推进。
 - 可以返回“维持现状”：parameterChanges 和 eventPoolChanges 都为空时必须让 developments 为空，并明确 summary 为维持现状。除此之外不要返回空提案。
 - 只输出 JSON，不要 Markdown。
 
@@ -127,10 +140,17 @@ export async function compileMacroProposal(input: MacroDirectorInput): Promise<{
     json: true,
   });
   const { parseMacroProposal } = await import('./macro.js');
-  const proposal = parseMacroProposal(result.text, {
-    world: input.world,
-    state: input.state,
-    knownFamilies: new Set(knownFamilies),
-  });
-  return { proposal, model: result.model, tokens: result.tokens, text: result.text };
+  try {
+    const proposal = parseMacroProposal(result.text, {
+      world: input.world,
+      state: input.state,
+      knownFamilies: new Set(knownFamilies),
+    });
+    return { proposal, model: result.model, tokens: result.tokens, text: result.text };
+  } catch (error) {
+    // Keep a bounded excerpt for operator diagnosis; never persist it as world
+    // history and never execute it.
+    const raw = result.text.replace(/\s+/g, ' ').slice(0, 700);
+    throw new Error(`${(error as Error).message} | raw: ${raw}`);
+  }
 }

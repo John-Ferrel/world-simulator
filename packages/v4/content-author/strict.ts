@@ -57,6 +57,7 @@ const VALID_ROLE_KINDS = new Set<RoleRequirement['kind']>([
   'neighbor',
   'official',
   'organization',
+  'historical',
 ]);
 const VALID_ORGANIZATION_KINDS = new Set([
   'household_firm',
@@ -98,6 +99,10 @@ const VALID_EFFECTS = new Set<EventEffect['type']>([
   'birth',
   'death',
   'estate',
+  'knowledge',
+  'historical_participation',
+  'historical_influence',
+  'historical_process',
 ]);
 
 const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
@@ -119,6 +124,8 @@ const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
   'capability',
   'worldYear',
   'pressure',
+  'historicalProcess',
+  'hasRelationWith',
 ]);
 
 export type AuthoredValidationOptions = {
@@ -181,6 +188,50 @@ function checkCondition(where: string, condition: SceneCondition, errors: string
       }
     }
   }
+  if (condition.kind === 'historicalProcess') {
+    const allowedKinds = [
+      'war_mobilization',
+      'public_health_crisis',
+      'social_movement',
+      'political_repression',
+      'economic_crisis',
+      'cultural_movement',
+      'other',
+    ];
+    if (condition.processKind && !allowedKinds.includes(condition.processKind))
+      errors.push(`${where}: invalid historical process kind ${condition.processKind}`);
+    const allowedPhases = [
+      'emerging',
+      'mobilizing',
+      'confrontation',
+      'institutionalizing',
+      'repression',
+      'declining',
+      'ended',
+    ];
+    for (const phase of condition.phases ?? [])
+      if (!allowedPhases.includes(phase))
+        errors.push(`${where}: invalid historical phase ${phase}`);
+    for (const role of condition.roles ?? [])
+      if (
+        ![
+          'participant',
+          'organizer',
+          'leader',
+          'executor',
+          'supporter',
+          'opponent',
+          'perpetrator',
+          'victim',
+          'witness',
+          'rescuer',
+          'affected',
+        ].includes(role)
+      )
+        errors.push(`${where}: invalid historical role ${role}`);
+  }
+  if (condition.kind === 'hasRelationWith' && !condition.personId)
+    errors.push(`${where}: hasRelationWith needs personId`);
 }
 
 function checkEffect(

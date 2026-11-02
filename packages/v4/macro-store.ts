@@ -166,11 +166,13 @@ export async function applyV4MacroProposal(
     // simulator picks it up on the next tick.
     for (const development of Object.values(safe.developments)) {
       if (development.type !== 'social_change') continue;
-      await enqueueV4ContentJob(
-        worldId,
-        'vienna-social-movement',
-        development.description.slice(0, 300),
-      ).catch(() => undefined);
+      // Historical processes get a process-aware brief. The generated pack is
+      // still validated against the ordinary scene/effect grammar and only
+      // becomes live after publication.
+      const briefId = 'vienna-historical-social-movement';
+      await enqueueV4ContentJob(worldId, briefId, development.description.slice(0, 300)).catch(
+        () => undefined,
+      );
     }
     return { revision, macro: next };
   } catch (error) {

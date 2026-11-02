@@ -8,14 +8,16 @@ import { applyScenarioToMacro, type MacroScenarioName } from '../packages/v4/mac
 import { populationSummary } from '../packages/v4/statistics.js';
 import { VIENNA_LIFE_SCENES } from '../packages/v4/content/vienna-life.js';
 import { VIENNA_POSTWAR_SCENES } from '../packages/v4/content/vienna-postwar.js';
+import { VIENNA_HISTORY_SCENES } from '../packages/v4/content/vienna-history.js';
+import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../packages/v4/content/vienna-developments.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
 import { GENERATED_PACKS, GENERATED_SCENES } from '../packages/v4/content/generated/index.js';
 import { validateGeneratedPack } from '../packages/v4/generated.js';
 
 const years = Number(process.argv[2] ?? 80);
-let world = structuredClone(VIENNA_1912_SEED);
-world.macro = defaultMacroState(world);
+let world = applyViennaHistoricalWorld(structuredClone(VIENNA_1912_SEED));
+if (!world.macro) world.macro = defaultMacroState(world);
 syncMacroPressures(world, world.macro);
 const scenario = process.env.V4_AUDIT_SCENARIO as MacroScenarioName | undefined;
 const birth = createV4Birth(
@@ -36,6 +38,7 @@ const scenes = [
   ...VIENNA_1912_SCENES,
   ...VIENNA_LIFE_SCENES,
   ...VIENNA_POSTWAR_SCENES,
+  ...VIENNA_HISTORY_SCENES,
   ...VIENNA_DEVELOPMENT_SCENES,
   ...VIENNA_FAMILY_RUNTIME_SCENES,
   ...GENERATED_SCENES,
@@ -205,6 +208,20 @@ for (const event of deathEvents) {
 }
 const population = world.macro ? populationSummary(world.macro) : undefined;
 
+const historicalEvents = events.filter(
+  (event) => event.action.startsWith('vienna-history') || event.action === 'historical_phase',
+);
+const historicalProcesses = Object.values(world.macro?.developments ?? {})
+  .filter((development) => development.historical)
+  .map((development) => ({
+    id: development.id,
+    kind: development.historical!.kind,
+    phase: development.historical!.phase,
+    outcome: development.historical!.outcome ?? null,
+    participants: Object.keys(development.historical!.participants).length,
+    organizations: Object.keys(development.historical!.organizationRoles).length,
+  }));
+
 const report = {
   years,
   scenario: scenario ?? 'baseline-no-directed-history',
@@ -260,6 +277,15 @@ const report = {
       }))
       .sort((a, b) => b.count - a.count || a.kind.localeCompare(b.kind)),
     samples: materializations.slice(0, 20),
+  },
+  historical: {
+    events: historicalEvents.length,
+    actionSamples: historicalEvents.slice(0, 8).map((event) => ({
+      date: event.date,
+      action: event.action,
+      text: event.immediateText,
+    })),
+    processes: historicalProcesses,
   },
   generated: {
     packs: GENERATED_PACKS.length,

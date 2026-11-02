@@ -604,6 +604,12 @@ legend {
   padding: 1px 6px;
   font-size: 10px;
 }
+.historical-badge {
+  color: var(--accent-2);
+  border: 1px solid rgba(159, 176, 138, 0.34);
+  padding: 1px 6px;
+  font-size: 10px;
+}
 .person-facts {
   display: flex;
   flex-direction: column;
@@ -669,6 +675,92 @@ legend {
   font-size: 9px;
   letter-spacing: 0.14em;
   margin-bottom: 4px;
+}
+.historical-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.historical-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-left: 1px solid rgba(159, 176, 138, 0.45);
+  padding-left: 10px;
+}
+.historical-card-head,
+.historical-process-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px 8px;
+  flex-wrap: wrap;
+}
+.phase-pill {
+  color: var(--accent-2);
+  border: 1px solid rgba(159, 176, 138, 0.32);
+  padding: 1px 6px;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.influence-note,
+.participant-count {
+  color: var(--faint);
+  font-size: 9.5px;
+  white-space: nowrap;
+}
+.historical-card p,
+.historical-process p {
+  color: #b3ad9d;
+  font-size: 11px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.historical-card .historical-outcome {
+  color: #9b756c;
+  border-top: 1px dotted rgba(42, 53, 44, 0.7);
+  padding-top: 5px;
+}
+.role-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.role-tags span {
+  color: #a8a291;
+  border: 1px solid var(--line);
+  background: rgba(159, 176, 138, 0.06);
+  padding: 0 5px;
+  font-size: 9.5px;
+}
+.historical-contact-list {
+  display: flex;
+  flex-direction: column;
+}
+.historical-contact-list button {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  min-width: 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid rgba(42, 53, 44, 0.5);
+  padding: 7px 0;
+  text-align: left;
+  color: var(--ink);
+  font-size: 12px;
+}
+.historical-contact-list button:hover {
+  color: var(--accent-2);
+}
+.historical-contact-list small {
+  color: var(--faint);
+  font-size: 10px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 .side-section {
   display: flex;
@@ -1082,6 +1174,32 @@ legend {
   color: #a8a291;
   font-size: 11px;
   line-height: 1.75;
+}
+.historical-processes {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.historical-process {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-left: 1px solid rgba(159, 176, 138, 0.45);
+  padding-left: 11px;
+}
+.historical-objectives {
+  margin: 0;
+  padding-left: 15px;
+  color: var(--faint);
+  font-size: 10px;
+  line-height: 1.6;
+}
+.historical-objectives li {
+  overflow-wrap: anywhere;
+}
+.historical-objectives li::marker {
+  color: var(--accent-2);
 }
 .public-event {
   display: flex;

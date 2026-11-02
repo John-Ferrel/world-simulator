@@ -1,0 +1,185 @@
+{
+  "worldId": "phase6-history-mvz8tlyz",
+  "status": "ok",
+  "evidence": [
+    {
+      "year": 1914,
+      "model": "deepseek-v4.1-flash",
+      "tokens": 4506,
+      "proposal": {
+        "summary": "维也纳及下奥地利在 1914 年初维持相对稳定的城市生活：社会民主党继续在工人街区与工会中动员，弗洛伊德圈子通过周三讨论会和出版物扩大知识网络。尚未出现现实中的大战，因此不制造战争伤亡；结核病负担与住房、卫生条件仍是长期卫生挑战。",
+        "developments": [
+          {
+            "type": "social_change",
+            "description": "社会民主党在维也纳工人区扩大工会与报刊网络，围绕普选、劳动保护与社会救济继续动员。",
+            "severity": 0.5,
+            "eventFamilyIds": ["vienna-history-social-democracy", "vienna-social-movement"]
+          },
+          {
+            "type": "other",
+            "description": "弗洛伊德周围的医生与作家通过周三讨论会、病例报告和出版物扩大精神分析网络。",
+            "severity": 0.45,
+            "eventFamilyIds": ["vienna-history-psychoanalysis", "vienna-history-culture"]
+          }
+        ],
+        "historicalMoves": [
+          {
+            "processId": "development:seed-vienna-social-democracy-1912",
+            "intent": "support",
+            "magnitude": 0.06,
+            "note": "工会与报刊网络继续扩展，围绕普选和社会救济的动员保持活跃。"
+          },
+          {
+            "processId": "development:seed-vienna-psychoanalytic-circle-1912",
+            "intent": "support",
+            "magnitude": 0.05,
+            "note": "周三讨论会与出版物维持知识网络扩张。"
+          }
+        ],
+        "parameterChanges": {
+          "unemployment": -0.03,
+          "healthcare": 0.02,
+          "epidemicTuberculosis": 0.01
+        },
+        "eventPoolChanges": [
+          {
+            "familyId": "vienna-history-social-democracy",
+            "weightMultiplier": 1.2
+          },
+          {
+            "familyId": "vienna-history-psychoanalysis",
+            "weightMultiplier": 1.15
+          },
+          {
+            "familyId": "vienna-social-movement",
+            "weightMultiplier": 1.1
+          }
+        ]
+      },
+      "beforeProcesses": [
+        {
+          "id": "development:seed-vienna-social-democracy-1912",
+          "phase": "mobilizing",
+          "participants": 1
+        },
+        {
+          "id": "development:seed-vienna-psychoanalytic-circle-1912",
+          "phase": "mobilizing",
+          "participants": 1
+        }
+      ],
+      "afterProcesses": [
+        {
+          "id": "development:history-demo-1914-mvz8tqa5:0",
+          "phase": "emerging",
+          "participants": 0
+        },
+        {
+          "id": "development:history-demo-1914-mvz8tqa5:1",
+          "phase": "emerging",
+          "participants": 0
+        },
+        {
+          "id": "development:seed-vienna-social-democracy-1912",
+          "phase": "mobilizing",
+          "participants": 1
+        },
+        {
+          "id": "development:seed-vienna-psychoanalytic-circle-1912",
+          "phase": "mobilizing",
+          "participants": 1
+        }
+      ],
+      "revision": 1
+    },
+    {
+      "year": 1920,
+      "model": "deepseek-v4.1-flash",
+      "tokens": 8158,
+      "proposal": {
+        "summary": "战后维也纳进入重建期。粮食供应改善但住房与燃料仍紧张，结核病持续流行；社会民主党在社会救济与工会网络中继续巩固，精神分析网络因核心成员退出而暂时收缩。",
+        "developments": [],
+        "historicalMoves": [
+          {
+            "processId": "development:seed-vienna-social-democracy-1912",
+            "intent": "support",
+            "magnitude": 0.06,
+            "note": "工会与救济网络在战后重建中继续扩展。"
+          }
+        ],
+        "parameterChanges": {
+          "foodSupply": 0.02,
+          "healthcare": 0.03,
+          "sanitation": 0.02,
+          "stability": 0.015,
+          "unemployment": -0.02,
+          "epidemicTuberculosis": 0.03,
+          "migrationPressure": 0.02
+        },
+        "eventPoolChanges": [
+          {
+            "familyId": "vienna-history-social-democracy",
+            "weightMultiplier": 1.2
+          },
+          {
+            "familyId": "vienna-history-psychoanalysis",
+            "weightMultiplier": 0.85
+          },
+          {
+            "familyId": "vienna-history-culture",
+            "weightMultiplier": 1.05
+          },
+          {
+            "familyId": "vienna-1918-influenza",
+            "weightMultiplier": 0.7
+          }
+        ]
+      },
+      "beforeProcesses": [
+        {
+          "id": "development:history-demo-1914-mvz8tqa5:0",
+          "phase": "emerging",
+          "participants": 0
+        },
+        {
+          "id": "development:history-demo-1914-mvz8tqa5:1",
+          "phase": "emerging",
+          "participants": 0
+        },
+        {
+          "id": "development:seed-vienna-social-democracy-1912",
+          "phase": "institutionalizing",
+          "participants": 9
+        },
+        {
+          "id": "development:seed-vienna-psychoanalytic-circle-1912",
+          "phase": "mobilizing",
+          "participants": 4
+        }
+      ],
+      "afterProcesses": [
+        {
+          "id": "development:history-demo-1914-mvz8tqa5:0",
+          "phase": "emerging",
+          "participants": 0
+        },
+        {
+          "id": "development:history-demo-1914-mvz8tqa5:1",
+          "phase": "emerging",
+          "participants": 0
+        },
+        {
+          "id": "development:seed-vienna-social-democracy-1912",
+          "phase": "institutionalizing",
+          "participants": 9
+        },
+        {
+          "id": "development:seed-vienna-psychoanalytic-circle-1912",
+          "phase": "mobilizing",
+          "participants": 4
+        }
+      ],
+      "revision": 8
+    }
+  ]
+}

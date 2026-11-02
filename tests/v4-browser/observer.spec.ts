@@ -28,9 +28,15 @@ test('register, give birth, read a concrete log and inspect the map', async ({ p
   await expect(page.locator('.observer')).toBeVisible({ timeout: 30000 });
   await expect(page.locator('.own-badge')).toBeVisible({ timeout: 30000 });
   await expect(page.locator('.person-heading h2')).toHaveText('E2E Klara', { timeout: 30000 });
+  await expect(page.locator('.historical-processes')).toBeVisible();
   await expect(page.locator('.log-entry').first()).toBeVisible({ timeout: 30000 });
   await expect(page.locator('.log-pane')).toContainText('出生');
   await expect(page.locator('.topbar')).toContainText(username);
+
+  await page.locator('.person-switch select').selectOption('person-sigmund-freud');
+  await expect(page.locator('.person-heading h2')).toHaveText('Sigmund Freud');
+  await expect(page.locator('.historical-badge')).toContainText('历史人物');
+  await expect(page.locator('.historical-participation')).toBeVisible();
 
   await page.locator('.person-switch select').selectOption('person-anton-huber');
   await expect(page.locator('.person-heading h2')).toHaveText('Anton Huber');

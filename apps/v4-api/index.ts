@@ -42,6 +42,7 @@ import {
   VIENNA_POSTWAR_CHRONICLE,
   VIENNA_POSTWAR_SCENES,
 } from '../../packages/v4/content/vienna-postwar.js';
+import { VIENNA_HISTORY_SCENES } from '../../packages/v4/content/vienna-history.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../../packages/v4/content/vienna-developments.js';
 
 const sha = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -283,6 +284,31 @@ export function makeV4Api() {
               parameters: region.parameters,
             })),
             population: meta.macro.population,
+            developments: Object.values(meta.macro.developments ?? {})
+              .filter((development) => development.historical)
+              .map((development) => ({
+                id: development.id,
+                type: development.type,
+                description: development.description,
+                status: development.status,
+                severity: development.severity,
+                organizationId: development.organizationId,
+                historical: development.historical
+                  ? {
+                      kind: development.historical.kind,
+                      phase: development.historical.phase,
+                      phaseStarted: development.historical.phaseStarted,
+                      metrics: development.historical.metrics,
+                      objectives: development.historical.objectives,
+                      participantCount: Object.keys(development.historical.participants).length,
+                      organizations: Object.entries(development.historical.organizationRoles).map(
+                        ([id, roles]) => ({ id, roles }),
+                      ),
+                      outcome: development.historical.outcome,
+                      recentHistory: development.historical.history.slice(-4),
+                    }
+                  : undefined,
+              })),
           }
         : null,
     };
@@ -304,7 +330,8 @@ export function makeV4Api() {
     if (!meta) return reply.code(404).send({ error: 'v4 世界尚未启动' });
     const detail = await v4PersonDetail(meta.id, (req.params as any).id);
     if (!detail) return reply.code(404).send({ error: '人物不存在' });
-    const u = await user(req);
+    const [u, macro] = await Promise.all([user(req), v4MacroState(meta.id)]);
+
     const isOwner = Boolean(u && detail.person.ownerId && detail.person.ownerId === u.id);
     const peopleById = Object.fromEntries(detail.people.map((person) => [person.id, person]));
     const relationsById = Object.fromEntries(
@@ -362,6 +389,41 @@ export function makeV4Api() {
       worldEvents: detail.worldEvents
         .filter((event) => event.visibility === 'public')
         .map((event) => projectEvent(event, detail.lookups)),
+      historicalProcesses: Object.values(macro?.developments ?? {})
+        .filter((development) => development.historical?.participants[detail.person.id])
+        .map((development) => {
+          const participation = development.historical!.participants[detail.person.id]!;
+          return {
+            id: development.id,
+            description: development.description,
+            kind: development.historical!.kind,
+            phase: development.historical!.phase,
+            outcome: development.historical!.outcome,
+            roles: participation.roles,
+            influence: participation.influence,
+            joinedAt: participation.joinedAt,
+            lastEventId: participation.lastEventId,
+          };
+        }),
+      historicalContacts: detail.person.relationshipIds
+        .map((id) => detail.relations.find((relation) => relation.id === id))
+        .filter((relation): relation is NonNullable<typeof relation> => Boolean(relation))
+        .map((relation) => {
+          const otherId = relation.a === detail.person.id ? relation.b : relation.a;
+          const other = detail.people.find((person) => person.id === otherId);
+          return other?.historicalIdentity
+            ? {
+                id: other.id,
+                name: other.name,
+                kind: relation.kind,
+                trust: relation.trust,
+                respect: relation.respect,
+                historicalId: other.historicalIdentity.id,
+                publicRole: other.historicalIdentity.publicRole,
+              }
+            : undefined;
+        })
+        .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry)),
     };
   });
 
@@ -487,6 +549,7 @@ const sceneTitles = new Map(
     ...VIENNA_1912_SCENES,
     ...VIENNA_LIFE_SCENES,
     ...VIENNA_POSTWAR_SCENES,
+    ...VIENNA_HISTORY_SCENES,
     ...VIENNA_DEVELOPMENT_SCENES,
     ...VIENNA_FAMILY_RUNTIME_SCENES,
     ...GENERATED_SCENES,
@@ -501,6 +564,7 @@ const ACTION_TITLES: Record<string, string> = {
   statistical_recovery: '康复',
   statistical_illness_worsened: '病情反复',
   interaction_response: '回应',
+  historical_phase: '历史转折',
 };
 
 /**
@@ -610,6 +674,7 @@ function publicPerson(
     roles: person.roles.filter((role) => !(age >= 12 && (role === 'infant' || role === 'child'))),
     lifeContract:
       ownerId !== undefined && person.ownerId === ownerId ? person.lifeContract : undefined,
+    historical: person.historicalIdentity ?? undefined,
     appearance: person.appearance ?? { skin: 1, hair: 0, clothes: 2, doll: { bodyType: 'female' } },
   };
 }

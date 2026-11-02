@@ -5,10 +5,12 @@ import { VIENNA_1912_SCENES, VIENNA_1912_SEED } from '../../packages/v4/content/
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../../packages/v4/content/vienna-family.js';
 import { GENERATED_SCENES } from '../../packages/v4/content/generated/index.js';
 import { defaultMacroState } from '../../packages/v4/macro.js';
+import { applyViennaHistoricalWorld } from '../../packages/v4/content/vienna-history-world.js';
 import { enqueueV4MacroProposal } from '../../packages/v4/macro-store.js';
 import { loadPublishedV4Scenes } from '../../packages/v4/content-runtime-store.js';
 import { VIENNA_LIFE_SCENES } from '../../packages/v4/content/vienna-life.js';
 import { VIENNA_POSTWAR_SCENES } from '../../packages/v4/content/vienna-postwar.js';
+import { VIENNA_HISTORY_SCENES } from '../../packages/v4/content/vienna-history.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../../packages/v4/content/vienna-developments.js';
 import {
   activeV4WorldMeta,
@@ -37,7 +39,7 @@ await enqueueMissingV4BirthContracts();
 if (!(await activeV4WorldMeta())) {
   // World ids are never reused: archived worlds keep their id, so a fresh
   // automatic seed gets a new stable suffix instead of colliding with history.
-  const seed = structuredClone(VIENNA_1912_SEED);
+  const seed = applyViennaHistoricalWorld(structuredClone(VIENNA_1912_SEED));
   seed.id = `${seed.id}-v${Date.now().toString(36)}`;
   await seedV4World(seed);
   console.log('v4 simulator: seeded Vienna 1912', seed.id);
@@ -132,6 +134,7 @@ while (!stopped) {
           ...VIENNA_1912_SCENES,
           ...VIENNA_LIFE_SCENES,
           ...VIENNA_POSTWAR_SCENES,
+          ...VIENNA_HISTORY_SCENES,
           ...VIENNA_DEVELOPMENT_SCENES,
           ...VIENNA_FAMILY_RUNTIME_SCENES,
           ...GENERATED_SCENES,
