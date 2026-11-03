@@ -103,6 +103,7 @@ const VALID_EFFECTS = new Set<EventEffect['type']>([
   'historical_participation',
   'historical_influence',
   'historical_process',
+  'organization_funds',
 ]);
 
 const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
@@ -125,6 +126,7 @@ const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
   'worldYear',
   'pressure',
   'historicalProcess',
+  'legacy',
   'hasRelationWith',
 ]);
 
@@ -207,6 +209,7 @@ function checkCondition(where: string, condition: SceneCondition, errors: string
       'institutionalizing',
       'repression',
       'declining',
+      'suspended',
       'ended',
     ];
     for (const phase of condition.phases ?? [])
@@ -229,6 +232,19 @@ function checkCondition(where: string, condition: SceneCondition, errors: string
         ].includes(role)
       )
         errors.push(`${where}: invalid historical role ${role}`);
+  }
+  if (condition.kind === 'legacy') {
+    const allowed = [
+      'reform',
+      'repression',
+      'war_aftermath',
+      'public_health_regime',
+      'cultural_institution',
+      'organization_split',
+      'social_memory',
+    ];
+    if (condition.legacyKind && !allowed.includes(condition.legacyKind))
+      errors.push(`${where}: invalid legacy kind ${condition.legacyKind}`);
   }
   if (condition.kind === 'hasRelationWith' && !condition.personId)
     errors.push(`${where}: hasRelationWith needs personId`);

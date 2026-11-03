@@ -78,6 +78,13 @@ type PersonSummary = {
   locationName?: string;
   occupation: string;
   historical?: HistoricalIdentity;
+  agency?: {
+    goal: string;
+    summary: string;
+    since: Date4;
+    lastAction?: Date4;
+    lastActionKind?: string;
+  };
   householdId: string;
   roles: string[];
   education: { status: string; level: number; placeId?: string };
@@ -123,7 +130,20 @@ type World = {
   organizations: { id: string; name: string; kind: string }[];
   recentEvents: LogEvent[];
   chronicle: Chronicle[];
-  macro?: { developments?: WorldHistoricalDevelopment[] } | null;
+  macro?: {
+    developments?: WorldHistoricalDevelopment[];
+    legacy?: {
+      id: string;
+      processId?: string;
+      kind: string;
+      title: string;
+      description: string;
+      regionId: string;
+      started: Date4;
+      tags: string[];
+      eventWeights: Record<string, number>;
+    }[];
+  } | null;
 };
 type PersonDetail = {
   person: PersonSummary;
@@ -1021,6 +1041,9 @@ function PersonPane({
         {person.roles.length > 0 && (
           <Fact label="角色" value={person.roles.slice(0, 3).join(' · ')} />
         )}
+        {person.agency && (
+          <Fact label="当前目标" value={person.agency.summary || person.agency.goal} />
+        )}
         {person.died && <Fact label="死因" value={person.deathCause ?? '没有记录'} />}
       </div>
       {person.lifeContract && (
@@ -1423,6 +1446,7 @@ function WorldPane({
   const activeDevelopments = (world.macro?.developments ?? [])
     .filter(isActiveHistoricalDevelopment)
     .slice(0, 4);
+  const activeLegacy = (world.macro?.legacy ?? []).slice(0, 4);
   return (
     <aside className="pane world-pane">
       <div className="pane-label">维也纳 · 世界</div>
@@ -1481,6 +1505,21 @@ function WorldPane({
           </button>
         )}
       </section>
+      {activeLegacy.length > 0 && (
+        <section className="historical-legacy">
+          <div className="section-head">
+            <h3>历史遗产</h3>
+            <span>{activeLegacy.length} 项仍在使用</span>
+          </div>
+          {activeLegacy.map((legacy) => (
+            <article key={legacy.id} className="historical-legacy-card">
+              <strong>{legacy.title}</strong>
+              <p>{legacy.description}</p>
+              <small>{legacy.tags.slice(0, 3).join(' · ')}</small>
+            </article>
+          ))}
+        </section>
+      )}
       {activeDevelopments.length > 0 && (
         <section className="historical-processes">
           <div className="section-head">

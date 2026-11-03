@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-11-03",
+  "model": "deepseek-v4.1-flash",
+  "command": "pnpm exec tsx scripts/v4-content-author.ts --generate <family>",
+  "packs": [
+    {
+      "family": "vienna-legacy-worklife",
+      "file": "packages/v4/content/generated/vienna-legacy-worklife.json",
+      "tokens": 9674,
+      "attempts": 1,
+      "nodes": 4,
+      "outcomes": 12,
+      "narrations": 24,
+      "validationErrors": 0,
+      "conditions": ["age", "legacy:reform"],
+      "actualTrigger": {
+        "experiment": "durable reform treatment vs control, 25 years",
+        "treatmentEvents": 53,
+        "controlEvents": 0,
+        "note": "The treatment world has a reform legacy; the control world has no legacy. Both use the same seed, scenes and ordinary population."
+      }
+    },
+    {
+      "family": "vienna-war-aftermath-life",
+      "file": "packages/v4/content/generated/vienna-war-aftermath-life.json",
+      "tokens": 9125,
+      "attempts": 1,
+      "nodes": 4,
+      "outcomes": 12,
+      "narrations": 24,
+      "validationErrors": 0,
+      "conditions": ["age", "legacy:war_aftermath"],
+      "actualTrigger": {
+        "experiment": "war process decays to ended, 12 years of aftermath life",
+        "events": 23,
+        "sampleDates": ["1926-06", "1926-09", "1927-07", "1927-11"],
+        "note": "The war process's legacy is war_aftermath; the generated pack fires only after that legacy exists."
+      }
+    }
+  ],
+  "limitations": [
+    "These are two generated event families; they are not a general-purpose content factory for every legacy kind.",
+    "The generated packs use ordinary effects only. Historical participation/influence remains authored in vienna-history.ts and runtime-generated historical packs are a separate family.",
+    "Generation is a manual/batch command; the content worker only auto-enqueues the historical social-movement brief today."
+  ]
+}

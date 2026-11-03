@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 import { pool } from '../packages/storage/index.js';
 import { VIENNA_1912_SEED } from '../packages/v4/content/vienna-1912.js';
 import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
+import { recordReformLegacy } from '../packages/v4/history.js';
 import { migrateV4, seedV4World } from '../packages/v4/store.js';
 
 const url = process.env.DATABASE_URL;
@@ -14,13 +15,13 @@ await pool.query(
    v4_interactions, v4_projects, v4_positions, v4_organizations, v4_persons,
    v4_households, v4_places, v4_worlds, sessions, users RESTART IDENTITY CASCADE`,
 );
-await seedV4World(
-  applyViennaHistoricalWorld({
-    ...structuredClone(VIENNA_1912_SEED),
-    id: 'world-vienna-e2e',
-    timePolicy: { secondsPerYear: 5, monthsPerTick: 12 },
-  }),
-);
+const e2eWorld = applyViennaHistoricalWorld({
+  ...structuredClone(VIENNA_1912_SEED),
+  id: 'world-vienna-e2e',
+  timePolicy: { secondsPerYear: 5, monthsPerTick: 12 },
+});
+recordReformLegacy(e2eWorld.macro!, 'development:seed-vienna-social-democracy-1912', e2eWorld.date);
+await seedV4World(e2eWorld);
 await pool.end();
 
 const child = spawn(process.execPath, ['--import', 'tsx', 'scripts/dev.ts'], {

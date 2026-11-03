@@ -9,6 +9,7 @@ export const historicalPhaseLabels: Record<string, string> = {
   institutionalizing: '制度化',
   repression: '压制',
   declining: '衰落',
+  suspended: '停滞',
   ended: '结束',
 };
 

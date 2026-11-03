@@ -21,6 +21,7 @@ import {
   type EventEffect,
   type EventFact,
   type EventParticipant,
+  type HistoricalProcessMetrics,
   type Household,
   type Id,
   type Interaction,
@@ -52,8 +53,10 @@ import {
   takeBackgroundPerson,
   syncMacroPressures,
   type MacroState,
+  type PendingMacroAction,
   type WorldDevelopment,
 } from './macro.js';
+import { agencyActorIds, planAgencyAction, planBottomUpProcess } from './agency.js';
 import {
   advanceHistoricalProcesses,
   ensureHistoricalProcess,
@@ -61,6 +64,7 @@ import {
   HISTORICAL_PROCESS_KINDS,
   historicalPersonAvailable,
   recordHistoricalInfluence,
+  recordReformLegacy,
   recordHistoricalParticipation,
   type HistoricalTransition,
 } from './history.js';
@@ -113,6 +117,10 @@ export type V4AdvanceOptions = {
    * fact/followup queue. Defaults to false so old fixtures remain stable.
    */
   eventRuntime?: boolean;
+  /** Deterministic person/organisation initiative loop. Defaults to false for old fixtures. */
+  agency?: boolean;
+  /** Maximum ordinary adults sampled for initiative per year. Defaults to 48. */
+  maxAgencyActorsPerYear?: number;
   /** Soft cap for ordinary statistical events per person-year. Fact events bypass. */
   maxOrdinaryEventsPerPerson?: number;
   /** Allow required missing roles to be taken from the background cohort. */
@@ -184,6 +192,8 @@ export type V4AdvanceResult = {
 type NormalizedOptions = {
   maxScenesPerPerson: number;
   eventRuntime: boolean;
+  agencyEnabled: boolean;
+  maxAgencyActorsPerYear: number;
   maxOrdinaryEventsPerPerson: number;
   materializePopulation: boolean;
   statisticalModel: boolean;
@@ -451,6 +461,11 @@ export function advanceV4Year(
   } else {
     runScenes(context, definitions, target, resolvedCounts, false);
   }
+  runPendingMacroActions(context, target);
+  if (normalized.agencyEnabled) {
+    runAgencyYear(context, target, normalized.maxAgencyActorsPerYear);
+    runBottomUpProcesses(context, target);
+  }
   mark('events');
   reapVitalityZero(context, target);
   if (draft.macro) {
@@ -485,7 +500,15 @@ export function advanceV4Year(
           action: 'historical_phase',
           title: '历史进程转折',
           causes: transition.causeEventId ? [transition.causeEventId] : [],
-          effects: [],
+          effects: livingParticipants.map(([personId]) => ({
+            type: 'knowledge' as const,
+            holderId: personId,
+            proposition: `我亲历或知晓「${development.description.slice(0, 80)}」进入${transition.to}阶段。`,
+            confidence: 0.8,
+            sourceKind: 'witnessed' as const,
+            visibility: 'shared' as const,
+            trueInWorld: true,
+          })),
           immediateText: transition.note,
           significance: 0.9,
           visibility: 'public',
@@ -544,6 +567,12 @@ function normalizeOptions(options: V4AdvanceOptions): NormalizedOptions {
   return {
     maxScenesPerPerson,
     eventRuntime: options.eventRuntime === true,
+    agencyEnabled: options.agency === true,
+    maxAgencyActorsPerYear:
+      typeof options.maxAgencyActorsPerYear === 'number' &&
+      Number.isFinite(options.maxAgencyActorsPerYear)
+        ? Math.max(0, Math.min(400, Math.floor(options.maxAgencyActorsPerYear)))
+        : 48,
     materializePopulation: options.materializePopulation !== false,
     statisticalModel: options.statisticalModel !== false,
     maxOrdinaryEventsPerPerson:
@@ -848,6 +877,18 @@ function conditionPasses(
           development.status === 'active' &&
           development.end.year * 12 + development.end.month >= now,
       );
+    }
+    case 'legacy': {
+      const regionId = regionIdForPerson(world, subject);
+      return Object.values(world.macro?.legacy ?? {}).some((legacy) => {
+        if (legacy.status !== 'active') return false;
+        if (condition.sameRegion !== false && legacy.regionId !== regionId) return false;
+        if (condition.id !== undefined && legacy.id !== condition.id) return false;
+        if (condition.legacyKind !== undefined && legacy.kind !== condition.legacyKind)
+          return false;
+        if (condition.tag !== undefined && !legacy.tags.includes(condition.tag)) return false;
+        return true;
+      });
     }
     case 'historicalProcess': {
       const process = world.macro?.developments;
@@ -1779,6 +1820,9 @@ function selectOutcome(
     );
   }
 
+  // An optional role that was not cast cannot be named in the prose. Filter
+  // such outcomes instead of committing a literal `{neighbor}` token.
+  outcomes = outcomes.filter((outcome) => !outcomeReferencesMissingRole(outcome, roles));
   if (outcomes.length === 0) return undefined;
 
   const rng = seededRng(
@@ -1939,6 +1983,31 @@ function selectNarration(
  * tokens stay literal so a broken reference is visible instead of silently
  * inventing a person.
  */
+const BUILTIN_TEXT_TOKENS = new Set([
+  'subject',
+  'place',
+  'residence',
+  'school',
+  'workplace',
+  'age',
+  'year',
+  'household',
+  'child',
+]);
+
+function textReferencesMissingRole(text: string, roles: Record<Id, Id>): boolean {
+  for (const match of text.matchAll(/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g)) {
+    const key = match[1]!;
+    if (BUILTIN_TEXT_TOKENS.has(key)) continue;
+    if (roles[key] === undefined) return true;
+  }
+  return false;
+}
+
+function outcomeReferencesMissingRole(outcome: SceneOutcome, roles: Record<Id, Id>): boolean {
+  return textReferencesMissingRole(outcome.immediateText, roles);
+}
+
 export function interpolateSceneText(
   text: string,
   world: WorldState,
@@ -2343,6 +2412,668 @@ function processScheduledEvents(
   const mergedQueue = new Map<string, ScheduledEvent>();
   for (const item of [...remaining, ...newlyScheduled]) mergedQueue.set(item.id, item);
   context.world.historyMeta.scheduledEvents = [...mergedQueue.values()];
+}
+
+function macroActionActor(world: WorldState, action: PendingMacroAction): Person | undefined {
+  if (action.actorPersonId) {
+    const explicit = world.persons[action.actorPersonId];
+    return explicit && !explicit.died ? explicit : undefined;
+  }
+  const organization = action.organizationId
+    ? world.organizations[action.organizationId]
+    : undefined;
+  if (!organization) return undefined;
+  for (const positionId of organization.positions) {
+    const holderId = world.positions[positionId]?.holderId;
+    const holder = holderId ? world.persons[holderId] : undefined;
+    if (holder && !holder.died) return holder;
+  }
+  return organization.memberIds
+    .map((id) => world.persons[id])
+    .filter((person): person is Person => Boolean(person) && !person.died)
+    .sort((a, b) => (b.life?.skills.social ?? 0) - (a.life?.skills.social ?? 0))[0];
+}
+
+function macroActionCandidates(
+  context: EngineContext,
+  action: PendingMacroAction,
+  date: WorldDate,
+): Person[] {
+  const world = context.world;
+  const regionId = action.organizationId
+    ? (world.places[world.organizations[action.organizationId]?.placeId ?? '']?.regionId ??
+      'region-lower-austria')
+    : 'region-lower-austria';
+  return Object.values(world.persons)
+    .filter(
+      (person) =>
+        !person.died &&
+        ageAt(person, date) >= 16 &&
+        ageAt(person, date) <= 75 &&
+        regionIdForPerson(world, person) === regionId &&
+        person.provenance.kind !== 'historical_activation',
+    )
+    .sort((a, b) => a.id.localeCompare(b.id));
+}
+
+function runPendingMacroActions(context: EngineContext, date: WorldDate): void {
+  const world = context.world;
+  const state = world.macro;
+  if (!state) return;
+  const actions = state.pendingActions ?? [];
+  if (actions.length === 0) return;
+  let budget = 6;
+  const existingActions = new Set(
+    world.events
+      .filter((event) => event.action.startsWith('macro_action:'))
+      .map((event) => event.action),
+  );
+  for (const action of actions) {
+    if (action.status !== 'pending') continue;
+    if (budget <= 0) break;
+    const marker = `macro_action:${action.id}`;
+    if (existingActions.has(marker)) {
+      action.status = 'applied';
+      continue;
+    }
+    const actor = macroActionActor(world, action);
+    const organization = action.organizationId
+      ? world.organizations[action.organizationId]
+      : undefined;
+    const process = action.processId
+      ? state.developments?.[action.processId]?.historical
+      : undefined;
+    if (!actor) {
+      action.status = 'skipped';
+      action.reason = 'no living actor';
+      continue;
+    }
+    const effects: EventEffect[] = [];
+    const participants: EventParticipant[] = [{ personId: actor.id, role: 'subject' }];
+    let text = `${actor.name}推动「${action.title}」。${action.description}`;
+    let significance = 0.55;
+    const addKnowledge = (holderId: string, proposition: string) => {
+      effects.push({
+        type: 'knowledge',
+        holderId,
+        proposition: proposition.slice(0, 280),
+        confidence: 0.85,
+        sourceKind: 'witnessed',
+        personId: actor.id,
+        visibility: 'shared',
+        trueInWorld: true,
+      });
+    };
+    const addParticipation = (role: 'organizer' | 'participant' | 'supporter' | 'opponent') => {
+      if (!action.processId) return;
+      effects.push({
+        type: 'historical_participation',
+        processId: action.processId,
+        personId: actor.id,
+        role,
+        influence: 0.03 + action.intensity * 0.05,
+        reason: `director action: ${action.kind}`,
+      });
+    };
+    const addInfluence = (
+      dimension: keyof HistoricalProcessMetrics,
+      amount: number,
+      reason: string,
+    ) => {
+      if (!action.processId) return;
+      effects.push({
+        type: 'historical_influence',
+        processId: action.processId,
+        personId: actor.id,
+        dimension,
+        amount: Math.max(-0.2, Math.min(0.2, amount * (0.5 + action.intensity))),
+        reason,
+      });
+    };
+    const candidates = macroActionCandidates(context, action, date);
+
+    switch (action.kind) {
+      case 'organize': {
+        if (!organization) {
+          action.status = 'skipped';
+          action.reason = 'organization missing';
+          continue;
+        }
+        const members = organization.memberIds
+          .map((id) => world.persons[id])
+          .filter((person): person is Person => Boolean(person) && !person.died)
+          .filter((person) => person.id !== actor.id)
+          .slice(0, 3);
+        const project: Project = {
+          id: `project:macro:${action.id}`,
+          ownerId: organization.id,
+          kind: 'macro_organize',
+          title: action.title,
+          participants: [
+            { personId: actor.id, role: 'organizer' },
+            ...members.map((member) => ({ personId: member.id, role: 'participant' })),
+          ],
+          placeId: organization.placeId,
+          state: 'active',
+          stage: 0,
+          required: { people: 2 },
+          committed: {},
+          deadline: addMonths(date, 12),
+          blockers: [],
+          causeIds: [],
+          history: [{ date: { ...date }, note: 'macro_action_organize' }],
+        };
+        effects.push({ type: 'project', project });
+        addParticipation('organizer');
+        addInfluence('support', 0.035, 'a real organizing effort');
+        for (const member of members) {
+          addKnowledge(member.id, `${actor.name}召集了一次关于${action.title}的组织会议。`);
+          effects.push({
+            type: 'relation',
+            a: actor.id,
+            b: member.id,
+            kind: 'colleague',
+            trust: 0.02,
+            obligation: 0.02,
+            reason: 'attended a director-proposed organizing meeting',
+          });
+          participants.push({ personId: member.id, role: 'participant' });
+        }
+        significance = 0.65;
+        break;
+      }
+      case 'recruit': {
+        if (!organization) {
+          action.status = 'skipped';
+          action.reason = 'organization missing';
+          continue;
+        }
+        const existing = new Set(organization.memberIds);
+        const targets = candidates
+          .filter((person) => !existing.has(person.id) && person.id !== actor.id)
+          .sort((a, b) => (b.life?.skills.social ?? 0) - (a.life?.skills.social ?? 0))
+          .slice(0, action.intensity > 0.6 ? 3 : 2);
+        if (targets.length === 0) {
+          action.status = 'skipped';
+          action.reason = 'no available recruits in region';
+          continue;
+        }
+        for (const target of targets) {
+          effects.push({
+            type: 'organization_membership',
+            personId: target.id,
+            organizationId: organization.id,
+            add: true,
+            reason: `recruited by ${actor.name}`,
+          });
+          effects.push({
+            type: 'relation',
+            a: actor.id,
+            b: target.id,
+            kind: 'acquaintance',
+            trust: 0.03,
+            obligation: 0.02,
+            reason: 'recruited into an organization',
+          });
+          addKnowledge(target.id, `${actor.name}邀请我加入${organization.name}。`);
+          if (action.processId)
+            effects.push({
+              type: 'historical_participation',
+              processId: action.processId,
+              personId: target.id,
+              role: 'supporter',
+              influence: 0.02,
+              reason: 'joined through a director-supported recruitment drive',
+            });
+          participants.push({ personId: target.id, role: 'recruit' });
+        }
+        addInfluence('support', 0.03, 'recruitment enlarged the organization');
+        text = `${actor.name}在${world.places[organization.placeId]?.name ?? '组织所在地'}招募了${targets.length}名新成员：${targets.map((person) => person.name).join('、')}。他们没有立刻成为骨干，但名册和会费都变了。`;
+        break;
+      }
+      case 'negotiate': {
+        const targetOrganization = action.targetOrganizationId
+          ? world.organizations[action.targetOrganizationId]
+          : undefined;
+        if (!targetOrganization) {
+          action.status = 'skipped';
+          action.reason = 'target organization missing';
+          continue;
+        }
+        const targetPerson =
+          targetOrganization.positions
+            .map((id) => world.positions[id]?.holderId)
+            .map((id) => (id ? world.persons[id] : undefined))
+            .find((person) => person && !person.died) ??
+          targetOrganization.memberIds
+            .map((id) => world.persons[id])
+            .find((person) => person && !person.died);
+        if (!targetPerson) {
+          action.status = 'skipped';
+          action.reason = 'target organization has no living representative';
+          continue;
+        }
+        const acceptEffects: EventEffect[] = [
+          {
+            type: 'relation',
+            a: actor.id,
+            b: targetPerson.id,
+            kind: 'acquaintance',
+            trust: 0.04,
+            respect: 0.03,
+            reason: 'reached an agreement',
+          },
+        ];
+        if (action.processId) {
+          acceptEffects.push({
+            type: 'historical_influence',
+            processId: action.processId,
+            personId: actor.id,
+            dimension: 'legitimacy',
+            amount: 0.04,
+            reason: 'negotiated recognition',
+          });
+        }
+        const rejectEffects: EventEffect[] = [];
+        if (action.processId) {
+          rejectEffects.push({
+            type: 'historical_influence',
+            processId: action.processId,
+            personId: actor.id,
+            dimension: 'opposition',
+            amount: 0.03,
+            reason: 'negotiation failed',
+          });
+        }
+        const interaction: Interaction = {
+          id: `interaction:macro:${action.id}`,
+          initiatorId: actor.id,
+          counterpartyIds: [targetPerson.id],
+          kind: 'negotiation',
+          subject: action.title,
+          status: 'pending',
+          created: { ...date },
+          due: addMonths(date, 6),
+          proposal: {
+            acceptText: `${targetPerson.name}接受了${actor.name}的谈判条件。`,
+            rejectText: `${targetPerson.name}拒绝了${actor.name}的谈判条件。`,
+            acceptEffects,
+            rejectEffects,
+          },
+          responses: [],
+          visibility: 'participants',
+        };
+        effects.push({ type: 'interaction', interaction });
+        participants.push({ personId: targetPerson.id, role: 'counterparty' });
+        addKnowledge(actor.id, `我代表${organization?.name ?? '自己'}与${targetPerson.name}谈判。`);
+        addKnowledge(targetPerson.id, `${actor.name}来找我谈判。`);
+        text = `${actor.name}代表${organization?.name ?? '自己'}与${targetPerson.name}会面，讨论「${action.title}」。双方没有当场签字，但把条件和保留意见都记了下来。`;
+        break;
+      }
+      case 'publish': {
+        let readers = candidates
+          .filter((person) => (person.life?.skills.literacy ?? 0) >= 0.25)
+          .slice(0, 4);
+        if (readers.length === 0 && organization) {
+          readers = organization.memberIds
+            .map((id) => world.persons[id])
+            .filter((person): person is Person => Boolean(person) && !person.died)
+            .filter((person) => person.id !== actor.id)
+            .slice(0, 3);
+        }
+        for (const reader of readers) {
+          addKnowledge(reader.id, `我读到${actor.name}关于${action.title}的文字。`);
+          participants.push({ personId: reader.id, role: 'reader' });
+        }
+        effects.push({
+          type: 'reputation',
+          personId: actor.id,
+          amount: 0.03,
+          reason: 'published a public argument',
+        });
+        addInfluence('information', 0.04, 'published and circulated an argument');
+        text =
+          readers.length > 0
+            ? `${actor.name}把「${action.title}」写成公开文字，交给印刷所和熟人传阅。几天后，${readers.length}个人在咖啡馆或工作间里讨论它。`
+            : `${actor.name}把「${action.title}」写成公开文字，交给印刷所；暂时没有多少读者，但稿子留在了档案里。`;
+        significance = 0.5;
+        break;
+      }
+      case 'relief': {
+        if (!organization) {
+          action.status = 'skipped';
+          action.reason = 'organization missing';
+          continue;
+        }
+        const households = Object.values(world.households)
+          .filter((household) => {
+            const members = household.memberIds
+              .map((id) => world.persons[id])
+              .filter((person): person is Person => Boolean(person) && !person.died);
+            return (
+              members.length > 0 &&
+              members.some((person) => regionIdForPerson(world, person) === 'region-lower-austria')
+            );
+          })
+          .sort((a, b) => a.cash - b.cash || a.id.localeCompare(b.id))
+          .slice(0, 3);
+        if (households.length === 0) {
+          action.status = 'skipped';
+          action.reason = 'no households in region';
+          continue;
+        }
+        const budget = Math.max(0, Math.min(6, organization.treasury / 3));
+        for (const household of households) {
+          effects.push({
+            type: 'cash',
+            householdId: household.id,
+            amount: Math.max(0.5, budget / households.length),
+            reason: `relief from ${organization.name}`,
+          });
+          effects.push({
+            type: 'food',
+            householdId: household.id,
+            amount: 1,
+            reason: `relief from ${organization.name}`,
+          });
+          for (const memberId of household.memberIds.slice(0, 2))
+            participants.push({ personId: memberId, role: 'recipient' });
+        }
+        addInfluence('support', 0.035, 'material relief reached households');
+        addInfluence('legitimacy', 0.025, 'relief was seen as legitimate help');
+        text = `${organization.name}拿出${budget.toFixed(1)}克朗和少量食物，分给${households.length}户最困难的人家。领到东西的人没有立刻变成支持者，但记住了是谁送来的。`;
+        significance = 0.55;
+        break;
+      }
+      case 'repress': {
+        const targets = process
+          ? Object.keys(process.participants)
+              .map((id) => world.persons[id])
+              .filter((person): person is Person => Boolean(person) && !person.died)
+              .sort((a, b) => a.id.localeCompare(b.id))
+              .slice(0, action.intensity > 0.6 ? 3 : 2)
+          : [];
+        if (targets.length === 0) {
+          action.status = 'skipped';
+          action.reason = 'no process participants to repress';
+          continue;
+        }
+        for (const target of targets) {
+          effects.push({
+            type: 'mood',
+            personId: target.id,
+            amount: -0.12,
+            reason: 'police or administrative pressure',
+          });
+          effects.push({
+            type: 'health',
+            personId: target.id,
+            amount: -0.02,
+            reason: 'detention or forced dispersal',
+          });
+          effects.push({
+            type: 'reputation',
+            personId: target.id,
+            amount: -0.02,
+            reason: 'publicly targeted by authorities',
+          });
+          addKnowledge(target.id, `${actor.name}或当局对参与行动的人施加压力。`);
+          participants.push({ personId: target.id, role: 'target' });
+        }
+        addInfluence('escalation', 0.04, 'coercive pressure raised the stakes');
+        addInfluence('opposition', 0.025, 'repression created opposition');
+        text = `${actor.name}推动对「${action.title}」相关人员的压制：${targets.map((person) => person.name).join('、')}被传唤、警告或被迫离开公开活动。压制没有让争议消失。`;
+        significance = 0.7;
+        break;
+      }
+      case 'reform': {
+        if (!action.processId) {
+          action.status = 'skipped';
+          action.reason = 'reform action needs a process';
+          continue;
+        }
+        const legacy = recordReformLegacy(state, action.processId, date);
+        addParticipation('organizer');
+        addInfluence('legitimacy', 0.05, 'a reform proposal gained institutional ground');
+        addInfluence('support', 0.04, 'reform attracted wider support');
+        effects.push({
+          type: 'reputation',
+          personId: actor.id,
+          amount: 0.03,
+          reason: 'pushed a reform proposal',
+        });
+        text = `${actor.name}把「${action.title}」推动到正式讨论中：条款被抄进会议记录，支持者和反对者都开始计算它真正实施后的后果。${legacy ? `这留下了「${legacy.title}」。` : ''}`;
+        significance = 0.8;
+        break;
+      }
+      case 'spawn_process': {
+        const processOrganization =
+          organization ??
+          Object.values(world.organizations).find(
+            (candidate) => candidate.status === 'active' && candidate.memberIds.includes(actor.id),
+          );
+        if (!processOrganization) {
+          action.status = 'skipped';
+          action.reason = 'spawned process needs an organization';
+          continue;
+        }
+        const id = `development:macro-action-${action.id}`
+          .replace(/[^a-zA-Z0-9:_-]/g, '-')
+          .slice(0, 160);
+        if (state.developments?.[id]) {
+          action.status = 'skipped';
+          action.reason = 'process id already exists';
+          continue;
+        }
+        effects.push({
+          type: 'historical_process',
+          process: {
+            id,
+            kind: action.intensity >= 0.65 ? 'political_repression' : 'social_movement',
+            title: action.title,
+            description: action.description,
+            regionId: world.places[processOrganization.placeId]?.regionId ?? 'region-lower-austria',
+            organizationId: processOrganization.id,
+            eventFamilyIds: [],
+            objectives: [action.description.slice(0, 200)],
+            sourceIds: [],
+          },
+        });
+        effects.push({
+          type: 'historical_participation',
+          processId: id,
+          personId: actor.id,
+          role: 'organizer',
+          influence: 0.06,
+          reason: 'created a new process from an existing organization',
+        });
+        text = `${actor.name}和${processOrganization.name}把「${action.title}」变成一场持续行动：有组织、有成员、有下一步计划，不再只是一次集会。`;
+        significance = 0.8;
+        break;
+      }
+    }
+    const event = commitEvent(
+      context,
+      {
+        date: { ...date },
+        placeId:
+          action.organizationId && world.organizations[action.organizationId]
+            ? world.organizations[action.organizationId]!.placeId
+            : actor.locationId,
+        subjectId: actor.id,
+        participants: participants.filter(
+          (entry, index, all) =>
+            all.findIndex((other) => other.personId === entry.personId) === index,
+        ),
+        action: marker,
+        title: action.title,
+        causes: process?.lastEventId ? [process.lastEventId] : [],
+        effects,
+        immediateText: text,
+        significance,
+        visibility: action.kind === 'repress' ? 'participants' : 'public',
+        provenance: { kind: 'system', sourceId: action.id },
+      },
+      {
+        roleIds: {},
+        fundingOrganizationIds: action.organizationId ? [action.organizationId] : [],
+      },
+      true,
+    );
+    budget -= 1;
+    if (event) {
+      action.status = 'applied';
+      action.eventId = event.id;
+      existingActions.add(marker);
+    } else {
+      action.status = 'skipped';
+      action.reason = 'no effect could be committed';
+    }
+  }
+  state.pendingActions = actions.slice(-40);
+}
+
+function runAgencyYear(context: EngineContext, date: WorldDate, ordinaryLimit: number): void {
+  const world = context.world;
+  const actorIds = agencyActorIds(world, date, ordinaryLimit).slice(0, ordinaryLimit + 80);
+  for (const personId of actorIds) {
+    const person = world.persons[personId];
+    if (!person || person.died) continue;
+    const rng = seededRng(world.seed, 'agency', personId, date.year, date.month);
+    const plan = planAgencyAction(world, personId, date, rng);
+    if (!plan) continue;
+    const subject = world.persons[personId];
+    if (!subject || subject.died) continue;
+    const participants = [
+      { personId, role: 'subject' },
+      ...plan.participants.filter((entry) => entry.personId !== personId),
+    ].filter(
+      (entry, index, all) => all.findIndex((other) => other.personId === entry.personId) === index,
+    );
+    const event = commitEvent(
+      context,
+      {
+        date: { ...date },
+        placeId: plan.placeId && world.places[plan.placeId] ? plan.placeId : subject.locationId,
+        subjectId: personId,
+        participants,
+        action: `agency:${plan.kind}`,
+        title: plan.title,
+        causes: [],
+        effects: plan.effects,
+        immediateText: plan.text,
+        significance: plan.significance,
+        visibility:
+          plan.kind === 'publish' ||
+          plan.kind === 'organize_meeting' ||
+          plan.kind === 'found_process'
+            ? 'public'
+            : 'participants',
+        provenance: { kind: 'system', sourceId: `agency:${personId}` },
+      },
+      { roleIds: {}, fundingOrganizationIds: plan.organizationId ? [plan.organizationId] : [] },
+      false,
+    );
+    if (!event) continue;
+    subject.agency = {
+      ...(subject.agency ?? {
+        goal: plan.goal,
+        summary: plan.title,
+        since: { ...date },
+      }),
+      goal: plan.goal,
+      lastAction: { ...date },
+      lastActionKind: plan.kind,
+      attempts: (subject.agency?.attempts ?? 0) + 1,
+    };
+  }
+}
+
+function runBottomUpProcesses(context: EngineContext, date: WorldDate): void {
+  const plan = planBottomUpProcess(context.world, date);
+  if (!plan) return;
+  const actor = context.world.persons[plan.actorPersonId];
+  if (!actor || actor.died) return;
+  const participants = plan.memberIds
+    .map((id) => context.world.persons[id])
+    .filter((person): person is Person => Boolean(person) && !person.died)
+    .map((person) => ({ personId: person.id, role: 'organizer' }));
+  const event = commitEvent(
+    context,
+    {
+      date: { ...date },
+      placeId: plan.placeId,
+      subjectId: actor.id,
+      participants,
+      action: `initiative:found_process:${plan.organizationId}`,
+      title: plan.title,
+      causes: [],
+      effects: [
+        {
+          type: 'historical_process',
+          process: {
+            id: plan.id,
+            kind: 'social_movement',
+            title: plan.title,
+            description: plan.description,
+            regionId: plan.regionId,
+            organizationId: plan.organizationId,
+            eventFamilyIds: [],
+            objectives: ['维持成员互助并把地方诉求变成持续行动'],
+            sourceIds: [],
+          },
+        },
+        {
+          type: 'historical_participation',
+          processId: plan.id,
+          personId: actor.id,
+          role: 'organizer',
+          influence: 0.08,
+          reason: 'co-founded a bottom-up process through sustained organization',
+        },
+        ...participants
+          .filter((entry) => entry.personId !== actor.id)
+          .map((entry): EventEffect => ({
+            type: 'historical_participation',
+            processId: plan.id,
+            personId: entry.personId,
+            role: 'organizer',
+            influence: 0.04,
+            reason: 'helped turn an organization into a sustained movement',
+          })),
+        {
+          type: 'knowledge',
+          holderId: actor.id,
+          proposition: `${plan.title}不是一次会议，而是我们这些年积累出来的持续组织。`,
+          confidence: 0.9,
+          sourceKind: 'inferred',
+          visibility: 'shared',
+          trueInWorld: true,
+        },
+        {
+          type: 'reputation',
+          personId: actor.id,
+          amount: 0.04,
+          reason: 'turned sustained local work into a public movement',
+        },
+      ],
+      immediateText: plan.description,
+      significance: 0.78,
+      visibility: 'public',
+      provenance: { kind: 'system', sourceId: `initiative:${plan.organizationId}` },
+    },
+    { roleIds: {}, fundingOrganizationIds: [plan.organizationId] },
+    false,
+  );
+  if (!event) return;
+  // The new process is a real WorldDevelopment; its history already points to
+  // the founding event. No Director or test script is required.
+  const development = context.world.macro?.developments?.[plan.id];
+  if (development?.historical) {
+    development.historical.lastEventId = event.id;
+    const last = development.historical.history[development.historical.history.length - 1];
+    if (last) last.eventId = event.id;
+  }
 }
 
 function runEventYear(
@@ -2829,6 +3560,17 @@ function commitEvent(
     choices: draft.choices,
     provenance: draft.provenance,
   };
+  // A death effect may have been recorded after ordinary events already
+  // committed earlier in the same annual draft. Anchor both the death date and
+  // the event's canonical date to the latest such fact, so no event is dated
+  // after the subject's death and no cause is dated after its consequence.
+  const deathDates = applied
+    .filter((effect): effect is Extract<EventEffect, { type: 'death' }> => effect.type === 'death')
+    .map((effect) => context.world.persons[effect.personId]?.died)
+    .filter((date): date is WorldDate => Boolean(date));
+  for (const date of deathDates) {
+    if (monthIndex(date) > monthIndex(event.date)) event.date = { ...date };
+  }
   context.world.events.push(event);
   scheduleFactTriggers(context, event, draft.triggerDepth ?? 0);
   context.world.historyMeta.sequence = identity.sequence;
@@ -3056,6 +3798,8 @@ function applyEffect(
       return applyHistoricalProcess(context, effect, binding);
     case 'estate':
       return applyEstate(context, effect, binding);
+    case 'organization_funds':
+      return applyOrganizationFunds(context, effect, binding);
     default: {
       const unknownEffect = effect as unknown as { type?: unknown };
       warnContext(context, 'unknown_effect', `unknown effect type ${String(unknownEffect.type)}`, {
@@ -3481,6 +4225,26 @@ function applyHistoricalProcess(
       updatedAt: { ...binding.date },
     };
   }
+  return { ...effect };
+}
+
+function applyOrganizationFunds(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'organization_funds' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const organization = context.world.organizations[effect.organizationId];
+  if (!organization || organization.status !== 'active') return undefined;
+  if (!Number.isFinite(effect.amount) || effect.amount === 0) return undefined;
+  const amount = roundMoney(effect.amount);
+  if (amount < 0) {
+    const debit = roundMoney(Math.min(organization.treasury, -amount));
+    if (debit <= 0) return undefined;
+    organization.treasury = roundMoney(organization.treasury - debit);
+    return { ...effect, amount: -debit };
+  }
+  if (typeof effect.reason !== 'string' || effect.reason.trim().length === 0) return undefined;
+  organization.treasury = roundMoney(organization.treasury + amount);
   return { ...effect };
 }
 
@@ -4281,6 +5045,15 @@ function repairGuardiansAfterDeath(world: WorldState, deceased: Person, date: Wo
   }
 }
 
+function latestPersonEventDate(world: WorldState, personId: Id): WorldDate | undefined {
+  let latest: WorldDate | undefined;
+  for (const event of world.events) {
+    if (event.subjectId !== personId) continue;
+    if (!latest || monthIndex(event.date) > monthIndex(latest)) latest = event.date;
+  }
+  return latest;
+}
+
 function applyDeath(
   context: EngineContext,
   effect: Extract<EventEffect, { type: 'death' }>,
@@ -4297,7 +5070,12 @@ function applyDeath(
   }
   if (typeof effect.cause !== 'string' || effect.cause.length === 0) return undefined;
 
-  person.died = { ...binding.date };
+  const previousEventDate = latestPersonEventDate(context.world, person.id);
+  const deathDate =
+    previousEventDate && monthIndex(previousEventDate) > monthIndex(binding.date)
+      ? { ...previousEventDate }
+      : { ...binding.date };
+  person.died = deathDate;
   person.deathCause = effect.cause;
   person.health.vitality = 0;
   if (!context.diagnostics.deaths.includes(person.id)) {
@@ -4310,16 +5088,16 @@ function applyDeath(
     }
     delete person.employment;
   }
-  closePositionsFor(context.world, person.id, binding.date);
+  closePositionsFor(context.world, person.id, deathDate);
   for (const organization of Object.values(context.world.organizations)) {
     organization.memberIds = organization.memberIds.filter((id) => id !== person.id);
   }
   for (const relation of Object.values(context.world.relations)) {
     if (relation.end !== undefined) continue;
     if (relation.a !== person.id && relation.b !== person.id) continue;
-    if (relation.kind === 'partner') relation.end = { ...binding.date };
+    if (relation.kind === 'partner') relation.end = { ...deathDate };
   }
-  repairGuardiansAfterDeath(context.world, person, binding.date);
+  repairGuardiansAfterDeath(context.world, person, deathDate);
 
   // Death closes projects instead of leaving them open on a corpse.
   for (const projectId of Object.keys(context.world.projects).sort()) {
@@ -4345,7 +5123,7 @@ function applyDeath(
     });
   }
 
-  const estate = settleExtinctHousehold(context.world, person, binding.date);
+  const estate = settleExtinctHousehold(context.world, person, deathDate);
   return {
     ...effect,
     ...(estate ? { estateTo: estate.heirHouseholdId, estateAmount: estate.amount } : {}),
@@ -4906,7 +5684,7 @@ function expireDueInteractions(context: EngineContext): void {
           action: 'interaction_expired',
           causes: [],
           effects: [{ type: 'interaction', interaction: updated }],
-          immediateText: '',
+          immediateText: `${initiator.name}关于「${interaction.subject.slice(0, 120)}」的请求没有得到回应，事情暂时搁下了。`,
           significance: 0.2,
           visibility: 'participants',
           provenance: { kind: 'interaction', sourceId: interaction.id },
@@ -5130,7 +5908,14 @@ function advanceDueProjects(context: EngineContext): void {
         action,
         causes: updated.causeIds,
         effects: [{ type: 'project', project: updated }],
-        immediateText: '',
+        immediateText:
+          action === 'project_completed'
+            ? `「${updated.title.slice(0, 120)}」完成了当前阶段，参与者留下了实际的记录和后续安排。`
+            : action === 'project_failed'
+              ? `「${updated.title.slice(0, 120)}」没有完成：${updated.blockers.slice(0, 2).join('、') || '参与者或资源不足'}。`
+              : action === 'project_blocked'
+                ? `「${updated.title.slice(0, 120)}」暂时受阻，参与者把日期往后推。`
+                : `「${updated.title.slice(0, 120)}」继续推进了一阶段。`,
         significance,
         visibility: 'participants',
         provenance: { kind: 'project', sourceId: updated.id },

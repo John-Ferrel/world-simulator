@@ -143,6 +143,7 @@ while (!stopped) {
         {
           economy: { enabled: economyEnabled },
           eventRuntime: true,
+          agency: true,
           maxOrdinaryEventsPerPerson: 4,
         },
       );

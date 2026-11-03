@@ -284,6 +284,19 @@ export function makeV4Api() {
               parameters: region.parameters,
             })),
             population: meta.macro.population,
+            legacy: Object.values(meta.macro.legacy ?? {})
+              .filter((legacy) => legacy.status === 'active')
+              .map((legacy) => ({
+                id: legacy.id,
+                processId: legacy.processId,
+                kind: legacy.kind,
+                title: legacy.title,
+                description: legacy.description,
+                regionId: legacy.regionId,
+                started: legacy.started,
+                tags: legacy.tags,
+                eventWeights: legacy.eventWeights,
+              })),
             developments: Object.values(meta.macro.developments ?? {})
               .filter((development) => development.historical)
               .map((development) => ({
@@ -565,6 +578,7 @@ const ACTION_TITLES: Record<string, string> = {
   statistical_illness_worsened: '病情反复',
   interaction_response: '回应',
   historical_phase: '历史转折',
+  macro_action: '历史行动',
 };
 
 /**
@@ -675,6 +689,7 @@ function publicPerson(
     lifeContract:
       ownerId !== undefined && person.ownerId === ownerId ? person.lifeContract : undefined,
     historical: person.historicalIdentity ?? undefined,
+    agency: person.agency ?? undefined,
     appearance: person.appearance ?? { skin: 1, hair: 0, clothes: 2, doll: { bodyType: 'female' } },
   };
 }

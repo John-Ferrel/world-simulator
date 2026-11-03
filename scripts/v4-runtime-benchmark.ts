@@ -136,6 +136,7 @@ for (let i = 0; i < years; i += 1) {
   const result = advanceV4Year(current, definitions, {
     economy: { enabled: false },
     eventRuntime: true,
+    agency: true,
     maxOrdinaryEventsPerPerson: 3,
   });
   current = result.world;

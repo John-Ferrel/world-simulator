@@ -1,5 +1,6 @@
 export { PHASE3_FAMILY_BRIEFS } from './phase3-briefs.js';
 export { PHASE4_FAMILY_BRIEFS } from './phase4-briefs.js';
+export { PHASE7_FAMILY_BRIEFS } from './phase7-briefs.js';
 export {
   PHASE2_FAMILY_BRIEFS,
   briefById,

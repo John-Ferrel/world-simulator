@@ -4,6 +4,8 @@
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
 
+> 2026-11-03 Phase 7 更新：确定性自主行动 (`agency.ts`)、组织主动行为、底部历史进程、进程 `suspended`/分裂、持久 `MacroState.legacy`、Director 可执行 `actions`、legacy 生活内容、canonical 死亡时序已接入。自由演化 A–F 证据见 [phase-7-experiments.json](phase-7-experiments.json)；真实 Director 6,143 + 10,263 tokens，提出 6 条行动、5 条执行、1 条无进程 reform 跳过，见 [phase-7-director-demo.json](phase-7-director-demo.json)；Content Author 9,674 + 9,125 tokens，见 [phase-7-content-author.json](phase-7-content-author.json)。完整验收见 [phase-7-report.md](phase-7-report.md)。
+
 > 2026-11-02 Phase 6 更新：可参与历史进程 (`WorldDevelopment.historical`)、4 位维也纳真实人物、13 个历史场景、Director historicalMoves、真实 Content Author 历史内容、战争/疫情/反事实测试已接入。88 年审计 381 人/217 在世/87.99 事件每年，历史事件 48 条；真实 Director 4,506 + 8,158 tokens，Content Author 8,744 tokens。验收见 [phase-6-report.md](phase-6-report.md)；这仍不是全球历史/20k 生产验收。
 
 > 2026-11-02 可玩版本更新：家庭容量/分户、死亡后伴侣终止/监护补选、出生愿望确定性回退、已故年龄/死因/标题投影、1946–1999 战后 16 场景与 24 条时代记录已接入。88 年审计 420 人/236 在世/111.26 事件每年；8 人物 88 年试玩 373 人/199 在世/最大在世家庭 12。尚未完成的 canonical 时间顺序、多地区 Director、20k DB/API、通用内容工厂仍明确列出。验收见 [playable-report.md](playable-report.md)。全量测试数字以最后一轮为准。
@@ -32,7 +34,7 @@
 | 玩家间持久互动       | 未完成             | Relation/Interaction 可存储，但没有跨玩家场景或请求-答复 UI                                                                                                                  |
 | LLM 场景/选择决策    | 未完成             | 引擎保留同步 policy 接口；默认确定性权重                                                                                                                                     |
 | History Director     | 未完成             | 只有内容包中的公开时代记录和 pressures                                                                                                                                       |
-| 内容工厂             | 完成（离线）       | 22 族 / 88 场景 / 239 outcome / 423 narration；8 个新族真实模型生成；验证后落盘；22/22 族审计触发                                                                            |
+| 内容工厂             | 完成（离线）       | 26 族 / 104 场景 / 519 narration；Phase 7 新增 2 族 legacy 内容；真实模型生成；审计 24/26 族触发（战争余波需实际战争进程）                                                   |
 | 读取路径与规模       | 部分完成           | 世界摘要/人物 keyset 分页/单人详情/搜索；1k/5k PostgreSQL 实测；未做 20k 或并发 API 压测                                                                                     |
 | 宏观多地区/全球      | 部分               | lower-austria + klosterneuburg 两地区数据/迁移；未做多地区长期真实 Director；不能宣称全球                                                                                    |
 | 内容覆盖审计         | 完成               | 80 年：3,657 事件、279 focal、358 causal、75 出生；零事件年份 0；未解析 token 0；顶层场景占比 7.9%                                                                           |
@@ -41,6 +43,13 @@
 | 真实历史人物         | 完成（4 人）       | Freud/Adler/Kraus/Schnitzler；稳定 Person/QID/来源/活动窗口；真实死亡只作参考                                                                                                |
 | 历史参与与因果       | 完成（垂直）       | 地点/组织/费用/关系渠道；participation/influence/knowledge effects；反事实 mobilizing→institutionalizing                                                                     |
 | 历史 Director/内容   | 完成（真实调用）   | 4,506 + 8,158 tokens、historicalMoves；Content Author 8,744 tokens、4/12/24、实际触发 2 条生成历史事件                                                                       |
+| 自主行动循环         | 完成（确定性）     | `agency.ts`；人物/组织每年最多一次；历史人物、组织领袖、普通成年人均可行动；儿童不执行成人组织行动                                                                           |
+| 组织主动行为         | 完成               | 招募/会议/会费/出版/互助/成立运动；真实 membership/treasury/project/relation/event；正式或非正式领袖                                                                         |
+| 自下而上历史         | 完成（自由演化）   | 1912–1950 自由运行；印刷工会 1915 由持续行动生成 `development:initiative-org-printers-union-1915`，Director 未预先批准                                                       |
+| 进程生命周期/遗产    | 完成（通用）       | end 为复查而非强制结束；suspended/declining/repression/institutionalizing/split/ended；legacy 改变 baseline、事件权重和内容条件                                              |
+| Director actions     | 完成（真实调用）   | 6,143 + 10,263 tokens；6 条 organize/publish/relief/recruit/reform 提案，5 条执行、1 条 reform 无进程被跳过；pending queue + event 幂等                                      |
+| canonical 时序       | 完成（新提交）     | 死亡日期锚定最后已提交人物事件；死亡事件日期同步；死亡后行动 0；原因不晚于后果；旧档保留                                                                                     |
+| Legacy 生活内容      | 完成（真实生成）   | reform 9,674 tokens、war aftermath 9,125 tokens；各 4/12/24；跨代实验 53 条 vs 对照 0 条；战后 23 条                                                                         |
 | 战后生活内容         | 完成（16 场景）    | 1946–1999 战后场景与 24 条时代记录；独立内容测试通过                                                                                                                         |
 | 出生无模型回退       | 完成               | 五种白名单能力关键词回退；`deterministic-fallback` 设置 compiledAt，不伪造异能                                                                                               |
 | Birth Contract 写入  | 完成               | `birth-contract-store.ts` 事务锁 + revision；`compiledAt` 防止重复应用；worker 已切到完整 contract                                                                           |
@@ -57,25 +66,25 @@ pnpm typecheck
 
 ### v4 测试
 
-```text
-pnpm exec vitest run tests/v4-engine.test.ts tests/v4-vienna-content.test.ts \
-  tests/v4-vienna-slice.test.ts tests/v4-vienna-life.test.ts \
-  tests/v4-player-life.test.ts tests/v4-wish.test.ts
+Phase 7 最终 v4 专项：
 
-→ Test Files 7 passed (7)
-→ Tests 45 passed (45)
+```text
+pnpm exec vitest run tests/v4-*.test.ts
+→ Test Files 23 passed | 2 skipped (25)
+→ Tests 152 passed | 8 skipped (160)
+→ 14.86s
 ```
 
-最终全量仓库测试（包含冻结的 v1–v3 测试与 v4）：
+Phase 7 最终全量仓库测试（包含冻结的 v1–v3 测试与 v4）：
 
 ```text
 pnpm test
-→ Test Files 56 passed | 5 skipped (61)
-→ Tests 333 passed | 28 skipped (361)
-→ 153.06s
+→ Test Files 72 passed | 7 skipped (79)
+→ Tests 432 passed | 36 skipped (468)
+→ 157.28s
 ```
 
-旧测试通过不等于 v4 完成；v4 的独立证据是上面的 45 项与浏览器流程。
+旧测试通过不等于 v4 完成；v4 的独立证据是专项、长期试玩、浏览器与真实模型调用。
 
 ### 浏览器验收
 

@@ -29,6 +29,8 @@ test('register, give birth, read a concrete log and inspect the map', async ({ p
   await expect(page.locator('.own-badge')).toBeVisible({ timeout: 30000 });
   await expect(page.locator('.person-heading h2')).toHaveText('E2E Klara', { timeout: 30000 });
   await expect(page.locator('.historical-processes')).toBeVisible();
+  await expect(page.locator('.historical-legacy')).toBeVisible();
+  await expect(page.locator('.historical-legacy')).toContainText('历史遗产');
   await expect(page.locator('.log-entry').first()).toBeVisible({ timeout: 30000 });
   await expect(page.locator('.log-pane')).toContainText('出生');
   await expect(page.locator('.topbar')).toContainText(username);

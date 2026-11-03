@@ -102,6 +102,7 @@ function run(
     const result = advanceV4Year(current, SCENES, {
       economy: { enabled: true },
       eventRuntime: true,
+      agency: true,
       maxOrdinaryEventsPerPerson: 4,
     });
     current = result.world;

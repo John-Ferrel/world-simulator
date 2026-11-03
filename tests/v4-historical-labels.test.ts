@@ -19,6 +19,7 @@ describe('historical observer labels', () => {
         'institutionalizing',
         'mobilizing',
         'repression',
+        'suspended',
       ].sort(),
     );
     expect(historicalPhaseLabel('mobilizing')).toBe('动员');

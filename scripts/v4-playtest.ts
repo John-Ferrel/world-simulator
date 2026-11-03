@@ -423,6 +423,7 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
     const result = advanceV4Year(world, scenes, {
       economy: { enabled: economyEnabled },
       eventRuntime: true,
+      agency: true,
       maxOrdinaryEventsPerPerson,
       ...(maxScenesPerPerson === undefined ? {} : { maxScenesPerPerson }),
     });

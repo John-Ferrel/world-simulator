@@ -142,6 +142,7 @@ export type MacroHistoryEntry = {
   parameterChanges: Partial<Record<MacroParamKey, number>>;
   eventPoolChanges: number;
   historicalMoves?: number;
+  actions?: number;
   unmappedDevelopments: string[];
   effectiveFrom: WorldDate;
   durationMonths: number;
@@ -182,6 +183,65 @@ export type WorldDevelopment = {
   source: string;
 };
 
+export type HistoricalLegacyKind =
+  | 'reform'
+  | 'repression'
+  | 'war_aftermath'
+  | 'public_health_regime'
+  | 'cultural_institution'
+  | 'organization_split'
+  | 'social_memory';
+
+/**
+ * A durable consequence of a historical process. It is not a second process:
+ * it is a bounded regional condition that changes future event weights and
+ * structural macro parameters, and it persists after the process ends.
+ */
+export type HistoricalLegacy = {
+  id: string;
+  processId?: string;
+  kind: HistoricalLegacyKind;
+  title: string;
+  description: string;
+  regionId: string;
+  started: WorldDate;
+  status: 'active' | 'faded';
+  tags: string[];
+  eventWeights: Record<string, number>;
+  parameterChanges: Partial<Record<MacroParamKey, number>>;
+  sourceEventId?: string;
+};
+
+export type MacroActionKind =
+  | 'organize'
+  | 'recruit'
+  | 'negotiate'
+  | 'publish'
+  | 'relief'
+  | 'repress'
+  | 'reform'
+  | 'spawn_process';
+
+export type MacroActionProposal = {
+  kind: MacroActionKind;
+  actorPersonId?: string;
+  organizationId?: string;
+  processId?: string;
+  targetOrganizationId?: string;
+  title: string;
+  description: string;
+  intensity: number;
+};
+
+export type PendingMacroAction = MacroActionProposal & {
+  id: string;
+  created: WorldDate;
+  status: 'pending' | 'applied' | 'skipped';
+  eventId?: string;
+  reason?: string;
+  sourceProposalId?: string;
+};
+
 export type MacroState = {
   version: number;
   updatedAt: WorldDate;
@@ -189,6 +249,10 @@ export type MacroState = {
   population: Record<string, RegionalPopulation>;
   eventPool: Record<string, EventPoolState>;
   developments?: Record<string, WorldDevelopment>;
+  /** Durable consequences of processes; indexed by stable legacy id. */
+  legacy?: Record<string, HistoricalLegacy>;
+  /** Bounded Director action proposals waiting for the engine's annual tick. */
+  pendingActions?: PendingMacroAction[];
   history: MacroHistoryEntry[];
 };
 
@@ -248,6 +312,8 @@ export type MacroProposal = {
   eventPoolChanges: EventPoolChange[];
   /** Bounded intents about existing historical processes; never a phase command. */
   historicalMoves?: HistoricalMove[];
+  /** Concrete initiatives the Engine can execute as real events/actions. */
+  actions?: MacroActionProposal[];
 };
 
 export type MacroSnapshot = {
@@ -303,6 +369,27 @@ export type MacroSnapshot = {
     publicRole: string;
     locationId: string;
     roles: string[];
+  }[];
+  organizations: {
+    id: string;
+    name: string;
+    kind: string;
+    placeId: string;
+    members: number;
+    treasury: number;
+    projects: number;
+    leaders: { id: string; name: string; title: string }[];
+  }[];
+  legacy: {
+    id: string;
+    processId?: string;
+    kind: string;
+    title: string;
+    description: string;
+    regionId: string;
+    started: WorldDate;
+    tags: string[];
+    eventWeights: Record<string, number>;
   }[];
   availableFamilies: string[];
 };
@@ -385,6 +472,30 @@ const MacroProposalSchema = z.object({
         intent: z.enum(['support', 'oppose', 'escalate', 'deescalate']),
         magnitude: z.number().finite().min(0).max(0.2),
         note: z.string().trim().max(240).default(''),
+      }),
+    )
+    .max(6)
+    .default([]),
+  actions: z
+    .array(
+      z.object({
+        kind: z.enum([
+          'organize',
+          'recruit',
+          'negotiate',
+          'publish',
+          'relief',
+          'repress',
+          'reform',
+          'spawn_process',
+        ]),
+        actorPersonId: z.string().trim().min(1).max(160).optional(),
+        organizationId: z.string().trim().min(1).max(160).optional(),
+        processId: z.string().trim().min(1).max(160).optional(),
+        targetOrganizationId: z.string().trim().min(1).max(160).optional(),
+        title: z.string().trim().min(1).max(160),
+        description: z.string().trim().min(1).max(600),
+        intensity: z.number().finite().min(0).max(1),
       }),
     )
     .max(6)
@@ -620,6 +731,8 @@ export function defaultMacroState(world: WorldState, date: WorldDate = world.dat
     population,
     eventPool: {},
     developments: {},
+    legacy: {},
+    pendingActions: [],
     history: [],
   };
 }
@@ -636,12 +749,27 @@ export function eventPoolMultiplier(
   if (!state) return 1;
   const familyId = definition.familyId ?? definition.id;
   const policy = state.eventPool[familyId];
-  if (!policy) return 1;
-  if (!policy.enabled) return 0;
-  if (policy.regions && policy.regions.length > 0 && !policy.regions.includes(regionId)) return 1;
-  if (policy.stages && policy.stages.length > 0 && !policy.stages.includes(definition.stage))
-    return 1;
-  return clamp(policy.weightMultiplier, 0, 3);
+  let multiplier = 1;
+  if (policy) {
+    if (!policy.enabled) return 0;
+    if (policy.regions && policy.regions.length > 0 && !policy.regions.includes(regionId))
+      multiplier = 1;
+    else if (policy.stages && policy.stages.length > 0 && !policy.stages.includes(definition.stage))
+      multiplier = 1;
+    else multiplier = clamp(policy.weightMultiplier, 0, 3);
+  }
+  // Durable institutions change future opportunity weights. A legacy is not a
+  // one-off parameter bump: it names the event families whose probability it
+  // structurally changes.
+  for (const legacy of Object.values(state.legacy ?? {})) {
+    if (legacy.status !== 'active') continue;
+    if (legacy.regionId !== regionId && legacy.regionId !== MACRO_DEFAULT_REGION) continue;
+    const weight = legacy.eventWeights[familyId];
+    if (typeof weight === 'number' && Number.isFinite(weight)) {
+      multiplier *= clamp(weight, 0, 3);
+    }
+  }
+  return clamp(multiplier, 0, 3);
 }
 
 function validateParameterChanges(
@@ -658,11 +786,14 @@ function validateParameterChanges(
     }
     const bound = PARAM_BOUNDS[key as MacroParamKey];
     const current = region.parameters[key as MacroParamKey];
-    const next = current + value;
-    if (next < bound.min - 1e-9 || next > bound.max + 1e-9) {
-      throw new MacroContractError(`宏观参数 ${key} 将越界`);
-    }
-    result[key as MacroParamKey] = value;
+    // A model may propose a delta that would leave the normalized range (for
+    // example -0.02 migration pressure when current pressure is already zero).
+    // Clamp to the nearest valid delta instead of rejecting an otherwise
+    // executable proposal; the stored proposal remains the bounded value.
+    const next = Math.min(bound.max, Math.max(bound.min, current + value));
+    const boundedDelta = next - current;
+    if (Math.abs(boundedDelta) < 1e-9) continue;
+    result[key as MacroParamKey] = boundedDelta;
   }
   return result;
 }
@@ -682,9 +813,16 @@ export function validateMacroProposal(
   if (!region) throw new MacroContractError(`未知地区 ${proposal.regionId}`);
   const currentMonth = context.world.date.year * 12 + context.world.date.month;
   const proposalMonth = proposal.effectiveFrom.year * 12 + proposal.effectiveFrom.month;
-  if (proposalMonth > currentMonth || proposalMonth < currentMonth - 12) {
-    throw new MacroContractError('宏观提案生效时间必须落在当前月或过去 12 个月内');
+  if (proposalMonth < currentMonth - 12) {
+    throw new MacroContractError('宏观提案生效时间不能早于过去 12 个月');
   }
+  // Models often name a future month for a proposal they are making now. The
+  // proposal still takes effect at the current world month; this is a bounded
+  // normalization, not permission to move history backwards or forwards.
+  const effectiveFrom =
+    proposalMonth > currentMonth
+      ? cloneDate(context.world.date)
+      : cloneDate(proposal.effectiveFrom);
   const changes = validateParameterChanges(proposal.parameterChanges, region);
   const hasExecutableDevelopment = proposal.developments.some(
     (development) => development.organization || (development.eventFamilyIds?.length ?? 0) > 0,
@@ -693,6 +831,7 @@ export function validateMacroProposal(
     Object.keys(changes).length === 0 &&
     proposal.eventPoolChanges.length === 0 &&
     (proposal.historicalMoves?.length ?? 0) === 0 &&
+    (proposal.actions?.length ?? 0) === 0 &&
     !hasExecutableDevelopment &&
     !proposal.maintainStatus
   ) {
@@ -735,23 +874,47 @@ export function validateMacroProposal(
     const development = context.state.developments?.[move.processId];
     return Boolean(development?.historical);
   });
+  const validActions = (proposal.actions ?? []).filter((action) => {
+    if (action.actorPersonId) {
+      const actor = context.world.persons[action.actorPersonId];
+      if (!actor || actor.died) return false;
+    }
+    if (action.organizationId) {
+      const organization = context.world.organizations[action.organizationId];
+      if (!organization || organization.status !== 'active') return false;
+    }
+    if (action.kind === 'spawn_process' && !action.organizationId && !action.actorPersonId)
+      return false;
+    if (action.processId) {
+      const development = context.state.developments?.[action.processId];
+      if (!development?.historical) return false;
+    }
+    if (action.targetOrganizationId) {
+      const target = context.world.organizations[action.targetOrganizationId];
+      if (!target || target.status !== 'active') return false;
+    }
+    return Boolean(action.organizationId || action.actorPersonId);
+  });
   if (
     Object.keys(changes).length === 0 &&
     validEventPoolChanges.length === 0 &&
     validHistoricalMoves.length === 0 &&
+    validActions.length === 0 &&
     !normalizedDevelopments.some(
       (development) => development.organization || development.eventFamilyIds.length > 0,
     ) &&
     !proposal.maintainStatus
   ) {
-    throw new MacroContractError('宏观提案没有可执行的参数、事件池或发展对象');
+    throw new MacroContractError('宏观提案没有可执行的参数、事件池、行动或发展对象');
   }
   return {
     ...proposal,
+    effectiveFrom,
     developments: normalizedDevelopments,
     parameterChanges: changes,
     eventPoolChanges: validEventPoolChanges,
     historicalMoves: validHistoricalMoves,
+    actions: validActions,
   };
 }
 
@@ -882,12 +1045,34 @@ export function applyMacroProposal(
       organization: development.organization,
       source: `macro-proposal:${proposalId}`,
     };
-    created.historical = ensureHistoricalProcess(created, date);
+    // A textual macro development without an organization is a regional
+    // condition, not a historical actor. Only real organizations become
+    // WorldDevelopment.historical processes.
+    if (development.organization) {
+      created.historical = ensureHistoricalProcess(created, date);
+      created.historical.source = 'director';
+    }
     next.developments![id] = created;
   });
   const withMoves = applyHistoricalMoves(next, proposal.historicalMoves ?? [], date);
   next.developments = withMoves.developments;
   next.updatedAt = withMoves.updatedAt;
+  if (!next.legacy) next.legacy = {};
+  if ((proposal.actions?.length ?? 0) > 0) {
+    const pending = next.pendingActions ?? [];
+    proposal.actions!.forEach((action, index) => {
+      pending.push({
+        ...action,
+        id: `macro-action:${proposalId}:${index}`,
+        created: cloneDate(date),
+        status: 'pending',
+        sourceProposalId: proposalId,
+      });
+    });
+    // Keep only a small, inspectable queue; old applied/skipped entries are
+    // retained for audit but bounded so macro JSON cannot grow forever.
+    next.pendingActions = pending.slice(-40);
+  }
   const mappedDevelopmentTypes = new Set([
     'war',
     'peace',
@@ -914,6 +1099,7 @@ export function applyMacroProposal(
     parameterChanges: { ...proposal.parameterChanges },
     eventPoolChanges: proposal.eventPoolChanges.length,
     historicalMoves: proposal.historicalMoves?.length ?? 0,
+    actions: proposal.actions?.length ?? 0,
     unmappedDevelopments,
     effectiveFrom,
     durationMonths: proposal.durationMonths,
@@ -1030,6 +1216,51 @@ export function macroSnapshot(
         locationId: person.locationId,
         roles: person.roles,
       })),
+    organizations: Object.values(world.organizations)
+      .filter((organization) => organization.status === 'active')
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .slice(0, 40)
+      .map((organization) => ({
+        id: organization.id,
+        name: organization.name,
+        kind: organization.kind,
+        placeId: organization.placeId,
+        members: organization.memberIds.filter((id) => {
+          const person = world.persons[id];
+          return Boolean(person && !person.died);
+        }).length,
+        treasury: organization.treasury,
+        projects: organization.projects.filter((id) => {
+          const project = world.projects[id];
+          return Boolean(project && project.state !== 'completed' && project.state !== 'failed');
+        }).length,
+        leaders: organization.positions
+          .map((id) => world.positions[id])
+          .filter((position): position is NonNullable<typeof position> => Boolean(position))
+          .map((position) => {
+            const person = position.holderId ? world.persons[position.holderId] : undefined;
+            return person && !person.died
+              ? { id: person.id, name: person.name, title: position.title }
+              : undefined;
+          })
+          .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+          .slice(0, 3),
+      })),
+    legacy: Object.values(state.legacy ?? {})
+      .filter((legacy) => legacy.status === 'active')
+      .sort((a, b) => b.started.year - a.started.year)
+      .slice(0, 20)
+      .map((legacy) => ({
+        id: legacy.id,
+        processId: legacy.processId,
+        kind: legacy.kind,
+        title: legacy.title,
+        description: legacy.description,
+        regionId: legacy.regionId,
+        started: legacy.started,
+        tags: legacy.tags,
+        eventWeights: legacy.eventWeights,
+      })),
     availableFamilies: [...knownFamilies].sort(),
   };
 }
@@ -1084,6 +1315,10 @@ export function materializeDevelopments(
       };
     }
     development.organizationId = organizationId;
+    if (!development.historical) {
+      development.historical = ensureHistoricalProcess(development, date);
+      development.historical.source = 'director';
+    }
   }
   return next;
 }
@@ -1105,6 +1340,12 @@ export function advanceDevelopmentLifecycle(
       ? world.organizations[development.organizationId]
       : undefined;
     if (!organization || organization.status !== 'active') {
+      // A historical process with participants but no formal organisation is
+      // handled by the historical lifecycle, not automatically ended here.
+      if (development.historical) {
+        development.lastAssessed = { ...date };
+        continue;
+      }
       development.status = 'ended';
       development.lastAssessed = { ...date };
       continue;

@@ -678,7 +678,7 @@ describe('v4 annual engine', () => {
       'project_failed',
       'project_progressed',
     ]);
-    expect(result.events.every((event) => event.immediateText === '')).toBe(true);
+    expect(result.events.every((event) => event.immediateText.length > 10)).toBe(true);
     expect(result.world.projects[progressing.id]).toMatchObject({
       state: 'active',
       stage: 1,

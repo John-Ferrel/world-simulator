@@ -35,6 +35,7 @@ export type HistoricalPhase =
   | 'institutionalizing'
   | 'repression'
   | 'declining'
+  | 'suspended'
   | 'ended';
 
 export type HistoricalParticipantRole =
@@ -83,9 +84,27 @@ export type HistoricalProcess = {
   history: { date: WorldDate; phase: HistoricalPhase; note: string; eventId?: Id }[];
   lastEventId?: Id;
   lastUpdated?: WorldDate;
+  /** Date of the last committed participant/action influence, not a Director intent. */
+  lastActivity?: WorldDate;
+  /** Consecutive years with no living vehicle and no committed activity. */
+  suspendedYears?: number;
+  /** Years the process has continued beyond its expected review date. */
+  overdueYears?: number;
   source: 'seed' | 'director' | 'event';
   /** Reference only; never a death command. */
   realWorldReference?: { sourceIds: string[]; note: string };
+};
+
+export type PersonAgencyGoal =
+  'survival' | 'work' | 'family' | 'belonging' | 'status' | 'cause' | 'care' | 'rest';
+
+export type PersonAgency = {
+  goal: PersonAgencyGoal;
+  summary: string;
+  since: WorldDate;
+  lastAction?: WorldDate;
+  lastActionKind?: string;
+  attempts?: number;
 };
 
 export type HistoricalIdentity = {
@@ -209,6 +228,8 @@ export type Person = {
   life?: PersonLife;
   /** Stable public historical identity; this is metadata, not an alternate actor model. */
   historicalIdentity?: HistoricalIdentity;
+  /** Self-directed goal formed from current conditions; not a scripted plot. */
+  agency?: PersonAgency;
   /** Where the person came from and which record made them named. */
   provenance: {
     kind: 'birth' | 'materialized_population' | 'historical_activation' | 'initial';
@@ -452,6 +473,12 @@ export type EventEffect =
       reason: string;
     }
   | {
+      type: 'organization_funds';
+      organizationId: Id;
+      amount: number;
+      reason: string;
+    }
+  | {
       type: 'knowledge';
       holderId: Id;
       proposition: string;
@@ -573,6 +600,14 @@ export type SceneCondition =
       phases?: HistoricalPhase[];
       roles?: HistoricalParticipantRole[];
       minInfluence?: number;
+      sameRegion?: boolean;
+    }
+  | {
+      kind: 'legacy';
+      /** Omit to match any active legacy in the region. */
+      id?: string;
+      legacyKind?: string;
+      tag?: string;
       sameRegion?: boolean;
     }
   | {

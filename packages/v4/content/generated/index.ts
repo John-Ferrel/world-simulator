@@ -22,6 +22,8 @@ import womenHousework from './vienna-women-housework.json';
 import wartimeHomefront from './vienna-wartime-homefront.json';
 import youthThreshold from './vienna-youth-threshold.json';
 import historicalSocialMovement from './vienna-historical-social-movement.json';
+import legacyWorklife from './vienna-legacy-worklife.json';
+import warAftermathLife from './vienna-war-aftermath-life.json';
 import {
   compileGeneratedPack,
   validateGeneratedPack,
@@ -57,6 +59,8 @@ export const GENERATED_PACKS = [
   elderBereavement,
   wartimeHomefront,
   historicalSocialMovement,
+  legacyWorklife,
+  warAftermathLife,
 ] as unknown as GeneratedPack[];
 
 export const GENERATED_SCENES = GENERATED_PACKS.flatMap((pack) => compileGeneratedPack(pack));

@@ -45,6 +45,7 @@ seed.id = worldId;
 seed.date = { year: 1914, month: 1 };
 await seedV4World(seed);
 const evidence: any[] = [];
+const allActionEvents: any[] = [];
 
 try {
   for (const year of [1914, 1920]) {
@@ -58,7 +59,7 @@ try {
       world,
       state: world.macro,
       knownFamilies: knownMacroFamilyIds(),
-      maxTokens: 4000,
+      maxTokens: 5200,
     });
     const applied = await applyV4MacroProposal(
       worldId,
@@ -67,7 +68,17 @@ try {
       `history-demo-${year}-${Date.now().toString(36)}`,
       new Set(knownMacroFamilyIds()),
     );
-    const after = (await loadV4World(worldId))?.macro?.developments ?? {};
+    const afterState = await loadV4World(worldId);
+    const after = afterState?.macro?.developments ?? {};
+    const pendingAfterApply = (afterState?.macro?.pendingActions ?? []).map((action) => ({
+      id: action.id,
+      kind: action.kind,
+      status: action.status,
+      organizationId: action.organizationId,
+      actorPersonId: action.actorPersonId,
+      processId: action.processId,
+      title: action.title,
+    }));
     evidence.push({
       year,
       model: compiled.model,
@@ -76,6 +87,7 @@ try {
         summary: compiled.proposal.summary,
         developments: compiled.proposal.developments,
         historicalMoves: compiled.proposal.historicalMoves ?? [],
+        actions: compiled.proposal.actions ?? [],
         parameterChanges: compiled.proposal.parameterChanges,
         eventPoolChanges: compiled.proposal.eventPoolChanges,
       },
@@ -84,6 +96,7 @@ try {
         phase: development.historical?.phase,
         participants: Object.keys(development.historical?.participants ?? {}).length,
       })),
+      pendingAfterApply,
       afterProcesses: Object.values(after).map((development) => ({
         id: development.id,
         phase: development.historical?.phase,
@@ -108,19 +121,51 @@ try {
       const result = advanceV4Year(current, scenes, {
         economy: { enabled: true },
         eventRuntime: true,
+        agency: true,
         maxOrdinaryEventsPerPerson: 4,
       });
       current = result.world;
+      allActionEvents.push(
+        ...result.events
+          .filter((event) => event.action.startsWith('macro_action:'))
+          .map((event) => ({
+            date: event.date,
+            action: event.action,
+            subjectId: event.subjectId,
+            title: event.title,
+            text: event.immediateText,
+            effects: event.effects.map((effect) => effect.type),
+          })),
+      );
       const nextMeta = await v4WorldMeta(worldId);
       if (!nextMeta) throw new Error('world meta disappeared');
       await saveV4World(current, nextMeta.revision, { lastTickAt: Date.now() });
     }
   }
-  const report = { worldId, status: 'ok', evidence };
+  const finalWorld = await loadV4World(worldId);
+  const report = {
+    worldId,
+    status: 'ok',
+    evidence,
+    actionEvents: allActionEvents,
+    finalPendingActions: (finalWorld?.macro?.pendingActions ?? []).map((action) => ({
+      id: action.id,
+      kind: action.kind,
+      status: action.status,
+      eventId: action.eventId,
+      reason: action.reason,
+    })),
+    finalLegacy: Object.values(finalWorld?.macro?.legacy ?? {}).map((legacy) => ({
+      id: legacy.id,
+      kind: legacy.kind,
+      title: legacy.title,
+      processId: legacy.processId,
+    })),
+  };
   mkdirSync('docs/v4', { recursive: true });
-  writeFileSync('docs/v4/phase-6-director-demo.json', JSON.stringify(report, null, 2) + '\n');
+  writeFileSync('docs/v4/phase-7-director-demo.json', JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report, null, 2));
 } finally {
-  await archiveV4World(worldId, 'Phase 6 Director demo archive').catch(() => undefined);
+  await archiveV4World(worldId, 'Phase 7 Director demo archive').catch(() => undefined);
   await pool.end();
 }

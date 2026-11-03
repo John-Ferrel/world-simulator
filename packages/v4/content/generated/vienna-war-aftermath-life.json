@@ -1,0 +1,641 @@
+{
+  "id": "vienna-war-aftermath-life",
+  "title": "战后余波里的普通人家",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 70
+  },
+  "tags": [
+    "legacy",
+    "war_aftermath",
+    "family",
+    "veteran",
+    "ordinary_life"
+  ],
+  "baseRate": 0.18,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 70
+    },
+    {
+      "kind": "legacy",
+      "legacyKind": "war_aftermath"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vienna-war-aftermath-life.pension-office",
+      "title": "抚恤金窗口",
+      "weight": 1,
+      "rate": 0.0486,
+      "conditions": [
+        {
+          "kind": "legacy",
+          "legacyKind": "war_aftermath"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "read-forms-for-others",
+          "weight": 1,
+          "text": "队伍里的老妇人捏着几张发脆的表格，她说不识字。{subject}接过纸，一行行念给她听，又替她填好编号。窗口叫到号时，老妇人让{subject}先办，说年轻人跑一趟不容易。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.05,
+              "reason": "替邻居读表填表"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "反复阅读官方表格"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "read-forms-for-others",
+              "text": "窗口后的{官}员敲了敲玻璃，说表格上少一个印章。老妇人把手帕包里的克朗数了两遍，{subject}帮她把零钱按面值排好，又指了隔壁代书摊的位置。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "read-forms-for-others",
+              "text": "{neighbor}在队伍里站得腿发麻，把随身的小凳递给老妇人坐。轮到{subject}时，老妇人从篮子里摸出一块面包塞过来，说是早上烤的，还热着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "argue-over-missing-certificate",
+          "weight": 1,
+          "text": "{subject}把退伍证明、结婚证和死亡通知摊在窗台上，{official}却说还缺一份团部盖章的服役记录，没有这纸就按最低档发。后面的人开始叹气，{subject}的指节把柜台边缘攥得发白。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "与窗口职员争执后憋闷"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在队列前争执被旁人侧目"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "argue-over-missing-certificate",
+              "text": "{official}把文件推回来，纸角擦过{subject}的手背。{neighbor}从后面挤上来打圆场，说先去街角的军人协会问问，那边有旧档案。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "argue-over-missing-certificate",
+              "text": "队列里有人低声附和，说自家的也卡在同一张纸上。{subject}收起文件，袖口沾了窗台上的灰，走开时听见后面的人报出自己的名字和年份。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "leave-queue-for-market",
+          "weight": 1,
+          "text": "队伍半天没动，{subject}算了一笔账：与其在这里耗到下午，不如去市场买点吃的。{neighbor}劝再等等，{subject}已经转身下了台阶。黑市面粉一袋要八克朗，比配给贵出三倍。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "市场购买高价面粉"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "买回的面粉和豆子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leave-queue-for-market",
+              "text": "市场里人声嘈杂，面粉袋口缝着粗线。{subject}抖了抖袋底，确认没有掺石灰，又花二十赫勒买了半升豆子，用报纸包着揣进怀里。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leave-queue-for-market",
+              "text": "回到{residence}时天色还亮，{subject}把面粉倒进木箱，箱底那张旧军毯的边角露了出来。{neighbor}后来问起抚恤金，{subject}只摇了摇头，说窗口明天还开。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-war-aftermath-life.broken-clock",
+      "title": "停摆的挂钟",
+      "weight": 1,
+      "rate": 0.0432,
+      "conditions": [
+        {
+          "kind": "legacy",
+          "legacyKind": "war_aftermath"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "open-official-letter",
+          "weight": 1,
+          "text": "{subject}用刀尖挑开信封，里面是一张补发通知，让本人去区公所核对地址。日期是三个月前。{neighbor}凑过来看，说那个地址是城郊的临时登记处，早就撤了。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "pension_followup_needed",
+              "add": true,
+              "reason": "发现补发通知已过期"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "过期通知带来的失望"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "open-official-letter",
+              "text": "信纸很薄，对着窗光能看见背面的印章轮廓。{subject}把通知折好，夹进挂钟后面的缝隙里，钟摆停在半空，一动不动。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "open-official-letter",
+              "text": "{official}在区公所把登记簿翻了两遍，说档案已经移交，让下周再来。{subject}站在走廊里，闻着石灰和旧纸的味道，把通知又看了一遍。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "repair-clock-and-move-on",
+          "weight": 1,
+          "text": "{subject}请街角的钟表匠来上发条，老头拆开后盖，说只是油泥干了，收了六十赫勒。指针重新走起来，滴答声填满屋子。{neighbor}在门口站了一会儿，说这样也好。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "钟表匠修理挂钟"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "屋里重新有了钟声"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "repair-clock-and-move-on",
+              "text": "钟摆左右晃着，{subject}把停在离家那天的指针拨回当下，拧钥匙时听见齿轮咬合的轻响。桌上的信封被推到一边，上面压了一只茶杯。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "repair-clock-and-move-on",
+              "text": "{neighbor}带来一小罐机油，说自家男人当年也修过钟。两人踩着凳子把挂钟扶正，墙上的钉眼比原来深了一点，落下一撮灰。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "help-neighbor-first",
+          "weight": 1,
+          "text": "{subject}把信塞进抽屉最底层，先去帮{neighbor}搬煤。对方家里孩子咳嗽，炉子却快灭了。两人来回抬了三筐，手指缝里嵌满黑灰，信的事被暂时搁下。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "affection": 0.05,
+              "reason": "帮忙搬煤照应邻里"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "搬煤劳累腰背发酸"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "help-neighbor-first",
+              "text": "煤筐压得绳子吱吱响，{subject}和{neighbor}在楼梯间歇了两次。孩子裹着毯子坐在炉边，看见火苗窜起来，才松开一直攥着毯角的手。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "help-neighbor-first",
+              "text": "天黑前{subject}回到{residence}，洗了三遍手水还是黑的。抽屉里那封信没有动，挂钟照旧停着，屋里只听见煤气灯芯的嘶声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-war-aftermath-life.missing-room",
+      "title": "空出来的床铺",
+      "weight": 1,
+      "rate": 0.045,
+      "conditions": [
+        {
+          "kind": "legacy",
+          "legacyKind": "war_aftermath"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "rent-out-bed-settle-debt",
+          "weight": 1,
+          "text": "{subject}让两个新来的工人看了床位，说好每人每月四克朗，先付半个月。旧军毯叠起来塞进柜子，床上换了草垫。{neighbor}帮忙清了欠房东的账，收据上还按了指印。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "新租客预付半个月床位钱"
+            },
+            {
+              "type": "household",
+              "personId": "$worker",
+              "householdId": "$household",
+              "reason": "工人租客搬入空床铺"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-out-bed-settle-debt",
+              "text": "工人把帆布包往床脚一放，问水龙头在哪儿。{subject}指了走廊尽头，又把账单和收据折好收进抽屉，欠账那栏终于划掉了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-out-bed-settle-debt",
+              "text": "四个人挤一间屋，夜里翻身都能听见。{subject}把柜子挪到床边挡风，旧军毯压在最底下，谁也没再提它原来的主人。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "keep-bed-for-the-returning",
+          "weight": 1,
+          "text": "{subject}对房东说床铺先不租，欠账按月慢慢还。{neighbor}摇头，说人都没消息了还占着地方。{subject}没接话，把旧军毯重新铺平，拍掉上面的灰。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "顶住房东和邻居的劝说"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "在空床铺一事上意见不合"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "keep-bed-for-the-returning",
+              "text": "房东把钥匙在掌心掂了掂，说月底再见不到钱就自己带人来看房。{subject}站在门口，听见楼下新租客的脚步声下去又上来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "keep-bed-for-the-returning",
+              "text": "床铺空着，屋里显得更冷。{subject}把军毯边角掖到草垫下面，又从自己碗里拨出半份土豆留给晚上，炉子上的水壶盖轻轻跳着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rent-to-woman-with-child",
+          "weight": 1,
+          "text": "{subject}只肯租给带孩子的女人，租金从五克朗减到三克朗。搬进来的是个洗衣妇，男孩把一只木马放在床头。{neighbor}说这价钱太亏，{subject}数着找回来的零钱没吭声。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "收下洗衣妇的月租"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "respect": 0.06,
+              "reason": "少收租金帮助带孩子的人"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-to-woman-with-child",
+              "text": "洗衣妇把湿手在围裙上擦了擦，才接过房门钥匙。孩子蹲在床边摸那只旧军毯，{subject}没有拦，只说夜里冷，毯子可以盖。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-to-woman-with-child",
+              "text": "房钱少了，菜钱就得省。{subject}把土豆削得薄了些，又多抓了一把豆子下锅，{neighbor}送来的半棵卷心菜放在窗台上，叶子还带着露水。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vienna-war-aftermath-life.rebuilding-crew",
+      "title": "修屋顶的临时工",
+      "weight": 1,
+      "rate": 0.0432,
+      "conditions": [
+        {
+          "kind": "legacy",
+          "legacyKind": "war_aftermath"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "fix-widows-roof-first",
+          "weight": 1,
+          "text": "{subject}和{worker}先把瓦片搬上寡妇家的屋顶，自家工钱记在纸上以后再说。瓦片不够，就用旧木板补了两处。{neighbor}在下面递灰浆，仰头喊当心脚下滑。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "先修寡妇家屋顶"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "跟着工人学铺瓦补屋顶"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fix-widows-roof-first",
+              "text": "风从屋脊缺口灌进来，{subject}踩着椽子把第一块瓦卡进去，掌心被毛边划了一道。{worker}在上面用绳子吊材料，下面的人仰着头等。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "fix-widows-roof-first",
+              "text": "收工时寡妇端来一壶淡咖啡，杯子不够，几个人轮着喝。{subject}把手上的灰在裤子上蹭了蹭，说等天晴再来看接缝。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "demand-daily-pay",
+          "weight": 1,
+          "text": "{subject}把话说在前头：按天结清，一天两克朗，不赊账，否则不上梯子。{neighbor}说这样伤了街坊情面，{worker}却把铁锤往地上一顿，说这年月谁家不是等米下锅。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "修屋顶当日工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "为工钱与街坊起争执"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "demand-daily-pay",
+              "text": "钱是住户挨家凑的，铜币和镍币混在一起，{subject}当面数清才别在腰上。{neighbor}在旁边看着，手里的麻绳绕了两圈又松开。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "demand-daily-pay",
+              "text": "傍晚工钱到手，{subject}拐进面包房买了半条黑面包，收在怀里时还是温的。回到{residence}，灯下把剩下的钱一枚枚摞好。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "keep-material-accounts",
+          "weight": 1,
+          "text": "{subject}找来一本旧账本，把每袋水泥、每把钉子按价记下，让住户自己排先后。{worker}嫌麻烦，{neighbor}却拿过本子认认真真抄了一份贴在门厅。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.05,
+              "reason": "记录材料账目"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "共同公开材料账目"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "keep-material-accounts",
+              "text": "账本摊在窗台上，铅笔头短得捏不住，{subject}就用牙齿咬住木杆继续写。有人来看账，指着一行数目问了两遍，{subject}翻出收据对给他看。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "keep-material-accounts",
+              "text": "门厅贴出账目后，送材料的马车迟了半日，住户也没再吵。{subject}把账本收进抽屉，和自家那张房租收据放在一起。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

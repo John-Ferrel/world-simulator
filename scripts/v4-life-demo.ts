@@ -55,6 +55,7 @@ for (let year = 0; year < 80; year += 1) {
   const result = advanceV4Year(world, scenes, {
     economy: { enabled: true },
     eventRuntime: true,
+    agency: true,
     maxOrdinaryEventsPerPerson: 4,
   });
   world = result.world;

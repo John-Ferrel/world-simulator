@@ -87,6 +87,7 @@ try {
   const tick = advanceV4Year(afterWorld, scenes, {
     economy: { enabled: true },
     eventRuntime: true,
+    agency: true,
     maxOrdinaryEventsPerPerson: 4,
   });
   const revision = await saveV4World(tick.world, meta.revision, { lastTickAt: Date.now() });

@@ -80,6 +80,17 @@ function schemaExample(): string {
           note: '继续扩大集会与救济网络。',
         },
       ],
+      actions: [
+        {
+          kind: 'organize',
+          processId: 'development:example',
+          organizationId: 'org-example',
+          actorPersonId: 'person-example',
+          title: '在利奥波德城组织一次救济会议',
+          description: '由现有组织召集成员和邻里，讨论配给、会费和下一步行动。',
+          intensity: 0.6,
+        },
+      ],
     },
     null,
     2,
@@ -108,8 +119,12 @@ export function macroDirectorMessages(
 - 如果历史发展无法由现有参数/事件池/组织表达，写进 developments，并在 summary 中说明能力缺口；不要偷偷降级成一句 chronicle。
 - 快照中的 historicalPeople 是真实历史人物；你只能通过 developments/eventFamilyIds 提出他们可能遇到的机会，不能直接写他们的关系、死亡、胜利或失败。历史人物的真实死亡日期不是游戏死亡命令。
 - 快照中的 developments.historical 是已经存在的历史进程。可以用 historicalMoves 对已有进程提出 support/oppose/escalate/deescalate，但绝不能直接指定阶段、胜负或结果；阶段由 Engine 根据参与、组织资源和事件结算。不要为了每年制造新闻而新建进程。
+- developments 只用于真正新的组织、运动或外部冲击。如果快照中已有能表达同一件事的进程，使用 historicalMoves 和 actions，不要另建一个文字相似、零参与者的 development。
 - 不要因为真实历史中某年发生某事就强制它发生；只有当前世界状态和已提交事实支持时才推进。
-- 可以返回“维持现状”：parameterChanges 和 eventPoolChanges 都为空时必须让 developments 为空，并明确 summary 为维持现状。除此之外不要返回空提案。
+- 快照中的 organizations 是真实存在的组织与当前负责人。可以用 actions 提出具体行动：organize（组织会议/项目）、recruit（招募）、negotiate（谈判）、publish（出版/宣传）、relief（救济）、repress（压制）、reform（推动改革）、spawn_process（从现有组织形成新的持续进程）。actions 只描述意图和参与者，Engine 会按其资源、关系和反对力量结算成功或失败；不要直接写“已经成功”“已经夺权”“已经死亡”。
+- actions 必须引用快照中的 organizationId/actorPersonId；negotiate 还必须引用 targetOrganizationId；reform/spawn_process 应引用已有的 processId 或现有组织。每次最多 6 条，intensity 0..1。
+- historicalLegacy 是过去进程留下的制度/记忆/战后状态。你可以提出与这些持久后果相称的新机会，但不要用一个 support +0.1 代替制度变化。
+- 可以返回“维持现状”：parameterChanges、eventPoolChanges、historicalMoves 和 actions 都为空时必须让 developments 为空，并明确 summary 为维持现状。除此之外不要返回空提案。
 - 只输出 JSON，不要 Markdown。
 
 可用参数：${MACRO_PARAM_KEYS.join(', ')}。

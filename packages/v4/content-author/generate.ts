@@ -86,6 +86,7 @@ const CONDITION_NAMES = [
   'worldYear',
   'pressure',
   'historicalProcess',
+  'legacy',
 ].join(', ');
 
 function schemaExample(brief: GenerationBrief) {

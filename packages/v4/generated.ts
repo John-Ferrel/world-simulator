@@ -107,6 +107,7 @@ const VALID_EFFECTS = new Set<EventEffect['type']>([
   'historical_participation',
   'historical_influence',
   'historical_process',
+  'organization_funds',
 ]);
 const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
   'age',
@@ -128,6 +129,7 @@ const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
   'worldYear',
   'pressure',
   'historicalProcess',
+  'legacy',
   'hasRelationWith',
 ]);
 
@@ -360,6 +362,14 @@ function validateEffect(nodeId: string, outcomeId: string, effect: EventEffect, 
         typeof effect.process.description !== 'string'
       )
         errors.push(`${label}: bad historical process`);
+      break;
+    case 'organization_funds':
+      if (
+        !ref(effect.organizationId) ||
+        !Number.isFinite(effect.amount) ||
+        typeof effect.reason !== 'string'
+      )
+        errors.push(`${label}: bad organization funds`);
       break;
     default:
       break;
