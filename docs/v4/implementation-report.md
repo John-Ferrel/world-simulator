@@ -4,6 +4,8 @@
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
 
+> 2026-11-03 Phase 9 更新：内容池从 Phase 8 的 50 Task / 104 generated event scenes 扩展到 **110 Task / 206 generated event scenes**。真实模型生产 27 Family / 162 nodes（60 Task + 102 Event）、487 outcomes、974 narration variants；最终发布 pack 的生成 tokens 530,721，含被丢弃重生成的累计 1,123,277；0 精确/近似重复，27/27 发布。3 seed × 35 年同 Engine 对照：在世人物平均 Task 候选 1.25→6.83、Event 候选 11.80→24.01、Task 事件 580→804、不同 Task 34→64、Task 候选为 0 的人 72→22.67；每年耗时 105.8→139.8 ms。45 年 treatment：11,349 事件 / 1,516 Task 事件 / 73 种 Task / 7 historical developments（control 9）。88 年 playtest：31,567 事件 / 3,673 Task 事件 / 0 未解析 token / 0 死亡后事件；control 29,737。20k 合成人口最坏 Task 选择 2,363 ms/年、400 MB。完整报告见 [phase-9-report.md](phase-9-report.md)。这不是千级/百万级内容库，也不是 20k 完整 DB/API 生产验收。
+
 > 2026-11-03 Phase 8 更新：内容驱动 Task Pool (`TaskDefinition`/`taskUtility`/`auditCandidatePools`) 已接入；真实模型发布 48 个 task（另 2 个 authored 补充），144 outcomes/288 narrations，148,566 tokens（含重试）；同一世界五种人生产生 690 task events、36/50 unique tasks；88 年 treatment 24,991 events / 159 repeat offenders vs control 21,021 / 325。证据见 [phase-8-report.md](phase-8-report.md)、[phase-8-content-batch.json](phase-8-content-batch.json)、[phase-8-candidates.json](phase-8-candidates.json)、[phase-8-lives.json](phase-8-lives.json)。
 
 > 2026-11-03 Phase 7 更新：确定性自主行动 (`agency.ts`)、组织主动行为、底部历史进程、进程 `suspended`/分裂、持久 `MacroState.legacy`、Director 可执行 `actions`、legacy 生活内容、canonical 死亡时序已接入。自由演化 A–F 证据见 [phase-7-experiments.json](phase-7-experiments.json)；真实 Director 6,143 + 10,263 tokens，提出 6 条行动、5 条执行、1 条无进程 reform 跳过，见 [phase-7-director-demo.json](phase-7-director-demo.json)；Content Author 9,674 + 9,125 tokens，见 [phase-7-content-author.json](phase-7-content-author.json)。完整验收见 [phase-7-report.md](phase-7-report.md)。
@@ -48,6 +50,12 @@
 | Task Pool            | 完成（内容驱动）   | `TaskDefinition` + `taskUtility` + `auditCandidatePools`；50 个 Task；无需为新行为改 Engine switch                                                                           |
 | 真实 Task 内容       | 完成               | 8 族/48 个模型生成 Task + 2 authored；144 outcomes/288 narrations；148,566 tokens；0 语义重复                                                                                |
 | 五种差异人生         | 完成               | 同一世界 45 年；贫穷学徒/富裕青年/医生/活动者/特殊能力；690 task events、36/50 unique tasks；历史人物接触与 legacy 并存                                                      |
+| Phase 9 内容池       | 完成（真实模型）   | 27 Family / 162 nodes / 60 Task + 102 Event；487 outcomes / 974 narrations；发布 27/27；最终 pack tokens 530,721，累计 1,123,277 |
+| Phase 9 有效候选     | 完成               | 3 seed × 35 年：Task 候选 1.25→6.83、Event 11.80→24.01、Task 事件 580→804、不同 Task 34→64、Task 候选为 0 的人 72→22.67 |
+| Phase 9 长期人生     | 完成（部分）       | 45 年 11,349 事件 / 1,516 Task / 73 种 Task / 7 developments；control 9 developments；Task 仍替代部分 Agency 行动 |
+| Phase 9 88 年审计    | 完成               | playtest treatment 31,567 事件 / 3,673 Task，control 29,737；audit 0 未解析 token、0 死亡后事件、0 零事件年；生成内容 share 65.5% |
+| Phase 9 性能         | 完成（有限规模）   | 160 人真实内容 105.8→139.8 ms/年；20k 合成 Task 最坏 2,363 ms/年、400 MB；不是 20k 完整内容/DB/API |
+| Phase 9 浏览器       | 完成               | 三栏布局未改；`pnpm build` 通过，Playwright v4 1 项通过（9.3s） |
 | 候选审计             | 完成               | 按人物年龄/职业/教育/关系/能力统计；50 个定义对具体人物仅 2–7 个有效候选；事件候选 3–34                                                                                      |
 | 重复与叙事           | 部分完成           | treatment 159 vs control 325 prefix offenders；LifePassage 从已提交事实组织；仍有长期邻里/医疗重复，不能禁止真实持续照护                                                     |
 | 自主行动循环         | 完成（确定性）     | `agency.ts`；人物/组织每年最多一次；历史人物、组织领袖、普通成年人均可行动；儿童不执行成人组织行动                                                                           |
@@ -73,22 +81,22 @@ pnpm typecheck
 
 ### v4 测试
 
-Phase 8 最终 v4 专项：
+Phase 9 最终 v4 专项：
 
 ```text
 pnpm exec vitest run tests/v4-*.test.ts
-→ Test Files 25 passed | 2 skipped (27)
-→ Tests 163 passed | 8 skipped (171)
-→ 15.68s
+→ Test Files 27 passed | 2 skipped (29)
+→ Tests 172 passed | 8 skipped (180)
+→ 18.36s
 ```
 
-Phase 8 最终全量仓库测试（包含冻结的 v1–v3 测试与 v4）：
+Phase 9 最终全量仓库测试（包含冻结的 v1–v3 测试与 v4）：
 
 ```text
 pnpm test
-→ Test Files 74 passed | 7 skipped (81)
-→ Tests 443 passed | 36 skipped (479)
-→ 157.50s
+→ Test Files 76 passed | 7 skipped (83)
+→ Tests 452 passed | 36 skipped (488)
+→ 158.22s
 ```
 
 旧测试通过不等于 v4 完成；v4 的独立证据是专项、长期试玩、浏览器与真实模型调用。
@@ -102,7 +110,7 @@ pnpm test:e2e --config playwright.v4.config.ts
 → 1 passed (13.3s total)
 ```
 
-`pnpm build` 同时通过（Vite production bundle，2.89s）。
+`pnpm build` 同时通过（Vite production bundle，2.93s）。
 
 该流程使用独立 `living_world_e2e` 数据库，实际：
 

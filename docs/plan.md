@@ -1,5 +1,7 @@
 # 完整游戏关键路径
 
+> 2026-11-03 Phase 9 关键路径：见 [v4/phase-9-plan.md](v4/phase-9-plan.md)。
+>
 > 2026-11-03 Phase 8 关键路径：见 [v4/phase-8-plan.md](v4/phase-8-plan.md)。
 >
 > 2026-11-03 Phase 7 关键路径：见 [v4/phase-7-plan.md](v4/phase-7-plan.md)。
@@ -110,3 +112,12 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - `packages/worldline/`：7 维偏移评估、证据校验、严格干预 schema、确定性 fallback、LLM prompt；`pnpm worldline` 可运行 fallback。尚未接入周期 worker/审核队列。
 - 非数据库全量 **48 文件 / 272 项通过，28 项跳过**；数据库 12 项、mock worker 4 项、Playwright 2 项、typecheck/build 通过。
 - 当前活动世界 `world-3-tide3` 从 1900 启动；旧世界归档。30 秒/年仍未达成，实际首批 6 个月约 20 秒，长期更慢。
+
+## Phase 9 执行状态（2026-11-03）
+
+- 内容：27 个 Phase 9 Family / 162 nodes（60 Task + 102 Event），487 outcomes / 974 narrations；发布 27/27。
+- 总池：110 Task / 206 generated event scenes；`ALL_TASKS` / `ALL_EVENT_SCENES` 已接入游戏。
+- 有效候选（3 seed × 35 年）：Task 候选 1.25→6.83，Event 候选 11.80→24.01，Task 事件 580→804，不同 Task 34→64。
+- 长期人生：45 年 11,349 事件 / 1,516 Task / 73 种 Task；88 年 playtest 31,567 事件 / 3,673 Task。
+- 性能：160 人真实内容 105.8→139.8 ms/年；20k 合成 Task 最坏 2,363 ms/年、400 MB。
+- 未完成：童年内容仍薄（平均 2.00 个 Task 候选）；46/110 Task 单样本未触发；Task 仍替代部分 Agency 与历史过程（7 vs 9 developments）；无 20k 完整内容 + PostgreSQL/API 生产验收。
