@@ -2,6 +2,7 @@ import { performance } from 'node:perf_hooks';
 import { advanceV4Year } from '../packages/v4/engine.js';
 import { defaultMacroState } from '../packages/v4/macro.js';
 import { ALL_TASKS, GENERATED_TASKS } from '../packages/v4/content/generated/index.js';
+import { DEFAULT_COMPOSITION } from '../packages/v4/composition/default.js';
 import type {
   Household,
   Person,
@@ -138,6 +139,7 @@ for (let i = 0; i < years; i += 1) {
     economy: { enabled: false },
     eventRuntime: true,
     agency: true,
+    ...(process.env.V4_BENCH_COMPOSITION === '1' ? { composition: DEFAULT_COMPOSITION } : {}),
     tasks:
       process.env.V4_BENCH_TASKS === '0'
         ? []
@@ -155,6 +157,7 @@ console.log(
   JSON.stringify({
     persons: count,
     years,
+    composition: process.env.V4_BENCH_COMPOSITION === '1',
     tasks:
       process.env.V4_BENCH_TASKS === '0'
         ? 0

@@ -26,6 +26,7 @@ import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-fami
 import { VIENNA_POSTWAR_SCENES } from '../packages/v4/content/vienna-postwar.js';
 import { VIENNA_HISTORY_SCENES } from '../packages/v4/content/vienna-history.js';
 import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
+import { DEFAULT_COMPOSITION } from '../packages/v4/composition/default.js';
 import {
   GENERATED_SCENES,
   GENERATED_TASKS,
@@ -430,6 +431,7 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
       eventRuntime: true,
       agency: true,
       tasks: process.env.V4_PLAYTEST_TASKS === '0' ? [] : ALL_TASKS,
+      composition: DEFAULT_COMPOSITION,
       maxOrdinaryEventsPerPerson,
       ...(maxScenesPerPerson === undefined ? {} : { maxScenesPerPerson }),
     });

@@ -64,6 +64,7 @@ import {
   refreshAgencyGoal,
 } from './agency.js';
 import { taskUtility } from './tasks.js';
+import type { CompositionSource } from './composition/types.js';
 import {
   advanceHistoricalProcesses,
   ensureHistoricalProcess,
@@ -130,6 +131,8 @@ export type V4AdvanceOptions = {
   maxAgencyActorsPerYear?: number;
   /** Content-authored active tasks, chosen by utility rather than event rate. */
   tasks?: TaskDefinition[];
+  /** Phase 11 context×kernel composition source. Opt-in so old fixtures stay stable. */
+  composition?: CompositionSource;
   /** Soft cap for ordinary statistical events per person-year. Fact events bypass. */
   maxOrdinaryEventsPerPerson?: number;
   /** Allow required missing roles to be taken from the background cohort. */
@@ -185,6 +188,17 @@ export type V4AdvanceDiagnostics = {
     reason: string;
   }[];
   economy: V4EconomyDiagnostics;
+  /** Phase 11 context×kernel composition statistics, when enabled. */
+  composition?: {
+    activeContexts: number;
+    activeMilieus: number;
+    kernelsConsidered: number;
+    compiledScenes: number;
+    compiledTasks: number;
+    skippedByContext: number;
+    skippedByMilieu: number;
+    cacheHit: boolean;
+  };
   warnings: V4Warning[];
   timings?: Record<string, number>;
 };
@@ -210,6 +224,7 @@ type NormalizedOptions = {
   foodPerPersonPerMonth: number;
   outcomePolicy?: V4OutcomePolicy;
   choicePolicy?: V4ChoicePolicy;
+  composition?: CompositionSource;
 };
 
 type EngineContext = {
@@ -411,12 +426,15 @@ export function advanceV4Year(
     materializedCount: 0,
   };
 
-  const definitions = usableDefinitions(scenes, diagnostics).filter(
-    (definition) => !(draft.macro && definition.tags?.includes('baseline_mortality')),
-  );
+  const composed = normalized.composition?.compile(draft, target);
+  if (composed) diagnostics.composition = composed.stats;
+  const definitions = usableDefinitions(
+    composed ? [...scenes, ...composed.scenes] : scenes,
+    diagnostics,
+  ).filter((definition) => !(draft.macro && definition.tags?.includes('baseline_mortality')));
   context.definitions = definitions;
   const taskDefinitions = usableDefinitions(
-    (options.tasks ?? []) as unknown as SceneDefinition[],
+    [...(options.tasks ?? []), ...(composed?.tasks ?? [])] as unknown as SceneDefinition[],
     diagnostics,
   ).filter((definition): definition is TaskDefinition => {
     const task = (definition as TaskDefinition).task;
@@ -600,6 +618,7 @@ export function auditCandidatePools(
   date: WorldDate,
   scenes: SceneDefinition[],
   tasks: TaskDefinition[] = [],
+  composition?: CompositionSource,
 ): V4CandidatePoolAudit | undefined {
   const person = world.persons[personId];
   if (!person || person.died) return undefined;
@@ -630,7 +649,12 @@ export function auditCandidatePools(
     },
     warnings: [],
   };
-  const definitions = usableDefinitions(scenes, diagnostics);
+  const composed = composition?.compile(world, date);
+  const definitions = usableDefinitions(
+    composed ? [...scenes, ...composed.scenes] : scenes,
+    diagnostics,
+  );
+  const allTasks = [...tasks, ...(composed?.tasks ?? [])];
   const context: EngineContext = {
     world,
     target: date,
@@ -647,11 +671,11 @@ export function auditCandidatePools(
     sceneHistory: resolvedSceneHistory(world),
     definitions,
     triggerIndex: new Map(),
-    tasks,
+    tasks: allTasks,
     tasksByStage: new Map(),
     materializedCount: 0,
   };
-  for (const task of tasks) {
+  for (const task of allTasks) {
     const list = context.tasksByStage.get(task.stage) ?? [];
     list.push(task);
     context.tasksByStage.set(task.stage, list);
@@ -730,6 +754,7 @@ function normalizeOptions(options: V4AdvanceOptions): NormalizedOptions {
     foodPerPersonPerMonth,
     outcomePolicy: options.outcomePolicy,
     choicePolicy: options.choicePolicy,
+    composition: options.composition,
   };
 }
 
@@ -3334,18 +3359,102 @@ function runBottomUpProcesses(context: EngineContext, date: WorldDate): void {
   }
 }
 
+type IndexedScene = {
+  definition: SceneDefinition;
+  requiredPlaceKinds?: Set<string>;
+  employment?: boolean;
+  education?: string[];
+  hasRole?: string;
+  notHasRole?: string;
+  cash?: { min?: number; max?: number };
+  health?: { min?: number; max?: number };
+  householdSize?: { min?: number; max?: number };
+};
+
+function indexScenesByStage(definitions: SceneDefinition[]): Map<SceneStage, IndexedScene[]> {
+  const byStage = new Map<SceneStage, IndexedScene[]>();
+  for (const definition of definitions) {
+    const entry: IndexedScene = { definition };
+    for (const condition of definition.conditions) {
+      switch (condition.kind) {
+        case 'placeKind':
+          if (Array.isArray(condition.in)) entry.requiredPlaceKinds = new Set(condition.in);
+          break;
+        case 'employment':
+          entry.employment = condition.employed;
+          break;
+        case 'education':
+          entry.education = [...condition.in];
+          break;
+        case 'hasRole':
+          entry.hasRole = condition.role;
+          break;
+        case 'notHasRole':
+          entry.notHasRole = condition.role;
+          break;
+        case 'cash':
+          entry.cash = { min: condition.min, max: condition.max };
+          break;
+        case 'health':
+          entry.health = { min: condition.min, max: condition.max };
+          break;
+        case 'householdSize':
+          entry.householdSize = { min: condition.min, max: condition.max };
+          break;
+        default:
+          break;
+      }
+    }
+    const list = byStage.get(definition.stage) ?? [];
+    list.push(entry);
+    byStage.set(definition.stage, list);
+  }
+  return byStage;
+}
+
+function indexedSceneFits(world: WorldState, entry: IndexedScene, subject: Person): boolean {
+  if (entry.employment !== undefined && Boolean(subject.employment) !== entry.employment) {
+    return false;
+  }
+  if (entry.education && !entry.education.includes(subject.education.status)) return false;
+  if (entry.hasRole !== undefined && !subject.roles.includes(entry.hasRole)) return false;
+  if (entry.notHasRole !== undefined && subject.roles.includes(entry.notHasRole)) return false;
+  if (entry.cash) {
+    const household = world.households[subject.householdId];
+    if (!household) return false;
+    if (entry.cash.min !== undefined && household.cash < entry.cash.min) return false;
+    if (entry.cash.max !== undefined && household.cash > entry.cash.max) return false;
+  }
+  if (entry.health) {
+    if (entry.health.min !== undefined && subject.health.vitality < entry.health.min) return false;
+    if (entry.health.max !== undefined && subject.health.vitality > entry.health.max) return false;
+  }
+  if (entry.householdSize) {
+    const household = world.households[subject.householdId];
+    if (!household) return false;
+    const size = household.memberIds.filter((id) => {
+      const person = world.persons[id];
+      return Boolean(person) && !person.died;
+    }).length;
+    if (entry.householdSize.min !== undefined && size < entry.householdSize.min) return false;
+    if (entry.householdSize.max !== undefined && size > entry.householdSize.max) return false;
+  }
+  const required = entry.requiredPlaceKinds;
+  if (required && required.size > 0) {
+    const actual = personPlaceKinds(world, subject);
+    for (const kind of required) if (actual.has(kind as never)) return true;
+    return false;
+  }
+  return true;
+}
+
 function runEventYear(
   context: EngineContext,
   definitions: SceneDefinition[],
   date: WorldDate,
   resolvedCounts: Map<Id, number>,
 ): void {
-  const byStage = new Map<SceneStage, SceneDefinition[]>();
-  for (const definition of definitions) {
-    const list = byStage.get(definition.stage) ?? [];
-    list.push(definition);
-    byStage.set(definition.stage, list);
-  }
+  const byStage = indexScenesByStage(definitions);
   const personIds = Object.keys(context.world.persons).sort();
   for (const personId of personIds) {
     let subject = context.world.persons[personId];
@@ -3360,8 +3469,10 @@ function runEventYear(
     // events. Resolve at most one milestone first, then fill with ordinary
     // events.
     const stageDefinitionsForMilestone = byStage.get(stageForAge(ageAt(subject, date))) ?? [];
-    for (const definition of stageDefinitionsForMilestone) {
+    for (const entry of stageDefinitionsForMilestone) {
+      const definition = entry.definition;
       if (!definition.oncePerPerson || used.has(definition.id)) continue;
+      if (!indexedSceneFits(context.world, entry, subject)) continue;
       if (!sceneEligible(context, definition, subject, date)) continue;
       // Once-per-person milestones normally fire on the first eligible year,
       // but an authored low-rate milestone (e.g. a rare historical contact)
@@ -3409,11 +3520,13 @@ function runEventYear(
     // scenes must not crowd out the events that create the next generation.
     if (subject && !subject.died && ordinary < ordinaryCap) {
       const lifecycleDefinitions = (byStage.get(stageForAge(ageAt(subject, date))) ?? []).filter(
-        (definition) => definition.tags.includes('lifecycle') && !used.has(definition.id),
+        (entry) => entry.definition.tags.includes('lifecycle') && !used.has(entry.definition.id),
       );
       const lifecycleCandidates: { definition: SceneDefinition; weight: number }[] = [];
-      for (const definition of lifecycleDefinitions) {
+      for (const entry of lifecycleDefinitions) {
+        const definition = entry.definition;
         if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
+        if (!indexedSceneFits(context.world, entry, subject)) continue;
         if (!sceneEligible(context, definition, subject, date)) continue;
         const rate = v4EventRate(context, definition, subject, date);
         const rng = seededRng(
@@ -3470,8 +3583,10 @@ function runEventYear(
       if (!subject || subject.died) break;
       const candidates: { definition: SceneDefinition; weight: number }[] = [];
       const stageDefinitions = byStage.get(stageForAge(ageAt(subject, date))) ?? [];
-      for (const definition of stageDefinitions) {
+      for (const entry of stageDefinitions) {
+        const definition = entry.definition;
         if (used.has(definition.id)) continue;
+        if (!indexedSceneFits(context.world, entry, subject)) continue;
         if (!sceneEligible(context, definition, subject, date)) continue;
         if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
         const rate = v4EventRate(context, definition, subject, date);

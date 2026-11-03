@@ -9,6 +9,7 @@ import {
   ALL_EVENT_SCENES,
   ALL_TASKS,
 } from '../../packages/v4/content/generated/index.js';
+import { DEFAULT_COMPOSITION } from '../../packages/v4/composition/default.js';
 import { defaultMacroState } from '../../packages/v4/macro.js';
 import { applyViennaHistoricalWorld } from '../../packages/v4/content/vienna-history-world.js';
 import { enqueueV4MacroProposal } from '../../packages/v4/macro-store.js';
@@ -150,6 +151,7 @@ while (!stopped) {
           eventRuntime: true,
           agency: true,
           tasks: ALL_TASKS,
+          composition: DEFAULT_COMPOSITION,
           maxOrdinaryEventsPerPerson: 4,
         },
       );
