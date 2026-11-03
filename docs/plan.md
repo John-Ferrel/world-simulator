@@ -1,5 +1,7 @@
 # 完整游戏关键路径
 
+> 2026-11-04 Phase 11 关键路径：见 [v4/phase-11-plan.md](v4/phase-11-plan.md)。
+>
 > 2026-11-03 Phase 10 关键路径：见 [v4/phase-10-plan.md](v4/phase-10-plan.md)。
 >
 > 2026-11-03 Phase 9 关键路径：见 [v4/phase-9-plan.md](v4/phase-9-plan.md)。
@@ -133,3 +135,13 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - 88 年 playtest：27,510 事件 / 3,490 Task；44 个重复 offender；0 未解析 token、0 死亡后事件。
 - UI：稳定 ID 人物/事件/进程高亮、Hover 档案、事件/进程 modal；e2e 通过。
 - 未完成：不是百万/千级定义库；教育/出生覆盖下降；64/140 Task 单样本未触发；无正式逮捕/养老金/租金持久 effect；无 20k 完整内容+DB/API 验收。
+
+
+## Phase 11 执行状态（2026-11-04）
+
+- 组合层：Context × Milieu × Plot Kernel → 现有 Scene/Task；150 Kernel / 10 Context / 12 Milieu / 98 variants / 450 base outcomes。
+- 容量：naive 上界 1,265,143；默认 Vienna 编译 255 Scene + 151 Task；跨四情境 996 compiled scene IDs；35 年 293 composed events / 56 kernels。
+- 长周期：88 年 23,802 事件 / 2,965 Task / 27 repeat offenders；0 未解析 token。
+- 性能：160 人真实内容 147.7 ms/年；1k 535 ms、5k 10.4s、20k 252.7s/年；20k 未达生产要求。
+- 文学：Critic 20 样本 9 通过 / 11 失败；性别代词、货币、集体效果、条件与重复仍是硬缺口。
+- 未完成：百万是上界不是实例；无多城市/10k 历史人物/更强制候选索引。
