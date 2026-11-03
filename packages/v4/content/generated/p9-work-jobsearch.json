@@ -1,0 +1,1321 @@
+{
+  "id": "p9-work-jobsearch",
+  "title": "找工、试工与谈工钱",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 16,
+    "max": 60
+  },
+  "tags": [
+    "work",
+    "job_search",
+    "negotiation",
+    "wages",
+    "employment",
+    "task"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 16,
+      "max": 60
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "work",
+    "goals": [
+      "work",
+      "survival"
+    ],
+    "needs": [
+      "cash",
+      "autonomy"
+    ],
+    "baseUtility": 1.5,
+    "risk": 0.3,
+    "skills": [
+      "social",
+      "numeracy"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p9-work-jobsearch.ask-trial",
+      "title": "在厂门口问一次试工",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "journeyman",
+          "kind": "worker",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 45
+        }
+      ],
+      "tags": [
+        "job_search",
+        "trial",
+        "factory"
+      ],
+      "outcomes": [
+        {
+          "id": "ask-trial.accepted",
+          "weight": 2,
+          "text": "工头把烟蒂在鞋底按灭，上下打量他沾灰的袖口，说明早六点来试半天，只管一顿午饭，干得好再谈工钱。{subject}连声道谢，回家路上把明早要穿的褂子先刷了一遍。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "trial_work_pending",
+              "add": true,
+              "reason": "约好次日试工"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "工头愿意给一次试工机会"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "有了试工的盼头"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ask-trial.accepted",
+              "text": "午休的哨子刚响，{foreman}夹着烟走到门口。{subject}报上姓名、住址和干过的活，声音有点发紧。工头嗯了一声，说明早六点来，管一顿午饭，干得好再谈工钱。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "ask-trial.accepted",
+              "text": "厂门口的砖墙被太阳晒得发烫。{journeyman}在旁听着，插了一句这后生看着手稳。工头把烟灰弹进阴沟，说试半天，午饭他管。{subject}点头时，肚子先响了一声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ask-trial.no-vacancy",
+          "weight": 2,
+          "text": "工头说眼下没有空缺，让他把名字和住址写在账本撕下的纸角上，说月底再来问。{subject}看那张纸被随手压进抽屉，纸角还露出半截，知道多半不会有人翻。他道过谢，往街尾另一家走去。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "名字只写在纸角上"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "工头客气但没有松口"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "继续沿街问工"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ask-trial.no-vacancy",
+              "text": "{foreman}没有接话，先从抽屉里撕下一角纸。{subject}把名字、住址和手艺一样样说完，工头边写边应，写完把纸压回抽屉，说月底来问。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "ask-trial.no-vacancy",
+              "text": "门口的铁栅栏后面机器还在响。{subject}隔着栅栏说完自己的来意，工头只抬了抬下巴。纸角上的铅笔字很淡，他把住址又念了一遍，怕对方写错。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ask-trial.deposit-refused",
+          "weight": 1,
+          "text": "工头说要干就先交十克朗工具押金，坏了照价扣。{subject}把口袋翻出来，里面只有几个赫勒和一张车票，凑不齐。工头耸耸肩，说这里规矩就是这样，他便提着帽子转身去了下一家。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "拿不出押金被挡在门外"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "仍没有着落"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "空手离开厂门口"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ask-trial.deposit-refused",
+              "text": "“十克朗押金，先交后干。”{foreman}说得很平。{subject}把两只口袋翻给人家看，柜台上只落下一张皱车票。工头收回话头，他也不再问，提着帽子走出栅栏。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "ask-trial.deposit-refused",
+              "text": "栅栏边的工友听着都低下头。{journeyman}小声说这押金上个月还没有。{subject}数了三遍手里的赫勒，差得远，只好说声打扰了，沿着墙根往下一家走。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "survival"
+        ],
+        "needs": [
+          "cash",
+          "autonomy"
+        ],
+        "baseUtility": 1.7,
+        "risk": 0.25,
+        "skills": [
+          "social",
+          "craft"
+        ]
+      }
+    },
+    {
+      "id": "p9-work-jobsearch.request-raise",
+      "title": "把一年的活计摊在桌上",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "wages",
+        "raise",
+        "negotiation"
+      ],
+      "outcomes": [
+        {
+          "id": "request-raise.granted-extra-duty",
+          "weight": 2,
+          "text": "厂长听完那张记满活计的纸，摆弄了一下怀表，说每周加一克朗，但从下月起仓库钥匙归他管，月底盘点要留下对账。{subject}当晚就把钥匙串系在腰上，回家路上算了算，多的一克朗刚够交房租添头。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "加薪一周一克朗的积攒"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "学着盘点和记账"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.05,
+              "reason": "厂长把仓房交给他"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "工钱涨了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "request-raise.granted-extra-duty",
+              "text": "{employer}把怀表扣在桌面上，一刻钟走得清清楚楚。{subject}把那张纸推过去，一行行念，念到替人顶班时停了一下。厂长说加一克朗，钥匙和月底盘点也归你。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "request-raise.granted-extra-duty",
+              "text": "办公室有股墨水味。{worker}在门外等着，透过玻璃看见{subject}把纸摊平。厂长开抽屉取出仓库钥匙串，往桌上一放，说工钱加一克朗，月底得把数目对上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "request-raise.postponed",
+          "weight": 2,
+          "text": "厂长翻了两页纸，说这个月订单少，加薪的事推到明年，连具体哪个月都没提。他出来时那张纸还留在桌上，边角被茶杯压出一道湿印。活还是那些活，工钱还是二十六克朗。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "加薪被推到没有月份"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.03,
+              "reason": "觉得东家只是推托"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "开口谈工钱没有失礼"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "request-raise.postponed",
+              "text": "“明年再说，眼下订单少。”{employer}把纸往桌边一推。{subject}站着没动，想问哪个月，厂长的怀表已经合上。茶杯底下压着那两页活计，印子慢慢洇开。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "request-raise.postponed",
+              "text": "{worker}从门缝里看见他出来时手里空空的。厂长原话说生意淡，加薪留到明年。{subject}回工位把锤子放回木架，什么也没说，只把袖口又卷高了一指。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "request-raise.leaked-wages",
+          "weight": 1,
+          "text": "说到一半，{subject}顺口把自己听说别家熟手拿三十克朗的事抖了出来。厂长脸色一沉，说那你上别家去，原本默许加的那一克朗当场收回。他回到工位，{worker}问谈成了没有，他只摇摇头。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "说漏嘴丢掉加薪"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.08,
+              "reason": "东家认为他拿别处压价"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "厂里传出他不安分的话"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "request-raise.leaked-wages",
+              "text": "“别家熟手三十克朗。”{subject}话一出口就后悔。{employer}把怀表往桌上一磕，说那你上别家去。门开后，走廊里打字机的声音听得格外清。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "request-raise.leaked-wages",
+              "text": "厂长本来都拿起笔了，听见那个数目又放下。{subject}想补一句自己不是那个意思，{worker}正好推门进来送单子，屋里静了一下，那笔终于没收。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "cash",
+          "status"
+        ],
+        "baseUtility": 1.5,
+        "risk": 0.5,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p9-work-jobsearch.railway-depot",
+      "title": "南站货场的招工日",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "stationForeman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 55
+        }
+      ],
+      "tags": [
+        "job_search",
+        "railway",
+        "depot",
+        "hiring"
+      ],
+      "outcomes": [
+        {
+          "id": "railway-depot.day-labor",
+          "weight": 2,
+          "text": "站务员把出生证明和上一任东家的离职证明摊在桌上核对，又让他看远处车皮上的号码，考视力。后生念对了，便被派去跟装卸班，按日结钱，一天两克朗四十分，干得好才补进正式名册。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$stationForeman",
+              "occupation": "货场临时装卸工",
+              "wage": 2.4,
+              "workplaceId": "$workplace",
+              "reason": "招工日被收作按日结钱的临时工"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "back_strain",
+              "add": true,
+              "reason": "整日扛麻袋扭伤腰背"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$stationForeman",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "站务员收下了他的证明"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "排了半宿队终于有活"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "railway-depot.day-labor",
+              "text": "天色还灰着，{subject}手里攥着几张折皱的证明。{stationForeman}让他念车皮上的号码，听见念对了，就朝装卸班一挥手，说先按日结钱，一天两克朗四十分。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "railway-depot.day-labor",
+              "text": "货场的煤烟落在肩上。{worker}帮他扛第一袋时教他把腰沉下去。站务员在名册边上记了日期，说干得好才有正式名分，{subject}点头，把袋子往肩上一顶。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "railway-depot.eyesight-failed",
+          "weight": 2,
+          "text": "体检室的窗子很小，医生让他认墙上贴的字牌，他眯着眼把最后两行念错。站务员只留下他的名字，说货场有空缺再叫。他走出南站，手里那张洗礼证明的边已经被汗浸软。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "视力不合格被搁下"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "名字留在货场等空缺"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$stationForeman",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "站务员记下名字"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "railway-depot.eyesight-failed",
+              "text": "字牌贴在石灰墙上，最后两行他实在分不清。{official}用笔杆敲敲桌面，{stationForeman}把名字写进另一本册子，说有缺再叫。{subject}把证明一张张叠好，折边已经发软。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "railway-depot.eyesight-failed",
+              "text": "排在他前面的{worker}很快过了关。轮到他时，医生把灯挪近了些，他还是念错。出了南站，太阳才刚爬上车皮，他站在路边把揉皱的证明捋平。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "railway-depot.no-baptism",
+          "weight": 1,
+          "text": "站务员一样样点过去，最后卡在洗礼证明上。他手里只有出生纸，教区在城另一头。{subject}搭车赶去，回来时日头偏西，名册已经收进柜里，装卸班早开工了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "往返教区的车钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "赶回来名额已满"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "仍需另找活路"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "railway-depot.no-baptism",
+              "text": "“洗礼证明。”{stationForeman}把手一摊。{subject}只有出生纸，说教区在城另一头。站务员看了眼钟，说名册按时候收。他跑出去搭车，回来时柜门已经上锁。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "railway-depot.no-baptism",
+              "text": "教区的办事员翻了很久簿子才开出证明，纸上的墨还没干透。{subject}一路攥着往南站赶，月台上卸货的人已经排成两行，他站在队尾，听人说上午就招满了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "survival"
+        ],
+        "needs": [
+          "cash",
+          "status"
+        ],
+        "baseUtility": 1.8,
+        "risk": 0.3,
+        "skills": [
+          "numeracy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-work-jobsearch.relative-introduction",
+      "title": "舅公家的星期天",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 60
+        },
+        {
+          "kind": "cash",
+          "max": 60
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 60
+        },
+        {
+          "key": "relative",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "job_search",
+        "relative",
+        "introduction",
+        "favor"
+      ],
+      "outcomes": [
+        {
+          "id": "relative-introduction.lead-works",
+          "weight": 2,
+          "text": "点心放在桌布上，{relative}问完这半年做了什么，便说明天带他去见一个管工头的熟人。星期一上午，{foreman}在料场边让他搬了两趟木箱，看他手脚利落，说下星期来试工，先做杂活。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "kin",
+              "trust": 0.08,
+              "reason": "舅公真替他引见"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "工头看了他干活"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "trial_work_pending",
+              "add": true,
+              "reason": "约好下周试工"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "亲戚的人情有了回音"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "relative-introduction.lead-works",
+              "text": "星期天的点心拆开纸包，{relative}先问他这半年干了什么。听完没多说，只说明天一早跟他走。料场边那个工头话不多，让他搬了两趟木箱，点了点头。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "relative-introduction.lead-works",
+              "text": "舅公家的咖啡是兑了菊苣的。{subject}把从前的活一样样报出来，舅公听着，偶尔嗯一声。转天{foreman}看他搬箱子的架势，说下星期来试杂活。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "relative-introduction.never-mentions",
+          "weight": 2,
+          "text": "{relative}在饭桌上满口答应，说认识几个管工的，过两天就给问。到了下一个星期天，他提着一小包糖再去，舅公家门关着，敲了半天只有邻居探出头来。引见的事没有人再提起。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "kin",
+              "trust": -0.06,
+              "reason": "口头应承却没有下文"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "再买一包糖上门"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "白跑一趟"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "relative-introduction.never-mentions",
+              "text": "舅公拍着胸口说包在他身上，还送他到楼梯口。下个星期天，{subject}提着糖站在门口，敲了三回，隔壁的妇人说舅公一早出门了，没说去哪。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "relative-introduction.never-mentions",
+              "text": "点心纸包搁在膝上，{relative}说熟人多，慢慢问，别急。{subject}回家把这些话学给母亲听，母亲只叹了口气。那包糖后来自己家里分着吃了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "relative-introduction.warehouse-errand",
+          "weight": 1,
+          "text": "{relative}答应引见，但要他先去帮自己看两个月仓库，傍晚开门清点进出的麻袋，算是先把人情还上。活不轻，夜里冷，可仓库角落有张旧床，工钱没有，只给饭。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "kin",
+              "trust": 0.05,
+              "obligation": 0.06,
+              "reason": "先替舅公看守仓库"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "仓库管一顿晚饭"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "chilled",
+              "add": true,
+              "reason": "夜里守仓受凉"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "relative-introduction.warehouse-errand",
+              "text": "“先替我看两个月仓库。”{relative}说得很平，好像这是最省事的安排。{subject}跟着到仓库，麻袋咬破的地方漏出一路面粉，角落里那张床短得伸不直腿。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "relative-introduction.warehouse-errand",
+              "text": "货栈的门轴响得刺耳。舅公交给他一盏油灯和一本进出账，说傍晚记清，别让收麻袋的占便宜。他掀开被子一角，里面全是面屑和潮气。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "belonging"
+        ],
+        "needs": [
+          "cash",
+          "belonging"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.2,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-work-jobsearch.negotiate-hours",
+      "title": "星期六下午的价钱",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "hours",
+        "negotiation",
+        "saturday",
+        "union"
+      ],
+      "outcomes": [
+        {
+          "id": "negotiate-hours.half-day",
+          "weight": 2,
+          "text": "{subject}把同业公会的工时表摊在柜台上，指着星期六那栏。东家看了半晌，答应下午歇半天，但工钱按日扣，一个月少算两克朗。头一个星期六，他中午就从店里出来，天还亮着，在街角站着有些不惯。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "星期六下午工钱按日扣减"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "终于有半天空闲"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.03,
+              "reason": "东家抄了工时表的折中"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "第一次天亮时回家"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "negotiate-hours.half-day",
+              "text": "工时表铺在柜台上，边角卷起。{subject}指着星期六，{employer}的手指在数字上敲了两下，说下午歇可以，工钱按日扣。礼拜六中午，他推门出来，街上的影子短得像另一来处。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "negotiate-hours.half-day",
+              "text": "{worker}在旁边悄悄比了个手势，让他别逼太紧。东家最后说中午收摊，算一天的钱扣两克朗。{subject}点头，把自己那块怀表跟店里的钟对了一眼。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "negotiate-hours.longer-break-only",
+          "weight": 2,
+          "text": "东家只答应把午休从半小时延到三刻钟，说顾客星期六最多，少一个下午就少一天生意。下班钟点一字没动，灯还是晚上八点亮着。{subject}拿到的不过是多坐一刻钟的功夫，面包能吃得慢些。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "午休稍长喘了口气"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "谈话只换来一刻钟"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.01,
+              "reason": "东家没有翻脸也没有松口"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "negotiate-hours.longer-break-only",
+              "text": "{employer}把柜台擦了两遍才开口，说午休可以到三刻钟，收铺的时辰照旧。{subject}把算好的话咽回去，正午的钟一响，他多坐了会儿，看窗外的车过了一趟又一趟。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "negotiate-hours.longer-break-only",
+              "text": "店里灯罩子下有小飞虫绕。东家说少一个下午就是少一天生意，语气很和气。{subject}没再争，回头把靠墙的凳子搬到光线好一点的地方，午休时就坐那儿。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "negotiate-hours.dismissed-threat",
+          "weight": 1,
+          "text": "{subject}把公会的工时表拍在柜台上，说同行都照这个。{employer}脸涨红了，说那你去同行那儿干，下个月不用再来。他愣在原地，围裙还系在腰上，最后自己解下来搭在椅背上。",
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "拿工时表硬谈被辞退"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "当街被辞心里发空"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.12,
+              "reason": "谈崩了"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "柜前的争执被顾客看见"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "negotiate-hours.dismissed-threat",
+              "text": "“那你去同行那儿干。”{employer}把工时表推回来，纸在柜面滑出声音。{subject}还想说什么，门口有顾客进来，他把围裙解下，椅子腿在地上蹭了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "negotiate-hours.dismissed-threat",
+              "text": "{worker}从后间探头，看见两人僵着。东家只说下个月不用来了，随即转身招呼客人。{subject}把工具一件件装进布袋，柜台上的工时表被风吹得卷起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "family"
+        ],
+        "needs": [
+          "autonomy",
+          "health"
+        ],
+        "baseUtility": 1.4,
+        "risk": 0.35,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p9-work-jobsearch.leave-bad-employer",
+      "title": "欠薪的作坊与街对面的招工",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "cash",
+          "max": 50
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "job_search",
+        "bad_employer",
+        "resignation",
+        "risk"
+      ],
+      "outcomes": [
+        {
+          "id": "leave-bad-employer.quit-unpaid",
+          "weight": 2,
+          "text": "机器没有护罩，东家又把钳子摔在案上，{subject}当场说要走。两个月的工钱只结了一半，{employer}说剩下的月底给。是{worker}借给他三克朗，先垫上房东那份，他才没在周末被赶出门。",
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "当场辞掉欠薪的作坊"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "向工友借来的应急钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "friend",
+              "trust": 0.1,
+              "obligation": 0.08,
+              "reason": "借了钱帮他撑过房租"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "工钱没结清"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leave-bad-employer.quit-unpaid",
+              "text": "钳子砸在铁案上，火星子溅到靴面。{subject}解下围裙说今天不干了。{employer}从抽屉里数出几张票子推过来，说剩下的月底。{worker}追到巷口，从内衣袋里摸出三克朗塞给他。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leave-bad-employer.quit-unpaid",
+              "text": "作坊的窗子上糊着纸，白天也得点灯。{subject}收拾自己的凿子时，听见东家在后面骂。工友跟到楼梯口，说房东那边先别慌，这钱拿去，下月发了再还。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "leave-bad-employer.new-place-first",
+          "weight": 2,
+          "text": "{subject}趁午休过街到对面问清楚，工头说缺熟手，工钱从小工算起，一天一克朗六十分。谈妥以后他才回作坊辞工，{employer}扣下最后半个月的工钱，说这是规矩。他把自己的工具装进布袋，没有动作坊的一颗钉子。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "机工",
+              "wage": 1.6,
+              "workplaceId": "$workplace",
+              "reason": "先谈好街对面的活再辞工"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "被扣的半月工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.05,
+              "reason": "被扣半个月工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "下家已经落实"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leave-bad-employer.new-place-first",
+              "text": "街对面的工头在门口抽烟，{subject}过去问了两句，就定下按小工算钱。回到作坊辞工时，东家数出几张票子，说扣半个月是规矩。他把凿子、锉刀一件件裹进布，账算得不响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leave-bad-employer.new-place-first",
+              "text": "午休短，他跑过去时嘴里还嚼着面包。对方说缺熟手，一天一克朗六十分，明天就能上工。回来{employer}冷着脸扣钱，{worker}靠在门边没吭声，只帮他把工具袋口系紧。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "leave-bad-employer.stay-transferred",
+          "weight": 1,
+          "text": "{subject}没有立刻走，先要求补发欠薪。{employer}说分期给，每月先付两克朗，却把他从车床调到仓库看料，整天不着机器，手艺眼看要闲下来。夜里他翻了翻那本记工的小册子，欠账一栏还空着一半。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "分期补发的头一笔欠薪"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": -0.03,
+              "reason": "调离车床手艺生疏"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.02,
+              "reason": "东家答应分期付欠薪"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被调去看料"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leave-bad-employer.stay-transferred",
+              "text": "{employer}答应每月先给两克朗，说年底结清，随手把派工单改成仓库看料。{subject}站在料架之间，听见隔墙车床转着，那是别人在使他的机器。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leave-bad-employer.stay-transferred",
+              "text": "他把记工的小册子摊在膝上，一页页算。东家说分期给，先付了一小叠票子。第二天派工单换了，他的位置从车床挪到堆木料的墙边，手上只剩一把清点用的尺。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "survival"
+        ],
+        "needs": [
+          "safety",
+          "autonomy"
+        ],
+        "baseUtility": 1.1,
+        "risk": 0.7,
+        "skills": [
+          "social"
+        ]
+      }
+    }
+  ]
+}

@@ -36,7 +36,12 @@ import {
   VIENNA_1912_SCENES,
 } from '../../packages/v4/content/vienna-1912.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../../packages/v4/content/vienna-family.js';
-import { GENERATED_SCENES, GENERATED_TASKS } from '../../packages/v4/content/generated/index.js';
+import {
+  GENERATED_SCENES,
+  GENERATED_TASKS,
+  ALL_EVENT_SCENES,
+  ALL_TASKS,
+} from '../../packages/v4/content/generated/index.js';
 import { VIENNA_LIFE_SCENES } from '../../packages/v4/content/vienna-life.js';
 import {
   VIENNA_POSTWAR_CHRONICLE,
@@ -572,8 +577,8 @@ const sceneTitles = new Map(
     ...VIENNA_HISTORY_SCENES,
     ...VIENNA_DEVELOPMENT_SCENES,
     ...VIENNA_FAMILY_RUNTIME_SCENES,
-    ...GENERATED_SCENES,
-    ...GENERATED_TASKS,
+    ...ALL_EVENT_SCENES,
+    ...ALL_TASKS,
   ].map((scene) => [scene.id, scene.title]),
 );
 

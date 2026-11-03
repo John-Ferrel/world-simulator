@@ -15,7 +15,12 @@ import { VIENNA_POSTWAR_SCENES } from '../packages/v4/content/vienna-postwar.js'
 import { VIENNA_HISTORY_SCENES } from '../packages/v4/content/vienna-history.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../packages/v4/content/vienna-developments.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
-import { GENERATED_SCENES, GENERATED_TASKS } from '../packages/v4/content/generated/index.js';
+import {
+  GENERATED_SCENES,
+  GENERATED_TASKS,
+  ALL_EVENT_SCENES,
+  ALL_TASKS,
+} from '../packages/v4/content/generated/index.js';
 import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
 
 const ALL_SCENES = [
@@ -25,7 +30,7 @@ const ALL_SCENES = [
   ...VIENNA_HISTORY_SCENES,
   ...VIENNA_DEVELOPMENT_SCENES,
   ...VIENNA_FAMILY_RUNTIME_SCENES,
-  ...GENERATED_SCENES,
+  ...ALL_EVENT_SCENES,
 ];
 
 type RunResult = { world: WorldState; events: EventFact[]; years: number };
@@ -48,7 +53,7 @@ function run(world: WorldState, years: number, scenes = ALL_SCENES): RunResult {
       economy: { enabled: true },
       eventRuntime: true,
       agency: true,
-      tasks: GENERATED_TASKS,
+      tasks: ALL_TASKS,
       maxOrdinaryEventsPerPerson: 4,
     });
     current = result.world;
@@ -429,13 +434,13 @@ const controlRun = run(controlWorld, 25, [
   ...VIENNA_1912_SCENES,
   ...VIENNA_LIFE_SCENES,
   ...VIENNA_FAMILY_RUNTIME_SCENES,
-  ...GENERATED_SCENES,
+  ...ALL_EVENT_SCENES,
 ]);
 const treatmentRun = run(treatmentWorld, 25, [
   ...VIENNA_1912_SCENES,
   ...VIENNA_LIFE_SCENES,
   ...VIENNA_FAMILY_RUNTIME_SCENES,
-  ...GENERATED_SCENES,
+  ...ALL_EVENT_SCENES,
 ]);
 const legacyLifeEvents = (result: RunResult) =>
   result.events.filter((event) => event.action.startsWith('vienna-legacy-worklife'));
@@ -705,7 +710,7 @@ const aftermathEvents = run(aftermathWorld, 12, [
   ...VIENNA_1912_SCENES,
   ...VIENNA_LIFE_SCENES,
   ...VIENNA_FAMILY_RUNTIME_SCENES,
-  ...GENERATED_SCENES,
+  ...ALL_EVENT_SCENES,
 ]);
 const experimentF = {
   process: processView(aftermathWorld, warProcessId),

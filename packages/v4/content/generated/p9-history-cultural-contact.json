@@ -1,0 +1,1497 @@
+{
+  "id": "p9-history-cultural-contact",
+  "title": "书信、讲堂与文化圈",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 65
+  },
+  "tags": [
+    "culture",
+    "knowledge",
+    "letter",
+    "lecture",
+    "editor",
+    "training",
+    "circle"
+  ],
+  "baseRate": 0.1,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 65
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "culture",
+    "goals": [
+      "knowledge",
+      "status"
+    ],
+    "needs": [
+      "knowledge",
+      "status"
+    ],
+    "baseUtility": 1.25,
+    "risk": 0.2,
+    "skills": [
+      "literacy",
+      "social"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p9-history-cultural-contact.letter-adler",
+      "title": "寄往党部的信",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 65
+        },
+        {
+          "kind": "hasRole",
+          "role": "union_member"
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "union",
+            "factory",
+            "home"
+          ]
+        },
+        {
+          "kind": "cash",
+          "min": 1
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "social_movement",
+          "phases": [
+            "emerging",
+            "mobilizing",
+            "confrontation",
+            "institutionalizing"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "adler",
+          "kind": "historical",
+          "required": true,
+          "minAge": 58,
+          "maxAge": 66,
+          "historicalId": "Q366845"
+        },
+        {
+          "key": "party",
+          "kind": "organization",
+          "required": false,
+          "organizationKind": "party"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "adler-reply-yes",
+          "weight": 1,
+          "text": "{subject}收到{adler}亲笔回信，说可派一位演说者，附一叠小册子和一张去维也纳新城的车票。支部会议改在大厅，听众挤到门外，散会时收了四十二克朗会费。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "寄信和买信封邮票"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "阿德勒回信答应派演说者并附来小册子",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "personId": "$subject",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "支部因组织演讲受到称赞"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$adler",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "respect": 0.15,
+              "reason": "通信后得到对方回复"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "adler-reply-yes",
+              "text": "邮差在午饭前送来厚信封，里面除回信还有一叠油印小册子。{subject}把信纸摊在桌上，念到“同意派员”时，邻座的老工人把汤匙放下，说大厅得提前借。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "adler-reply-yes",
+              "text": "回信末尾的签名墨色很重。{subject}揣着信去支部，路上在报摊前停了一下，当天的《工人报》仍然没货。借大厅要三克朗押金，先由会费垫上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "adler-reply-polite-no",
+          "weight": 1,
+          "text": "{adler}回信很客气，说总部排不出人，建议先和本地支部联系。{subject}把信读了两遍，发现连称呼都是书记代写的。会费收据夹在信里退回，会议日期只好划掉重排。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "往返邮资和信纸"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "被婉拒后的失望"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "总部以人手不足为由婉拒派演说者",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "personId": "$subject",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "adler-reply-polite-no",
+              "text": "回信只有半页，措辞周到得像账单。{subject}把会费收据从信封里抖出来，纸角已经折了。旁边的工友问怎么样，{subject}说总部忙，先自己想办法。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "adler-reply-polite-no",
+              "text": "信封上的党部戳记很清楚，里面的字却像抄来的。{subject}在支部会上把信念了一遍，没人接话，最后有人说那就请本地小学教师来讲。会议日期用铅笔改了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "letter-sits-two-weeks",
+          "weight": 1,
+          "text": "信在编辑部压了两个星期。{subject}索性搭电车进城，在党部门口等到散会，只见到一位书记，说信已转给阿德勒本人，但本周不会答复。回程车票花掉四十赫勒。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "电车票和路上买的面包"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "白跑一趟的疲惫"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "党部书记说信已转交但本周不会答复",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "personId": "$subject",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "letter-sits-two-weeks",
+              "text": "党部走廊的灯只开了一半，长椅上坐着两个等消息的人。{subject}把帽子捏在手里，听书记说“转交了”，知道今天不会有结果。电车回郊区时，窗外的环城大道已经亮灯。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "letter-sits-two-weeks",
+              "text": "散会的人从楼梯上下来，没人朝{subject}这边看。书记翻登记簿，指着一行字说信在阿德勒的夹子里。{subject}在门口买了个干面包，边吃边等下一班电车。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "politics",
+        "goals": [
+          "cause",
+          "status"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.35,
+        "risk": 0.3,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-history-cultural-contact.letter-kraus",
+      "title": "给《火炬》编辑部的一封信",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 65
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "higher"
+          ]
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "cafe",
+            "home"
+          ]
+        },
+        {
+          "kind": "cash",
+          "min": 2
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "cultural_movement",
+          "phases": [
+            "emerging",
+            "mobilizing",
+            "confrontation",
+            "institutionalizing"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "kraus",
+          "kind": "historical",
+          "required": true,
+          "minAge": 37,
+          "maxAge": 50,
+          "historicalId": "Q44328"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65,
+          "occupation": "Redakteur"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "kraus-postcard-and-quote",
+          "weight": 1,
+          "text": "{kraus}回了一张措辞尖刻的明信片，说信里的矛盾“值得再读三遍”，却在下一期《火炬》里引用了{subject}短文里的一句话，还标了“来函”。稿费没提，邮票倒是用掉了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "六页信纸和回邮邮票"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "短文被《火炬》引用"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kraus",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.1,
+              "reason": "通信后得到对方注意"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "克劳斯在《火炬》上引用了自己的短文",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "personId": "$subject",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "kraus-postcard-and-quote",
+              "text": "明信片上的字又密又斜，末尾一句是“下次请把矛盾写清楚”。{subject}在咖啡馆把明信片给同桌看，对方笑出声。下一期《火炬》出来，短文里那句话果然印在边栏。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "kraus-postcard-and-quote",
+              "text": "邮差把明信片递来时，{subject}正站在家门口。明信片正面是洛林街的风景，背面挤着红墨水字。两个星期后，{subject}在报摊上翻到《火炬》，那行引用旁边加了引号。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "manuscript-returned-annotated",
+          "weight": 1,
+          "text": "信没有回音。一个月后原稿被退回，页边多了几处红笔批注，字迹像是编辑部里另一个人写的。回邮邮票原样贴在退回的信封上，{subject}把批注抄进笔记本，花了半个晚上。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "退回的邮资和抄写用的纸"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "稿件被退回的失落"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "整理批注和修改文稿"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "manuscript-returned-annotated",
+              "text": "退回的稿子用一根细绳扎着，红笔在第三段划了一道，旁边写“前后不符”。{subject}在灯下把批注逐条抄进本子，墨水瓶快见底，窗外有轨电车响了一声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "manuscript-returned-annotated",
+              "text": "信封比寄出时厚，摸得出里面的稿纸。{subject}拆开，看见页边红字，有一处批注说“此处可删”。回邮邮票没用上，仍贴在原处，边角已经发脆。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "kraus-invites-reading",
+          "weight": 1,
+          "text": "{kraus}没有回信，但托人带话，请{subject}去参加下一次朗读会。地点在咖啡馆后厅，入场收一克朗。{subject}去了，坐在最后一排，散场时有人在门口记下名字和地址。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "朗读会入场费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "受邀参加朗读会"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kraus",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.12,
+              "reason": "受邀后当面见过一面"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "克劳斯托人请自己参加朗读会",
+              "confidence": 0.85,
+              "sourceKind": "told",
+              "personId": "$kraus",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "kraus-invites-reading",
+              "text": "带话的是个戴眼镜的年轻人，说完就匆匆走了。{subject}在朗读会门口交了一克朗，后厅烟雾很重，{kraus}念到一半停下来喝水。散场时有人在门边摆开本子记名字。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "kraus-invites-reading",
+              "text": "话是从咖啡馆侍者那里转来的，说“星期三，后厅，别迟到”。{subject}提前半小时到，挑了靠墙的位子。{kraus}朗读时目光扫过最后一排，没有停留。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "knowledge",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.25,
+        "risk": 0.35,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-history-cultural-contact.letter-freud",
+      "title": "寄往 Berggasse 19 的求学信",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 40
+        },
+        {
+          "kind": "education",
+          "in": [
+            "higher"
+          ]
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "colleague",
+          "minTrust": 0.1
+        },
+        {
+          "kind": "cash",
+          "min": 10
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home",
+            "hospital"
+          ]
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "cultural_movement",
+          "phases": [
+            "emerging",
+            "mobilizing",
+            "confrontation",
+            "institutionalizing"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 40
+        },
+        {
+          "key": "freud",
+          "kind": "historical",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 66,
+          "historicalId": "Q9215"
+        },
+        {
+          "key": "mentor",
+          "kind": "worker",
+          "required": false,
+          "minAge": 40,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "freud-invites-wednesday",
+          "weight": 1,
+          "text": "{freud}回信说可以先来听周三的讨论，但要自己找一位分析者，费用另算。{subject}把信读了三遍，在日历上圈出日期，又去问{mentor}能否介绍便宜些的分析者，{mentor}摇头。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "寄信和买讨论会用的笔记本"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "弗洛伊德允许旁听周三讨论，分析须另找且自费",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "personId": "$subject",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$freud",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.15,
+              "reason": "得到回信并获准旁听"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "求学信有了回音"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "freud-invites-wednesday",
+              "text": "回信写在诊所信笺上，字迹工整。{subject}在病房走廊里拆开，读到“可先旁听”时停下脚步。{mentor}看过信说，分析者的费用不是小数，最好先问清楚。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "freud-invites-wednesday",
+              "text": "信封上的地址是贝格街十九号，邮戳清楚。{subject}把信折好放进上衣内袋，去问{mentor}有没有便宜些的分析者。{mentor}正在写病历，头也没抬，只说“慢慢找”。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "freud-one-line-refusal",
+          "weight": 1,
+          "text": "回信只有一句：病房经验不够，先去综合医院做满一年助理。{subject}把信放在桌上，数了数自己已经做了七个月。推荐条和病例还夹在信封里，没有动过。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "被直接拒绝"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "弗洛伊德要求至少一年助理经验才考虑",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "personId": "$subject",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "寄信邮资和信纸"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "freud-one-line-refusal",
+              "text": "回信短得像个便条，末尾有签名。{subject}把信翻过来，背面空白。病房里有人在叫换药，{subject}把信塞进抽屉，抽屉里还压着没抄完的病例。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "freud-one-line-refusal",
+              "text": "只有一句话，连客套都省了。{subject}在灯下又读了一遍，把信封里的推荐条抽出来看了看，又放回去。窗外天已经暗了，病房的煤气灯一盏盏亮起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "freud-no-reply",
+          "weight": 1,
+          "text": "信没有回音。{subject}把推荐条和病例收进抽屉，改去听大学的神经病理课，一学期学费十二克朗。第一堂课坐在后排，抄了四页笔记，教授的名字始终没听清。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -12,
+              "reason": "神经病理课学费"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.04,
+              "reason": "听课记笔记"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "大学神经病理课一学期学费十二克朗",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "personId": "$subject",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "等不到回音的失落"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "freud-no-reply",
+              "text": "抽屉里的病例纸边已经卷起。{subject}去大学注册时，窗口收下十二克朗，给了一张油印课表。第一堂课人很多，{subject}坐在后排，笔记本上只写了日期和教室号。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "freud-no-reply",
+              "text": "每天回公寓，{subject}都先看门房有没有信，没有。学费是攒了两个月的。阶梯教室里粉笔灰很重，教授讲到反射弧，{subject}抄下几个词，在后面加了问号。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.25,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-history-cultural-contact.letter-schnitzler",
+      "title": "给剧作家的一封信与公开讲座",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 65
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "higher"
+          ]
+        },
+        {
+          "kind": "cash",
+          "min": 3
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "cafe",
+            "other"
+          ]
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "cultural_movement",
+          "phases": [
+            "emerging",
+            "mobilizing",
+            "confrontation",
+            "institutionalizing"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "schnitzler",
+          "kind": "historical",
+          "required": true,
+          "minAge": 48,
+          "maxAge": 58,
+          "historicalId": "Q44331"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65,
+          "occupation": "Redakteur"
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "schnitzler-secretary-reply",
+          "weight": 1,
+          "text": "{schnitzler}的秘书回了信，确认朗读后有讨论，但座位在前一天售罄。{subject}改买楼座最后一张站票，花了两克朗；朗读后把习作交给一位{worker}，没有见到{schnitzler}本人。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "楼座站票"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "散场时交上习作并交谈"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "朗读会后有讨论，但正厅座位提前售罄",
+              "confidence": 0.85,
+              "sourceKind": "told",
+              "personId": "$schnitzler",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "终于进了剧院"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "schnitzler-secretary-reply",
+              "text": "秘书的回信写在剧院信笺上，措辞客气。{subject}傍晚赶到售票处，正厅已经挂出“售罄”牌子，只好买楼座站票。散场时人往门口挤，{subject}把习作塞给一位拿手杖的编辑。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "schnitzler-secretary-reply",
+              "text": "回信说讨论会照常，座位先到先得。{subject}去晚了，正厅门口站着收票员，手里拿着一沓退票。楼座站票两克朗，站了两个钟头，腿发麻，散场时{worker}接过稿子翻了一页。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "no-reply-still-goes",
+          "weight": 1,
+          "text": "信没有回音，{subject}还是去了剧院，在门廊里等到散场。{schnitzler}上车时被几个人围着，{subject}只远远看见他扶了扶帽子。回程的电车上，习作还在口袋里，纸角被汗浸软。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "电车票和门廊里买的咖啡"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "没见到本人"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "施尼茨勒散场后由马车接走，未停留",
+              "confidence": 0.7,
+              "sourceKind": "witnessed",
+              "personId": "$subject",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "no-reply-still-goes",
+              "text": "门廊的风很冷，{subject}把衣领竖起来。散场的人一批批出来，{schnitzler}被三四个人围着往马车走。{subject}往前挪了两步，又停下，口袋里的稿纸被捏出折痕。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "no-reply-still-goes",
+              "text": "剧院门口的地砖被雨打湿。{subject}等到最后一批观众离开，才看见{schnitzler}从侧门出来，上车前朝人群点了点头。{subject}没有挤上去，只记下了马车驶去的方向。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "teacher-takes-manuscript",
+          "weight": 1,
+          "text": "{teacher}在讲座后留下来答疑，{subject}递上习作，{teacher}翻了两页，说可以带去给{worker}看看，但要{subject}自己誊清。{subject}当晚在厨房桌上抄到十一点，用掉三张纸。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "买纸和墨水"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.1,
+              "reason": "讲座后交谈并受托转稿"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.04,
+              "reason": "誊清习作"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "teacher-takes-manuscript",
+              "text": "讲座结束后，{teacher}站在讲台边收笔记本。{subject}把习作递过去，{teacher}翻了两页，指着一处说“这里要改”。厨房的灯很暗，{subject}抄到手指发酸，第三张纸写废了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "teacher-takes-manuscript",
+              "text": "{teacher}没有当场答应，只说“先誊清再说”。{subject}回家把稿子铺在桌上，把涂改的地方重抄一遍，墨水用掉小半瓶。第二天早晨把誊清稿送到{teacher}给的地址。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "culture",
+        "goals": [
+          "knowledge",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.25,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-history-cultural-contact.submit-editor",
+      "title": "编辑部窗下的稿子",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 65
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "higher"
+          ]
+        },
+        {
+          "kind": "capability",
+          "capability": "literacy"
+        },
+        {
+          "kind": "cash",
+          "min": 2
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "other",
+            "factory"
+          ]
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "cultural_movement",
+          "phases": [
+            "emerging",
+            "mobilizing",
+            "confrontation",
+            "institutionalizing"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65,
+          "occupation": "Redakteur"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "feuilleton-accepted",
+          "weight": 1,
+          "text": "副刊用了这篇稿子，删去末尾两段，寄来稿费十五克朗和一张约稿便条。{subject}在报摊上找到自己的名字，字很小，排在广告上方。{neighbor}借去报纸，说要给家里人看。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 15,
+              "reason": "副刊稿费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "文章在副刊刊出"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "邻居借报纸传看"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "副刊编辑删去末尾两段后刊出并寄来约稿便条",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "personId": "$subject",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "feuilleton-accepted",
+              "text": "汇款单和便条一起到，便条上写着“望再寄”。{subject}去报摊买了一份，站在路边翻到副刊，末尾两段果然没了。{neighbor}凑过来看，把报纸借走，说晚上还。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "feuilleton-accepted",
+              "text": "稿费是邮差送来的，十五克朗，纸币还新。{subject}把报纸铺在厨房桌上，找到自己的名字，又读了一遍被删掉的地方，觉得删得对。{neighbor}在门口探头，问是不是登了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rejection-slip-margin-note",
+          "weight": 1,
+          "text": "信封退回时夹着一张铅印退稿单，页边只有一句“材料尚可，写法太急”。{subject}把退稿单翻过来，背面是空白的。邮票没有退，邮资白花了二十赫勒。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "寄稿邮资"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "稿件被退回"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "编辑在退稿单页边批“材料尚可，写法太急”",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "personId": "$subject",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rejection-slip-margin-note",
+              "text": "退稿单是铅印的，填了日期和编号，页边一行铅笔字。{subject}在门口站了一会儿，把稿子重新卷起来。{neighbor}问是不是登了，{subject}说没有，把信揣进口袋。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rejection-slip-margin-note",
+              "text": "信封比寄出时轻，摸得出只有一张纸。{subject}拆开，退稿单上的字是印好的，只有页边那句是手写。稿子没有批注，原样退回，纸角还留着铜口的压痕。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "editor-keeps-in-drawer",
+          "weight": 1,
+          "text": "{worker}把稿子留在抽屉里，说等下一个季度的版面，既没有答应也没有退回。{subject}隔两周去问一次，第三次去时，{worker}正在开会，只让门房传话说“还在”。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "往返编辑部的电车票"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "几次登门询问稿子"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "悬而未决的等待"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "editor-keeps-in-drawer",
+              "text": "编辑部在环城大道旁，窗下堆着退稿和咖啡杯。{worker}把稿子收进抽屉，说“先放着”。{subject}第三次去时，门房认得他了，说编辑在开会，稿子还在抽屉里。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "editor-keeps-in-drawer",
+              "text": "第一次去，{worker}正在校样上改字，头也没抬。第二次去，抽屉拉开一半，稿子压在一叠纸下面。第三次门房摆摆手，说今天不见客。{subject}在门口站了站，转身去赶电车。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "knowledge",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "status",
+          "knowledge"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.35,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-history-cultural-contact.join-circle",
+      "title": "咖啡馆后厅的文化圈",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 65
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "higher"
+          ]
+        },
+        {
+          "kind": "cash",
+          "min": 3
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "acquaintance",
+          "minTrust": 0.1
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "cafe",
+            "home"
+          ]
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "cultural_movement",
+          "phases": [
+            "emerging",
+            "mobilizing",
+            "confrontation",
+            "institutionalizing"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "writer",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65,
+          "occupation": "Schriftsteller"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "circle-welcomes",
+          "weight": 1,
+          "text": "{neighbor}把{subject}介绍给桌边的人，读完一篇短稿后，大家同意下次还来。咖啡钱按人头收，{subject}付了八十赫勒。{writer}在纸角记下{subject}的地址，说下回带稿子来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "咖啡钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "affection": 0.05,
+              "reason": "介绍加入文化圈"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$writer",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "respect": 0.1,
+              "reason": "在圈子里读过短稿"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "被圈子接纳"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "circle-welcomes",
+              "text": "后厅的桌子拼成长条，烟灰缸里堆着烟蒂。{neighbor}拍了拍{subject}的肩，向桌边介绍。{subject}读完短稿，有人点头，有人继续搅咖啡。{writer}在本子背面记下地址。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "circle-welcomes",
+              "text": "侍者端来咖啡，按人头收八十赫勒。{subject}坐在靠门的位置，读完稿子后，{writer}问了两句，说“下回带来”。散场时{neighbor}说，以后星期四都可以来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "circle-rejects",
+          "weight": 1,
+          "text": "有人嫌{subject}的口音和衣着，说来者不像这个圈子的人，话题很快转到别处。{subject}把咖啡喝完，付了八十赫勒，{neighbor}送到门口，没有提下次。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "咖啡钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "被冷落"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "介绍未成，场面尴尬"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "circle-rejects",
+              "text": "有人上下打量{subject}的衣领，低声说了句什么，桌边笑起来。{subject}把杯子放下，咖啡还剩一半。{neighbor}送他到门口，说“别在意”，没有提下星期四。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "circle-rejects",
+              "text": "朗读到一半，有人打断问{subject}是哪里人，听完口音就不再接话。话题转到新到的刊物，{subject}插不上嘴。付咖啡钱时，收钱的人点了点数，没有道谢。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "copy-programme",
+          "weight": 1,
+          "text": "{subject}没有加入，只留下地址，答应替圈子抄一份节目单。{teacher}给了草稿，{subject}在厨房抄到半夜，抄错两处，用刀片刮掉重写。下星期四送去时，{teacher}说“先放着吧”。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "纸和墨水"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "obligation": 0.05,
+              "reason": "受托抄写节目单"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "抄写节目单"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "文化圈每星期四在后厅聚会，节目单由成员轮流抄写",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "personId": "$teacher",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "copy-programme",
+              "text": "{teacher}把草稿递过来，纸上有几处涂改。{subject}在厨房抄到半夜，刀片刮纸的声音很轻。下星期四送去，{teacher}接过来看了看，放在桌角，没有说好不好。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "copy-programme",
+              "text": "节目单要抄十份，{subject}只抄完八份，手指沾了墨。送去时后厅还没坐满，{teacher}把纸收下，说“先放着吧”。{subject}在门口站了一会儿，没有进去坐。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "culture",
+        "goals": [
+          "belonging",
+          "knowledge"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.15,
+        "risk": 0.2,
+        "skills": [
+          "social",
+          "literacy"
+        ]
+      }
+    }
+  ]
+}

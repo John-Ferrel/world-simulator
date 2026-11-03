@@ -1,0 +1,1181 @@
+{
+  "id": "p9-work-printshop",
+  "title": "排字房、油墨与急活",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 60
+  },
+  "tags": [
+    "work",
+    "printshop",
+    "printing",
+    "compositor",
+    "craft",
+    "workshop"
+  ],
+  "baseRate": 0.12,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 60
+    },
+    {
+      "kind": "employment",
+      "employed": true
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-work-printshop.type-case",
+      "title": "字盘里少了一个字母",
+      "weight": 1,
+      "rate": 0.0216,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "apprentice",
+          "kind": "worker",
+          "required": false,
+          "minAge": 14,
+          "maxAge": 19
+        }
+      ],
+      "tags": [
+        "typesetting",
+        "rush_order"
+      ],
+      "outcomes": [
+        {
+          "id": "borrow-box",
+          "weight": 1,
+          "text": "{subject}把围裙一解，穿过街去对面印厂借一盒同号小写铅字，押了半克朗。回来时{foreman}已把广告标题排好，两人赶在午饭前上机印完五百份，油墨蹭了满手。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "押给对面印厂的铅字保钱"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "学会在急活里调配铅字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": 0.06,
+              "reason": "按时交活让工头信得过"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "borrow-box",
+              "text": "街对面的印厂老板验过保钱，才让学徒捧出那只木盒；{subject}一路小跑回来，盒里的铅字哗啦响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "borrow-box",
+              "text": "午饭钟响时印刷机还在转，{foreman}拿手背擦额头，把印好的第一沓往柜台上一拍，说这才叫排字房。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "patch-smaller-type",
+          "weight": 1,
+          "text": "{subject}用小一号的 e 填满空位，远处看还齐整，近看行距发虚。{foreman}翻了两页，扣了半天工钱，一克朗二十赫勒，说下回自己想法子。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "字距不齐被扣的半天工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被当众扣钱心里发闷"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "记住字号不能混用"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "patch-smaller-type",
+              "text": "{subject}把补上的字母一个个按平，指腹摸过去能觉出高低；广告主顾取货时没细看，工头却用指甲刮了刮行距。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "patch-smaller-type",
+              "text": "工钱袋里少了几个硬币，{subject}数了两遍，把它塞回口袋，转身去收拾字盘，铅字碰得叮当响。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "apprentice-crawl",
+          "weight": 1,
+          "text": "{subject}让{apprentice}趴在地上按字母把撒掉的铅字捡回格子，自己先排标题。活拖到下午三点才交，主顾骂了几句，学徒膝盖上全是灰。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "拖活挨骂的憋闷"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$apprentice",
+              "kind": "colleague",
+              "trust": -0.05,
+              "reason": "学徒觉得被当差使"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "在缺字里练出排急活的手脚"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "apprentice-crawl",
+              "text": "楼梯间的光线暗，{apprentice}把捡起的铅字按字母堆成小丘，{subject}在排字台前一根根补进去，指尖染得发黑。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "apprentice-crawl",
+              "text": "下午的太阳移到窗框上，印刷机才咔嗒响起来；{foreman}在门口站了一会儿，什么也没说，只把交货单往前推了推。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-printshop.ink-barrel",
+      "title": "见底的油墨桶",
+      "weight": 1,
+      "rate": 0.0192,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "inkGrinder",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "ink",
+        "rush_order",
+        "supplies"
+      ],
+      "outcomes": [
+        {
+          "id": "thin-with-turpentine",
+          "weight": 1,
+          "text": "{subject}用松节油把桶底的墨调稀，印出来的黑发灰，剧院主顾只收下一半，另一半退回来。{foreman}没说话，把退单钉在墙上。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.8,
+              "reason": "退货扣掉的计件工钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "印出的海报颜色发灰"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "知道调稀的墨压不住颜色"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "thin-with-turpentine",
+              "text": "{subject}揭开桶盖，刮刀贴着桶底刮出最后一点黑，松节油的气味冲上鼻子，样张摊在柜台上，灰得像阴天的墙。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "thin-with-turpentine",
+              "text": "主顾把退回来的半沓海报往台上一放，纸角还黏着，{foreman}用拇指搓了搓，搓出一层浅灰。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "buy-own-ink",
+          "weight": 1,
+          "text": "{subject}拿自己的工钱去颜料店买了一小罐好墨，一克朗四十赫勒。红黑两色按时印出，样张干净，{foreman}装作没看见，只在交货单上签了字。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.4,
+              "reason": "自掏腰包买的黑墨"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "摸熟了红黑两色的压印"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": 0.05,
+              "reason": "工头记下这个人肯兜底"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "buy-own-ink",
+              "text": "颜料店的伙计从架子上取下小罐，{subject}数出硬币，罐子揣在围裙里，回到排字房时还是凉的。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "buy-own-ink",
+              "text": "样板压出来，红字压在黑纸上不打滑，主顾拿近看了两眼，点头付了余款，{foreman}把烟斗从嘴里拿下来，又放回去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wait-for-delivery",
+          "weight": 1,
+          "text": "{subject}停机等送货车，把别的活往后推。车到傍晚才来，剧院主顾已经走了。{foreman}在误工单上记了一笔，这个月的加班名单上没了影。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "白等半天又丢加班"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "误工少算的工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": -0.04,
+              "reason": "停机误事被工头记账"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wait-for-delivery",
+              "text": "送货车在傍晚进院，车夫卸下墨桶时天已擦黑；{subject}对着空转的机器站了一下午，鞋底磨得发烫。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wait-for-delivery",
+              "text": "误工单摊在桌上，{foreman}蘸着笔一行行写下去，写完了把单子翻过来扣着，说下个月再说。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-printshop.press-accident",
+      "title": "压印机咬住袖口",
+      "weight": 1,
+      "rate": 0.0192,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        },
+        {
+          "kind": "health",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "accident",
+        "injury",
+        "press",
+        "insurance"
+      ],
+      "outcomes": [
+        {
+          "id": "hospital-and-claim",
+          "weight": 1,
+          "text": "{worker}扳下闸，{foreman}把袖子剪开。{subject}被送去医院缝合四针，工头把时间和机器编号写进事故簿，月底领到一笔伤残补助，七克朗。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "袖口卷进滚筒留下的手伤"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 7,
+              "reason": "保险会批下的伤残补助"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": 0.04,
+              "reason": "工头如实把工伤写进簿子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hospital-and-claim",
+              "text": "诊室里碘酒的气味刺鼻，医生捏着镊子数针脚，{subject}盯着墙上剥落的石灰，听见外面电车驶过。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hospital-and-claim",
+              "text": "{foreman}在事故簿上写字时把日期核对了两遍，笔尖停在机器编号后面，说这螺丝早该换了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wrap-and-finish",
+          "weight": 1,
+          "text": "{subject}用干净抹布裹住手，先把下午的活干完。血渗过布，颜色印在废页上。后来那根手指伸不直，握字盒时总差一点。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "伤了手指没及时医治"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "stiff_finger",
+              "add": true,
+              "reason": "手指愈合后不能伸直"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "忍着疼继续上机的憋屈"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wrap-and-finish",
+              "text": "血洇进抹布，变成暗色一圈；{subject}把纸一沓沓码好，机器仍旧咔嗒咔嗒，指头在字盒边缘打滑。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wrap-and-finish",
+              "text": "收工时{worker}递来一小块肥皂，{subject}在水盆里洗了很久，水面浮着一层灰黑的沫。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "refuse-fingerprint",
+          "weight": 1,
+          "text": "{subject}不肯在事故单上按手印，说护罩的螺丝早松了。跟{foreman}争执起来，第二天被调去搬纸，一天十四捆，没人再提保险会的表格。",
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "与工头争执后被调离排字岗位"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "被说成不好支使的人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "争了一场仍被撵去搬纸"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "refuse-fingerprint",
+              "text": "事故单摊在桌上，红印泥开着盖；{subject}把手背在身后，{foreman}把笔往桌上一搁，屋里一时只有机器空转的响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "refuse-fingerprint",
+              "text": "第二天早班，纸垛挪到后墙，{subject}弯腰抱起一捆，腰上一沉，排字台那边传来别人的脚步。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-printshop.foreman-favor",
+      "title": "工头手里的一张轻活单",
+      "weight": 1,
+      "rate": 0.0216,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "foreman",
+        "favoritism",
+        "overtime"
+      ],
+      "outcomes": [
+        {
+          "id": "wedding-cards-deal",
+          "weight": 1,
+          "text": "{subject}答应下班后替{foreman}的女儿排一版婚礼请柬，五十份，不记工钱。换来的是轻卡片活和星期六的加班名额，加班按一个半小时算。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.5,
+              "reason": "星期六加班名额挣来的钱"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "排请柬练了花饰和边框"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "替工头家里排了请柬"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wedding-cards-deal",
+              "text": "{subject}在下班后留下，字盒里挑出花体字母，灯泡昏黄，请柬一张张晾在桌上，{foreman}的女儿的长名要排得端正。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wedding-cards-deal",
+              "text": "星期六车间只剩一半人，{subject}守着机器添纸，钟敲五点也没人催，工钱袋比往常厚了一点。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "refuse-in-front",
+          "weight": 1,
+          "text": "{subject}当着工友的面把轻活单推回去，说自己不比别人金贵。第二天开单，{subject}被排到纸垛旁，一捆纸压得肩膀发酸，{worker}看了他一眼没做声。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "搬厚纸垛压出的酸痛"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "工友觉得他有骨气"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": -0.06,
+              "reason": "当面顶了工头"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "refuse-in-front",
+              "text": "轻活单在{subject}手里停了一停，又放回桌上；{foreman}没抬头，只用铅笔在名单上划了一道。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "refuse-in-front",
+              "text": "后墙的厚纸受了潮，一捆压手，{subject}把纸往台边一靠，喘了两口气，衣领里全是纸屑。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "give-to-injured",
+          "weight": 1,
+          "text": "{subject}把轻卡片活让给手上缠布条的{worker}，自己去搬纸。{foreman}靠在门框上看了半晌，只说了句随你，加班名单照旧没改。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "把轻活让给伤了手的工友"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "搬纸一天的劳累"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "车间里传他肯吃亏"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "give-to-injured",
+              "text": "{worker}接过卡片活时把手往袖子里缩了缩，{subject}已经弯腰去抱第一捆纸，纸绳子勒进掌心。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "give-to-injured",
+              "text": "傍晚收工，{worker}在门口等他一起走，两人没说什么，只把脚步放慢了些。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-printshop.wage-dispute",
+      "title": "计件单上被划掉的数字",
+      "weight": 1,
+      "rate": 0.0192,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "unionMember",
+          "kind": "union_member",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "wages",
+        "piecework",
+        "union",
+        "dispute"
+      ],
+      "outcomes": [
+        {
+          "id": "sign-the-rate",
+          "weight": 1,
+          "text": "{subject}在价目表上签了名，月底少拿三克朗，机器调试不再另算。{employer}在班次表上加了他的名字，下个月的活保住了，{worker}签完把笔一扔就走了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "新计价少算的工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "明知吃亏还是签了字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.05,
+              "reason": "顺从新价保住了班次"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sign-the-rate",
+              "text": "价目表用图钉钉在更衣室门边，纸边卷起来；{subject}俯身签名，钢笔在纸上顿了一下才划开。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sign-the-rate",
+              "text": "月底工钱袋里少了几枚硬币，{subject}把它倒在桌上数，铜板磕着木板，屋里没人说话。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "go-with-union",
+          "weight": 1,
+          "text": "{subject}和几个工友星期五晚上去活动室找{unionMember}，一条条对行数和工时。第二个星期厂里把新价目暂时收回，{employer}见了他只点点头。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "在工友里成了敢说话的人"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.04,
+              "reason": "学会跟工会代表对账"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$unionMember",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "一起核过计件单"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "go-with-union",
+              "text": "活动室里烟味重，{unionMember}把小本摊在桌上，一行行问排版的行数和调机的时间，{subject}用手指点着答。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "go-with-union",
+              "text": "第二天价目表被撕下来，墙上留四个图钉眼；{subject}回到排字台，{worker}在他肩上拍了一下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "keep-own-ledger",
+          "weight": 1,
+          "text": "{subject}拒签，把自己每天排的行数和工时记在小本上，铅笔头磨短了一截。{employer}路过时看了一眼本子，没说什么，只提了句下月的班次要看活多活少。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "拒签后被压减的计件活"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.06,
+              "reason": "拒签让东家不痛快"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "天天核算行数与工钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "keep-own-ledger",
+              "text": "{subject}把小本塞进上衣内袋，晚上在灯下补记白天的行数，铅笔在纸上沙沙响，手指头上还有墨。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "keep-own-ledger",
+              "text": "{employer}从排字台边走过去了，皮鞋声停了一下又起，{subject}没有抬头，只把本子往怀里按了按。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-printshop.printed-secret",
+      "title": "不该排的一版",
+      "weight": 0.9,
+      "rate": 0.0192,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "customer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "secret",
+        "handbill",
+        "night_work",
+        "risk"
+      ],
+      "outcomes": [
+        {
+          "id": "print-at-night",
+          "weight": 1,
+          "text": "{subject}收下{foreman}递来的一把钥匙，夜里开机印完三百份。{customer}在三点前取走，纸钱压在台灯下，废页和原稿一起塞进炉子，火苗发蓝。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "夜里印传单分到的纸钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "熬了一整夜印活"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$customer",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "替来人连夜赶了传单"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "print-at-night",
+              "text": "机器在空车间里响得格外清，{subject}一张张翻看印出来的是否清楚，窗外巷子里有人走过，脚步停了一下又远去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "print-at-night",
+              "text": "炉膛里纸边卷起来发亮，{subject}用火钩拨了拨，灰飘上去，落在窗台上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ask-for-name",
+          "weight": 1,
+          "text": "{subject}把笔推过去，要来人在单子上写下姓名和地址。{customer}收起纸，把帽子压低，从后门走了，那晚机器一次也没开。第二天{foreman}问起，{subject}只说人没来。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "没被拖进不明不白的活里"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$customer",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "要姓名地址把人吓走了"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "学会先问清来路"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ask-for-name",
+              "text": "来人盯着那张单子看了一会儿，帽檐下的眼睛动了动，把纸推回来，转身把后门轻轻带上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "ask-for-name",
+              "text": "第二天{foreman}把机器罩布掀开，看了看空着的纸台，问了一句，手里还捏着烟斗。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tell-foreman",
+          "weight": 1,
+          "text": "{subject}把传单的事原样说给{foreman}听，{foreman}说照印，钱照收，但把原稿锁进自己的抽屉，钥匙揣在背心口袋里。{official}若来问，两人就说排的是戏单。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": 0.06,
+              "reason": "两人拴在同一件事上"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.5,
+              "reason": "传单活分到的工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "心里悬着一桩说不清的事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "tell-foreman",
+              "text": "{foreman}听完，把抽屉拉开又推上，铜锁扣上时响了一声；{subject}站在旁边，手里还捏着那张传单的样张。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "tell-foreman",
+              "text": "车间里的煤油灯照着字盒，{subject}把传单的字一行行拆回格子里，铅字落下的声音很轻。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

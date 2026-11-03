@@ -1,0 +1,1392 @@
+{
+  "id": "p9-work-career",
+  "title": "学徒、证明与自己的招牌",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 60
+  },
+  "tags": [
+    "work",
+    "career",
+    "craft",
+    "clerk",
+    "education",
+    "task"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 60
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "work",
+    "goals": [
+      "work",
+      "status"
+    ],
+    "needs": [
+      "status",
+      "autonomy"
+    ],
+    "baseUtility": 1.4,
+    "risk": 0.3,
+    "skills": [
+      "craft",
+      "social"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p9-work-career.journeyman-exam",
+      "title": "出师考试的那张工作台",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 30
+        },
+        {
+          "kind": "education",
+          "in": [
+            "apprenticeship"
+          ]
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 30
+        },
+        {
+          "key": "master",
+          "kind": "worker",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 40
+        }
+      ],
+      "tags": [
+        "apprentice",
+        "journeyman",
+        "exam",
+        "craft"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-career.journeyman-exam.pass",
+          "weight": 1,
+          "text": "{subject}在三月最后一个星期一清出那张空工作台，用铅笔在接缝处划了三条线，一块榆木抽屉板刨到发亮。{master}用拇指沿燕尾榫摸过去，没说话，只把评语写在纸上：榫严，面平，可出师。{subject}向柜上付了两克朗考试费，把证明折好放进内袋，下周起工钱按伙计算。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "出师考试的考试费与材料费"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.06,
+              "reason": "独立完成燕尾榫抽屉并通过师傅检验"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "作坊里传开出师证明办下来了"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": 0.08,
+              "respect": 0.06,
+              "reason": "师傅认可了出师考试的活"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.journeyman-exam.pass",
+              "text": "他把抽屉塞回柜架，抽拉两下，木头发出干净的一声闷响。{master}摘下眼镜，在评语纸上按了手印。屋外利奥波德城的雨沿檐口滴，屋里的松香水气还没散。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.journeyman-exam.pass",
+              "text": "{worker}凑过来看那排燕尾榫，用指甲掐了掐边角，说了句“没有补过”。{subject}把两克朗硬币排在台面上，一枚一枚数给柜上，手心全是刨花末。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.journeyman-exam.rework",
+          "weight": 1,
+          "text": "{subject}想在午饭前把抽屉交上去，锯得太急，左角接缝处露了一道头发丝宽的光。{master}把抽屉翻过来对着窗，拿小锤柄敲了两下，说这道缝进了潮气就会张。证明先不写，再干三个月，工钱照学徒算。{subject}重新量线，锯子放慢了一半。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "返工中学会控制锯路与接缝余量"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "出师被推迟三个月"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": 0.03,
+              "respect": 0.02,
+              "reason": "师傅认为他肯返工，不糊弄"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.journeyman-exam.rework",
+              "text": "他把那道缝对着煤气灯举起来，光从背面透成一根细线。{worker}没吭声，只把自己的角尺推过来。{subject}把已经画好的线擦掉，重新从墨斗弹起。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.journeyman-exam.rework",
+              "text": "{master}把那块板搁回工作台，说三个月后再看，考试费先挂在账上。{subject}点点头，把刨子刃口重新磨了一遍，水石上磨出的泥浆一直流到台脚。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.journeyman-exam.debt",
+          "weight": 1,
+          "text": "柜上要两克朗考试费，{subject}翻遍口袋只有六赫勒。{master}把硬币替他排在台面，说钱先垫着，条件是出师后多留一年，工钱按伙计的八折。{subject}盯着那张纸看了很久，最后签了名。证明拿到了，可接下来十二个月他仍旧离不开这间作坊。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "师傅垫付考试费，现钱过手"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "为考试费签下多留一年的条件"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": 0.07,
+              "obligation": 0.1,
+              "reason": "垫付考试费形成人情与约束"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bound_by_apprenticeship_debt",
+              "add": true,
+              "reason": "出师后仍须留满一年"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.journeyman-exam.debt",
+              "text": "{master}把两枚克朗在手心里掂了掂，推到柜上，顺手把欠条压在墨水瓶下面。{subject}签完名，觉得自己的名字比平时小了一圈。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.journeyman-exam.debt",
+              "text": "窗外送煤的车正卸货，铁铲刮着石板。{subject}把证明和欠条一起折好，两张纸放进同一个内袋，走路时互相磨着边。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "status",
+          "autonomy"
+        ],
+        "baseUtility": 1.6,
+        "risk": 0.2,
+        "skills": [
+          "craft"
+        ]
+      }
+    },
+    {
+      "id": "p9-work-career.reference",
+      "title": "一封写得恰到好处的证明",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "reference",
+        "certificate",
+        "employer"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-career.reference.strong",
+          "weight": 1,
+          "text": "{subject}把新东家的信放在柜台上。{employer}读完，抽出公司的信笺，蘸墨水写下“勤勉可靠，品行端正，因故离柜，并无纠葛”。写完吹干，盖了章，还多写一句“有需要可来函”。{subject}把信纸夹进厚纸板，第二天一早就往玛丽亚希尔夫的新账房去了。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "旧东家在证明上给了明确好评"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.06,
+              "respect": 0.04,
+              "reason": "好聚好散，旧东家愿意替他说好话"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "has_strong_reference",
+              "add": true,
+              "reason": "拿到措辞有利的离职证明"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.reference.strong",
+              "text": "{employer}的笔尖在“尚称”两个字上停了停，终于划掉，改成“勤勉”。他把烟灰弹进铜盘里，说信封和印泥都在第二个抽屉。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.reference.strong",
+              "text": "墨迹没干透，{subject}用指背碰了一下，留下一道浅灰。{worker}在门口侧身让路，朝那封信抬了抬下巴，什么也没问。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.reference.bare",
+          "weight": 1,
+          "text": "{employer}照着账本核了一遍，提笔只写“已离职，结清工钱，再无欠款”，落款盖了圆章，纸上大半是空白。{subject}拿着这张纸走了两条街，在环城路的柱子旁读了两遍。新东家那边人事科的窗口收下它，没有多问，也没有叫他进去谈。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "证明上只有干巴巴的离职记录"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "证明没有一句评价，旁人不易判断他的品行"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.03,
+              "reason": "旧东家连客套都省了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.reference.bare",
+              "text": "圆章按下去时油墨太重，“款”字糊成一团。{employer}吹了吹，把那张纸推过柜台，眼睛已经回到账本上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.reference.bare",
+              "text": "电车驶过时，{subject}把纸举到窗光下，纸面上只有三行字，底下空得发亮。他把它折了两折，塞进外衣最里头的口袋。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.reference.delay",
+          "weight": 1,
+          "text": "{employer}愿意把评语写足，说“勤勉、可靠、熟悉账目”，但要求{subject}留到年底，把新来的{worker}带到能单独上柜台为止。证明先不写，只给了一张临时字条。{subject}拿着字条去答复新东家，对方说位置可以等到圣灵降临节。他回到柜台，把学徒的账本又翻了出来。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "离职被拖到年底，心里悬着"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.04,
+              "reason": "在旧东家与新东家之间谈条件"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.05,
+              "obligation": 0.04,
+              "reason": "要负责把新人带出师"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "delayed_reference",
+              "add": true,
+              "reason": "正式证明要年底才拿得到"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.reference.delay",
+              "text": "{employer}把钢笔帽拧上又拧开，说年底和圣灵降临节差不了三个月，账面上的事急不得。{subject}看着那张临时字条，上面只有一句“该员现仍在职”。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.reference.delay",
+              "text": "{worker}正把一叠票据按日期排齐，听说要带自己，手在纸边停了一下。{subject}把账本摊开，指头点在第三栏，说从这儿开始认。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "status",
+          "safety"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.15,
+        "skills": [
+          "social",
+          "literacy"
+        ]
+      }
+    },
+    {
+      "id": "p9-work-career.night-course",
+      "title": "夜校里的簿记课",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "cash",
+          "min": 5
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "apprenticeship"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "classmate",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 50
+        }
+      ],
+      "tags": [
+        "education",
+        "night_school",
+        "bookkeeping",
+        "certificate"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-career.night-course.certificate",
+          "weight": 1,
+          "text": "{subject}在十月第一个星期三交了六克朗学费，又花一克朗二十赫勒买了课本。每个星期三下工后赶到商业夜校，{teacher}在煤气灯下把借方贷方写在黑板上，粉笔灰落进袖口。年底结课时他领到一张结业证，上面写着簿记、商业算术、书信三门均及格。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -7,
+              "reason": "夜校学费与课本费"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.07,
+              "reason": "簿记与商业算术训练"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 1,
+              "reason": "夜校簿记课程结业"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.04,
+              "reason": "夜校教师认得他每星期三都来"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.night-course.certificate",
+              "text": "{teacher}把结业证递过来，纸角还带着米糊的味。{subject}用工装袖子擦了擦手才接，看见自己的名字写得又大又正。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.night-course.certificate",
+              "text": "窗外的电车轨道反着光，教室里的长桌只有一半坐了人。最后一晚，{classmate}把用剩的墨水推给他，说下回考试还来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.night-course.dropout",
+          "weight": 1,
+          "text": "{subject}头两次课都到了，第三次车间赶一批订单，工头留他加班到九点。他赶到夜校时黑板已经擦干净。此后两个月，加班总落在星期三。六克朗学费不退，课本只翻到第十四页，书脊还是硬的。他把书塞进床底下的木箱。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "学费不退，等于白付"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "课没上完，钱也没了"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.01,
+              "reason": "只上了两课，记得借贷两栏"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.night-course.dropout",
+              "text": "他第三次推门时，{teacher}正讲到结账，抬眼看了他一下，没说什么，只朝后排的空位点了点头。{subject}坐下，笔记本还停在上次的页码。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.night-course.dropout",
+              "text": "车间里油灯点到九点半，{subject}的指节让纸边划了口子。他把那本簿记课本连同记工单一起压箱底，箱盖合上时磕了一下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.night-course.review",
+          "weight": 1,
+          "text": "{subject}和{classmate}的书都缺页，两人把笔记摊在咖啡馆后桌，交替着抄，谁先到谁先占座位，一杯咖啡续到打烊。结课前一夜复习到十一点，{teacher}第二天发卷子时扫了一眼他们的笔记，说抄得比听讲还整齐。{subject}考了七十八分，结业证照发，只是名次靠后。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "夜校学费"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "咖啡馆里续杯与夜点"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.05,
+              "reason": "靠抄笔记与互相讲授补上课程"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$classmate",
+              "kind": "friend",
+              "trust": 0.08,
+              "affection": 0.04,
+              "reason": "轮流抄笔记，考前一起复习"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.night-course.review",
+              "text": "咖啡馆的煤气灯芯剪得太短，光晕发黄。{classmate}把登记簿的借方栏念出来，{subject}用铅笔在旧信封背面跟着记，字歪斜却一栏不错。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.night-course.review",
+              "text": "{teacher}把卷子发下来，在他那页上用红笔打了个勾，旁边写“实务熟”。{subject}把卷子折成四折，和那张抄满的旧信封夹在一起。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.1,
+        "skills": [
+          "numeracy",
+          "literacy"
+        ]
+      }
+    },
+    {
+      "id": "p9-work-career.clerk-post",
+      "title": "写字间里的空椅子",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 40
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "apprenticeship",
+            "higher"
+          ]
+        },
+        {
+          "kind": "cash",
+          "min": 10
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 40
+        },
+        {
+          "key": "seniorClerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 50
+        }
+      ],
+      "tags": [
+        "clerk",
+        "office",
+        "application",
+        "white_collar"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-career.clerk-post.hired",
+          "weight": 1,
+          "text": "{subject}在保险公司写字间的小桌上抄完一页德文书信，又算出利息表上最后一行，速记只漏了两个词。{seniorClerk}把卷子翻过来看背面，说手是稳的。月底他领到七十克朗，扣掉十五克朗保证金，签字画押，坐进靠窗那把椅子，桌上有一块吸墨纸和一支借来的笔。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 55,
+              "reason": "首月工钱扣除保证金后实发"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.05,
+              "reason": "商业书信与速记练习"
+            },
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "保险写字间试用办事员",
+              "wage": 70,
+              "workplaceId": "$workplace",
+              "reason": "通过考试被录用"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$seniorClerk",
+              "kind": "colleague",
+              "trust": 0.06,
+              "respect": 0.05,
+              "reason": "主考认可他的字和算术"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.clerk-post.hired",
+              "text": "吸墨纸是新的，压下去还能看见织纹。{seniorClerk}把一摞空白表格放在他桌角，说先从这里开始，别把编号写错。窗下是内城的一条窄巷，马车轮子从早响到晚。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.clerk-post.hired",
+              "text": "他把笔尖在墨水瓶口刮了两下才落笔，第一个人名写到一半手抖了一下，又重新誊了一张。{worker}从隔壁桌探过头来，指了指签字栏的位置。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.clerk-post.nodeposit",
+          "weight": 1,
+          "text": "{subject}考得不错，{seniorClerk}把分数记在名册上，说位置可以给他，但保证金十五克朗要先交，还得有铺保。他手头只有十克朗出头，保人一时也找不到。椅子给了下一位，那人进门时袖口已经熨得笔直。{subject}把答卷折好带走，纸边被汗浸软了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "往返内城的车钱与考试杂费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "位置因保证金落空"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "在同一批考生里听说他拿不出保证金"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.clerk-post.nodeposit",
+              "text": "{seniorClerk}把名册合上，手按在封皮上停了一会儿，说规矩不是他定的。{subject}站在桌边，听见走廊里下一位考生的鞋跟敲过来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.clerk-post.nodeposit",
+              "text": "走廊尽头有一面小镜子，{subject}对着它把领口扯平，又松开。十五克朗的数目他在心里翻来覆去地算，算到楼梯口也没凑出来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.clerk-post.archive",
+          "weight": 1,
+          "text": "{subject}的信写得好，笔画干净，算盘也快，可速记一栏空了大半。{seniorClerk}把卷子批了“文书可用，速记欠熟”，人事科把他安排到档案室抄旧保单，日薪两克朗四十赫勒，比正式办事员少一截。桌旁没有窗，只有一盏悬在头顶的灯，他抄到下班时右肩发僵。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2.4,
+              "reason": "档案室抄写日薪"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.04,
+              "reason": "成天抄保单，字越写越稳"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "阴面档案室坐久了肩颈发硬"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "awaiting_clerk_slot",
+              "add": true,
+              "reason": "被列为下次有缺时优先考虑"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.clerk-post.archive",
+              "text": "纸页发脆，翻一次掉一点碎屑。{worker}从门口递进来一叠待抄的旧保件，说这批是火灾险的，编号连不上要问楼上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.clerk-post.archive",
+              "text": "头顶那盏灯嗡嗡响，{subject}每隔一阵就放下笔揉右肩。他把速记符号的小卡片立在墨水瓶旁边，抄累了就照着画两行。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "status",
+          "cash"
+        ],
+        "baseUtility": 1.7,
+        "risk": 0.3,
+        "skills": [
+          "literacy",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p9-work-career.client-list",
+      "title": "主顾名单上的新名字",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 60
+        },
+        {
+          "kind": "cash",
+          "min": 5
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 60
+        },
+        {
+          "key": "client",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "fellowCraftsman",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "craft",
+        "clients",
+        "reputation",
+        "independence"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-career.client-list.referral",
+          "weight": 1,
+          "text": "{subject}把街角咖啡馆松动的八把椅子逐一套榫、重粘、上蜡，收了四克朗。老板让他下次过来喝咖啡时捎上小册子，当天就把楼下杂货铺和公寓看门人介绍给他。小册子上多了三行字，每个名字旁边写着“由某某介绍”。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "修咖啡馆八把椅子的工钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "活做得干净，主顾愿意转介绍"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$client",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "reason": "咖啡馆老板成了他的介绍人"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "学会请满意的客人替他传名"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.client-list.referral",
+              "text": "他把每把椅子的四只脚都在石板上按一按，找平的才留。老板端着咖啡站在旁边看，忽然问：“你会修柜子锁吗？”{subject}说看看再说。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.client-list.referral",
+              "text": "咖啡馆后厨的蒸汽把窗玻璃熏白了一层，{subject}在蒸汽里上蜡，袖口沾了蜡痕。临走时老板在账单背面写了个地址，说杂货铺老板姓什么他一时想不起。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.client-list.cheap",
+          "weight": 1,
+          "text": "{subject}想先把名字攒起来，把价钱报到别人一半。活一下子接不完，夜里做到十一点，手指让凿柄磨出泡。可来的主顾只认便宜，活稍慢一点就换人；{fellowCraftsman}在街口碰见他，说这样干坏了行价。月底算下来，收入并不比按行价少接几件多。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "低价接活的进项，量大而单薄"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "连续赶夜活，手上起泡"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "同行认为他压价坏了规矩"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$fellowCraftsman",
+              "kind": "rival",
+              "trust": -0.03,
+              "reason": "低价抢活引起同行不满"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.client-list.cheap",
+              "text": "他把凿子夹在腋下找角度，木屑落进鞋面。{fellowCraftsman}站在街口没有走近，只朝他的价目纸看了一眼，转身走了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.client-list.cheap",
+              "text": "十一点后楼里熄了灯，{subject}借着楼梯间的光收工具。掌心的泡破了一个，他用布条缠上，第二天照样握锉。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.client-list.uptown",
+          "weight": 1,
+          "text": "医生的太太要人上门修一只核桃木衣柜，价钱开得高，但要下午三点到，活做完还要把刨花扫净带走。{subject}犹豫后应下，穿上唯一一件没沾漆的外衣去了。活干得顺利，主顾多加了一克朗。可回作坊时，老主顾在门口等他，说现在要请动他得先看时辰了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 5,
+              "reason": "上门修衣柜的工钱与小费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在better-off的主顾里留下手艺好的名声"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$client",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "老主顾觉得他攀高枝、不好请了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.client-list.uptown",
+              "text": "衣柜的核桃木纹路很密，蜡要薄薄上一层，{subject}蹲在门厅的地毯边上擦了三遍。医生的太太出来看了一眼，说比新的时候还亮。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.client-list.uptown",
+              "text": "进门要换鞋，他弯腰解鞋带时有点不自在。临走主顾塞来一克朗，他推了一次没推掉。回到巷口，老主顾抱着胳膊站在灯下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "cash",
+          "status"
+        ],
+        "baseUtility": 1.4,
+        "risk": 0.35,
+        "skills": [
+          "social",
+          "craft"
+        ]
+      }
+    },
+    {
+      "id": "p9-work-career.security-or-independence",
+      "title": "固定薪水与自己的招牌",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "cash",
+          "min": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": false,
+          "minAge": 22,
+          "maxAge": 55,
+          "sameHousehold": true
+        },
+        {
+          "key": "landlord",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "career",
+        "independence",
+        "security",
+        "decision"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-career.security-or-independence.salary",
+          "weight": 1,
+          "text": "{subject}在契约上签了字，月薪八十五克朗，年底另有补贴。他把攒下的三十克朗原封不动收进铁盒，租门面的念头压到抽屉最底层。{partner}数着月份算，说这样下一年冬天可以添一床羊毛毯。{employer}把办公室钥匙串上他那把，说试用三个月。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 85,
+              "reason": "固定职位首月薪金"
+            },
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "固定办事员",
+              "wage": 85,
+              "workplaceId": "$workplace",
+              "reason": "接下有保障的固定职位"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "按月有薪，家里松了口气"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "gave_up_own_sign",
+              "add": true,
+              "reason": "放弃开店的念头"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.security-or-independence.salary",
+              "text": "铁盒盖上有一小块锈，{subject}用拇指蹭掉，把三十克朗一张一张铺平。{partner}在旁边数月份，数到十二月时把毯子的价钱也说了出来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.security-or-independence.salary",
+              "text": "{employer}把钥匙串在柜台上摊开，让他自己挑哪把是办公室的。{subject}挑了一把铜的，拿在手里掂了掂，比想象中轻。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.security-or-independence.shop",
+          "weight": 1,
+          "text": "{subject}辞了工，用四十五克朗在希钦区一条小巷里租下门面，头一个月租金已付。他把自己的名字写在木牌上，挂在门楣，漆还没干就迎来第一个主顾，修一只挂钟，收了一克朗六十赫勒。三个月里这样的活零星有十几件，积蓄一天天薄下去，月底他站在门口数路过的行人。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -45,
+              "reason": "租门面首月租金与招牌木料"
+            },
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "辞去固定差事，自己挂牌谋生"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "巷子里挂起了自己的名字"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "own_workshop",
+              "add": true,
+              "reason": "有了自己的门面"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.security-or-independence.shop",
+              "text": "他把木牌举上门楣，用鞋跟钉了两颗钉。漆顺着“r”的弯淌下来一小滴，他伸手抹了，指腹上是自己名字的颜色。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.security-or-independence.shop",
+              "text": "头一个主顾是隔壁面包房的伙计，挂钟走了十年没洗过油。{subject}把机芯摊在工作台上，低头时能听见自己门牌在风里轻轻磕墙。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-career.security-or-independence.halves",
+          "weight": 1,
+          "text": "{subject}与{employer}谈成上午在柜上帮工、下午回租来的半间屋做自己的活，工钱减四成，招牌照挂。他把门面隔出一角，招牌比人还窄。下午的活起初零落，晚上他把主顾名字一个一个记进小册子。收入不稳，可每天下午推开那扇门时，门楣上的名字是他自己的。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -12,
+              "reason": "半间门面的租金与招牌"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 51,
+              "reason": "帮工半月工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "招牌挂了出去，心里踏实"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.05,
+              "reason": "东家同意他半天留给自己"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "own_workshop",
+              "add": true,
+              "reason": "有了自己的小门面与招牌"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-career.security-or-independence.halves",
+              "text": "他把隔板量了三遍才下锯，锯路贴着自己这一面。{partner}在隔板那头挂了一幅旧画，说这样两边都像个正经地方。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-career.security-or-independence.halves",
+              "text": "上午柜台上的账他还照记，下午回巷子时肩上背着工具袋。招牌窄窄一条，风大时晃，他拿铁丝又拴了一道。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "autonomy",
+          "safety"
+        ],
+        "baseUtility": 1.6,
+        "risk": 0.6,
+        "skills": [
+          "numeracy",
+          "social"
+        ]
+      }
+    }
+  ]
+}

@@ -14,7 +14,12 @@ import { VIENNA_POSTWAR_SCENES } from '../packages/v4/content/vienna-postwar.js'
 import { VIENNA_HISTORY_SCENES } from '../packages/v4/content/vienna-history.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../packages/v4/content/vienna-developments.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
-import { GENERATED_SCENES, GENERATED_TASKS } from '../packages/v4/content/generated/index.js';
+import {
+  GENERATED_SCENES,
+  GENERATED_TASKS,
+  ALL_EVENT_SCENES,
+  ALL_TASKS,
+} from '../packages/v4/content/generated/index.js';
 import { defaultMacroState } from '../packages/v4/macro.js';
 import { applyV4MacroProposal } from '../packages/v4/macro-store.js';
 import { knownMacroFamilyIds } from '../packages/v4/macro-director.js';
@@ -68,7 +73,7 @@ try {
     ...VIENNA_HISTORY_SCENES,
     ...VIENNA_DEVELOPMENT_SCENES,
     ...VIENNA_FAMILY_RUNTIME_SCENES,
-    ...GENERATED_SCENES,
+    ...ALL_EVENT_SCENES,
     ...runtimeScenes,
   ];
   let current = world;
@@ -80,7 +85,7 @@ try {
       economy: { enabled: true },
       eventRuntime: true,
       agency: true,
-      tasks: GENERATED_TASKS,
+      tasks: ALL_TASKS,
       maxOrdinaryEventsPerPerson: 4,
     });
     current = result.world;

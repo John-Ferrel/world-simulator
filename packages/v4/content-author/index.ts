@@ -2,6 +2,12 @@ export { PHASE3_FAMILY_BRIEFS } from './phase3-briefs.js';
 export { PHASE4_FAMILY_BRIEFS } from './phase4-briefs.js';
 export { PHASE7_FAMILY_BRIEFS } from './phase7-briefs.js';
 export { PHASE8_TASK_BRIEFS } from './phase8-briefs.js';
+export { PHASE9_CHILDHOOD_BRIEFS } from './phase9-childhood.js';
+export { PHASE9_WORK_BRIEFS } from './phase9-work.js';
+export { PHASE9_SOCIAL_BRIEFS } from './phase9-social.js';
+export { PHASE9_HISTORY_BRIEFS } from './phase9-history.js';
+export { PHASE9_GAP_BRIEFS } from './phase9-gaps.js';
+export { PHASE9_SOLITUDE_BRIEFS } from './phase9-gaps-solitude.js';
 export type { GeneratedPack } from '../generated.js';
 export {
   PHASE2_FAMILY_BRIEFS,

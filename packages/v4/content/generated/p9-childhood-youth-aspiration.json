@@ -1,0 +1,1450 @@
+{
+  "id": "p9-childhood-youth-aspiration",
+  "title": "夜校、书本与出师后的路",
+  "stage": "adolescence",
+  "ageWindow": {
+    "min": 14,
+    "max": 20
+  },
+  "tags": [
+    "adolescence",
+    "education",
+    "aspiration",
+    "school",
+    "books",
+    "club",
+    "exam"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 14,
+      "max": 17
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "education",
+    "goals": [
+      "knowledge",
+      "status"
+    ],
+    "needs": [
+      "knowledge",
+      "status"
+    ],
+    "baseUtility": 1.3,
+    "risk": 0.2,
+    "skills": [
+      "literacy",
+      "numeracy"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p9-childhood-youth-aspiration.trade-school-application",
+      "title": "职业学校报名处",
+      "weight": 1,
+      "rate": 0.09,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 16
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "apprenticeship"
+          ]
+        },
+        {
+          "kind": "cash",
+          "min": 5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 16
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "paid-night-class",
+          "weight": 2,
+          "text": "{subject}把出生证明和小学毕业证摊在桌上，{teacher}数了数克朗，收下第一学期学费，在课程表夜班栏画了个勾。每周三晚六点到九点，教室在二楼，凳子要自己带。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "职业夜校第一期学费"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 1,
+              "reason": "注册夜班课程"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.03,
+              "reason": "开始接触制图与算术课"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.05,
+              "reason": "登记报名时与教师的短暂接触"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "paid-night-class",
+              "text": "{subject}把六枚克朗按在登记簿旁，{teacher}抬起眼镜看了看他的出生日期，在夜班名单上写下名字。他领到一张油印课程表，纸角还湿着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "paid-night-class",
+              "text": "报名处窗外传来电车铃，{teacher}从抽屉里取出一张夜班课表，指了指周三那一格。{subject}把找回的零钱塞进内袋，出门时数了两遍。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "missing-certificate",
+          "weight": 2,
+          "text": "{subject}交了钱，{teacher}却把小学毕业证推回来，说印刷模糊，要他下星期三补一份学校盖章的副本。报名表压在桌角，夜班名额只留到星期五。他连跑两趟学校，第二趟才找到管事的人。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "报名手续费与押金"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "证书问题拖住报名"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "needs_school_certificate",
+              "add": true,
+              "reason": "报名处要求补交盖章毕业证明"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "在报名处被要求补材料"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "missing-certificate",
+              "text": "{teacher}用指甲刮了刮毕业证上的印章，说这印子模糊得像被水泡过。{subject}把课程表折好放进口袋，走出教室时听见身后有人问下一个。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "missing-certificate",
+              "text": "走廊里{subject}碰到{teacher}正锁门，教师说下星期三之前把副本拿来就行。他数了数兜里的车钱，决定走路去学校，省下四赫勒。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "switched-to-church-class",
+          "weight": 1,
+          "text": "{subject}凑不够十二克朗的正班学费，在门口站了一会儿，转身去了两条街外的教会补习班。修女收下他，发了一本旧算术册子，说每晚七点来，不要钱，但要帮着擦黑板。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "找到免费补习的出路"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.02,
+              "reason": "教会补习班的基础读写练习"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "church_tutoring",
+              "add": true,
+              "reason": "改上免费教会补习班"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "补习班教师的接纳"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "switched-to-church-class",
+              "text": "教会补习班的黑板有裂口，{subject}用湿布擦过两遍。修女把算术册子递给他，封面用铅笔写着上一个学生的名字，已经涂掉了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "switched-to-church-class",
+              "text": "他从职业学校门口走开时，听见里面在搬长凳。拐过街角，教堂侧门开着，{teacher}正往黑板上写乘法表，招手让他进来坐最后一排。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.45,
+        "risk": 0.2,
+        "skills": [
+          "literacy",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p9-childhood-youth-aspiration.save-for-books",
+      "title": "攒钱买一本教科书",
+      "weight": 1,
+      "rate": 0.08,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 17
+        },
+        {
+          "kind": "cash",
+          "max": 35
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home",
+            "shop",
+            "street"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 55
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "bought-used-book",
+          "weight": 2,
+          "text": "{subject}把火柴盒里的零钱倒在书摊木板上，一枚一枚数出三克朗，换回那本《机械制图》。书脊裂了，他用母亲补袜子的布条重新粘过，当晚就着一盏煤油灯抄下第一页的图例。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "旧书摊买《机械制图》"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "研读制图教科书"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "终于买下想要的书"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "书摊老板少收了五赫勒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "bought-used-book",
+              "text": "书摊上那本《机械制图》被压在一摞旧画报下面，{subject}抽出来时抖落一层灰。{worker}把书翻到缺角那页，说三克朗拿走，他数出最后几枚赫勒，硬币在木板上叮当响。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "bought-used-book",
+              "text": "回家路上{subject}把书夹在腋下，怕雨点打湿纸页。进了门，{parent}问他哪来的书，他把粘好的书脊翻过来给母亲看，布条颜色跟袜子一样。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "money-taken-for-coal",
+          "weight": 2,
+          "text": "{subject}掀开火柴盒，里面的克朗少了七成。{parent}说煤快烧完了，先把钱挪去煤铺。少年没吭声，第二天在图书馆坐了一下午，把书里重要的图例抄到裁开的纸袋上。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "积蓄被挪去买煤"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "攒下的书钱被拿走"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "在图书馆手抄书页"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.04,
+              "obligation": 0.06,
+              "reason": "书钱被挪作家用"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "money-taken-for-coal",
+              "text": "{parent}把火柴盒放回窗台，说等发了工钱再补给他。{subject}把抄好的纸袋叠成小册子，用缝衣针别在一起，封面写了书名，字比平时大。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "money-taken-for-coal",
+              "text": "图书馆的暖气片只热半边，{subject}把冻僵的手指凑近灯罩，抄完第三张图纸时闭馆铃响了。他把纸袋夹进课本里，和煤铺的收据一起。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "installment-deal",
+          "weight": 1,
+          "text": "{subject}跟书摊老板{worker}谈成先付一克朗，剩下的两克朗下月补齐。他把自己跑面包房的路线说给老板听，老板让他把学生证押在摊上。书拿到手，他每晚翻十页，用铅笔在登记卡上画道。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "旧书首付"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "book_debt_2kr",
+              "add": true,
+              "reason": "欠书摊两克朗，下月补齐"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "按计划研读制图入门"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "obligation": 0.05,
+              "reason": "书摊老板允许分期付款"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "installment-deal",
+              "text": "{worker}把书翻到扉页，用铅笔写上日期和两克朗的欠额。{subject}把学生证放到柜台上的铁盒里，出门时回头看了一眼，证上那张照片拍得比本人精神。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "installment-deal",
+              "text": "他把书用旧报纸包好，路过面包房时闻见新出炉的味道，摸了摸口袋里的硬币又松开。到家翻开第一页，纸边还粘着上一任主人留下的干面包渣。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "knowledge",
+          "survival"
+        ],
+        "needs": [
+          "cash",
+          "knowledge"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.1,
+        "skills": [
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p9-childhood-youth-aspiration.ask-a-mentor",
+      "title": "去找那位排字师傅",
+      "weight": 1,
+      "rate": 0.08,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 17
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "apprenticeship"
+          ]
+        },
+        {
+          "kind": "cash",
+          "min": 1
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 65
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "weekly-lesson",
+          "weight": 2,
+          "text": "{subject}在咖啡馆角落找到{worker}，把抄好的字母表铺在咖啡杯旁边。老师傅用手指顺着字母格划过，说每星期天早上来一钟头，先认字盘上的空格和倒字。少年把这句话记在信纸背面。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.05,
+              "reason": "排字师傅教授字盘基础"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "respect": 0.08,
+              "reason": "老师傅答应每周指导"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "typesetting_mentor",
+              "add": true,
+              "reason": "跟排字师傅学习字盘"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "得到师傅指点"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "weekly-lesson",
+              "text": "{worker}把老花镜往鼻梁上推了推，让{subject}用食指在字盘空位上比画。咖啡馆伙计来续水时，老人把字母表折起来，说下星期带旧字样本来看。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "weekly-lesson",
+              "text": "少年把没写完的信推到一边，老师傅看了一眼抬头，说字太挤。他让{subject}明早去印刷厂后门，先从擦铅字开始认。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "borrowed-specimen-book",
+          "weight": 2,
+          "text": "{worker}说自己眼睛不行了，带不了徒弟，但从帆布袋里抽出一本旧字样本，让{subject}拿回去临摹。书皮用麻线缝过三次，扉页上有一行褪色的签名。少年双手接过来，在咖啡馆门口鞠了个躬。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.04,
+              "reason": "临摹旧字样本"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.03,
+              "reason": "老师傅借出私人字样本"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "typesetting_specimen_book",
+              "add": true,
+              "reason": "持有借来的排字样本"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "咖啡馆里请老师傅喝一杯"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "borrowed-specimen-book",
+              "text": "字样本很沉，{subject}把它裹在旧衬衫里夹着走。路过印刷厂时，他停下来看排字房窗户透出的灯，怀里书的麻线硌着肋部。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "borrowed-specimen-book",
+              "text": "{worker}用咖啡匙压住书页，说看完就还，别弄上油渍。少年点头，把咖啡钱留在桌上，出门时听见老人咳嗽了两声，又翻开报纸。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "asked-to-come-back-later",
+          "weight": 1,
+          "text": "{worker}看了看{subject}抄的字母表，说大小不一，让他回去用直尺画格子重抄一遍，下个月再来。少年把纸折好，在咖啡馆门口站了一会儿，走回印刷厂时绕到排字房窗外看了很久。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被师傅要求先练基本功"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "按要求重新抄写字母"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mentor_pending_retry",
+              "add": true,
+              "reason": "下月再去找排字师傅"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "respect": 0.05,
+              "reason": "老师傅愿意等他下次再来"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "asked-to-come-back-later",
+              "text": "老人用指节点了点纸上的字母间距，说连字盘都认不全，急不来。{subject}把信纸和字母表一起收进布袋，出门时把袋口系紧了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "asked-to-come-back-later",
+              "text": "回家路上他在旧货店橱窗前站住，看里面摆着木格字盘。他比划了一下格子大小，决定今晚先用尺子在烟盒背面练。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "belonging"
+        ],
+        "needs": [
+          "knowledge",
+          "safety"
+        ],
+        "baseUtility": 1.25,
+        "risk": 0.15,
+        "skills": [
+          "social",
+          "literacy"
+        ]
+      }
+    },
+    {
+      "id": "p9-childhood-youth-aspiration.job-or-school",
+      "title": "工钱袋与听课证",
+      "weight": 1,
+      "rate": 0.09,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 15,
+          "max": 17
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "apprenticeship"
+          ]
+        },
+        {
+          "kind": "cash",
+          "max": 60
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 17
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 55
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 32,
+          "maxAge": 68,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "took-factory-job",
+          "weight": 2,
+          "text": "{subject}把听课证从桌上拿起来，放进床头抽屉，跟{parent}说明年再报。第二天他穿上围裙去印刷厂上工，第一周工钱十八克朗，拿在手里比想象中薄。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "印刷厂杂工",
+              "wage": 18,
+              "workplaceId": "$workplace",
+              "reason": "正式受雇于印刷厂"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 18,
+              "reason": "第一周工钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "deferred_school_for_work",
+              "add": true,
+              "reason": "为工作推迟入学"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.05,
+              "respect": 0.04,
+              "reason": "听从家庭安排先挣钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "took-factory-job",
+              "text": "{parent}把工钱袋上的绳结解开，数出买菜和煤的份，剩下的放回桌上。{subject}把听课证压在抽屉最底下，上面还沾着报名处的油墨味。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "took-factory-job",
+              "text": "上工第一天，{employer}让他先扫机器底下的纸屑。他扫到中午，腰弯得发酸，口袋里那张听课证硬邦邦地硌着大腿。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "chose-night-school",
+          "weight": 2,
+          "text": "{subject}把工钱袋推回去，说夜班课已交过费。白天他接零活，给面包房送两趟货，工钱比正式工少了一半。晚上坐在教室里，手指还带着面粉味，握笔时总打滑。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 1,
+              "reason": "选择继续夜校课程"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 9,
+              "reason": "白天零工一周所得"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "白天干活晚上上课，休息不足"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "night_school_priority",
+              "add": true,
+              "reason": "优先保住夜校学业"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.05,
+              "reason": "拒绝正式工作让母亲担忧"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "chose-night-school",
+              "text": "{parent}把两份纸又摆了一遍，{subject}只拿起听课证。母亲没再说话，把工钱袋收进围裙口袋，转身去捅炉子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "chose-night-school",
+              "text": "夜校教室的凳子腿长短不齐，{subject}用折起的课程表垫在下面。老师在黑板上写算式，他低头记下，面粉从袖口簌簌落在本子上。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "negotiated-half-week",
+          "weight": 1,
+          "text": "{subject}去找{employer}，问能不能每周少上一天工，用那天去听课。厂主翻了翻排班表，说少一天就少一天的工钱，活儿不等人。少年答应了，每周四去教室，回来再补夜班。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "印刷厂杂工",
+              "wage": 15,
+              "workplaceId": "$workplace",
+              "reason": "协商减少工时以就读夜校"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 15,
+              "reason": "每周工钱减少后的收入"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 1,
+              "reason": "半工半读注册课程"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.06,
+              "reason": "厂主同意弹性排班"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "周四上课后回厂补活"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "negotiated-half-week",
+              "text": "{employer}用铅笔尖戳着排班表上星期四那一格，说缺的活计要他自己找时间补。{subject}点头，把课程表折成小方块放进工装口袋。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "negotiated-half-week",
+              "text": "星期四下午他坐在教室最后一排，隔壁工位的油墨味还没洗掉。老师在讲比例尺，他低头画图，手指关节上沾着黑边。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "family",
+          "status"
+        ],
+        "needs": [
+          "autonomy",
+          "status"
+        ],
+        "baseUtility": 1.5,
+        "risk": 0.35,
+        "skills": [
+          "numeracy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-childhood-youth-aspiration.join-a-club",
+      "title": "工人青年会的门",
+      "weight": 0.9,
+      "rate": 0.07,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 17
+        },
+        {
+          "kind": "cash",
+          "min": 1
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "union",
+            "street",
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 25
+        },
+        {
+          "key": "workersYouth",
+          "kind": "organization",
+          "required": true,
+          "organizationKind": "union"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "joined-and-borrowed",
+          "weight": 2,
+          "text": "{subject}跟着{neighbor}走进印刷厂后面的屋子，交了十赫勒会费，在借书簿上按了手印。他挑了一本讲蒸汽机的册子，封面烫金已经磨掉；管理员说下月十赫勒要按时交，书才能续借。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.1,
+              "reason": "工人青年会月费"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "阅读蒸汽机原理小册"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "reason": "邻居带他加入青年会"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "workers_youth_member",
+              "add": true,
+              "reason": "成为工人青年会会员"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "找到可以借书的地方"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "joined-and-borrowed",
+              "text": "屋里烧着铁炉，{neighbor}把会费交给靠门坐的人。{subject}在借书簿上按手印时，指腹沾了印泥，翻书页留下浅红痕迹。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "joined-and-borrowed",
+              "text": "墙边有人在摆棋，有人哼歌本上的曲子。{subject}把蒸汽机册子塞进外套内袋，出门时{neighbor}说下周有读书会，记得带铅笔。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "went-once-and-left",
+          "weight": 2,
+          "text": "{subject}交了第一个月的会费，进去坐了一刻钟。屋里太吵，下棋的争论盖过了念书的声音，他借的书也被人翻得卷了边。下个月他路过门口，没再进去交十赫勒。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.1,
+              "reason": "只交了一个月会费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "没再去青年会，邻居有些失望"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "workers_youth_quit",
+              "add": true,
+              "reason": "退出工人青年会活动"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "觉得会里太吵不适合读书"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "went-once-and-left",
+              "text": "铁炉边的长凳坐满了人，{subject}把借来的书摊在膝上，旁边两个人在为一盘棋高声争。他把书合上，又坐了一会儿才走。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "went-once-and-left",
+              "text": "第二个月{neighbor}在楼梯口问他怎么没来，{subject}说晚上要帮家里干活。邻居点点头，把歌本夹在腋下先走了。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "worked-for-dues",
+          "weight": 1,
+          "text": "{subject}翻遍口袋只有几枚赫勒，便跟管事的说愿替大家抄歌本抵会费。他坐在窗边抄了一下午，手指被墨水染黑，换来的借书权让他捧回一本讲齿轮的旧书，书页里夹着上一个人留下的铅笔字。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "抄写歌本练习书写"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "阅读齿轮原理旧书"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "邻居介绍他以工抵费"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "workers_youth_work_trade",
+              "add": true,
+              "reason": "以抄歌本换取借书资格"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "靠劳动换来借书机会"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "worked-for-dues",
+              "text": "歌本纸是粗的，{subject}的钢笔尖刮起毛边。管事的看了看他抄的谱子，说行，那本齿轮书先借你两星期。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "worked-for-dues",
+              "text": "抄到最后一页时天已经暗了，{neighbor}给他端来一杯温水。他把齿轮书卷进外套，出门时闻见纸页上的旧烟味。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "belonging",
+          "status"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.15,
+        "risk": 0.15,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-childhood-youth-aspiration.prepare-exam",
+      "title": "考试前夜的煤油灯",
+      "weight": 1,
+      "rate": 0.09,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 17
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "apprenticeship"
+          ]
+        },
+        {
+          "kind": "health",
+          "min": 0.4
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "studied-late-passed",
+          "weight": 2,
+          "text": "{subject}把煤油灯芯捻到最亮，复习算术到后半夜，德文作文列了三段提纲。第二天考场上算错一道比例题，但短文写得清楚，{teacher}收卷时多看了他两眼。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 1,
+              "reason": "通过入学考试"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "算术考试练习"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.04,
+              "reason": "德文短文写作"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "熬夜复习，睡眠不足"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "考试通过"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "studied-late-passed",
+              "text": "灯罩上熏出黑圈，{subject}把面包屑扫到桌角，在草稿纸上重算第三遍。天快亮时他趴在桌上眯了一会儿，醒来发现袖口沾了墨。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "studied-late-passed",
+              "text": "考场上他坐在靠窗第二排，题目里的数字比昨晚练的简单。短文写完还剩一刻钟，他检查了两遍，把比例那道题空着交了上去。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "oil-ran-out-slept-in-exam",
+          "weight": 2,
+          "text": "煤油烧到一半时灯芯冒起黑烟，{subject}只好借面包房后窗透出的光背公式。后半夜他靠在墙上睡着了，醒来已经七点。考场上脑子发沉，算术卷子只答了一半，{teacher}收卷时敲了敲桌面。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "熬夜且睡眠不足"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "考试未答完"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "failed_entrance_exam",
+              "add": true,
+              "reason": "入学考试未通过"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "教师对考试表现失望"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "oil-ran-out-slept-in-exam",
+              "text": "{subject}把空煤油灯推到桌角，窗外面包房的炉火还亮着。他攥着铅笔背公式，声音越来越低，最后额头抵在摊开的算术本上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "oil-ran-out-slept-in-exam",
+              "text": "考场里他看题看了两遍才认出比例符号。交卷铃响时他还在算最后两道，{teacher}把卷子从他手边抽走，纸角划了一下他的指节。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cheat-sheet-washed-off",
+          "weight": 1,
+          "text": "{subject}把公式用铅笔写在左手心，出门前在水龙头下搓了搓，字迹只剩浅浅灰印。考场上他凭记忆答题，算到第三题时手心出汗，灰印化开成一道黑线。他答完了，但不知道对不对。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "exam_guilt",
+              "add": true,
+              "reason": "带小抄进考场后又洗掉"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "心里不踏实"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "靠记忆完成算术题"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.02,
+              "reason": "母亲察觉到他的心不在焉"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cheat-sheet-washed-off",
+              "text": "水龙头的水冰凉，{subject}搓手心时听见母亲在屋里喊他吃早饭。他把手在裤子上擦干，掌纹里还嵌着铅笔灰。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cheat-sheet-washed-off",
+              "text": "考到一半他低头看手，灰印糊成一片。他索性不再看，把演算纸写得满满的，交卷后一个人在走廊里站了很久。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "autonomy"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.2,
+        "skills": [
+          "literacy",
+          "numeracy"
+        ]
+      }
+    }
+  ]
+}

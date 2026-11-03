@@ -67,6 +67,7 @@ const EFFECT_NAMES = [
   'birth',
   'death',
   'estate',
+  'knowledge',
 ].join(', ');
 
 const CONDITION_NAMES = [
@@ -195,6 +196,7 @@ function buildPrompt(brief: GenerationBrief, previousErrors: string[]): string {
 - residence：{ "type": "residence", "householdId": "$household", "residenceId": "允许的住址 id", "reason": "..." }
 - death：{ "type": "death", "personId": "$partner", "cause": "stroke", "reason": "..." }
 - estate：{ "type": "estate", "personId": "$subject", "heirHouseholdId": "$household", "amount": 12, "reason": "..." }
+- knowledge：{ "type": "knowledge", "holderId": "$subject", "proposition": "一句可被人物记住的具体事实", "confidence": 0.8, "sourceKind": "witnessed", "personId": "$neighbor", "visibility": "private", "trueInWorld": true }
 所有人物引用字段必须叫 personId，不能写 person；所有数量字段必须叫 amount，不能写 delta。`;
   return `你是历史人生模拟游戏的内容作者。为1900年代维也纳生成一个事件族包，严格输出 JSON，不要 markdown，不要解释。
 
@@ -281,6 +283,14 @@ function normalizeRoleTokens(text: string, roleKeys: Set<string>): string {
   });
 }
 
+function hasUnresolvedRoleToken(text: string, roleKeys: Set<string>): boolean {
+  for (const match of text.matchAll(/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g)) {
+    const key = match[1]!;
+    if (!BUILTIN_TEXT_TOKENS.has(key) && !roleKeys.has(key)) return true;
+  }
+  return false;
+}
+
 function normalizeEffectValue(value: unknown, roleKeys: Set<string>): unknown {
   if (typeof value === 'string') return normalizeRoleTokens(value, roleKeys);
   if (Array.isArray(value)) return value.map((item) => normalizeEffectValue(item, roleKeys));
@@ -313,6 +323,36 @@ function normalizeGeneratedOutcome(
     }
     if (effect.type === 'cash' || effect.type === 'food')
       (effect as { householdId: string }).householdId = '$household';
+    if (effect.type === 'knowledge') {
+      const source = effect as Record<string, unknown>;
+      const holder = typeof source.holderId === 'string' ? source.holderId : source.personId;
+      if (typeof holder !== 'string') return false;
+      const proposition =
+        typeof source.proposition === 'string'
+          ? source.proposition
+          : typeof source.topic === 'string'
+            ? `${source.topic}${typeof source.reason === 'string' ? `：${source.reason}` : ''}`
+            : typeof source.reason === 'string'
+              ? source.reason
+              : '';
+      if (proposition.length < 3) return false;
+      source.holderId = holder;
+      source.proposition = proposition.slice(0, 280);
+      source.confidence =
+        typeof source.confidence === 'number' && Number.isFinite(source.confidence)
+          ? Math.max(0, Math.min(1, source.confidence))
+          : 0.75;
+      source.sourceKind =
+        typeof source.sourceKind === 'string' &&
+        ['witnessed', 'told', 'document', 'inferred'].includes(source.sourceKind)
+          ? source.sourceKind
+          : 'witnessed';
+      source.visibility = source.visibility === 'shared' ? 'shared' : 'private';
+      source.trueInWorld = source.trueInWorld !== false;
+      if (typeof source.personId === 'string' && !source.personId.startsWith('$')) {
+        delete source.personId;
+      }
+    }
     if (effect.type === 'education') {
       const status = (effect as { status?: string }).status;
       if (status === 'vocational') (effect as { status: string }).status = 'apprenticeship';
@@ -330,6 +370,10 @@ function normalizeGeneratedOutcome(
           if (!v || typeof v.text !== 'string') return undefined;
           const normalized = normalizeRoleTokens(v.text, roleKeys);
           if (normalized.length < 20) return undefined;
+          // A typo in an optional narration variant should not block the whole
+          // pack when the immediate outcome text is valid. Variants with
+          // unresolved role tokens are dropped.
+          if (hasUnresolvedRoleToken(normalized, roleKeys)) return undefined;
           return {
             ...(v as object),
             key: record.id as string,

@@ -1,0 +1,1281 @@
+{
+  "id": "p9-social-family-conflict-care",
+  "title": "兄弟姐妹、病床与一张房契",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 70
+  },
+  "tags": [
+    "family",
+    "care",
+    "siblings",
+    "inheritance",
+    "housing",
+    "money"
+  ],
+  "baseRate": 0.2,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 70
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-social-family-conflict-care.sibling-medicine-bill",
+      "title": "母亲药费的分摊",
+      "weight": 1,
+      "rate": 0.036,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 70
+        },
+        {
+          "kind": "cash",
+          "max": 60
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 55,
+          "maxAge": 95
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "split-per-head",
+          "weight": 1,
+          "text": "{subject}把旧练习本翻到空白一页，用铅笔头写下三人的名字，在每人旁边画一道竖线。十四克朗除以三，每人四克朗六十六赫勒，多出的两赫勒记在公账上。{sibling}盯着自己的那一栏看了半天，从围裙口袋里摸出硬币，一枚一枚摞在糖罐旁边。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "分摊母亲药费中自己的一份"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "把药费账目摊开算清，兄妹勉强接受"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "split-per-head",
+              "text": "铅笔在粗纸上划出沙沙声，{sibling}数出四克朗六十六赫勒，剩下的散钱用一块手帕包好放回糖罐。窗外收废品的车已经走远，屋里只剩下硬币碰着桌面的脆响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "split-per-head",
+              "text": "{subject}把练习本推到桌子中央，{sibling}的指尖在那一列数字上停了一下，最后还是把铜币和银币分开摞好。母亲在里屋咳了两声，谁也没有再提上次住院的旧账。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "advance-with-room-claim",
+          "weight": 1,
+          "text": "{subject}先把十四克朗整张票子压在药费单上，对{sibling}说这钱不用还，只要求以后母亲那间朝院子的屋子归自己照看，钥匙也归自己管。{sibling}把咖啡杯往桌上一顿，说照看是照看，房契上的名字是另一回事，但药费单总算从糖罐底下抽了出来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -14,
+              "reason": "先垫付母亲全部药费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.05,
+              "affection": -0.02,
+              "obligation": 0.1,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "垫钱换照看母亲房间的权利，兄妹心里存了疙瘩"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "claims_mother_room",
+              "add": true,
+              "reason": "以垫付药费为由提出照看母亲房间"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "advance-with-room-claim",
+              "text": "{subject}把那张十四克朗的票子铺平，四角用三只咖啡杯压住。{sibling}没有碰那钱，只是伸手把糖罐挪开，露出底下那张皱巴巴的药费单，说先救了急再说别的。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "advance-with-room-claim",
+              "text": "钥匙在{sibling}指间转了一圈，最后还是落在桌面上。{subject}把钱收进上衣内袋，听见里屋母亲的呼吸声，知道今晚不必再翻糖罐找那张单子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "refuse-push-bill",
+          "weight": 1,
+          "text": "{subject}把药费单从糖罐底下抽出来，对折，推回桌子中央，说自己上个月的工钱已经贴过煤钱，这回不能再出。{sibling}的脸沉下来，拿起练习本翻得哗哗响，最后把单子重新压回糖罐底下，起身去够挂在门后的外套。三只咖啡杯里剩的渣子凉在桌上。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.1,
+              "affection": -0.08,
+              "obligation": -0.05,
+              "fear": 0,
+              "respect": 0,
+              "reason": "拒绝分摊药费，兄妹关系明显冷淡"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "把药费单推走后心里发沉"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "refuse-push-bill",
+              "text": "{subject}的指尖碰着那张纸又缩回来，{sibling}一句话没说，只是把外套从钉子上扯下来。门开时楼道里的冷风灌进来，吹得练习本翻过去两页，那些数字还留在纸上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "refuse-push-bill",
+              "text": "糖罐重新压住药费单，{sibling}的脚步声在楼梯间一层层往下。{subject}独自坐着，听见收废品的车又绕回来，铃铛响了两下，屋里却没有谁站起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-social-family-conflict-care.sick-parent-night",
+      "title": "夜里的药粉和便盆",
+      "weight": 1,
+      "rate": 0.04,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 70
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.1
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 95
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "shifts-with-sibling",
+          "weight": 1,
+          "text": "{subject}和{sibling}把值班时辰定下来：{sibling}守前半夜，{subject}守后半夜，医生嘱咐的静养天数用粉笔写在门后，一共二十一天。夜里煤油灯芯拧小，{subject}把药粉分成小包摆在床头，便盆换水时尽量不碰出响声。头三天两人都熬得眼睛发红，但父亲起身时总有人扶。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "连续夜里守夜睡眠不足"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.08,
+              "affection": 0.05,
+              "obligation": 0.08,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "与兄妹轮流守夜照顾父亲"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "night_care_duty",
+              "add": true,
+              "reason": "承担父亲夜间照看"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "shifts-with-sibling",
+              "text": "门后的粉笔字一天擦掉一格，{subject}在凌晨三点把药粉倒进半杯温水里，{sibling}蜷在塌了一边的椅子上打盹。便盆里的水倒进楼道尽头的桶，回来时煤油灯已经暗成一个小点。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "shifts-with-sibling",
+              "text": "{sibling}把钟拨到床头，说前半夜归自己。{subject}合眼没一会儿就被父亲的咳嗽叫醒，摸黑去够便盆，手肘碰翻了半包药粉，只好用手指把粉末拢回纸上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hire-neighbor-daycare",
+          "weight": 1,
+          "text": "{subject}请楼下的{neighbor}白天来照看父亲，讲好每天管两顿饭，外加十赫勒煤钱。{neighbor}上午来换床单，下午喂药，临走前把便盆提到楼道口。{subject}下工回来先摸煤箱，看还够不够烧，然后在练习本上记下当天给{neighbor}的饭钱和煤钱。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "支付邻居照看工钱和煤钱"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "给邻居管两顿饭"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "affection": 0.03,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "雇邻居白天照看父亲"
+            },
+            {
+              "type": "health",
+              "personId": "$parent",
+              "amount": 0.04,
+              "reason": "白天有人按时喂药和换洗"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hire-neighbor-daycare",
+              "text": "{neighbor}围裙口袋里装着一小包药粉，进门先看父亲的嘴唇干不干。煤钱放在糖罐旁边，{subject}下工后数出十赫勒，听见{neighbor}说今天咳得比昨天轻些，才去灶上热自己的饭。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hire-neighbor-daycare",
+              "text": "楼道里飘着{neighbor}熬的汤味，{subject}把饭钱压在盘子底下。父亲靠在叠高的枕头上，嘴角沾着药粉，{neighbor}用湿布替他擦掉，顺手把煤油灯芯挑亮。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hospital-deposit",
+          "weight": 1,
+          "text": "{subject}跑了一趟医院，把父亲送进病房，先交三克朗押金，又买了一只要用的搪瓷杯和一条旧毛巾。护士收走父亲的便盆，换上一只带刻度的玻璃壶。{subject}回到空了的床边，把塌下去的椅子扶正，才发现自己一整天只喝了一杯咖啡。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "住院押金和住院用品"
+            },
+            {
+              "type": "health",
+              "personId": "$parent",
+              "amount": 0.06,
+              "reason": "父亲住进医院得到治疗"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "把父亲送进医院后心里空落"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parent_hospitalized",
+              "add": true,
+              "reason": "父亲已入院"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hospital-deposit",
+              "text": "医院的走廊比家里亮，{subject}把三克朗押金数了两遍。护士接过搪瓷杯，说探视时间在下午。父亲在病床上抬起手，{subject}握住那只手，指节比在家里更凉。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hospital-deposit",
+              "text": "{subject}把旧毛巾叠好放在床头，玻璃壶里的水映出窗外的天。回家路上经过煤店，想买又没买，推开门时看见床边那只便盆还留在原地，才想起今天不用再倒了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-social-family-conflict-care.school-fork",
+      "title": "国民学校毕业后的岔路",
+      "weight": 0.9,
+      "rate": 0.032,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 28,
+          "max": 55
+        },
+        {
+          "kind": "householdSize",
+          "min": 3
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        },
+        {
+          "kind": "cash",
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 55
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "pay-for-buergerschule",
+          "weight": 1,
+          "text": "{subject}把市民学校的书本费和服装费凑齐，一共十二克朗，交到{teacher}手里。回家路上把肉钱减半，晚饭只有扁豆和土豆。{teacher}在成绩单背面写了收据，说孩子若能跟上，明年可以申请减免。煤箱旁边的练习本上多了一页开支。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -12,
+              "reason": "市民学校书本费和服装费"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "减半肉钱，伙食变差"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.03,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.06,
+              "reason": "为孩子交费并听老师安排"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_in_buergerschule",
+              "add": true,
+              "reason": "孩子进入市民学校"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pay-for-buergerschule",
+              "text": "{teacher}把十二克朗点完，在一张窄纸条上写了收据。{subject}回家把肉铺的账划掉一半，晚饭时孩子低头吃扁豆，不敢问新衣服什么时候做。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pay-for-buergerschule",
+              "text": "服装费里包括一双结实的皮鞋，{subject}在店里让孩子试了两次。回家路上经过煤店，只买了半筐碎煤，孩子拎着书包走在前面，鞋底在石板路上响得清脆。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "apprentice-at-printer",
+          "weight": 1,
+          "text": "{subject}在印刷厂的招工窗口替孩子报了学徒，第一年每周带回两克朗工钱。{teacher}在成绩单背面写的推荐话被折进信封，和学徒契约一起锁在抽屉里。孩子第一天回来，袖口沾着油墨，说师傅让他先搬纸。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "孩子学徒第一周带回工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "没有听老师建议继续升学"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_apprentice_printer",
+              "add": true,
+              "reason": "孩子进入印刷厂做学徒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "apprentice-at-printer",
+              "text": "学徒契约上盖着印刷厂的章，{subject}按了手印。孩子傍晚回来，指甲缝里嵌着黑油墨，把两克朗放在桌上，说师傅讲明天要早到一个钟头。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "apprentice-at-printer",
+              "text": "{teacher}在街角碰见{subject}，问了两句，听说孩子进了印刷厂，没再说什么。{subject}回家看见孩子把油墨袖子泡在冷水里，盆底沉着一层黑沙。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ask-for-reduction",
+          "weight": 1,
+          "text": "{subject}带着成绩单去学校找{teacher}，问减免和奖学金的事。{teacher}领到办公室，一位{official}翻着册子说可以减一半书本费，但服装费得自己出，答复要等开学前一周。{subject}把两张纸重新折好，回家对母亲说再等几天，桌布底下的决定先不动。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "决定悬而未决，心里不踏实"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.02,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "向老师打听减免和奖学金"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "affection": 0,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "与学校办事员打过一次交道"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "awaiting_school_aid",
+              "add": true,
+              "reason": "等待学校减免答复"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ask-for-reduction",
+              "text": "{official}用铅笔在册子边上打了个勾，说下周再来问。{subject}走出校门时，{teacher}在身后补了一句：孩子算术不差。回家路上经过印刷厂，听见机器声从窗户里滚出来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "ask-for-reduction",
+              "text": "办公室里的墨水瓶没盖，{subject}闻到一股酸味。{teacher}把成绩单摊在桌上，{official}看了一眼说等开学前一周。母亲在桌布底下摸到那两张纸，问有没有准信，{subject}摇了摇头。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-social-family-conflict-care.notary-inheritance",
+      "title": "公证人桌上的房契",
+      "weight": 1,
+      "rate": 0.032,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 70
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.1
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 95
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sign-away-for-cash",
+          "weight": 1,
+          "text": "{subject}在{official}面前签下放弃继承的声明，{parent}从内袋里摸出二十克朗推过来，纸币上还带着体温。{sibling}把房契往自己那边挪了挪。{subject}数也没数就把钱收好，出门时听见公证人办公室的门在背后合上，铜把手凉了一下手心。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 20,
+              "reason": "放弃继承换来一笔现钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.12,
+              "affection": -0.08,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "放弃继承让兄妹觉得占了便宜"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": 0.02,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "当面接受父亲给的现钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "renounced_inheritance",
+              "add": true,
+              "reason": "已签署放弃继承声明"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sign-away-for-cash",
+              "text": "声明纸上的字很小，{subject}逐行看完才落笔。{parent}把二十克朗折了两折，塞进{subject}手里，说别为这钱跟{sibling}红脸。{sibling}没有抬头，手指一直按在房契的边角上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sign-away-for-cash",
+              "text": "公证人把印泥盒推到桌边，{subject}的拇指按下去，红印落在名字旁边。二十克朗在口袋里硌着腿，出门走下石阶时，{sibling}从身后追上来问了一句什么，{subject}没停步。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "demand-accounts-first",
+          "weight": 1,
+          "text": "{subject}把修缮账和照护账推到{official}面前，要求先把大哥修屋顶出的八克朗、二姐照顾母亲两年的工钱算清，再谈房子归谁。{parent}的手指在房契上敲了敲，{sibling}翻出另一本旧账，两人在公证人桌上对起数目来。墨水瓶旁边那三把钥匙被挪到一边。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "在公证人面前与兄妹对账争吵"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.06,
+              "affection": -0.05,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "坚持先算清旧账再谈房契"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "affection": 0,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "请公证人见证算账"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "demands_estate_accounting",
+              "add": true,
+              "reason": "要求先算清修缮和照护账"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "demand-accounts-first",
+              "text": "旧账本摊开，纸页上的铅笔字迹深浅不一。{sibling}念一笔，{subject}就在边上记一笔，{official}的钢笔悬在遗嘱上方没有落。{parent}咳了一声，说屋顶那八克朗是自己看着修的。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "demand-accounts-first",
+              "text": "三把钥匙在桌面上被推来推去，{subject}把照护账里两年的药费和饭钱一笔笔指给{official}看。{sibling}的声音高起来，{parent}伸手按住房契，屋里一时只剩纸页翻动的声音。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "leave-unsigned",
+          "weight": 1,
+          "text": "{subject}把文件推回{official}面前，说不签，等{parent}自己改主意。{parent}的嘴角动了动，{sibling}把三把钥匙一把把收进衣袋，金属碰着金属响了几声。{subject}走下公证处的石阶，街对面面包房正在出炉，热气扑到脸上，口袋里一个赫勒也没多。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "拒绝签字后心里悬着"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.04,
+              "affection": -0.03,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "当着父亲的面拒绝签字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.05,
+              "affection": -0.04,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "留下未决的房契问题"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "inheritance_unsigned",
+              "add": true,
+              "reason": "暂不签署房契分配文件"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leave-unsigned",
+              "text": "{official}把文件收进硬纸夹，{sibling}的钥匙在衣袋里响了一路。{subject}在石阶上站了一会儿，看面包房的伙计把新出炉的面包码上木架，热气从门缝里涌出来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leave-unsigned",
+              "text": "{parent}没有追出来。{subject}走过两个街口才把手从口袋里拿出来，指尖还留着房契纸面的粗纹。公证处的窗户在身后暗下去，街上有人推着煤车叫卖。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-social-family-conflict-care.cousin-bed",
+      "title": "表亲提着藤箱进门",
+      "weight": 0.9,
+      "rate": 0.03,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 70
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.1
+        },
+        {
+          "kind": "overcrowded",
+          "value": false
+        },
+        {
+          "kind": "householdSize",
+          "max": 5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "kin",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "give-camp-bed-and-board",
+          "weight": 1,
+          "text": "{subject}让{kin}睡厨房的行军床，讲好每月收三克朗饭钱，煤钱另算。白天把铺盖卷起来靠在碗柜边，晚上再铺开。看门人再来问时，{subject}把藤箱指给他看，说人住下了，灯油钱也记在账上。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "表亲交来的饭钱"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "多一个人吃饭"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kin",
+              "kind": "kin",
+              "trust": 0.08,
+              "affection": 0.05,
+              "obligation": 0.06,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "收留表亲并收饭钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kin_staying_over",
+              "add": true,
+              "reason": "表亲借住家中"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "give-camp-bed-and-board",
+              "text": "{kin}把藤箱推到行军床底下，箱角露出半截下奥地利的车票。{subject}在练习本上记下三克朗，又画了一道线，写煤钱另计。晚上铺床时，厨房里只剩转身的地方。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "give-camp-bed-and-board",
+              "text": "看门人从门缝里探头，{subject}把藤箱上的灰尘拍掉，说这是自家亲戚。{kin}当天就帮着劈引火的木片，行军床白天竖在碗柜旁，晚上放下来时吱呀响了一声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "three-days-only",
+          "weight": 1,
+          "text": "{subject}只答应让{kin}住三天，腾出半张床，又托{sibling}去打听便宜的床位。三天里{kin}白天出去找活，傍晚回来坐在行军床边上，藤箱始终没有打开。第三天晚上{sibling}带回消息，说有一处工人宿舍，一周一克朗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "替表亲垫付工人宿舍第一周"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kin",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": 0.02,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "短暂收留并帮表亲找住处"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": 0.02,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "托兄妹帮忙打听床位"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "three-days-only",
+              "text": "第一天晚上{kin}把藤箱立在床头当桌子，吃了一碗面糊。第二天回来时鞋底磨薄了，说工地上只招熟手。第三天{sibling}带回宿舍的地址，{subject}数出一克朗硬币放在箱盖上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "three-days-only",
+              "text": "行军床在厨房里只铺了三个晚上，{kin}每次都把被子叠得方方正正。临走那天，{subject}把一克朗塞进{kin}的上衣口袋，{sibling}在门口指了去工人宿舍的路。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "turn-away-with-fare",
+          "weight": 1,
+          "text": "{subject}直说家里腾不出地方，从抽屉里摸出半克朗车费和一块黑面包，塞给{kin}。{kin}的藤箱提手已经磨毛，在门槛上磕了一下。{subject}关上门，听见脚步声沿着楼梯往下，看门人在楼下问了一句，{kin}答得含含糊糊。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "给表亲车费"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "给表亲一块黑面包"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kin",
+              "kind": "kin",
+              "trust": -0.08,
+              "affection": -0.05,
+              "obligation": -0.03,
+              "fear": 0,
+              "respect": -0.02,
+              "reason": "拒绝留宿，只给了路费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "把表亲挡在门外心里过意不去"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "turn-away-with-fare",
+              "text": "半克朗在{kin}的手心里搁了一会儿，才被收进衣袋。{subject}把面包掰成两半，递过去时碰到对方粗糙的指节。门合上后，楼道里还留着藤箱磕在栏杆上的回音。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "turn-away-with-fare",
+              "text": "{kin}没有争辩，只把藤箱换到另一只手上。{subject}站在门后听楼梯间的脚步，一层一层往下，最后被看门人的问话截住。厨房里行军床还卷在墙角，没有铺开。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-social-family-conflict-care.christmas-soup",
+      "title": "圣诞节前的一锅汤",
+      "weight": 0.8,
+      "rate": 0.03,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 70
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.05
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 55,
+          "maxAge": 95
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "serve-first-talk-later",
+          "weight": 1,
+          "text": "{subject}先给{sibling}盛了满满一碗，扁豆和面团结结实实压在勺底，那块熏肉切开分了两份。药费的事一句没提，只问要不要再添点汤。{sibling}吃到一半才开口，说上次说话太冲。桌边多摆的那把椅子，最后有人坐下了。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "圣诞节前一家人喝汤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.1,
+              "affection": 0.06,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "先盛汤不谈旧账，兄妹关系缓和"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "兄妹重新坐到一张桌上"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "serve-first-talk-later",
+              "text": "汤勺在锅里搅了两圈，{subject}把熏肉块拨到{sibling}碗里。汤的热气模糊了窗玻璃，街上的圣诞摊子传来铃铛声。{sibling}吃得很慢，碗底最后一点汤也用面包擦干净。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "serve-first-talk-later",
+              "text": "{subject}把三只碗摆好，多出的那只椅子往里挪了半尺。{sibling}坐下时大衣也没脱，喝到第二口才说了一句天气。炉子上的锅还温着，扁豆在锅底沉成一层。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ledger-on-table",
+          "weight": 1,
+          "text": "{subject}把旧账本摊在汤锅旁边，翻到药费那一页，说今天得当场算清才肯坐下。{sibling}的勺子停在半空，最后也把本子拉过去，一行行对起数来。汤在炉子上咕嘟着，谁也没先盛，等账算到最后一个赫勒，两人才同时伸手去够勺子。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在圣诞汤前对账，气氛紧绷"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": -0.02,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "坚持当场算清药费账"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "medicine_bill_settled",
+              "add": true,
+              "reason": "药费旧账当场结清"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ledger-on-table",
+              "text": "账本纸页上还沾着上次的咖啡渍，{subject}用手指点着每一行，{sibling}凑过来看，两人的头几乎碰着。汤锅的咕嘟声盖过了说话声，母亲留下的那把勺子在锅沿上搁着。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "ledger-on-table",
+              "text": "{sibling}起初把账本推回来，后来还是拉过去，在药费那栏画了个圈。炉子上的汤熬稠了，{subject}起身搅了一搅，回来时{sibling}已经在页脚写下了总数。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "jam-at-door",
+          "weight": 1,
+          "text": "{subject}只送来一罐杏子果酱，没有进门，把罐子放在门槛里边，说了句汤你们先喝。{sibling}在屋里听见了，走到门口时人已经下楼。果酱罐子上没有标签，只裹着一层报纸，瓶口用蜡封着。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "送去一罐果酱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.02,
+              "affection": 0.03,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0,
+              "reason": "没有进门，但送了果酱递话"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "送完果酱独自离开"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "jam-at-door",
+              "text": "果酱罐放在门槛里边，蜡封上留着一道指纹。{subject}走下楼梯时听见门后传来勺碰锅沿的声音，没有回头。楼道里的冷风把报纸吹开一角，露出底下深色的果酱。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "jam-at-door",
+              "text": "{sibling}开门时只看见一个背影和门槛边的玻璃罐。罐子还带着外面的凉气，报纸上蹭了一点油。屋里的汤已经盛好，多出的那把椅子仍然空着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

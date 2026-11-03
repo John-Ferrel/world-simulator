@@ -1,0 +1,1134 @@
+{
+  "id": "p9-history-war-homefront",
+  "title": "动员、配给与战后的空床",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 70
+  },
+  "tags": [
+    "war",
+    "homefront",
+    "mobilization",
+    "rationing",
+    "hospital",
+    "veteran",
+    "memorial"
+  ],
+  "baseRate": 0.18,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 70
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-history-war-homefront.mobilization-notice",
+      "title": "门缝里的动员通知",
+      "weight": 1,
+      "rate": 0.0324,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 50
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "war_mobilization",
+          "phases": [
+            "emerging",
+            "mobilizing",
+            "confrontation"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 50,
+          "sex": "male"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "army"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "report-and-leave-key",
+          "weight": 1,
+          "text": "报到日清晨，{subject}把房门钥匙和半个月工钱一共十二克朗塞给{neighbor}，托他每星期给母亲送煤和药。车站里全是穿便服的男人，{official}在月台上点名，点到名字的人把行李扔进车厢。火车开动时，{subject}摸到口袋里那张房租收据，边角已经被汗浸软了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -12,
+              "reason": "把半个月工钱交给邻居照看家里"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.2,
+              "obligation": 0.15,
+              "reason": "托付钥匙和家用"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mobilized",
+              "add": true,
+              "reason": "按通知报到入伍"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "report-and-leave-key",
+              "text": "楼梯间里煤油灯还没灭，{neighbor}把钥匙揣进围裙口袋，数了两遍那十二克朗。{subject}没回头，只听见母亲在楼上开窗又关窗。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "report-and-leave-key",
+              "text": "车站的钟敲了六下，{official}把名单折起来塞进公文包。{subject}站在最后一节车厢门口，看见{neighbor}举着那张房租收据朝他晃了晃，意思是一切都记下了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "seek-deferment",
+          "weight": 1,
+          "text": "先没去车站。{subject}在厂门口等到中午，厂主说位置留到月底但工钱不补；又去市政办事处排了一整天队，窗口只递出一张待查的纸条。回到家时{neighbor}正在门口劈引火柴，问{subject}到底走不走，{subject}把纸条折好放进内袋，说等通知。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "排队误工和买面包的开销"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "排了一天队只拿到待查纸条"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "邻居帮着留意消息"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "seek-deferment",
+              "text": "办事处走廊里挤了四十多人，空气里有湿大衣和墨水的味道。窗口后的职员把纸条推出来时头也没抬，{subject}看见纸上只印着“待查”两个字和一枚模糊的章。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "seek-deferment",
+              "text": "{neighbor}把劈好的引火柴码在门边，说厂里有人昨天已经被带走了。{subject}没接话，只把那张纸条对着灯看，纸边裁得不齐，印泥蹭在指头上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "leave-by-night-train",
+          "weight": 1,
+          "text": "报到前一晚，{subject}把行李卷成一个小包，从西站搭夜车去城外的亲戚家。临走前对{neighbor}说家里对外就讲已经收到通知、人按时走了。{neighbor}站在门灯下点了点头，又追出来塞了两个凉土豆，说路上别在站台上买热食。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居塞的凉土豆"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.1,
+              "reason": "邻居答应替家里遮掩"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "avoided_mobilization",
+              "add": true,
+              "reason": "搭夜车离开，没有报到"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leave-by-night-train",
+              "text": "夜车车厢里灯罩蒙着蓝布，一个卖票员来回查票。{subject}把脸转向窗玻璃，外面只有自己的影子和偶尔闪过的站台灯。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leave-by-night-train",
+              "text": "{neighbor}等火车声远了才关门，回屋把{subject}留下的地址抄在烟盒背面。第二天早上有人来问，他说人已经按通知走了，还指了指车站方向。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-history-war-homefront.rationing",
+      "title": "面包店门前的配给队",
+      "weight": 1,
+      "rate": 0.0324,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 70
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "war_mobilization",
+          "phases": [
+            "mobilizing",
+            "confrontation",
+            "repression"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70,
+          "occupation": "Bäcker"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "half-loaf-for-children",
+          "weight": 1,
+          "text": "天没亮{subject}就站在面包店拐角，前面已经排了二十多人。到下午{worker}从柜台后探出头说只剩半炉，每人半份。{subject}把领到的半块黑面包用布包好，自己掰了指甲大的一角尝了尝，剩下的全留给家里的孩子。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "领到的半份黑面包留给家里"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "排了一整天队只吃一点面包边"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "看着面包不够分"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "half-loaf-for-children",
+              "text": "面包店门框上挂着块木板，粉笔写着“今日三十份”。{worker}把柜台上的碎屑扫进纸袋，也递给后面的人。{subject}把布包贴在胸口，怕凉了也怕被人看见。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "half-loaf-for-children",
+              "text": "队伍里有人开始数前面的人头，数到三十就骂起来。{subject}没作声，只把配给卡捏在掌心，卡边磨得发白。半份面包到手时还带着烤炉的余温。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "buy-flour-from-corner",
+          "weight": 1,
+          "text": "排队到中午，{worker}挂出“售罄”的牌子。{neighbor}悄悄拉了拉{subject}的袖子，说街角有人有一袋面粉，不要收据。{subject}数出八克朗换回那袋面粉，比配给价贵了一倍多，袋子底下还沾着潮气，回家得先摊在炉边烘干。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "从街角买高价面粉"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "一袋面粉补充家里主食"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "邻居指了买粮的路子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "buy-flour-from-corner",
+              "text": "街角那人把面粉袋从大衣里挪出来，眼睛一直看着面包店方向。{subject}接过袋子时摸到袋口的绳结是新的，什么也没问，把八克朗折成小方块递过去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "buy-flour-from-corner",
+              "text": "回到院子里，{neighbor}帮{subject}把面粉倒进铁盆，挑出几粒发黑的麦子。两人都没提为什么不走正门，只听见楼上有人在敲配给卡，一下一下的。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "share-card-with-neighbor",
+          "weight": 1,
+          "text": "轮到{subject}时店里已经没货，{worker}说卡上可以登记明天优先。{neighbor}提出两家合用一张卡轮流排队，多领的那份记在账上，月底一起算。{subject}把卡交出去，在账本上画了一道，旁边写着“面包半份”。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "两家合卡多领的一份"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "合卡轮流排队，账目互认"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "share-card-with-neighbor",
+              "text": "账本是{neighbor}从烟盒背面裁的，铅笔头短得捏不住。{subject}划那道线时手有点抖，不是舍不得，是没想到一张卡还能这样用。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "share-card-with-neighbor",
+              "text": "{worker}看了看两张卡又看了看他们，没说话，把两份面包一起推出来。{neighbor}把多的一份用围裙兜好，低声说下回轮{subject}睡懒觉，自己来排。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-history-war-homefront.hospital",
+      "title": "医院走廊里的第三张床",
+      "weight": 0.9,
+      "rate": 0.0288,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 70
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "war_mobilization",
+          "phases": [
+            "mobilizing",
+            "confrontation",
+            "repression",
+            "institutionalizing"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "doctor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "stay-and-help-nurse",
+          "weight": 1,
+          "text": "没有床位，{subject}就在走廊里帮护士换床单、烧热水，一直忙到夜里查房。{doctor}路过时看了{subject}一眼，说绷带不够，让明天自己带旧布来。{neighbor}在楼梯口等，递来一块冷掉的土豆饼。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "在医院走廊帮工到深夜"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "在医院帮护士照料伤员"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$doctor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "respect": 0.1,
+              "reason": "医生记住了这个帮手"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stay-and-help-nurse",
+              "text": "热水桶从走廊这头提到那头，{subject}的指节被铁提手勒出红印。窗边第三张床上的人一直看着天花板，换床单时也没动。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stay-and-help-nurse",
+              "text": "{doctor}的白大褂下摆沾着泥点，说话时眼睛还在看手里的登记板。{neighbor}把土豆饼掰开，一半塞给{subject}，说楼梯口的穿堂风比外面还冷。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "take-wounded-home",
+          "weight": 1,
+          "text": "{doctor}写了一张换药的单子，说医院走廊不能再加人。{subject}和{neighbor}把伤员扶回自家屋子，腾出靠炉子近的那张床。单子上写着每天换两次纱布，{subject}自己去药房排队，细纱布一小卷要一克朗二十赫勒，先买了三天的量。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3.6,
+              "reason": "买纱布和药水"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "多一张嘴吃饭"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.2,
+              "obligation": 0.15,
+              "reason": "一起把伤员接回家照料"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "fatigue",
+              "add": true,
+              "reason": "夜里多次起来换药"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "take-wounded-home",
+              "text": "药房的队伍排到门外，玻璃柜台上摆着空纱布卷当样品。{subject}数出硬币时，柜台后的人把单子举到灯下看了两遍，才慢吞吞去取货。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "take-wounded-home",
+              "text": "伤员一路上没怎么出声，只在进院子时停了一下，问这里是不是九区。{neighbor}替他拉开楼道门，说楼梯窄，扶着墙走。炉子上的水壶一直没撤，换药时正好温手。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "send-to-private-clinic",
+          "weight": 1,
+          "text": "走廊里确实挤不下，{doctor}写了个地址，说城另一头有家私人诊所也许有床。{subject}和{neighbor}雇了辆手推车把人送过去，诊所先收五克朗押金，收据上的字是紫色的复写纸印。回来的路上手推车空着，轮子响得比去时还清楚。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "私人诊所的押金"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "没能把伤员留在近处"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "一起送伤员去诊所"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "send-to-private-clinic",
+              "text": "诊所门口有块铜牌，擦得比医院的门把手亮。{subject}把五克朗放在柜台上，收据从复写纸底下抽出来时还带着潮气。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "send-to-private-clinic",
+              "text": "手推车经过运河桥时风很大，{neighbor}把毯子角掖到伤员下巴底下。{subject}在后面推，车轮每转一圈就咯吱一声，像在数路还有多远。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-history-war-homefront.missing-relative",
+      "title": "失踪名单上的名字",
+      "weight": 0.9,
+      "rate": 0.0288,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 50
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.2
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "war_mobilization",
+          "phases": [
+            "mobilizing",
+            "confrontation",
+            "repression",
+            "institutionalizing"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 50
+        },
+        {
+          "key": "mother",
+          "kind": "parent",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 85
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "army"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "fill-forms-every-two-weeks",
+          "weight": 1,
+          "text": "{subject}把市政办事处和红十字会的表格逐项填好，附上最后一封家信的抄件，每两周去问一次。{official}翻着登记簿说还没有记录，让继续等。{mother}把回信按日期排在饼干盒里，盒盖已经合不上了。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "反复查问没有结果"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "trust": 0.1,
+              "obligation": 0.1,
+              "reason": "一起等消息"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "往返办事处的车钱和纸张"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fill-forms-every-two-weeks",
+              "text": "办事处里暖气不足，填表的人把手指缩进袖口。{subject}用印刷体把名字写了两遍，怕写连笔的人看错。{mother}在旁边把结婚证和军邮信按顺序摊在膝盖上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "fill-forms-every-two-weeks",
+              "text": "{official}从登记簿里抬头，只说了一句“暂无记录”，又低头盖下一个章。{mother}没问第二遍，把章印对着灯吹了吹，像怕它不干。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ask-army-acquaintance",
+          "weight": 1,
+          "text": "{subject}托军营里一个熟识的文书去查连队名册，等了三天，只带回一句“暂无记录”，没有正式通知。{mother}把这句话反复问了两遍，然后去厨房把炉子捅开，说那就再等等。{subject}把文书留下的烟盒纸压在桌角，上面写着一个连队番号。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$mother",
+              "amount": -0.05,
+              "reason": "收到含糊口信，没有正式消息"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "trust": 0.05,
+              "reason": "一起面对含糊答复"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ask-army-acquaintance",
+              "text": "文书是在军营后门的煤堆旁说的，帽子夹在胳膊底下，说话时一直看别处。{subject}把烟盒纸折好，没再追问，只记住那个连队番号。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "ask-army-acquaintance",
+              "text": "{mother}把炉钩放下，说没有正式通知就还有指望。{subject}看见她围裙口袋里露出半截信封，是上个月那封还没拆的第二封查询回函。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "search-red-cross-and-cemetery",
+          "weight": 1,
+          "text": "{subject}不再等回信，先去红十字会问战俘名单，又去城外的墓地抄新立的木牌。红十字会的职员翻了很久，说名单还没到；墓地的木牌上有些名字被雨水冲得模糊，{subject}蹲着一块一块对，膝盖上沾满了泥。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "在墓地蹲着抄木牌，受了凉"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "战俘名单和墓地都没有确切结果"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$mother",
+              "kind": "kin",
+              "trust": 0.1,
+              "reason": "替母亲跑完了所有能问的地方"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "search-red-cross-and-cemetery",
+              "text": "红十字会的走廊里贴着列车时刻表一样的名单，{subject}从上往下找了两遍。墓地新翻的土是深褐色的，木牌上的字用黑漆写，有几块已经翘了边。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "search-red-cross-and-cemetery",
+              "text": "从墓地回来时天快黑了，{subject}把抄了名字的纸摊在桌上，{mother}戴上眼镜一行行看，看到第三行停住，说不是这个。炉子上的水开了，谁也没去提。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-history-war-homefront.returning-veteran",
+      "title": "退伍军人回到院子里",
+      "weight": 0.9,
+      "rate": 0.0288,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 70
+        },
+        {
+          "kind": "legacy",
+          "legacyKind": "war_aftermath"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "accompany-pension-and-light-work",
+          "weight": 1,
+          "text": "{subject}陪{neighbor}去市政办事处递抚恤金申请，排了两个窗口，交了四十赫勒的印花税；又去厂里问有没有轻活，{employer}说正式位置满了，但仓库缺个记数的，一天两克朗，先干着。回来的路上{neighbor}一直用右手数台阶。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "抚恤金申请的印花税"
+            },
+            {
+              "type": "employment",
+              "personId": "$neighbor",
+              "organizationId": "$employer",
+              "occupation": "仓库记数",
+              "wage": 2,
+              "workplaceId": "$workplace",
+              "reason": "厂里给的临时轻活"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.2,
+              "obligation": 0.15,
+              "reason": "陪着跑办事处和厂里"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "accompany-pension-and-light-work",
+              "text": "办事处的长椅上，{neighbor}把退伍证明摊开又合上，左手少了两根手指的地方一直揣在大衣口袋里。{employer}在仓库门口拿粉笔在木箱上划了一道，说先记这些。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "accompany-pension-and-light-work",
+              "text": "印花税票贴在申请表的右上角，{subject}帮着按平。{neighbor}填日期时写得很慢，笔尖在纸上停了一下，像在算离开院子到底多少天了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "help-in-shop-daily",
+          "weight": 1,
+          "text": "{subject}让{neighbor}在自家铺子里帮忙，工钱按天算，每天一克朗五十赫勒，不签长期合同。{neighbor}头一天把货架从下到上擦了一遍，有顾客进门时他站得笔直，等人走了才想起该招呼。{subject}没说什么，把当天的工钱压在茶碟底下。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "付给退伍军人的日工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.15,
+              "obligation": 0.2,
+              "reason": "在铺子里给了一份日工"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "街坊看见铺子收留退伍军人"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "help-in-shop-daily",
+              "text": "茶碟是缺了口的，压工钱时{subject}把碟子往柜台里推了推。{neighbor}收工前把抹布洗了挂在门后，挂钩是原来就有的，他挂得很正。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "help-in-shop-daily",
+              "text": "有熟客问起{neighbor}的手，{subject}只说是在仓库里伤的。{neighbor}低头摆货，把罐头商标一律朝外，摆得比平时还整齐。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "listen-then-avoid",
+          "weight": 1,
+          "text": "{neighbor}坐在楼梯口讲前线的事，讲得很快，有时停下来看自己的手。{subject}听完了，之后尽量避开他喝过酒的时候。有一晚楼上传来砸东西的声音，{subject}在门后站了一会儿，到底没有出去。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "听了前线的事，夜里睡不踏实"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "fear": 0.15,
+              "reason": "有意避开退伍军人的酒后"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "listen-then-avoid",
+              "text": "楼梯口的灯只有十五瓦，{neighbor}说话时脸一半在暗处。他说到某个地名时重复了两遍，然后就不说了，盯着扶手上一道裂纹。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "listen-then-avoid",
+              "text": "楼上砸东西的声音响了一下就停了。{subject}把手放在门把上，听见隔壁有人开门又关门，楼道重新静下来，只剩煤油灯芯噼啪的细响。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-history-war-homefront.war-memorial",
+      "title": "纪念碑上的空白",
+      "weight": 0.9,
+      "rate": 0.0288,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 70
+        },
+        {
+          "kind": "legacy",
+          "legacyKind": "war_aftermath"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65,
+          "organizationKind": "state"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "add-missing-and-collect",
+          "weight": 1,
+          "text": "会上{subject}提出把失踪者和没有墓碑的人补进名单，{official}说需要家属证明。散会后{subject}和{neighbor}挨家收钱，每户二十到五十赫勒，刻字的{worker}说按字母算，一个字母三赫勒。收来的钱用烟盒纸记着，名字后面画勾。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "自己捐的刻字钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "为补刻失踪者名字奔走"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.1,
+              "reason": "一起挨家收刻字钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "add-missing-and-collect",
+              "text": "{official}把证明要求写在黑板上，粉笔断了一截。{worker}蹲在墙根量尺寸，说名字不能排太密，石头就那么宽。{neighbor}把烟盒纸上的勾数了两遍。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "add-missing-and-collect",
+              "text": "有一户只肯给十赫勒，说家里连黑面包都按半份领。{subject}没再劝，在名字后面画了个圈，{neighbor}看了也没说话，把烟盒纸折好。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "oppose-deserter-names",
+          "weight": 1,
+          "text": "{subject}在会上反对把逃兵的名字刻上去，说这是给前线死的人立的碑。散会后一个寡妇在门口拦住{subject}，手里攥着结婚证和军邮信，问她的男人算不算。{subject}让开路，没有回答，只听见{neighbor}在后面低声说算了。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "在纪念碑会上与寡妇起了争执"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "邻居不赞同他的态度"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被寡妇拦在门口问住"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "oppose-deserter-names",
+              "text": "会场在小学教室里，课桌拼成主席台，{official}坐在最边上记笔记。{subject}说完后有一阵没人接话，只听见有人把椅子往后挪。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "oppose-deserter-names",
+              "text": "寡妇把军邮信举到{subject}面前，信封上的地址被雨水晕开过。{neighbor}从后面轻轻拉了拉{subject}的袖子，说天晚了，先回去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "copy-letters-into-memorial-book",
+          "weight": 1,
+          "text": "{subject}不参加委员会，只帮{neighbor}把死者的军邮信抄进一本纪念册。纸张是{,subject}从铺子里裁的包装纸，抄一封给死者家属留一页。抄到第三封时{neighbor}停下来说这个人的名字写错了，两个人在灯下对了半天信封。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "买墨水和装订线"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "抄写信件时心情沉重"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "respect": 0.05,
+              "reason": "一起抄录军邮信"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "copy-letters-into-memorial-book",
+              "text": "包装纸裁得大小不一，{subject}用尺子压着边抄。{neighbor}把军邮信按日期排开，信封上的邮戳有的清楚有的模糊，像一排深浅不一的脚印。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "copy-letters-into-memorial-book",
+              "text": "墨水瓶快见底时{subject}把瓶身斜过来蘸。{neighbor}指着一封信说这个人的名字写错了，两个人凑到灯下对了半天，最后在页边补了一行小字。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

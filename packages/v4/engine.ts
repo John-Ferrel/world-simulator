@@ -3095,29 +3095,39 @@ function chooseContentTask(
   person: Person,
   date: WorldDate,
   rng: () => number,
+  minimumScore = 0,
 ): ContentTaskSelection | undefined {
   const tasks = context.tasksByStage.get(stageForAge(ageAt(person, date))) ?? [];
   if (tasks.length === 0) return undefined;
+  const floor = Math.max(0.1, minimumScore);
   const ranked: { definition: TaskDefinition; weight: number; score: number }[] = [];
   for (const definition of tasks) {
     if (!sceneEligible(context, definition, person, date)) continue;
     const score = taskUtility(context.world, person, definition, date);
-    if (score <= 0.1) continue;
+    if (score <= floor) continue;
     ranked.push({ definition, weight: score, score });
   }
   if (ranked.length === 0) return undefined;
-  const picked = weightedPick(ranked, rng);
-  if (!picked) return undefined;
-  const cast = castSceneRoles(context, picked.definition, person, date);
-  if (cast.missing.length > 0) return undefined;
-  const selection = selectOutcome(context, picked.definition, person, cast.roles, date);
-  if (!selection) return undefined;
-  return {
-    definition: picked.definition,
-    roles: cast.roles,
-    selection,
-    score: picked.score,
-  };
+  // Casting every task is the dominant cost in a large pool. Draw a weighted
+  // candidate first and retry a bounded number of alternatives only when the
+  // drawn task cannot actually be cast or has no eligible outcome.
+  const attempts = Math.min(8, ranked.length);
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const picked = weightedPick(ranked, rng);
+    if (!picked) return undefined;
+    ranked.splice(ranked.indexOf(picked), 1);
+    const cast = castSceneRoles(context, picked.definition, person, date);
+    if (cast.missing.length > 0) continue;
+    const selection = selectOutcome(context, picked.definition, person, cast.roles, date);
+    if (!selection) continue;
+    return {
+      definition: picked.definition,
+      roles: cast.roles,
+      selection,
+      score: picked.score,
+    };
+  }
+  return undefined;
 }
 
 function runAgencyYear(context: EngineContext, date: WorldDate, ordinaryLimit: number): void {
@@ -3129,15 +3139,43 @@ function runAgencyYear(context: EngineContext, date: WorldDate, ordinaryLimit: n
     refreshAgencyGoal(world, person, date);
     const rng = seededRng(world.seed, 'agency', personId, date.year, date.month);
     const plan = planAgencyAction(world, personId, date, rng);
+    // A task should only displace the ordinary agency plan when it is at least
+    // roughly as attractive. Use a dedicated gate draw so adding low-utility
+    // content cannot suppress an already available high-utility task.
+    const gateRng = seededRng(world.seed, 'task-gate', personId, date.year, date.month);
+    const taskFloor = plan ? plan.score * (1.0 + gateRng() * 0.35) : 0;
     const content = chooseContentTask(
       context,
       world.persons[personId]!,
       date,
       seededRng(world.seed, 'task-choice', personId, date.year, date.month),
+      taskFloor,
     );
-    const chooseContent =
-      content !== undefined &&
-      (plan === undefined || content.score > plan.score * (0.82 + rng() * 0.36));
+    // A content task is a personal initiative, not an institutional action.
+    // Organization leaders keep their annual institutional plan when one is
+    // available; otherwise a large task pool silently replaces the meetings,
+    // recruitment and process work that bottom-up history depends on.
+    const planKind = plan?.kind ?? '';
+    const institutionalPlan = [
+      'organize_meeting',
+      'found_process',
+      'recruit_members',
+      'publish',
+      'support_process',
+      'oppose_process',
+      'attend_meeting',
+    ].includes(planKind);
+    const leadsOrganization =
+      person.roles.includes('leader') ||
+      Object.values(world.organizations).some(
+        (organization) =>
+          organization.status === 'active' &&
+          organization.memberIds.includes(personId) &&
+          organization.positions.some(
+            (positionId) => world.positions[positionId]?.holderId === personId,
+          ),
+      );
+    const chooseContent = content !== undefined && !(institutionalPlan && leadsOrganization);
     const subject = world.persons[personId];
     if (!subject || subject.died) continue;
     if (chooseContent && content) {

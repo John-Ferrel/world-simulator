@@ -1,0 +1,1006 @@
+{
+  "id": "p9-social-tenement-neighbors",
+  "title": "公共厨房、晾衣绳与楼梯间的话",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 80
+  },
+  "tags": [
+    "housing",
+    "neighbors",
+    "tenement",
+    "daily",
+    "money",
+    "reputation"
+  ],
+  "baseRate": 0.24,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 80
+    },
+    {
+      "kind": "placeKind",
+      "in": [
+        "home"
+      ]
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-social-tenement-neighbors.stove-and-line",
+      "title": "星期一早晨的炉子与晾衣绳",
+      "weight": 1,
+      "rate": 0.0432,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        },
+        {
+          "kind": "householdSize",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighborB",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "stove-and-line.first-come-order",
+          "weight": 1,
+          "text": "{subject}把四只洗衣盆按到厨房的先后排成一列，用粉笔在门后写下各家的时辰：六点到七点半、七点半到九点。{neighbor}起初嘟囔，看到自家名字排在第二格，也就把水壶提了回去。晾衣绳按同样次序分两段，谁家的床单先上谁先占。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "把厨房和晾衣绳的次序说清，早晨不再堵在门口"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "obligation": 0.03,
+              "reason": "共同定下用炉和晾衣的次序"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stove-and-line.first-come-order",
+              "text": "粉笔字写得歪，{neighborB}凑近念了一遍，说自家的名字写小了一号。{subject}拿抹布擦掉重写，阁楼上的绳子这一回没人再偷偷挪动。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stove-and-line.first-come-order",
+              "text": "楼梯间的煤气味混着肥皂水味。{subject}把盆沿擦干，顺手把三楼的湿床单往回折了一掌宽，给后面的人让出一段绳子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stove-and-line.move-to-line-end",
+          "weight": 1,
+          "text": "{subject}把自己泡着的衣服端到绳子最末一段，把靠近炉子的位置让给{neighbor}，条件是对方看着火，别让水烧干。{neighbor}点头，往炉膛里添了一块煤，说中午以前一定把炉子空出来。两家的盆就挨着放在窗下。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "obligation": 0.05,
+              "reason": "让出炉位换人看火"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "早晨的争抢化成一句说定的托付"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stove-and-line.move-to-line-end",
+              "text": "绳尾风大，衣服干得慢些。{subject}用木夹把袖口夹紧，回头看见{neighbor}正把自家水壶从炉上提开，腾出炉圈。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stove-and-line.move-to-line-end",
+              "text": "炉门一开，热气扑到脸上。{neighbor}说十一点前不会走开，{subject}便把最后一只盆也搬了过去，绳子上的水珠滴在石板地上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stove-and-line.sheet-quarrel",
+          "weight": 1,
+          "text": "{subject}发现自己搭在栏杆上的床单被人挪到了绳尾，角上沾了煤灰，一时火起，在楼梯间拦住{neighbor}问是谁动的。{neighbor}说是{neighborB}嫌滴水，两人越说越响，最后各自回屋摔上门，炉子空着，谁也没再去烧水。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "为一条被挪动的床单吵了一场"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.07,
+              "reason": "床单被挪动引发的争吵"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stove-and-line.sheet-quarrel",
+              "text": "床单一角的黑印怎么也搓不掉。{subject}把它重新搭好，听见隔壁门闩落下，楼道里只剩下滴水声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stove-and-line.sheet-quarrel",
+              "text": "{neighborB}站在半层楼梯上没作声，手里拎着空桶。{subject}回到厨房，炉膛已经凉了，早晨那点热水也白烧了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-social-tenement-neighbors.rent-note",
+      "title": "看门人送来的涨租纸条",
+      "weight": 1,
+      "rate": 0.0432,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        },
+        {
+          "kind": "cash",
+          "max": 50
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 80
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "rent-note.pay-increase",
+          "weight": 1,
+          "text": "{subject}把纸条压在糖罐下面，算了半天：两克朗正好是四天的面包钱。月底还是把涨后的房租数出来交给看门人，铜币在桌上摞成两小堆。那一周的晚饭改成面包和稀汤，猪油省着抹。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "按涨租纸条多付的两克朗"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "从伙食里挤出涨租的钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-note.pay-increase",
+              "text": "看门人点数时手指沾了唾沫。{subject}看着最后一枚赫勒被推过去，把收条折好塞进围裙口袋，楼道的玻璃窗果然换过了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-note.pay-increase",
+              "text": "糖罐里只剩下一点碎糖。{subject}把纸条留在罐底，提醒自己下个月还要再数一遍，厨房的汤锅比往常清。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rent-note.together-to-office",
+          "weight": 1,
+          "text": "{subject}和{neighbor}叫上楼下两家，一同去房东的事务所。{official}隔着柜台听他们说完，翻出账簿，答应先补上楼梯间的窗闩，涨租从下下个月起算。四人出门时挤在台阶上，谁也没先说话，{neighbor}把帽子往后一推，说总算没白跑。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.09,
+              "obligation": 0.04,
+              "reason": "一同去事务所交涉涨租"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "几家联手把涨租推迟了一个月"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-note.together-to-office",
+              "text": "事务所的墨水味很重。{official}把印章在印泥上按了两下，说窗闩这周就派人来装，{subject}盯着那张写满名字的纸，直到它被夹进账簿。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-note.together-to-office",
+              "text": "回程经过面包店，{neighbor}买了四个小面包分给同去的人。{subject}边走边吃，纸袋上的油印沾到手指。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rent-note.look-for-cheaper-bed",
+          "weight": 1,
+          "text": "{subject}没去事务所，只在洗衣房打听更便宜的床位。有人提到利奥波德城另一条街上有一间合住的屋子，一个月少一克朗半，只是要跟三个人共用一间。{subject}去看了两趟，量了窗子和床的位置，回来把箱子底下的旧报纸铺开算账。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "looking_for_cheaper_housing",
+              "add": true,
+              "reason": "开始打听更便宜的床位"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "向同楼邻居打听租房消息"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rent-note.look-for-cheaper-bed",
+              "text": "那间屋子朝后院，墙上渗着潮气。{subject}蹲下摸了摸床板，回来时在楼梯间同{neighbor}说了一声，对方只问新住处的看门人凶不凶。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rent-note.look-for-cheaper-bed",
+              "text": "旧报纸上写满了数。{subject}把省下的一克朗半在纸上圈了两圈，又把行李清单添了一项，窗外的晾衣绳还搭着别人的床单。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-social-tenement-neighbors.gramophone-wall",
+      "title": "院子上空的留声机",
+      "weight": 0.9,
+      "rate": 0.0384,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "gramophone-wall.knock-and-bargain",
+          "weight": 1,
+          "text": "{subject}上楼敲了{neighbor}的门，说唱针刮在墙上，夜班的人睡不安稳。{neighbor}把留声机从墙边挪到窗下，垫了一块毛毡，答应十点以后不再放。下楼时进行曲还在响，但闷了些，{subject}能听见自家水壶的响声了。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "商量留声机挪位和静音时辰"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "夜里终于能早些入睡"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gramophone-wall.knock-and-bargain",
+              "text": "门开时唱片还在转。{neighbor}弯腰把机器挪开，毛毡边角翘起来，{subject}伸手按平，顺手把唱针抬了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gramophone-wall.knock-and-bargain",
+              "text": "楼梯间的灯只剩半截芯。{subject}一边下楼一边听，进行曲隔着窗子传出来，像蒙了一层布。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gramophone-wall.caretaker-notice",
+          "weight": 1,
+          "text": "{subject}去找看门人，说院子里四面墙，声音绕不出去。第二天楼梯间的木板上贴了一张纸：晚上十点后请勿放留声机，鞋匠铺也请收锤。纸条没有落款，只有房东事务所的戳。{neighbor}路过时看了很久，把留声机的盖子合上了。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "楼梯间贴出了作息告示"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "请看门人出面，而不是当面商量"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gramophone-wall.caretaker-notice",
+              "text": "纸上写着“请勿”，字迹规整。{subject}看见{neighbor}在板前停下，用手抹了一下纸角，又把手放回口袋。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gramophone-wall.caretaker-notice",
+              "text": "鞋匠第二天果然收了锤，院子里安静得能听见鸽子落在窗台。可{subject}再上楼时，{neighbor}只点了一下头。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gramophone-wall.cotton-in-ears",
+          "weight": 1,
+          "text": "{subject}忍到天亮，第二天去药房买了五分钱的棉花，撕成两小团塞在耳里。夜里的进行曲还剩一点闷响，翻个身也就过去了。此后在楼梯间遇见{neighbor}只是点头，再没有进过那家的门。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.05,
+              "reason": "在药房买棉花塞耳朵"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "不开口交涉，只是疏远"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gramophone-wall.cotton-in-ears",
+              "text": "棉花塞进去，自己的呼吸声一下变大了。{subject}把剩下的一小卷放进抽屉，和针线摆在一起。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gramophone-wall.cotton-in-ears",
+              "text": "第二天清早，院子的石板路上落着唱片封套的碎纸。{subject}扫自己门前时把它们拢到墙角，没多看一眼。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-social-tenement-neighbors.flour-loan",
+      "title": "借出去的一袋面粉",
+      "weight": 0.9,
+      "rate": 0.0384,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        },
+        {
+          "kind": "cash",
+          "max": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "flour-loan.full-bag",
+          "weight": 1,
+          "text": "{subject}把一整袋面粉倒进{neighbor}的空口袋，袋口用麻绳扎了两道，说等她男人发了薪再还。{neighbor}连声道谢，把写着借煤日期的小纸片折好放回围裙。柜子里只剩一袋面粉，{subject}当晚煮汤时多加了一勺水。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "借出的一整袋面粉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.06,
+              "reason": "借出面粉救急"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "flour-loan.full-bag",
+              "text": "面粉扬起一层白雾。{neighbor}把口袋抱在胸前，出门前回头说发薪那天一准先送过来。{subject}点点头，把柜门关严。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "flour-loan.full-bag",
+              "text": "麻绳打得紧，{neighbor}试了试袋口的结实程度。{subject}把空面袋抖干净，挂在厨房钉子上，想着下个月得少做两回面疙瘩。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "flour-loan.half-bag-with-note",
+          "weight": 1,
+          "text": "{subject}只舀出半袋，说自家也不宽裕，要{neighbor}把上次的煤钱一并记在纸上。{neighbor}接过纸片，当着面把日期和数目重写一遍，两人各留一半。面粉少了，账却清楚了，{subject}把纸片夹进账簿样的旧本子。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "借出的半袋面粉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "obligation": 0.09,
+              "reason": "借半袋并立下字据"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "flour-loan.half-bag-with-note",
+              "text": "铅笔头在纸片上蹭了两下才出字。{neighbor}念了一遍数目，问要不要画个押。{subject}说不用，把旧本子的夹页掀开，把纸片插平。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "flour-loan.half-bag-with-note",
+              "text": "口袋只装了一半，{neighbor}把袋底折起来打了个结。{subject}把剩下的面粉推回柜子深处，顺手把半罐猪油的盖子盖紧。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "flour-loan.two-slices-of-bread",
+          "weight": 1,
+          "text": "{subject}说自家也快见底了，不能再借面粉，临关门前往{neighbor}手里塞了两块面包，说先给孩子垫一垫。{neighbor}攥着面包站了一会儿，说了声谢谢就走了，楼梯上传来脚步和纸袋的磨蹭声。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "塞给邻居的两块面包"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "拒绝了借面粉，心里不安"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "flour-loan.two-slices-of-bread",
+              "text": "面包还热着。{neighbor}用纸袋包好，衣袖上沾了一点面屑，下楼时脚步很快。{subject}关上门，把柜子里那两袋面粉数了一遍。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "flour-loan.two-slices-of-bread",
+              "text": "门缝里的光窄下去。{subject}听见隔壁的孩子在问什么，回答的声音被门板挡住了，只剩两个模糊的字。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-social-tenement-neighbors.evicted-neighbours",
+      "title": "三楼那家的箱子搬到了走廊",
+      "weight": 1,
+      "rate": 0.0432,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        },
+        {
+          "kind": "cash",
+          "max": 60
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "evicted-neighbours.store-boxes",
+          "weight": 1,
+          "text": "{subject}让{neighbor}把两只箱子和床架先搬进自家厨房，腾出一块干地方，煤箱挪到灶边。走廊空了，孩子能坐在台阶上吃面包。{subject}给他们倒了一壶热水，说今晚先这么过，明早再想办法。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.12,
+              "obligation": 0.07,
+              "reason": "收留邻居的箱子和床架"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "分给被收房一家的晚饭"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "evicted-neighbours.store-boxes",
+              "text": "床架横在厨房里，走路要侧身。{neighbor}的孩子捧着杯子，把热气吹开又吹开，{subject}蹲下来替他把鞋带系上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "evicted-neighbours.store-boxes",
+              "text": "煤箱放在灶边，谁烧水都能顺手取。{subject}把箱盖上的灰擦了擦，说放几天不妨事，明早还要陪着去问一问。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "evicted-neighbours.district-office-queue",
+          "weight": 1,
+          "text": "{subject}陪{neighbor}去区公所排队问救济和临时床位，从午后站到天擦黑。{official}翻了名册，给了一张可换两晚铺位的纸。回来时{subject}把自己的外套披在孩子身上，说这一趟到底没白跑。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.06,
+              "reason": "陪着排队问救济"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "排队办成了一张临时铺位的凭证"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "evicted-neighbours.district-office-queue",
+              "text": "区公所的长凳坐满了人。{official}的笔尖在名册上划了一道，把纸推过来时没有抬眼。{subject}把纸折了三折，塞进{neighbor}手里。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "evicted-neighbours.district-office-queue",
+              "text": "回程的街上路灯刚亮。{neighbor}抱着睡着的孩子，{subject}替她拎着那只空煤箱，走半条街换一次手。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "evicted-neighbours.only-hot-water",
+          "weight": 1,
+          "text": "{subject}没有开门，只从门缝递出一壶热水，说自家也挤不下。走廊里的箱子到半夜还堆着，孩子的哭声隔着门板一阵一阵。{subject}坐在桌边没有点灯，第二天在楼梯间遇见时避开了目光。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "没有收留邻居，夜里听着走廊的动静"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "只递出一壶热水"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "evicted-neighbours.only-hot-water",
+              "text": "壶里是刚烧开的水，倒进罐子时热气从门缝扑出去。{subject}把门合上，听见罐子放在地上轻轻碰了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "evicted-neighbours.only-hot-water",
+              "text": "走廊的脚步声一直没停。{subject}把椅子挪到门边又挪回来，最后干脆坐到厨房里，借着炉火的一点亮等天亮。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-social-tenement-neighbors.stairwell-rumor",
+      "title": "楼梯间传开的那句话",
+      "weight": 0.8,
+      "rate": 0.0336,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        },
+        {
+          "key": "neighborB",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "stairwell-rumor.ask-straight",
+          "weight": 1,
+          "text": "{subject}在楼梯间拦住{neighbor}，问那句话是从哪儿听来的，又趁送活的人上门时当面看清是谁。原来是对面作坊的裁缝来取改好的裤子。{neighbor}听完把话咽回去，第二天洗衣房里没人再提。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "当面问清来客身份，止住闲话"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "当众追问传话来源"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stairwell-rumor.ask-straight",
+              "text": "裁缝腋下夹着一卷裤子，站在门口愣了一下。{subject}侧身让他进门台阶，回头看着{neighbor}，没再说话，楼道里静得能听见水桶晃动。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stairwell-rumor.ask-straight",
+              "text": "洗衣房的水汽还没散。{neighbor}搓着衣角，说只是听看门人的妻子讲的，{subject}把话头收住，拿起自己的盆走了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stairwell-rumor.repeat-at-bakery",
+          "weight": 1,
+          "text": "{subject}在面包店排队时把听来的话又讲了一遍，添了“夜里常有男人上楼”一句。到傍晚，整栋楼都在说二楼女房客的事，连看门人都在门口站着看。二楼的门一直关着，{subject}回家时才觉得那句话说得太响。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "在面包店传闲话，被同楼人议论"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighborB",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "闲话传开伤了邻里信任"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stairwell-rumor.repeat-at-bakery",
+              "text": "面包店的热气里，几个女人交换了眼色。{subject}要了两个小面包，纸袋上的油印在手心印出痕迹，出门时已经有人往二楼方向看。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stairwell-rumor.repeat-at-bakery",
+              "text": "傍晚的楼梯间比平时热闹。{subject}上楼时听见有人在笑，笑声在栏杆之间折回来，门缝里的光一暗，外面静了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stairwell-rumor.warn-the-latch",
+          "weight": 1,
+          "text": "{subject}没传话，只在二楼门口站了一会儿，提醒{neighborB}夜里把门闩好，说楼梯间有人爱嚼舌头。{neighborB}点点头，把门闩推过去，发出很轻的一声。此后送活的人还是照来，闲话却渐渐没人接。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighborB",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "私下提醒女房客把门闩好"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "没有传话，心里踏实"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stairwell-rumor.warn-the-latch",
+              "text": "门开了一条缝，{neighborB}手里还捏着针。{subject}把话说完就下楼，身后的门闩响了一下，声音很干脆。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stairwell-rumor.warn-the-latch",
+              "text": "走廊里堆着几卷待取的布料。{subject}侧身走过，把话压低，只说了两句，{neighborB}把布料挪到门内，说了声多谢。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

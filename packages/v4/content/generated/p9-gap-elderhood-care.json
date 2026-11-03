@@ -1,0 +1,1075 @@
+{
+  "id": "p9-gap-elderhood-care",
+  "title": "老了以后仍能主动做的事",
+  "stage": "elderhood",
+  "ageWindow": {
+    "min": 60,
+    "max": 85
+  },
+  "tags": [
+    "elderhood",
+    "care",
+    "pension",
+    "housing",
+    "task"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 60,
+      "max": 85
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "daily",
+    "goals": [
+      "rest",
+      "family"
+    ],
+    "needs": [
+      "cash",
+      "health",
+      "belonging"
+    ],
+    "baseUtility": 1.1,
+    "risk": 0.1,
+    "skills": [
+      "social"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p9-gap-elderhood-care.pension-appeal",
+      "title": "去养老金局问一次补发",
+      "weight": 1,
+      "rate": 0.085,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "pension-appeal-partial",
+          "weight": 1,
+          "text": "{subject}把旧工资册摊在柜台上，{official}翻到被划掉的那页，说缺一份厂里证明，答应先补三个月的差额，剩下的要她下月带证明再来。补发的九克朗扣了四十赫勒手续费，她数了两遍才放进布袋。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 9,
+              "reason": "补发部分养老金，扣除手续费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "拿到部分补发，但还有事没办完"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pension-appeal-partial",
+              "text": "楼梯没有扶手，{subject}扶着墙一步步上到二楼，窗口后面的{official}把工资册举到灯下看了很久，用指甲刮了刮被划掉的那行字。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pension-appeal-partial",
+              "text": "她数钱时手指有些抖，九克朗加几枚赫勒，在掌心压出一点分量。{official}已经在叫下一个人，她赶紧把布袋口系紧，退到走廊里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pension-appeal-two-trips",
+          "weight": 1,
+          "text": "第一次去，窗口说管档案的人不在，让她改天再来。{subject}隔了四天又跑一趟，这回{neighbor}陪她，{official}才收下身份纸和邻居写的证明，说工龄要核，补发的钱月底汇到。她来回走了两趟，鞋底磨薄了一层。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "两趟往返的车钱与手续费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "邻居陪她跑了一趟养老金局"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pension-appeal-two-trips",
+              "text": "那天雨夹雪，{subject}在局门口等了半个钟头才开门，管档案的桌子空着，{official}只抬了抬下巴说改天。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pension-appeal-two-trips",
+              "text": "第二次{neighbor}搀着她上楼梯，{official}把那张邻居写的证明翻来覆去看了两遍，才在册子上记下她的名字和门牌号。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pension-appeal-refused",
+          "weight": 1,
+          "text": "{official}说那一页工龄没有厂里盖章，无法证明，补发办不了。{subject}把工资册收回布袋，下楼时在拐角歇了一回。回家后{neighbor}帮她把册子又翻了一遍，在一张旧工资条背面找到铅笔写的年份，两人对着灯看了半天。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "补发申请被拒，工龄无法证明"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "邻居帮她翻找旧工资条"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pension-appeal-refused",
+              "text": "窗口的木板啪地合上，{subject}还站着没动，布袋里的工资册硌着肋骨。她下楼时扶着冰冷的墙，每一级都踩得很实。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pension-appeal-refused",
+              "text": "灯下{neighbor}把工资条举到近前，{subject}眯着眼辨认那行铅笔字，手指顺着纸边摸过去，摸到一道折痕。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "survival",
+          "rest"
+        ],
+        "needs": [
+          "cash",
+          "safety"
+        ],
+        "baseUtility": 1.15,
+        "risk": 0.1,
+        "skills": [
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p9-gap-elderhood-care.ask-neighbor-repair",
+      "title": "请邻居帮忙修一次炉子",
+      "weight": 1,
+      "rate": 0.08,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        },
+        {
+          "kind": "householdSize",
+          "min": 1,
+          "max": 4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "stove-repaired-free",
+          "weight": 1,
+          "text": "楼下在铁工厂干活的{neighbor}傍晚拎着工具上来，蹲在炉前敲敲打打，换了一截铁皮烟道，把炉门铰链紧好。他要走时，{subject}把那锅汤热了端给他，他坐在门槛上喝完，没收一个赫勒。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "炉子修好，不再倒烟呛咳"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "把一锅汤送给帮忙的邻居"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stove-repaired-free",
+              "text": "{neighbor}的袖口沾着铁屑，他先用手指试了试炉门缝，再从工具袋里摸出一把扳手，一下一下拧紧。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stove-repaired-free",
+              "text": "汤是白菜和一点熏肉皮熬的，{subject}看着他把汤喝净，才想起自己后半夜终于能睡个整觉。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stove-needs-part",
+          "weight": 1,
+          "text": "{neighbor}看过炉门，说铰链座子裂了，得换零件，今天先别生火。他第二天从厂里带了一小片铁板回来，锉成座子装上，收了她二十赫勒当材料钱。{subject}当晚把炉子生起来，烟是直的。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -20,
+              "reason": "付给邻居的零件材料钱"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "bronchitis",
+              "add": false,
+              "reason": "炉子修好后煤烟不再倒灌"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stove-needs-part",
+              "text": "他用手背碰了碰炉门，说这铁皮薄了，关不严。{subject}给他递了杯热水，他喝了一口就下楼去取工具。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stove-needs-part",
+              "text": "二十赫勒是{subject}从手绢里数出来的，{neighbor}接过去揣进兜里，又蹲下把螺丝挨个紧了一遍。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stove-temp-fix",
+          "weight": 1,
+          "text": "{neighbor}那几天厂里加班，抽不出空，只教{subject}用湿报纸堵住炉门缝，再用一块砖把烟道口压小。烟确实小了些，但半夜还是呛醒了一回。她没再开口请他，把砖块挪了挪，凑合过这个冬天。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "炉子未修好，仍受煤烟刺激"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "求人未成，只能自己凑合"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stove-temp-fix",
+              "text": "湿报纸贴上去时嗤地冒了一股白汽，{subject}退后看了一会儿，烟果然从砖缝里绕出去了些。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stove-temp-fix",
+              "text": "{neighbor}说等这批活干完就来，{subject}点点头，没再提那锅汤。夜里她起来两回，把压烟道的砖挪来挪去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "rest",
+          "care"
+        ],
+        "needs": [
+          "safety",
+          "health"
+        ],
+        "baseUtility": 1.15,
+        "risk": 0.1,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-gap-elderhood-care.take-lodger",
+      "title": "把空房间租给一个安静的人",
+      "weight": 1,
+      "rate": 0.085,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        },
+        {
+          "kind": "householdSize",
+          "min": 1,
+          "max": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 35
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "lodger-settled",
+          "weight": 1,
+          "text": "{neighbor}带女工{worker}来看房，屋子朝院子，有张铁床和一只洗脸架。她摸了摸窗台，说干净，当场定下，每月六克朗，发薪日先交。{subject}看着她在租约上按下手印，心里松了半口气。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "收到第一个月房租"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "女工租下空房间"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lodger-settled",
+              "text": "{worker}弯腰看了看床脚，又推了推窗户，铰链响了一声。{neighbor}在门口说这屋子冬天有点冷但干净，她听了就没再还价。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "lodger-settled",
+              "text": "租约是{subject}从抽屉里翻出来的旧纸，背面还有字。{worker}用蘸了墨水的手指按下去，留下一个圆圆的印。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lodger-refused-cold",
+          "weight": 1,
+          "text": "{worker}看过房间，伸手在墙上贴了一会儿，说太冷，冬天怕是熬不住，便走了。{subject}追到楼梯口说租金可以降到五克朗，对方还是摇头。她回来把窗户缝用纸条塞了塞，没告诉{neighbor}。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "房间没租出去，有些泄气"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "买纸条塞窗缝的小开销"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lodger-refused-cold",
+              "text": "{worker}把手掌贴在墙上，很快又收回去，说这墙渗寒气。{subject}说铺厚点就行，对方已经转身去看楼梯了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "lodger-refused-cold",
+              "text": "楼梯口的光很暗，{subject}压低声说五克朗也行，{worker}摇了摇头，围巾在脖子上绕了一圈就下楼去了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lodger-trial",
+          "weight": 1,
+          "text": "{neighbor}替{worker}说了几句好话，说她安静、按时上工。{subject}便同意先试住一个月，租金五克朗，水电另算。头一个星期，女工每晚回来都把炉子边的灰扫干净，{subject}看在眼里，没说什么。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 5,
+              "reason": "试住一个月的租金"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "reason": "邻居为女工担保"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lodger-trial",
+              "text": "{neighbor}站在门口说这姑娘在洗衣房干活，不闹腾。{subject}看了看{worker}的鞋，鞋底是补过的，便点了头。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "lodger-trial",
+              "text": "第一个星期，炉子边的灰每天都是干净的，{subject}有时故意早起来看，看见扫帚靠在墙角。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "survival",
+          "belonging"
+        ],
+        "needs": [
+          "cash",
+          "belonging"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.1,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-gap-elderhood-care.clinic-recheck",
+      "title": "去医院复查一次",
+      "weight": 1,
+      "rate": 0.085,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "doctor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "clinic-cheaper-medicine",
+          "weight": 1,
+          "text": "{doctor}听了听她的胸口，把旧处方翻过来，换了一种便宜些的药粉，说少吃盐，别喝浓咖啡。{subject}把嘱咐记在药盒背面，用铅笔头，字写得歪，但看得清。药钱比原来省了三十赫勒。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "挂号与换药的花费"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "复查后换了合适的药"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "clinic-cheaper-medicine",
+              "text": "{doctor}把听诊器贴上去时，{subject}屏住气，听见自己心跳在耳朵里响。他挪开听筒，在处方纸上写了几行字。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "clinic-cheaper-medicine",
+              "text": "药盒背面被她写得密密麻麻，铅笔头钝了，她就在裤子上蹭一蹭再写。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "clinic-no-ticket",
+          "weight": 1,
+          "text": "{subject}天没亮就出门，到医院时队伍已经排到街角。等到中午，号发完了。她在医院门口的石阶上坐了很久，胸口那阵闷劲儿退下去才起身，布袋里的药盒一次没拿出来。回家时买了一个面包，花了四赫勒。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "排了半天没挂上号"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "往返与一个面包的花费"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "clinic-no-ticket",
+              "text": "队伍前面有人靠着墙打盹，{subject}把手缩进袖口里，脚下的石板又冷又硬，她换了好几回坐姿。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "clinic-no-ticket",
+              "text": "号发完时窗口挂出一块小牌，{subject}站起来读了半天，才明白今天没指望了。石阶上还留着别人坐过的潮气。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "clinic-neighbor-recheck",
+          "weight": 1,
+          "text": "{neighbor}陪她坐电车去医院，替她在队伍里站着。{doctor}看了旧处方，说药量先减一半，下个月再来一趟。{subject}问减一半会不会不管用，{doctor}说先看看，别自己加。回来的电车上她一直捏着那张减量的处方。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "医生调整了药量"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.09,
+              "reason": "邻居陪她去医院并替她排队"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "clinic-neighbor-recheck",
+              "text": "电车里挤，{neighbor}用胳膊替她挡着人，{subject}把布袋抱在胸前。医院走廊的石灰水味一直跟到门口。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "clinic-neighbor-recheck",
+              "text": "{doctor}把药量写在纸上，画了一道横线表示减半。{subject}凑近看了两遍，才把纸折好收进布袋内层。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "health",
+        "goals": [
+          "survival",
+          "rest"
+        ],
+        "needs": [
+          "health",
+          "safety"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.15,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-gap-elderhood-care.join-aid",
+      "title": "加入教会的互助会",
+      "weight": 1,
+      "rate": 0.08,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "church",
+          "kind": "organization",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 90,
+          "organizationKind": "church"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 85
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "aid-joined",
+          "weight": 1,
+          "text": "{subject}在圣坛边的长椅上等{official}写完册子，交了第一季的会费一克朗二十赫勒。她的名字被写进那本厚册，旁边注着门牌号。回家走的是巷子，风从教堂门口灌过来，她把围巾掖紧了，脚步比来时稳。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "缴纳互助会第一季会费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "名字进了互助会册子，心里踏实"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "aid-joined",
+              "text": "{official}的笔尖蘸了墨水，在册子上落下她的名字，又抬头问门牌号。{subject}报了两遍，怕他写错。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "aid-joined",
+              "text": "会费是从手绢里一张张数出来的，一克朗加两枚十赫勒。{official}数完，把收据推过来，纸还带着墨味。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "aid-only-half-year",
+          "weight": 1,
+          "text": "会费比她算的贵，一季要一克朗四十赫勒。{subject}只交了半年的，说剩下的看年底。{official}在册子上注了一笔，提醒她缺的月份要补。她把收据折好，回家路上算了算，这个月得少买两次肉。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2.8,
+              "reason": "缴纳半年会费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "会费比预想贵，有些心疼"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "aid-only-half-year",
+              "text": "{official}报了价，{subject}的手指在钱包里停了一下。她把钱数出来，又数了一遍，才推到台面上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "aid-only-half-year",
+              "text": "她在肉铺门口站了一会儿，看了看挂着的香肠，最后只买了半磅猪油。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "aid-neighbor-paid",
+          "weight": 1,
+          "text": "会费凑不齐，{subject}在教堂门口犹豫半晌。住楼上的{neighbor}看见了，替她垫了头一个月四十赫勒，说等她宽裕了再还。{subject}在册子上签了名，回家把欠的钱记在日历背面，用红铅笔圈起来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.4,
+              "reason": "邻居替她垫付的会费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.1,
+              "reason": "邻居替她垫付互助会会费"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "aid-neighbor-paid",
+              "text": "{neighbor}从自己钱包里摸出硬币，往台面上一放，说先记她名下。{subject}想说不用，嘴唇动了动，到底没说出来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "aid-neighbor-paid",
+              "text": "日历背面她用红铅笔圈了一笔四十赫勒，圈了两遍，怕自己忘。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "belonging",
+          "rest"
+        ],
+        "needs": [
+          "belonging",
+          "safety"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.05,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-gap-elderhood-care.give-tools",
+      "title": "把旧工具送给年轻学徒",
+      "weight": 1,
+      "rate": 0.085,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 25
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "tools-given-all",
+          "weight": 1,
+          "text": "{subject}把柜底的刨子、凿子和小锯擦干净，用一块旧布包好，交给新搬来的{neighbor}。年轻人当场试了试刨子，刨出一卷薄木花，说比作坊里的好用。她把空出来的柜底又摸了摸，才关上柜门。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "把丈夫留下的工具送给了用得上的年轻人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "把旧工具赠予年轻学徒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "tools-given-all",
+              "text": "木柄被手汗磨得发亮，{subject}用布挨个擦过去，擦到小锯的锯齿时停了停，才放进包袱。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "tools-given-all",
+              "text": "{neighbor}蹲在门口的木条上试刨子，薄木花卷起来落在他鞋面上，他捡起来看了看，咧嘴笑了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tools-kept-one",
+          "weight": 1,
+          "text": "{subject}把刨子和小锯包好送出去，凿子却又放回柜底，说这一把留着，万一家里有东西要修。{neighbor}谢过她，临走说等打好了第一件小凳子送她一只。她点头，没提柜底还留着一把。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "送出一部分工具，留下称手的凿子"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "收到部分旧工具的年轻学徒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "tools-kept-one",
+              "text": "凿子握在手里沉甸甸的，{subject}犹豫了一会儿，还是把它裹回布里，塞进柜子最里头。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "tools-kept-one",
+              "text": "{neighbor}把包袱夹在腋下，说打好了凳子就送来。{subject}站在门口，看他上楼，才回身关上门。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tools-refused-exchange",
+          "weight": 1,
+          "text": "{neighbor}红着脸不肯白收，说作坊里师傅讲过不能拿老人的东西。{subject}说那就当换工，他每周来帮着劈一回柴。年轻人答应了，第一次来劈柴时把刨子也带了来，在院里给她修好了晃动的晾衣杆。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.08,
+              "reason": "以工具换每周劈柴的约定"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "劈好的柴火储备"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "tools-refused-exchange",
+              "text": "{neighbor}把手背在身后，说不能收。{subject}把包袱往他怀里一塞，说那你出点力气，他这才接住。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "tools-refused-exchange",
+              "text": "院里斧头落下去的声音很实，木柴裂开时散出一股干松味，{subject}在窗边看着，晾衣杆已经不晃了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "care",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.1,
+        "risk": 0.05,
+        "skills": [
+          "craft",
+          "social"
+        ]
+      }
+    }
+  ]
+}

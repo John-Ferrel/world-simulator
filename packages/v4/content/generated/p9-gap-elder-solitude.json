@@ -1,0 +1,878 @@
+{
+  "id": "p9-gap-elder-solitude",
+  "title": "老年屋子里的一天",
+  "stage": "elderhood",
+  "ageWindow": {
+    "min": 60,
+    "max": 85
+  },
+  "tags": [
+    "elderhood",
+    "daily",
+    "solitude",
+    "memory",
+    "home"
+  ],
+  "baseRate": 0.11,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 60,
+      "max": 85
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-gap-elder-solitude.old-photographs",
+      "title": "整理一盒旧照片",
+      "weight": 1,
+      "rate": 0.0187,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "memory",
+        "photographs",
+        "solitude"
+      ],
+      "outcomes": [
+        {
+          "id": "photos-sorted-by-year",
+          "weight": 1,
+          "text": "她把照片按年份铺在床单上，从一九〇一年的婚礼排到厂门口的合影。有一张背面用铅笔写着“米齐”，她想了半天也叫不出这个人是谁，把照片翻过来又翻回去，最后夹进账本里，灯芯烧短了一截。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "整理旧照片时想起往事"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "keeps_old_photographs",
+              "add": true,
+              "reason": "把无名的照片夹进账本收好"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "photos-sorted-by-year",
+              "text": "她把床让出一半给照片，光脚站在地板上排年份，膝盖发酸了才坐下。写完“米齐”两个字的纸角卷起来，她用拇指压平，把铁盒推回柜顶。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "photos-sorted-by-year",
+              "text": "窗外的天暗下来，她没点第二根灯芯，只借着最后的光辨认照片上的厂服。排到一半她停住，把写着陌生名字的那张单独扣在桌角，其余按顺序摞好，用麻绳捆了一道。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "photos-half-then-soup",
+          "weight": 1,
+          "text": "她看了不到一半就把照片收回铁盒，盒盖扣得比打开时用力。晚饭只煮了一小锅汤，切了半个土豆，盐放得比平时少，吃完把碗泡在盆里没洗，坐在床边听楼下孩子的脚步声。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "晚饭只煮了一点汤"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "照片看了一半便收起，心里发闷"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "photos-half-then-soup",
+              "text": "铁盒放回柜顶时她踮了踮脚，盒子碰着墙发出一声闷响。灶上的汤滚了两滚，她拿勺子撇掉浮沫，忽然想起照片里站在自己旁边的那个人的手搭在哪儿。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "photos-half-then-soup",
+              "text": "她把倒出来的照片一张张翻回盒里，翻到那张早夭孩子的就加快手。汤在锅里冒气，她没去管，等想起来时锅边已经结了一圈白渍。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "photos-shown-to-colleague",
+          "weight": 1,
+          "text": "她挑出那张厂门口的合影，用布擦了擦玻璃框的角，第二天上午走到楼下旧同事的门口。两人对着照片点了半天名字，谁站哪一排、谁后来去了哪儿，说到一半都笑了，回来时她在楼梯口多站了一会儿。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "与旧同事一起辨认合影上的人"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "主动与楼里的旧同事来往"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "photos-shown-to-colleague",
+              "text": "旧同事把照片凑到窗边，用指节敲了敲玻璃，说这个人后来搬去了别的区。她听着，把自己记得的补上去，两个人站在门框里说了许久。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "photos-shown-to-colleague",
+              "text": "上楼前她把照片从框里取出来，怕玻璃磕坏，只用一块干净手帕包着。对方接过手帕时先闻了闻上面的樟脑味，才低头去看那些面孔。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-elder-solitude.sunday-lunch",
+      "title": "一个人的星期日午餐",
+      "weight": 1,
+      "rate": 0.0187,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "food",
+        "sunday",
+        "solitude"
+      ],
+      "outcomes": [
+        {
+          "id": "sunday-half-pot-nap",
+          "weight": 1,
+          "text": "她吃了半锅面疙瘩，剩下的连锅放进橱柜。另一只盘子摆了一会儿就收回柜里，收的时候用手掌抹了抹盘沿。下午在床上和衣睡了一觉，醒来时针已经走过四点，屋里的烤肉味淡了。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "星期日煮的面疙瘩吃了半锅"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "一个人吃完星期日午餐后午睡"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sunday-half-pot-nap",
+              "text": "她把香肠切得比平时薄，一片片码在盘子边上，码完才发现只用了半根。楼上的椅子拖过来又拖过去，她枕着胳膊睡去，锅盖半掩着。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sunday-half-pot-nap",
+              "text": "面疙瘩在锅里翻着，她拿木勺搅了两下就停了。另一只盘子是对面摆着的，她没往里面盛东西，吃完自己那份，把它原样端回柜里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sunday-two-plates-washed",
+          "weight": 1,
+          "text": "她把两只盘子都摆好，往另一只上也放了一小片香肠，吃的时候偶尔抬眼看一看。吃完仔细洗干净，擦干，两只一起放回柜里，手在柜门上停了一下才关。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "按旧日习惯摆好两只盘子吃饭"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "好好吃完一顿热饭"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sunday-two-plates-washed",
+              "text": "她把两只盘子对着摆，叉子放在右手边，和从前一样的距离。面疙瘩盛得不多，吃完把两只盘子叠着端到水池，热水冲下去时她哼了两句不成调的东西。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sunday-two-plates-washed",
+              "text": "另一只盘子上的香肠她最后没有动，端回柜前用抹布角蹭干净了那块油印。水槽里的水凉了，她才把最后一只盘子擦干放好。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sunday-burnt-noodles",
+          "weight": 1,
+          "text": "面疙瘩糊在锅底，屋里泛起焦味。她拿木铲刮了两下，刮不动，就把锅泡在水里，最后只吃了两片面包和剩下的半根香肠。吃完把窗打开一条缝，让焦味散出去。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "面疙瘩煮糊，只吃了面包和香肠"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "锅烧糊了，一个人收拾残局"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sunday-burnt-noodles",
+              "text": "她本来站在窗边听楼下的说话声，回过身锅里已经冒起青烟。刮锅底时手腕使不上劲，焦屑掉在灶台上，她用湿布一抹，抹布也黑了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sunday-burnt-noodles",
+              "text": "焦味顺着楼梯往上飘，她怕邻居来敲门，先把炉火压小，再把锅端到水池。面包是星期六买的，边缘硬了，她掰开放进嘴里慢慢嚼完。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-elder-solitude.cemetery-afternoon",
+      "title": "在墓园坐一个下午",
+      "weight": 1,
+      "rate": 0.0187,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "cemetery",
+        "memory",
+        "solitude"
+      ],
+      "outcomes": [
+        {
+          "id": "cemetery-until-dusk",
+          "weight": 1,
+          "text": "她擦干净墓碑，把常春藤盆放正，坐下来歇脚，一歇就到太阳偏西。起身时腿发麻，扶着旁边的小径栅栏走了一阵，到电车站时末班车已经进站，她小跑两步才上去。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "在墓园坐了一下午，腿脚发麻"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "把墓碑擦干净，心里安定"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cemetery-until-dusk",
+              "text": "碑上的字被风雨磨浅，她用指腹顺着笔画描了一遍才擦。常春藤的土是湿的，手指沾了泥，她在围裙上蹭了蹭，看影子从碑前挪到小径上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cemetery-until-dusk",
+              "text": "抹布洗过两遍水，水是凉的。她坐在自己带来的一小块硬纸板上，听邻座墓前有人换花，后来连换花的人也走了，只剩风声和她自己的呼吸。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cemetery-met-mourner",
+          "weight": 1,
+          "text": "她在墓园遇到另一个来扫墓的老人，两人各自收拾完，默默走到同一条小径上。对方说自己在药房做过学徒，她提起自己做工的那条街，一直说到电车站，车来了还多说了两句才上去。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "在墓园遇见同来扫墓的老人，一路说话"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "与陌生人温和交谈"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cemetery-met-mourner",
+              "text": "那人手里拎着一只空水罐，罐底还滴着水。她把自己的抹布借出去一角，对方接过去按在碑座上，说了声谢谢，两人便并排站着。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cemetery-met-mourner",
+              "text": "电车站的棚子底下有风，她们都把手插进袖口。对方问起她住哪个区，她说出街名，那人点点头，说年轻时去那一带送过药。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cemetery-rain-short-visit",
+          "weight": 1,
+          "text": "那天下起雨，她把常春藤盆放在碑前，用抹布匆匆擦了两把，字还没看清就往回走。电车里全是湿衣服的味道，她到家时鞋帮已经湿透，把报纸塞进去吸水。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "冒雨往返墓园，鞋袜湿透"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "往墓园的电车票钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cemetery-rain-short-visit",
+              "text": "雨点打在帽檐上，她只待了一刻钟，花盆往碑前挪正就退开。小径上的泥粘在鞋底，走一步带一步，她越走越快，到门口才想起抹布还攥在手里。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cemetery-rain-short-visit",
+              "text": "她本来想等雨小一点，可云压得低，墓园里只剩她一个人。回城的电车上她把湿抹布摊在膝盖上，看窗外店铺的灯一盏盏亮起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-elder-solitude.pill-box",
+      "title": "把药盒按星期分好",
+      "weight": 1,
+      "rate": 0.0176,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "medicine",
+        "health",
+        "solitude"
+      ],
+      "outcomes": [
+        {
+          "id": "pill-box-sun-moon",
+          "weight": 1,
+          "text": "她分好了七天的药，在纸盒每个格子上画了太阳和月亮，早上哪种、晚上哪种，一眼就分得清。数完把桌上的碎屑扫进手心，倒进炉子，药瓶按大小摆回抽屉。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "把一周的药按早晚分好"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "按剂量逐格清点药片"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pill-box-sun-moon",
+              "text": "她用铅笔头在硬纸格子上画太阳，画得歪歪扭扭，月亮只勾了一道弯。药片倒在桌上一片片拨进格子，剩下半片用刀背切开，切的时候屏着气。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pill-box-sun-moon",
+              "text": "眼镜滑到鼻尖上，她隔一会儿就推一下。七个格子填满后她把盒子举到窗边照了照，确认没有空格，才盖上那块已经磨毛的纸板盖。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pill-box-recount",
+          "weight": 1,
+          "text": "她数到一半忘了哪种药已经放过，只好把格子里的全倒回桌上重来。第二次她拿铅笔在纸上记一道，再拨药片，弄完时天已经黑了，手指上沾了药片的粉。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "重新分好一周的药"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "数药时反复出错，觉得吃力"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pill-box-recount",
+              "text": "三种药的形状有两个很像，她把其中一片举到灯下看，还是拿不准是哪种。最后按医生写的纸条一格一格对，对完把纸片压在药盒底下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pill-box-recount",
+              "text": "药片在桌上滚了两颗，有一颗掉到地上，她弯腰找了半天，在柜脚边摸到。捡起来用衣角擦了擦，犹豫了一下，还是放进了晚间的格子里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pill-box-low-supply",
+          "weight": 1,
+          "text": "她发现有一种药只剩三片，格子空了一半。想了想把药瓶放回抽屉，决定明天先去药房问能不能少买一点、赊到月底，摸出小本子把瓶上的名字和价钱抄下来。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "pharmacy_short_supply",
+              "add": true,
+              "reason": "发现药只剩三片，打算去药房问"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "担心药钱和药量不够"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pill-box-low-supply",
+              "text": "她把空了一半的格子用铅笔描了个圈，提醒自己别忘了。小本子上的字写得大，价钱抄成一行，末尾还点了个问号。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pill-box-low-supply",
+              "text": "药瓶倒过来磕了磕，只倒出三片，最后一片卡在瓶底，她用筷子头拨出来。抽屉里几枚铜币摆在一起，她数了两遍，又原样摆回去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-elder-solitude.gramophone",
+      "title": "留声机上的一张旧唱片",
+      "weight": 1,
+      "rate": 0.0176,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "music",
+        "gramophone",
+        "solitude"
+      ],
+      "outcomes": [
+        {
+          "id": "gramophone-both-sides",
+          "weight": 1,
+          "text": "她听完一面，又摇了一次柄，把另一面也听完。唱针划过末尾的沙沙声里，她给自己倒了半杯热水，坐在椅子上没动，等唱片自己转停。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "把旧唱片两面都听完"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "坐着听音乐，人松弛下来"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gramophone-both-sides",
+              "text": "摇柄转起来有些沉，她的手腕使了两次劲才转动。圆舞曲从铁喇叭里出来，声音发闷，她跟着用脚尖在木地板上点了点拍子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gramophone-both-sides",
+              "text": "第二面换上去时她把窗帘拉开了些，让光落在唱盘上。曲子中间有一段她闭上眼听，听见唱针底下的细响，像雨落在屋檐。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gramophone-needle-stuck",
+          "weight": 1,
+          "text": "唱针跳到中间，反复卡在同一小节，同一句旋律一遍遍回来，她起初还笑了一下，后来站起来把唱片收进纸套，把留声机盖上。屋里重新安静，她听见自己椅子挪动的声音。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "唱片卡住，只好收起来"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "gramophone_needle_dull",
+              "add": true,
+              "reason": "唱针钝了，唱片反复跳针"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gramophone-needle-stuck",
+              "text": "她用指头轻轻抬了一下唱臂，放回去还是在那一小节停住。纸套的边角已经裂开，她把唱片往里送到底，拿手帕包了包才放回柜里。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gramophone-needle-stuck",
+              "text": "同一句旋律第三次响起来的时候，她不再去管，坐到窗边把袜子上的线头抽直。唱针在唱片上磨出细白的痕，她看见那痕迹就没再摇柄。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gramophone-basement-knock",
+          "weight": 1,
+          "text": "声音太响，楼下敲了敲暖气管。她把铁喇叭的嘴转了向，站远些听，还是把音量调小，坐回椅子把剩下半面听完。敲管子的声音没有再响。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "把留声机调小，安静听完唱片"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "楼下被打扰，敲了暖气管"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gramophone-basement-knock",
+              "text": "管子响了三下，她的手指停在摇柄上。把唱针挪到唱片外圈重放，声音降下去，她侧着身坐在椅子边上，听完才敢再摇一次柄。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gramophone-basement-knock",
+              "text": "她先关了窗才去调，觉得这样楼下能少听些。唱片转到末尾，她把盖子轻轻合上，下楼倒水时在楼梯上遇见人，点了点头，没提刚才的事。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-elder-solitude.letter-to-kin",
+      "title": "给远方的亲戚写一封信",
+      "weight": 1,
+      "rate": 0.0187,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "letter",
+        "kin",
+        "solitude"
+      ],
+      "outcomes": [
+        {
+          "id": "letter-posted",
+          "weight": 1,
+          "text": "她把信写完，写满一页半，说到药、楼梯和窗外的树。贴上那枚旧邮票，第二天上午下楼时交给门房，请他顺路投进街角的邮筒，握手时多说了句麻烦。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "给远方侄女写完信并寄出"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "托门房寄信，说话客气"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "letter-posted",
+              "text": "墨水瓶见了底，她把瓶侧过来，用笔尖去够最后一点墨，写完自己名字时笔画已经发虚。信纸折成三折，贴邮票前用指头把边角按平。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "letter-posted",
+              "text": "门房在楼下扫楼梯，她扶着栏杆把信递过去，说邮筒就在拐角。对方把信插进衣袋，她看着那衣袋鼓起来一块，才转身回屋。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "letter-unfinished",
+          "weight": 1,
+          "text": "她写了三行就停下，笔尖在纸上悬着，觉得自己在数楼梯和药片，没什么可写。把信纸折起来压进抽屉最里面，打算明天再写，顺手把墨水瓶的木塞拧紧。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "信写到一半停下，没有寄出"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "letter_unfinished_drawer",
+              "add": true,
+              "reason": "把写了一半的信留在抽屉里"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "letter-unfinished",
+              "text": "窗外的天短了，她觉得刚过晌午屋里就暗下来。信纸上只有三行字，她把纸转了个方向，看来看去也没添新的话，就压上了抽屉里的旧账本。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "letter-unfinished",
+              "text": "笔尖干了一次，她蘸了墨，写了“身体还”三个字又停住。抽屉开着，里面有一截旧橡皮和一叠信封，她把信纸塞到信封底下才关上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "letter-no-reply-needed",
+          "weight": 1,
+          "text": "她把信写完，末尾又加了一句“不必回信”，封口时手有些抖，浆糊抹到了纸边上。她用袖子蹭掉，翻出针线盒里的蜡头，还是决定只靠浆糊封，把信放在桌上等干。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "把信写完封好，心里松了一点"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.1,
+              "reason": "买浆糊和信封的零钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "letter-no-reply-needed",
+              "text": "写“不必回信”时她停了停，还是写下去。浆糊瓶口结了硬皮，她拧开后用手指抹了一点，沿信封边按过，按到最后一角手抖了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "letter-no-reply-needed",
+              "text": "信封是去年留下的，封口有一道折过的印。她把信装进去，对着灯照了照，确认没有折角，才放到桌上去晾，自己坐回床边。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

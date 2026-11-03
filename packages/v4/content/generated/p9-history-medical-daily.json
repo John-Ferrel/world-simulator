@@ -1,0 +1,1140 @@
+{
+  "id": "p9-history-medical-daily",
+  "title": "诊所、药房与卫生巡查",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 22,
+    "max": 70
+  },
+  "tags": [
+    "health",
+    "medical",
+    "public_health",
+    "family",
+    "pharmacy",
+    "sanitation",
+    "daily"
+  ],
+  "baseRate": 0.2,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 22,
+      "max": 70
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-history-medical-daily.clinic-queue",
+      "title": "诊所门口的长队",
+      "weight": 1,
+      "rate": 0.036,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 70
+        },
+        {
+          "kind": "cash",
+          "max": 45
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 1,
+          "maxAge": 80
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65,
+          "occupation": "Kanzleidiener"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "queue-until-noon",
+          "weight": 1,
+          "text": "{subject}在诊所门口从五点半站到十一点，膝盖发僵，终于用最后四十赫勒付了挂号费。门房{clerk}撕下转诊单，叫{subject}去综合医院排队，药费还得另算。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "诊所挂号费"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "长时间站立等候，膝盖和腰背酸痛"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "综合医院的药房比街角药房便宜，但要排到下午",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "personId": "$clerk",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "queue-until-noon",
+              "text": "队伍拐过街角时天还黑着，{subject}数着前面二十三个人的后脑勺。门房每喊一个号码，就有人从墙根弹起来。付挂号费时铜币在木柜台上一枚枚滚开，{clerk}头也不抬，只把转诊单从玻璃窗口推出来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "queue-until-noon",
+              "text": "到中午{subject}才挪进诊室，外套肩头被雨打湿一片。医生听了听胸口，写两行字便叫下一个。{clerk}把转诊单塞过来时补了一句，综合医院药房下午两点开窗口，去晚了又得等一天。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "give-place-to-mother",
+          "weight": 1,
+          "text": "{subject}把靠前的位置让给抱孩子的{neighbor}，自己去街角药房买了退烧药。夜里烧得更厉害，听见隔壁孩子哭声低了些，自己的额头却烫得像炉盖。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "街角药房买退烧药"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "延误就诊，发热加重"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "让出排队位置给抱孩子的邻居"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "give-place-to-mother",
+              "text": "那女人怀里的孩子脸烧得通红，{subject}往后退了半步，把用粉笔写的号码塞给她。药房伙计收了六十赫勒，给一瓶褐色药水。回家路上{subject}一阵阵发冷，到夜里反而烧得更高，只能拿湿布敷额头。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "give-place-to-mother",
+              "text": "{neighbor}抱着孩子连声道谢时，{subject}已经弯着腰在咳。药房玻璃瓶上贴着褪色标签，喝下去满嘴甘草味。后半夜{subject}听见自己牙齿打颤，炉子早灭了，水壶底结了一圈白垢。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "quarrel-with-clerk",
+          "weight": 1,
+          "text": "{subject}和门房{clerk}为号码顺序争起来，被推到街边，帽子滚进水沟。傍晚回来时窗口已经关了，长椅上空空荡荡，只剩一张踩脏的挂号单。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "与门房争吵后被推出队伍，白等一天"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "在诊所门口与人争执"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "在湿冷街头耗到傍晚"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "quarrel-with-clerk",
+              "text": "{subject}指着墙上粉笔写的号码，说{clerk}把二十一号喊了两遍。门房把本子一合，说爱等不等。推搡间{subject}的帽子滚进街沟，捞上来时吸饱了菜叶和泥水，再抬头窗口已经拉下铁帘。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "quarrel-with-clerk",
+              "text": "争吵只用了半分钟。{clerk}抬手指向街角的面包房，说那儿暖和。{subject}在附近转了三条街，回来时诊所门房正在上锁，长椅上落着别人丢下的面包纸和一根断鞋带。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-history-medical-daily.house-call",
+      "title": "雪夜里的出诊",
+      "weight": 1,
+      "rate": 0.036,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 70
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        },
+        {
+          "kind": "health",
+          "max": 0.9
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 1,
+          "maxAge": 80
+        },
+        {
+          "key": "doctor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "fetch-doctor-half-fee",
+          "weight": 1,
+          "text": "{subject}踩着没到小腿的雪去敲{doctor}的门，先付一半出诊费，医生答应天亮前到。回来时鞋里灌满雪水，{neighbor}的额头已经烫得不敢碰。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "预付医生一半出诊费"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "冒雪夜行，脚趾冻得发麻"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.12,
+              "reason": "半夜冒雪为邻居请医生"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fetch-doctor-half-fee",
+              "text": "雪把电车轨道埋了一半，{subject}沿着墙根走，风从领口灌进去。{doctor}开门时披着睡袍，听完只问出诊费带了多少。三克朗的出诊费先付一克朗五十赫勒，他收了钱，答应天亮前一定到。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "fetch-doctor-half-fee",
+              "text": "医生家的门铃冻住了，{subject}用拳头捶了七八下。{doctor}在门里问清地址，把听诊器放进皮包。回来的路上{subject}数着口袋里剩下的铜币，进门时{neighbor}的呼吸又急又浅，湿布已经捂不凉。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "carry-child-hospital",
+          "weight": 1,
+          "text": "{subject}用毯子裹起{neighbor}，背到综合医院急诊走廊。长椅上挤满人，等到窗户发白，孩子的烧退了些，{subject}的胳膊却抖得端不住水杯。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "雪夜背孩子去医院，肩臂脱力"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "孩子在急诊退烧，心里稍安"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "reason": "背邻居家的孩子去急诊"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "carry-child-hospital",
+              "text": "雪灌进后领，{subject}把{neighbor}往上颠了颠，毯子角扫过结冰的路面。急诊走廊的煤气灯整夜亮着，值班护士给了半杯温水。天亮时孩子额头出了汗，{subject}的胳膊却抖得端不稳杯子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "carry-child-hospital",
+              "text": "从家到医院走了四十分钟，{subject}的鞋底磨得只剩一层布。急诊门口有人抽烟，烟味混着石炭酸，孩子趴在{subject}肩上哼哼。等到窗外发白，护士叫进去量了体温，说暂时稳住了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wait-with-wet-cloth",
+          "weight": 1,
+          "text": "{subject}用湿布和半瓶退烧药熬到天亮，煤都添进了炉子。{doctor}来时只在门口站了站，留一张饮食单，说继续观察，出诊费免了。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "整夜添煤烧水，多耗了口粮份额"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "整夜守候，睡眠不足"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "彻夜照看邻居家发烧的孩子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wait-with-wet-cloth",
+              "text": "炉子里的煤一块块塌下去，{subject}把湿布换了七八回。孩子抽了一阵，后来慢慢睡沉。{doctor}天亮后进门，没脱大衣，看了看眼睑，在纸上写下“稀粥、温水、静卧”，说药不用再加。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wait-with-wet-cloth",
+              "text": "退烧药水只剩半瓶，{subject}按药房标签倒了两次。后半夜孩子睁开眼要水喝，{subject}把铜壶里最后一点温水倒进杯子。医生来时雪已经停了，只在门垫上蹭了蹭靴底，留下饮食单便走。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-history-medical-daily.pharmacy-shortage",
+      "title": "药房里最后一瓶药",
+      "weight": 1,
+      "rate": 0.032,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 70
+        },
+        {
+          "kind": "cash",
+          "max": 50
+        },
+        {
+          "kind": "health",
+          "max": 0.95
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "occupation": "Apotheker"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "buy-last-bottle",
+          "weight": 1,
+          "text": "{subject}把最后一瓶止咳药水买下，{worker}按处方在瓶签上画了两道，说分两次服。药钱八十五赫勒记在{subject}的账本上，旁边写着欠煤店三十赫勒。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.85,
+              "reason": "购买最后一瓶止咳药水"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "服用止咳药水后咳嗽减轻"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "药剂师说下批止咳药水不知道什么时候到，进口药贵三倍",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "personId": "$worker",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "buy-last-bottle",
+              "text": "药房货架空了一排，{worker}把褐色瓶子放在柜台上，瓶塞上还沾着蜡。{subject}数出八十五赫勒，铜币里混着一枚磨平的十赫勒。药剂师用蘸水笔在瓶签背面写“分两次”，墨水洇开一个小点。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "buy-last-bottle",
+              "text": "柜台另一边摆着进口药，标价两克朗四十赫勒，{subject}只看了一眼。{worker}把最后一瓶国产药水推过来，说草药包也能顶事，但起效慢。回家路上{subject}把瓶子揣在怀里，怕冻裂。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "herbs-and-soup",
+          "weight": 1,
+          "text": "{subject}听{worker}的话改用草药和热汤，省下的钱买了两块煤。{neighbor}送来一把干薄荷，说煮水喝能压咳嗽，{subject}的喉咙却仍旧发痒。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "购买草药包"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "多煮热汤分食"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "热汤和草药缓解不适"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "herbs-and-soup",
+              "text": "{worker}从抽屉里称了一包款冬和薄荷，用灰纸包成方包，收三十赫勒。{subject}回家把药包丢进沸水，满屋都是苦味。省下的铜币换了两块煤，炉子烧旺时{neighbor}端来一碗面汤。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "herbs-and-soup",
+              "text": "药剂师说止咳药水断货，草药剂一样能喝。{subject}看着他把干叶碾碎，纸包用细麻绳扎紧。当天下午{subject}煮了一锅薄荷水，{neighbor}隔着门问是不是在熬药，说楼道里全是苦香。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hospital-pharmacy-queue",
+          "weight": 1,
+          "text": "{subject}拿着处方去综合医院药房排队，直到傍晚才领到替代药。玻璃窗口里的修女说原方缺货，给了另一种白色药片，嘱咐饭后再服。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "领到替代药并服用"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "在医院药房排队一整天"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "综合医院药房缺货时会发替代药片，不要钱但排队长",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "personId": "$worker",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hospital-pharmacy-queue",
+              "text": "医院药房的窗口只开一掌宽，{subject}把处方从铁栅下塞进去。前面的人拿着瓶瓶罐罐慢慢挪，队伍里有人蹲在地上啃面包。傍晚修女叫到名字，给了一小包白色药片，说止咳水断货，这个一样吃。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hospital-pharmacy-queue",
+              "text": "{subject}在医院走廊站到腿肿，药房窗口的灯亮了又灭。轮到时修女看了看处方，说原方缺货，转身从铁柜里数出六粒药片，用纸包好，又在纸角写了“饭后”。出门时天已经擦黑。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-history-medical-daily.patient-family",
+      "title": "病房外的家属",
+      "weight": 1,
+      "rate": 0.032,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 55
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.1
+        },
+        {
+          "kind": "cash",
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 55
+        },
+        {
+          "key": "patient",
+          "kind": "parent",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 90
+        },
+        {
+          "key": "doctor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sign-for-surgery",
+          "weight": 1,
+          "text": "{subject}在手术同意书上签了字，四处借钱交上押金。{patient}被推进病房时攥着{subject}的袖口，{doctor}说术后要看头三天。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -18,
+              "reason": "四处借来的手术押金"
+            },
+            {
+              "type": "health",
+              "personId": "$patient",
+              "amount": 0.08,
+              "reason": "手术押金交齐后得到治疗"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patient",
+              "kind": "kin",
+              "trust": 0.1,
+              "reason": "为亲属签字并借钱交手术押金"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sign-for-surgery",
+              "text": "同意书上的字又小又密，{subject}在长椅上看了两遍才签。押金要十八克朗，{subject}把借款名字写在费用单背面：煤店老板、同楼的裁缝、车间的工友。{doctor}收好单据，说术后头三天最要紧。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sign-for-surgery",
+              "text": "病房外暖气片咣咣响，{subject}攥着笔，笔尖在纸上停了好一会儿。{patient}从门缝里伸出手来，{subject}握住那只手，瘦得只剩骨头。押金凑到一半时，{doctor}还是点了头，让先把人推进去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "take-patient-home",
+          "weight": 1,
+          "text": "{subject}把{patient}接回家，按{doctor}的单子换药，夜里守在床边。炉子不敢灭，纱布和药膏摊在桌上，孩子睡在隔壁。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$patient",
+              "amount": 0.03,
+              "reason": "在家按医嘱换药休养"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "夜里守床，睡眠不足"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2.2,
+              "reason": "购买纱布、药膏和额外煤块"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "take-patient-home",
+              "text": "{doctor}把换药步骤写在处方纸背面，{subject}照着做，纱布揭下来时手直抖。{patient}夜里要坐起来喘气，{subject}就把枕头垫高，煤一块块往炉子里添，不敢让屋子凉下去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "take-patient-home",
+              "text": "出院时用毯子裹着{patient}，{subject}叫了一辆单马出租，花掉六十赫勒。家里孩子已经把床让出来，桌上的药膏和纱布按{doctor}的单子排好。{subject}守到后半夜，听见窗外送牛奶的车轱辘响。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dispute-bill",
+          "weight": 1,
+          "text": "{subject}和{doctor}争起费用，要求逐项看明细。最后只付了药费，{patient}留在观察室，{subject}回家时手里攥着一张揉皱的账单。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3.5,
+              "reason": "只付药费和部分材料费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "在病房外与医生争执费用"
+            },
+            {
+              "type": "health",
+              "personId": "$patient",
+              "amount": -0.02,
+              "reason": "押金未交齐，治疗暂缓"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "dispute-bill",
+              "text": "{subject}把费用单摊在长椅上，一项项问{doctor}：包扎费、诊查费、观察室床位费。医生用指节敲了敲纸面，说这是医院定的。最后{subject}只付了药费三克朗五十赫勒，{patient}留在观察室，护士给了一杯水。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "dispute-bill",
+              "text": "账单上的字像一串小钉子，{subject}看了半天，问为什么纱布要另算。{doctor}把笔帽扣上，说可以去找院方。{subject}没再吵，数出药费推过去，{patient}在观察室的长椅上侧躺着，没人换药。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-history-medical-daily.suspicious-death",
+      "title": "一张写得含糊的死亡证明",
+      "weight": 0.9,
+      "rate": 0.032,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 70
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "doctor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65,
+          "organizationKind": "state"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "go-to-municipal-office",
+          "weight": 1,
+          "text": "{subject}陪{neighbor}去市政办事处，要求重新验尸，并写下药粉的来路。办事员{clerk}翻着本子，说会转给卫生局，但得等。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "陪人跑市政办事处，心里发沉"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "死亡证明写的是心力衰竭，但死者前一天拿过一包白色药粉",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "personId": "$neighbor",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.12,
+              "reason": "陪死者家属去市政办事处要求重新验尸"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "go-to-municipal-office",
+              "text": "市政办事处里点着煤气灯，{clerk}翻开死亡登记本，{subject}站在{neighbor}旁边，把药粉的事又说了一遍。办事员用吸水纸按了按墨迹，说验尸要卫生局批，先回去等信。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "go-to-municipal-office",
+              "text": "{neighbor}说话时声音发紧，{subject}替她把药包的事补全。{clerk}从抽屉里抽出一张空白表格，慢慢问死者姓名、住址、最后一次看医生的日子。窗外有人在铲雪，铁锹刮着石板。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "accept-doctor-story",
+          "weight": 1,
+          "text": "{subject}接受{doctor}的说法，帮{neighbor}凑钱办葬礼，顺手把药包扔进炉子。纸包烧起来一股焦甜味，{subject}没再多问。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "帮死者家属凑葬礼钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "帮邻居料理死者后事"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "吸入烧药纸包的烟"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "accept-doctor-story",
+              "text": "{doctor}把死亡证明折好递给{neighbor}，说别折腾了。{subject}从口袋里摸出一克朗二十赫勒，放在桌上凑棺材钱。回家后把药包丢进炉子，纸边发蓝，烧出一股焦甜味，像烧糊的糖。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "accept-doctor-story",
+              "text": "楼里的女人都来劝{neighbor}，说人死不能复生。{subject}把药包从桌角拿起来，纸包上没写字，只有药房火漆印。炉门一开，火苗舔着纸角，{subject}把炉门关上，没再说什么。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ask-pharmacy",
+          "weight": 1,
+          "text": "{subject}拿着药包去药房追问处方，被药剂师赶出来，只抄到半个名字。纸上写的像“施特凡”又像“施托尔”，墨迹被水洇开。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "在药房被赶出来，满腹狐疑"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "在药房追问处方引起争执"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "药房处方存根上的名字被水洇开，只认得出“施特”两字",
+              "confidence": 0.5,
+              "sourceKind": "witnessed",
+              "personId": "$neighbor",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ask-pharmacy",
+              "text": "{subject}把药包拍在柜台上，问这是谁开的方子。药剂师看了一眼火漆印，说处方存根不能给外人看，叫{subject}出去。推搡间{subject}瞥见存根上半个名字，像“施特凡”，又像“施托尔”。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "ask-pharmacy",
+              "text": "药房伙计把手一横，说没有处方存根不能查。{subject}退到门口，从门玻璃反光里看见药剂师把本子合上。回家路上{subject}在纸角记下那半个名字，墨水被雪水洇开，转眼糊成一团。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-history-medical-daily.sanitation-inspection",
+      "title": "院子里的卫生巡查",
+      "weight": 0.9,
+      "rate": 0.032,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 70
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        },
+        {
+          "kind": "overcrowded",
+          "value": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65,
+          "organizationKind": "state"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sign-and-demand-repair",
+          "weight": 1,
+          "text": "{subject}带头指出堵住的下水道，在巡查记录上签名，要求房东限期修理。{official}把下水道口画在本子上，{neighbor}在旁边连连点头。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "带头向巡查员反映下水道问题"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "替院子里的邻居出头反映卫生问题"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "卫生巡查员把下水道堵塞记进了记录，说会通知房东限期修",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "personId": "$official",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sign-and-demand-repair",
+              "text": "{official}蹲在下水道口闻了闻，用铅笔在本子上画了个圈。{subject}指着墙根渗出的黑水，说去年就堵了，看门人只拿木板盖着。{neighbor}把湿衣服往旁边挪，让巡查员看墙皮上的霉斑。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sign-and-demand-repair",
+              "text": "签字时{subject}把笔握得很紧，在“住户意见”一栏写了“下水道堵塞，垃圾箱无盖”。{official}念了一遍，说会转给房东，限期两周。{neighbor}凑过来看，问要不要按手印。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sign-only-own-household",
+          "weight": 1,
+          "text": "{subject}替不识字的{neighbor}读了表，只签自己那一户，不愿替别人出头。{official}走后，走廊里有人嘀咕，说{subject}太会算计。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "只签自己一户，被邻居认为不肯出头"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "拒绝替邻居在巡查表上签字"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "卫生巡查表上每户只能签自己那一栏，代签要负连带责任",
+              "confidence": 0.75,
+              "sourceKind": "told",
+              "personId": "$official",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sign-only-own-household",
+              "text": "{neighbor}把表格递过来，说眼神不济。{subject}一行行念完，在自家那栏签了名，把笔放下。{official}问还有谁家没签，走廊里静了一会儿，有人把门关上了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sign-only-own-household",
+              "text": "表格上要写每户人数和厕所使用情况，{subject}念到“代签人负责”时停住了。{neighbor}等了一会儿，自己按了个手印。巡查员走后，楼梯口有人说{subject}认得字反倒更精。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "move-garbage-with-janitor",
+          "weight": 1,
+          "text": "{subject}和看门人一起把垃圾挪到后院，巡查员走后一切照旧。垃圾箱盖还是没盖上，墙根的湿痕第二天又洇出来。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "搬垃圾时吸进灰尘和霉味"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "应付完巡查，问题照旧"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "和邻居一起应付卫生巡查"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "move-garbage-with-janitor",
+              "text": "看门人拎着铁桶，{subject}抬另一头，把垃圾挪到后院墙根。{official}在本子上画了个勾，说下周再来复查。人一走，看门人把木板重新盖上下水道口，垃圾箱盖还是歪在一边。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "move-garbage-with-janitor",
+              "text": "垃圾里有烂菜叶和碎煤渣，{subject}搬完在围裙上擦手。{neighbor}端来一盆水，说好歹应付过去了。第二天早上墙根又洇出一片深色水印，比先前还宽了一指。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

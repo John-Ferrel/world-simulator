@@ -1,0 +1,882 @@
+{
+  "id": "p9-gap-adult-solitude",
+  "title": "一个人也能过完的下午",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 80
+  },
+  "tags": [
+    "adulthood",
+    "daily",
+    "solitude",
+    "ordinary",
+    "home"
+  ],
+  "baseRate": 0.1,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 80
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-gap-adult-solitude.misdelivered-letter",
+      "title": "一封寄错的信",
+      "weight": 1,
+      "rate": 0.017,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "tags": [
+        "daily",
+        "letter",
+        "home",
+        "solitude"
+      ],
+      "outcomes": [
+        {
+          "id": "misdelivered-letter.upstairs",
+          "weight": 1,
+          "text": "{subject}拿着信上了四层楼，敲了两户都不是，门牌是七号还是十七号已看不清。第三户的老太太说那人去年就搬去法沃里滕了。她把信交回门房，门房在登记簿上写下一个赫勒的墨水钱。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "把不属于自己的东西放回了该去的地方"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "门房记住了她办事仔细"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "misdelivered-letter.upstairs",
+              "text": "楼梯间煤油味很重，她一层层上去，第三户的老太太隔着门缝说那人早走了。下楼时她把信捏得边角发软，门房接过去只说了句“留着吧”。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "misdelivered-letter.upstairs",
+              "text": "她先看十七号，再看七号，两扇门都开了一条缝又关上。最后她把信从门房窗口递进去，看门人蘸墨记了一笔，没说谢谢。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "misdelivered-letter.opened",
+          "weight": 1,
+          "text": "信封没封牢，{subject}在灯下把它掀开，里面是维也纳联合银行的催款单，欠了三十四克朗。她认出那名字是楼上常穿黑裙的女人，便把纸原样叠回去，用米汤把封口粘好，放到门房窗台上。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "看见别人家欠债数目，心里发沉"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "knows_upstairs_debt",
+              "add": true,
+              "reason": "知道了楼上住户的欠款数额"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "misdelivered-letter.opened",
+              "text": "纸上有银行的戳，数字写得又细又密。她把信沿原来的折痕折回去，手指在封口上来回按，米汤粘得手上发黏。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "misdelivered-letter.opened",
+              "text": "灯芯有点短，她凑近才看清三十四克朗那几个字。她把信放回窗台时特意让有字的一面朝下，像那样就能把看见的事翻过去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "misdelivered-letter.sugar-jar",
+          "weight": 1,
+          "text": "{subject}把信压在厨房的糖罐底下，想着明天再问。三天后糖罐渗了油，信角洇出一片深色，收信人的名字糊了半个。她把信拿到门房那儿，门房说这地址已经退过两回了。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "拖了几天才处理，信已弄脏"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "学着与门房打交道、说明情况"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "misdelivered-letter.sugar-jar",
+              "text": "糖罐底下压着信，罐口滴下的油慢慢洇进去。她拿起来时纸是软的，名字只剩一半，门房看了一眼就说不用再送了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "misdelivered-letter.sugar-jar",
+              "text": "那几天她每天想起一次，又每天忘了。等她把信从糖罐底下抽出来，封皮已经起皱，她把信递进门房窗口时手上有糖的黏感。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-solitude.leaking-shoe",
+      "title": "修一只漏水的鞋",
+      "weight": 1,
+      "rate": 0.017,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "tags": [
+        "daily",
+        "repair",
+        "shoe",
+        "poverty"
+      ],
+      "outcomes": [
+        {
+          "id": "leaking-shoe.stitched",
+          "weight": 1,
+          "text": "{subject}用鞋蜡把裂缝填上，又拿粗针和麻线把鞋底缝了一圈。针脚歪，鞋底一高一低，走路时右脚落地总比左脚重。第二天上工回来，脚后跟磨出一个水泡，可鞋没再渗水。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "鞋底不平磨出水泡"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "自己缝补鞋底的手法"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leaking-shoe.stitched",
+              "text": "她把鞋夹在两膝间，针顶进去要用掌根推。蜡的味道留在指头上，缝完最后一针，她把鞋往地上磕了磕，听声音是实的。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leaking-shoe.stitched",
+              "text": "麻线不够长，她分了两段接上，接头藏在鞋底中间。试穿时她在屋里走了两圈，右肩不自觉地往下沉。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "leaking-shoe.belt-patch",
+          "weight": 1,
+          "text": "{subject}拆下一条旧皮带的头，蒙在鞋底破口上，用钉子一点点敲进去。第三下时锥子扎透鞋面，扎进左手拇指根，血滴在鞋帮上。她用围裙擦了擦，还是把皮子钉完了，第二天走路时鞋底有块硬响。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "锥子扎伤拇指根"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "弄坏了手，鞋面上还留了血点"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leaking-shoe.belt-patch",
+              "text": "旧皮带硬得像木板，她先放在炉边烤软。锥子滑了一下，她把手含在嘴里，过一会儿又接着敲。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leaking-shoe.belt-patch",
+              "text": "皮子蒙上去比破口大出一圈，边缘翘着。她用锤柄压了半天也压不服帖，走起来嗒嗒地响。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "leaking-shoe.gave-up",
+          "weight": 1,
+          "text": "{subject}缝了半个钟头，线老是从针眼里脱出来，最后把鞋往床底下一踢。第二天清早她穿着这双鞋站在厂门口等开门，湿石头地的凉气从裂缝里钻进来，脚趾冻得发麻，只能来回换脚。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "穿着漏水的鞋在冷地上站久了"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "没修好鞋，早上受了冻"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leaking-shoe.gave-up",
+              "text": "线头又脱了，她把针往布垫上一插，没再管。第二天门还没开，她已经站了二十分钟，脚趾在鞋里蜷得发疼。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leaking-shoe.gave-up",
+              "text": "窗外雨没停，她把鞋翻过来看了看那道口子，叹了口气就去烧水了。早晨出门踩进第一洼水时，她只是把脚在裤腿上蹭了蹭。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-solitude.stopped-clock",
+      "title": "停了的钟",
+      "weight": 1,
+      "rate": 0.017,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "tags": [
+        "daily",
+        "clock",
+        "home",
+        "time"
+      ],
+      "outcomes": [
+        {
+          "id": "stopped-clock.wire-fix",
+          "weight": 1,
+          "text": "{subject}把钟背板卸下来，发现一根发条断了。她从缝纫盒里找出一截细铁丝，把断头缠住，钟摆晃了几下又走了起来。走是走，每天慢一刻钟，她索性把指针往前拨了拨，凑合着看。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "拆装座钟机芯的经验"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "钟又能走了，屋里重新有滴答声"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stopped-clock.wire-fix",
+              "text": "齿轮上蒙着一层灰，她用围裙角擦了擦。铁丝缠上去时手抖，发条弹了一下，她往后缩，随后听见摆锤重新敲出声音。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stopped-clock.wire-fix",
+              "text": "钟壳里有一股旧油的酸味。她对着窗口的光把铁丝弯成小钩，挂上发条，指针动起来那一刻她才想起自己还没吃午饭。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stopped-clock.church-bell",
+          "weight": 1,
+          "text": "{subject}没有再修钟，把上工的时间交给楼下教堂的钟声。风从多瑙河那边刮过来时，钟声就散，窗户一关更听不见。有一回她误了钟点，到车间时工头已经在门口站着，扣了半个克朗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "迟到被扣工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被扣钱，心里窝火"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stopped-clock.church-bell",
+              "text": "她醒来先侧耳听，窗外只有扫街的扫帚声。等她跑到车间，工头拿粉笔在小黑板上划了一道。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stopped-clock.church-bell",
+              "text": "那天风向不对，钟声没传过来。她照旧烧水、穿鞋，出门时太阳已经很高，巷口的面包车都走了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stopped-clock.repair-shop",
+          "weight": 1,
+          "text": "{subject}用围裙裹着钟走到钟表铺，铺子里的老头把钟翻过来看了看，说要换发条，连工带料一克朗二十赫勒。她算了算这星期的菜钱，把钟又裹回围裙里提回家，搁在柜上，没再提修的事。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "修钟的钱出不起"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stopped-clock.repair-shop",
+              "text": "柜台上铺着绿绒布，老头戴着单片眼镜，报完价就低头去弄别的钟了。她抱着钟出来，街上正好敲正午。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stopped-clock.repair-shop",
+              "text": "铺子里挂满了钟，几十个滴答声混成一片。她站在那儿听完价钱，说了句“我再想想”，围裙的结在手里又系紧了一道。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-solitude.remake-coat",
+      "title": "把旧外套改小",
+      "weight": 1,
+      "rate": 0.016,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "tags": [
+        "daily",
+        "mending",
+        "clothing",
+        "household"
+      ],
+      "outcomes": [
+        {
+          "id": "remake-coat.short-jacket",
+          "weight": 1,
+          "text": "{subject}把外套的肩线拆开，往里收了四指，袖口剪掉一截，改出一件到胯骨的短上衣。剩下的布头拼成两只手套，针脚粗，戴着能挡风。她在镜子前转了一圈，肩还是有点空，但总算能穿出门。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "拆改厚呢外套的手上功夫"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "旧外套终于能穿在身上"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "remake-coat.short-jacket",
+              "text": "拆线时呢料的灰絮飞得到处都是。她跪在椅边比着肩，粉笔在布上画了又擦，最后拿大针脚先绷住，试了才敢落细线。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "remake-coat.short-jacket",
+              "text": "手套是从袖子上截下来的，指头接缝处鼓着。她戴上试了试，手指头动不太开，凑合着能提篮子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "remake-coat.crooked-sleeves",
+          "weight": 1,
+          "text": "{subject}的剪刀钝得咬布，一剪下去袖口走了斜线。她索性把两只袖子都裁短，袖边用灰线锁了一圈。锁边时线太短，接到第三段才够，右手食指被针顶出个红印，改完像件旧式的短褂。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "剪裁失手后重新锁边"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "剪歪了，成品不太像样"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "remake-coat.crooked-sleeves",
+              "text": "布在剪刀下打滑，一线下去歪了两指。她把两只袖子都比着同一道粉线重裁，短了一截，倒也齐整。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "remake-coat.crooked-sleeves",
+              "text": "灰线只剩一小卷，她一边锁边一边量剩下的长度。针顶到指尖时她停下来捏了捏，又接着缝到收口。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "remake-coat.left-on-chair",
+          "weight": 1,
+          "text": "{subject}只把外套的里衬拆了一半，就搁在椅背上。冬天天短，她每天回来都看见那件敞着口子的外套，想着明天接着弄，明天又总是有别的事。到开春外套还搭在那儿，呢面上落了一层灰。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "开了一半的活计一直搁着"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "unfinished_coat",
+              "add": true,
+              "reason": "外套拆了一半搁在椅背上"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "remake-coat.left-on-chair",
+              "text": "里衬拆开的地方翻着毛边，她掸了掸灰又放下。屋里没生火，她把手揣进袖筒里坐着，看窗外的天一点点暗。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "remake-coat.left-on-chair",
+              "text": "椅子只有一把，她坐的时候得先把外套挪到床沿。挪来挪去一个冬天，线头越拖越长，她也没再动剪刀。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-solitude.window-argument",
+      "title": "窗边听见的争吵",
+      "weight": 1,
+      "rate": 0.016,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "tags": [
+        "daily",
+        "home",
+        "neighbor",
+        "overheard"
+      ],
+      "outcomes": [
+        {
+          "id": "window-argument.closed",
+          "weight": 1,
+          "text": "{subject}把窗关上，争吵声立刻变成闷响，像隔着一层棉被。可那男人的一句话还是从缝里钻进来，她躺到床上翻来覆去，数着墙上的水渍，到很晚才睡着。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被楼下争吵搅得没睡好"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "夜里心绪不宁"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "window-argument.closed",
+              "text": "窗框卡了一下才关上，玻璃上还有她手心的印子。躺下后她听见自己的心跳，和楼下隐约的说话声咬在一起。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "window-argument.closed",
+              "text": "她把被子拉到耳朵上，声音还是从院子里升上来。对面厨房的火熄了，屋里彻底黑下来，争吵却还没停。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "window-argument.peek",
+          "weight": 1,
+          "text": "{subject}下楼倒水，在楼梯口看见院子里站着一对夫妻，男人的围裙上还沾着面粉，女的攥着一张工钱条。她没插话，提着壶又上楼，关门时听见那女人说“一星期八克朗怎么够”。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "看见邻家为工钱发愁，心里不安"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "学会不插手别人的家务事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "window-argument.peek",
+              "text": "楼梯间的灯没点，她借着院子里的光看见那两个人。男人反复说“账不是这么算的”，手在围裙上擦来擦去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "window-argument.peek",
+              "text": "她本来只想倒掉壶里的水，站住听了一句就后悔了。上楼时台阶在脚下响，她尽量放轻。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "window-argument.nod",
+          "weight": 1,
+          "text": "{subject}在窗边听了一刻钟，只听出是工钱和面包账的事，最后把窗虚掩上睡了。第二天清早在楼梯口碰见那个女人，眼睛有点肿，两人错身时她点了点头，谁也没说话。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "和邻家女人有了一点无声的往来"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "knows_downstairs_quarrel",
+              "add": true,
+              "reason": "听见了楼下夫妻为工钱争吵"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "window-argument.nod",
+              "text": "楼梯口窄，两人侧身过。那女人的围裙口袋露出半截工钱条，点了点头就下楼去了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "window-argument.nod",
+              "text": "她本来想开口问一句，又觉得不合适。点头之后各走各的，院子里晾着的床单在风里拍了两下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-solitude.river-walk",
+      "title": "一个人走到多瑙河边",
+      "weight": 1,
+      "rate": 0.017,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "tags": [
+        "daily",
+        "walk",
+        "river",
+        "solitude"
+      ],
+      "outcomes": [
+        {
+          "id": "river-walk.far",
+          "weight": 1,
+          "text": "{subject}顺着河岸一直走，走过铁路桥又走回来，天已经黑透。回来时脚底发热，袜子磨在脚背上，她一路数着路灯走完最后一段巷子，进门先坐下脱了鞋。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "走了很远的碎石路，脚底发疼"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "在河边走了一下午，心里松快"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "river-walk.far",
+              "text": "河上运煤的平底船一条接一条，对岸的树还是秃的。她走到铁路桥下才觉得脚累，回头看城市已经亮起灯来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "river-walk.far",
+              "text": "围巾被风吹到脸上，她扯下来又围好。回来路上路灯一盏隔一盏，她把每一步都踩在光里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "river-walk.bridge",
+          "weight": 1,
+          "text": "{subject}在桥边站了一会儿，看一艘平底船靠岸卸煤，几个工人用铁锹往岸上甩。风把煤灰吹到她脸上，她抹了一把，往回走时脚步比来时轻，回到巷口还给自己买了块三赫勒的糖。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "看了船卸货，心里舒展开"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.03,
+              "reason": "买了三赫勒的糖"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "river-walk.bridge",
+              "text": "铁锹碰在船底的声音一下一下传上来。她靠着桥栏站着，煤灰落在袖子上也不去掸。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "river-walk.bridge",
+              "text": "糖是纸包的，她含在嘴里走完剩下的路。河水的凉气跟糖的甜味在嘴里混着，倒也不觉得冷。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "river-walk.turned-back",
+          "weight": 1,
+          "text": "{subject}走到半路风忽然大起来，围巾抽在脸上生疼，她掉头往回走。路过面包店时橱窗里还剩几个昨天的圆面包，四赫勒一个，她买了两个，揣在怀里带回去当晚饭。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "买了两个剩面包"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.08,
+              "reason": "两个剩面包四赫勒一个"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "在风口里走了一段，脸被吹得发红"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "river-walk.turned-back",
+              "text": "风从河面直扑过来，她把围巾拉到鼻子上还是挡不住。面包店的玻璃上蒙着热气，她推门进去时铃铛响了一声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "river-walk.turned-back",
+              "text": "面包还温着，她用纸包好塞进怀里。回去的路上没再看河，只盯着脚下的碎石，想着明天要早起烧水。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1360 @@
+{
+  "id": "p9-childhood-apprenticeship",
+  "title": "作坊门槛：试工、工时与推荐",
+  "stage": "adolescence",
+  "ageWindow": {
+    "min": 12,
+    "max": 17
+  },
+  "tags": [
+    "adolescence",
+    "work",
+    "apprenticeship",
+    "labour",
+    "training",
+    "family"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 12,
+      "max": 17
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "work",
+    "goals": [
+      "work",
+      "status"
+    ],
+    "needs": [
+      "cash",
+      "status"
+    ],
+    "baseUtility": 1.4,
+    "risk": 0.25,
+    "skills": [
+      "craft",
+      "social"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p9-childhood-apprenticeship.ask-for-trial",
+      "title": "门口问一句试工",
+      "weight": 1,
+      "rate": 0.09,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 15
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        },
+        {
+          "kind": "cash",
+          "max": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 15
+        },
+        {
+          "key": "master",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 68
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 32,
+          "maxAge": 68,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 50
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "trial-granted",
+          "weight": 1,
+          "text": "{subject}在玛利亚希尔夫街那间印刷作坊门口站了半刻钟，终于把母亲写的地址递过去。{master}用围裙擦了擦手，指了指墙角一摞纸样，让他码齐并按斤数分堆。他码了整整一下午，手指被纸边划出细口；{master}说试工三天，管一顿午饭，工钱等做满再说。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.2,
+              "reason": "试工半日按小时折算的铜币"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "作坊管的一顿午饭省下家里一份口粮"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "学会了分辨纸样和码纸的规矩"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "老板答应给他试工机会"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "trial-granted",
+              "text": "压印机的把手在他背后一下一下响，{master}把量好的纸样翻过来，用铅笔在边角写了个数。{subject}蹲在地上码纸，膝盖压住纸堆，怕穿堂风把它们吹散。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "trial-granted",
+              "text": "他本来把地址攥得发潮，开口时嗓子发紧。{master}没抬头，只说“先把手洗干净，别碰铅字”。午饭是一碗扁豆汤和半块黑面包，他吃得很慢，把面包角留在围裙口袋里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "too-young-refused",
+          "weight": 1,
+          "text": "{master}打量了一下{subject}的肩膀和胳膊，说这活儿要搬整摞的纸，十二岁扛不住，让他明年开春再来。他退到门槛外，替作坊把门口散落的纸边捡进筐里，{master}给了他两个赫勒，让他别再站在路中间。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.2,
+              "reason": "替作坊捡纸边得到的两个赫勒"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被当面说年纪太小"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "继续在附近找能收他的作坊"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "too-young-refused",
+              "text": "他听见裁纸刀落下的声音，像一口短促的叹气。{master}指了指街对面面包房的推车，说那里也许缺个跑腿的，至少不用抬纸。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "too-young-refused",
+              "text": "纸筐很沉，他拖到墙根时鞋底在湿石板上打了个滑。{master}从围裙口袋摸出两枚赫勒，硬币还带着体温，他攥在掌心里没立刻放进口袋。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "silent-follow",
+          "weight": 1,
+          "text": "{subject}在门口没敢开口，跟着送纸的推车沿街走了一段。推车在一家装订铺后门停下，卸货的{worker}问他是不是来找活，他说是，{worker}让他帮忙把三捆纸搬进院子，说搬完可以问问师傅缺不缺人。他搬完时天已经擦黑，铺子里没人出来。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "搬纸捆扭了手腕"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "帮卸货伙计搬纸混了个脸熟"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "知道了装订铺后门这条找活的路"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "silent-follow",
+              "text": "推车的木轮在石板缝里咯噔响，他走在车侧，手搭在纸捆上免得滑落。{worker}问他住哪个区，他答得很快，像背地址。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "silent-follow",
+              "text": "院子里堆着旧书皮和线轴，麻绳勒进他手掌。搬完最后一捆，他站在后门口等了一会儿，只听见里面有人翻账页，没有人朝外看。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "cash",
+          "status"
+        ],
+        "baseUtility": 1.45,
+        "risk": 0.3,
+        "skills": [
+          "craft",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-childhood-apprenticeship.learn-the-task",
+      "title": "师傅手里的字盘",
+      "weight": 1,
+      "rate": 0.09,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 17
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory",
+            "shop"
+          ]
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "apprenticeship"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 55
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 32,
+          "maxAge": 68,
+          "organizationKind": "factory"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "small-ad-set",
+          "weight": 1,
+          "text": "{subject}照着{worker}的手法把价目表排齐，铅字之间的空铅一块块填进去，字盘锁得稳当。{worker}拿起来对着窗光照了照，没说话，只把一张小广告的稿子推到他面前，让他自己排。他排到“本店新到”那行，手腕还是抖了一下，但这次没散。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "独立排完第一张小广告的版"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "伙计们看见他能单独上手"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "第一次被派独立排字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.06,
+              "reason": "师傅肯把活交给他"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "small-ad-set",
+              "text": "字盘拿在手里比他想的沉，铅字边缘凉，压得指腹发白。{worker}在他身后站了一会儿，看他填完最后一块空铅才走开。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "small-ad-set",
+              "text": "窗台上落着细铅屑，他用抹布擦了又擦。排到落款时他停了一下，把行距重新量过一遍，才开始锁版。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "demoted-to-clean",
+          "weight": 1,
+          "text": "{subject}连着排错两行，字距一宽一窄，锁版时又有几块空铅掉出来。{worker}接过字盘摇了两下，让他先去搬纸、洗墨辊。墨辊上的清洗剂味道冲，他搓了半个下午，指甲缝里全是黑的，晚饭前才被叫回去看别人怎么排。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "清洗剂气味熏得他头晕"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被派去干杂活"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "在旁看别人排字，记住了字距规矩"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "demoted-to-clean",
+              "text": "墨辊洗到第三遍水才不那么黑，他换了两次水，端出去时在门槛上洒了一小片。{worker}没骂他，只把一块抹布丢在他脚边。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "demoted-to-clean",
+              "text": "他弯腰搬纸的时候听见背后字盘磕在台面上，叮的一声。那声音比挨说还难受，他把纸捆放得特别轻。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "polished-type-redo",
+          "weight": 1,
+          "text": "{subject}想讨个好，趁{worker}去喝水的工夫把铅字挨个擦亮，擦完还拿干布抹了一遍。印出来的小广告字面反光，油墨挂不住，第一张就花得看不清价钱。{worker}把纸摔在台面上，让他把整盘字倒回字匣重排，这一天的活干到天黑后一小时。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "饿着肚子加班重排"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "好心办坏事被当众返工"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "倒字重排把字匣位置记熟了"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.04,
+              "reason": "返工耽误了整批活"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "polished-type-redo",
+              "text": "他把花掉的那张纸翻过来看，油墨在“本店”两个字上积成一小汪。旁边伙计笑了一声，{worker}没笑，只把字匣推到他面前。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "polished-type-redo",
+              "text": "铅屑落在掌纹里，洗不掉。他一块一块往字匣里放，按字母顺序，放错一块就重新数一遍，到最后手指有点发僵。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "knowledge"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.15,
+        "skills": [
+          "craft"
+        ]
+      }
+    },
+    {
+      "id": "p9-childhood-apprenticeship.negotiate-hours",
+      "title": "星期六的工时",
+      "weight": 1,
+      "rate": 0.08,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 17
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "cash",
+          "max": 50
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 32,
+          "maxAge": 68,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "one-extra-hour",
+          "weight": 1,
+          "text": "{subject}跟{employer}说好每天多留一个钟头，星期六照常三点收工。他算了一天能多拿几个克朗，月底房租就有着落；{employer}把话说在前头，多留的那小时先把裁下的纸边扫净，再碰机器。{worker}在旁边听见了，把自己的扫帚递给他。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2.5,
+              "reason": "一个月多留一小时的工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "每天多站一个钟头"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.05,
+              "reason": "谈成了加时安排"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.04,
+              "reason": "师傅把扫帚借给他"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "one-extra-hour",
+              "text": "他把手指头按在台面上算数，一个钟头几个赫勒，乘到月底，再减掉母亲要交的房钱。{employer}听完只说“星期六别磨蹭”，就回去看交货单。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "one-extra-hour",
+              "text": "作坊里灯亮得早，他多留的那小时常听见外面小贩收摊。扫纸边的时候他把还能用的碎纸挑出来，压平了带回家给妹妹钉本子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "batch-pay-raw-deal",
+          "weight": 1,
+          "text": "{employer}不肯按钟点算，说这批账本和传单整包给一笔加班费，三克朗，做早做晚都一样。{subject}拿粉笔在纸边算了算，按平时速度得多干七八个钟头，怎么算都不划算；可他到底没说出口，只点头接下，回家路上越想越闷。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "整批加班的包干费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "算下来吃了亏又没敢说"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "连赶几晚的活"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.03,
+              "reason": "用粉笔算清了包干活的实际时薪"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "batch-pay-raw-deal",
+              "text": "粉笔字写在裁纸台的边角上，他写完又用袖子擦掉，怕被别人看见他在算老板的钱。{employer}把三克朗说得很痛快，像已经付过一样。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "batch-pay-raw-deal",
+              "text": "晚上收工，他用凉水冲了冲脸，水里有淡淡的墨色。妹妹问他这个月能不能买双鞋，他说再等等，声音比平时低。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "refused-overtime",
+          "weight": 1,
+          "text": "{subject}说星期六家里有事，加不了班。{employer}没再问，第二天把最费时的活——给一叠旧版书页重新分拣——派给了他，说这就是“照常的活”。他分拣到下午，比平时晚走一个钟头，一分加班钱也没拿到。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "拒绝了加班却被派了最费时的活"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "分拣旧书页又多站了一个钟头"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.04,
+              "reason": "顶了加班的安排"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "refused-overtime",
+              "text": "旧书页上全是潮味和灰，翻一页就扬起来一点。他一边分一边咳，{employer}从旁边过，只当没看见。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "refused-overtime",
+              "text": "他原想星期六陪母亲去交房租，这话没说出口。分拣到第三摞时，他把书页按年份排好，心里却记着家里的钟点。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "survival"
+        ],
+        "needs": [
+          "cash",
+          "autonomy"
+        ],
+        "baseUtility": 1.5,
+        "risk": 0.35,
+        "skills": [
+          "numeracy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-childhood-apprenticeship.cover-for-sibling",
+      "title": "替妹妹顶一班",
+      "weight": 0.9,
+      "rate": 0.07,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 17
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.1
+        },
+        {
+          "kind": "health",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 9,
+          "maxAge": 16
+        },
+        {
+          "key": "forewoman",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 60
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "delivery-paid",
+          "weight": 1,
+          "text": "{subject}替妹妹把一筐床单送到利奥波德城的两户人家，按件收了工钱，回来把铜币放在妹妹枕头边。{forewoman}看了他一眼，没问名字，只让他下次别走错门。妹妹的手多歇了一天，晚上能自己端碗了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.6,
+              "reason": "替妹妹送床单的计件工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "背着湿床单走了几个街区"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.08,
+              "reason": "替妹妹顶了半天工"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "妹妹歇过来，晚饭有着落"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "delivery-paid",
+              "text": "床单叠在筐里还带着皂味，他背带勒在肩上，走到第二户时领口已经汗湿。客户开门接过床单，数了数，塞给他几枚铜币和一句“下回叫你妹妹来”。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "delivery-paid",
+              "text": "{forewoman}在洗衣房门口点件数，手指在单子上划。他没敢多站，把筐还回去时顺手把绳结解开，省得别人再解一遍。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "forewoman-catches",
+          "weight": 1,
+          "text": "{forewoman}在客户门口撞见他，认出不是妹妹本人，当场扣下这半天的工钱，说冒名顶替要告诉妹妹的雇主。{subject}空手回来，妹妹已经撑着起了床，听说工钱没了，让他别再去了，声音发哑。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "冒名替工被识破"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.04,
+              "reason": "工钱没拿到，妹妹觉得是自己连累了他"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "白跑一趟，路上没吃东西"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "forewoman-catches",
+              "text": "女工头把手里的单子卷起来，敲了敲筐沿，说“件数对不上，人也对不上”。旁边帮佣探出头看，他把脸别过去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "forewoman-catches",
+              "text": "回来的电车上他没买票，走了三站路。妹妹坐在床沿，手上还缠着布条，听他讲完只点了点头，把枕头往里挪了挪。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "damp-linen-returned",
+          "weight": 1,
+          "text": "送到第二户时，客户摸了摸床单，说有潮气、不肯收。{subject}只好把床单背回洗衣房重洗，{forewoman}让他自己在后院晾，晾干再送，这一趟的件钱要等重送完才给。他蹲在后院翻床单，天快黑才把最后一角夹上绳。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "蹲久了膝盖发酸，又吹了晚风"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "活没送成还要返工"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "学会跟客户说明潮气的来由"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$forewoman",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "返工没推脱，女工头记下了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "damp-linen-returned",
+              "text": "客户把床单抖开，凑近闻了闻，说后墙返潮不能怪人，可今天的账不能记。他抱着床单下楼，台阶上的水渍一路滴下去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "damp-linen-returned",
+              "text": "后院的晾绳用木夹子夹，夹子不够，他把边角打在绳结里。风从院墙外灌进来，床单鼓起来，像一面面没字的旗。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "family",
+        "goals": [
+          "family",
+          "care"
+        ],
+        "needs": [
+          "cash",
+          "care"
+        ],
+        "baseUtility": 1.35,
+        "risk": 0.4,
+        "skills": [
+          "social",
+          "craft"
+        ]
+      }
+    },
+    {
+      "id": "p9-childhood-apprenticeship.leave-bad-workshop",
+      "title": "走出那间作坊",
+      "weight": 1,
+      "rate": 0.08,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 17
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        },
+        {
+          "kind": "health",
+          "max": 0.8
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 32,
+          "maxAge": 68,
+          "organizationKind": "factory"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 55
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "quit-to-open-window",
+          "weight": 1,
+          "text": "{subject}跟{employer}说干不下去了，油墨味熏得他早上手指发麻。{employer}把最后几天的工钱结了，扣掉试工时的午饭钱。他过街去另一家小作坊问位子，工钱少半克朗，可窗户开着，{neighbor}在门口说那家老板脾气急但从不扣人工钱。",
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "辞去通风不良的印刷作坊"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "被扣掉的午饭钱和少拿的工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "离开油墨味浓的作坊后头晕减轻"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "邻居给他指了另一家作坊"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "quit-to-open-window",
+              "text": "他把围裙叠好放在台面上，墨迹已经洗不掉。{employer}从抽屉里数出几张纸币，又拿回一枚，说试工那三天的午饭不能白吃。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "quit-to-open-window",
+              "text": "街对面的作坊窗子真的开着，风把门上的小铃吹得轻响。{subject}站在门口先闻了闻，闻到的只有纸和糨糊味，才开口问。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "half-measures-stay",
+          "weight": 1,
+          "text": "{subject}没有辞工，只求{employer}把通风窗打开、换一种清洗剂。{employer}答应拆掉一半木板，清洗剂还是用便宜的那种，说换牌子要加钱。窗开了一条缝，味道淡了些；他依旧每天头晕一阵，但工位和工钱没动，早上手指发麻就多搓两下。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "窗户拆掉一半后气味稍减"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "chronic_headache",
+              "add": true,
+              "reason": "清洗剂气味未彻底解决"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.03,
+              "reason": "老板答应了一半要求"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "保住工位，照常领日薪"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "half-measures-stay",
+              "text": "拆木板的活是他和{worker}一起干的，钉子起出来还能再用。窗缝里灌进街上的风，把台面上的铅屑吹到地上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "half-measures-stay",
+              "text": "清洗剂桶还是原来那只，标签被墨糊住半边。他倒的时候尽量侧着身子，让气味往窗口那边去，自己屏一会儿气再接着干。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "walked-off-unpaid",
+          "weight": 1,
+          "text": "{subject}没打招呼就不去了，围裙还挂在作坊的钉子上。月底家里等钱交房租，他才想起最后一个月的工钱还没结；回去问，{employer}说人走了就不按整月的规矩算，只扔给他几个铜币。他站在门口，手指在门框上按出几道白印。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "没拿到最后一个月的整月工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "不告而别吃了闷亏"
+            },
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "不告而别离开作坊"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.1,
+              "reason": "走人没打招呼，老板扣钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "walked-off-unpaid",
+              "text": "钉子上还挂着他的围裙，墨手印一个叠一个。他伸手想拿，{employer}从里面出来，先一步把围裙扯下来扔在柜台上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "walked-off-unpaid",
+              "text": "铜币是几枚发暗的十赫勒，他数了两遍，比算好的少了一大截。回家路上他绕开面包房，怕闻见味道。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "survival"
+        ],
+        "needs": [
+          "safety",
+          "autonomy"
+        ],
+        "baseUtility": 1.45,
+        "risk": 0.5,
+        "skills": [
+          "social",
+          "craft"
+        ]
+      }
+    },
+    {
+      "id": "p9-childhood-apprenticeship.teacher-recommendation",
+      "title": "老师的一封推荐信",
+      "weight": 0.9,
+      "rate": 0.09,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 16
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "apprenticeship"
+          ]
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        },
+        {
+          "kind": "cash",
+          "max": 60
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 16
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 32,
+          "maxAge": 68,
+          "organizationKind": "factory"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "letter-with-workbook",
+          "weight": 1,
+          "text": "{subject}回国民学校找{teacher}，把这两年临的版样和一本写满字的练习本放在桌上。{teacher}翻到最后一页，看了看字距，便给韦登区一家印刷厂写了推荐信，附上他的作业本，让他下星期带着去面试。信纸是学校的，封口处压了校印。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "has_recommendation",
+              "add": true,
+              "reason": "老师写了附作业本的推荐信"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.09,
+              "reason": "老师肯为他写信"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "作业本上的字让老师愿意担保"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "拿到了面试机会"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "letter-with-workbook",
+              "text": "教室里的粉笔灰和两年前一样。{teacher}从抽屉里取出一张信纸，写一行停一下，问他现在住在哪个区、家里几口人吃饭。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "letter-with-workbook",
+              "text": "作业本的边角卷了，他用湿布压过一晚才带来。{teacher}拿起来对着窗子看纸背，说墨迹透过来说明下笔太重，写字的人不能急。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ordinary-certificate",
+          "weight": 1,
+          "text": "{teacher}提起他最后一个学期缺了十几节课，说不能只写好话。她只写了一封普通的品行证明，证明他在校守规矩、识字会算，没提印刷的事。{subject}接过来看了看，信很短，折起来只有两折，他谢过老师，说拿这封去问问别的作坊。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "has_reference_letter",
+              "add": true,
+              "reason": "拿到一封普通的品行证明"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "信上没提他的手艺"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "老师照实写了证明"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ordinary-certificate",
+              "text": "{teacher}把笔搁下，看着他说，缺课的事不能装作没有。她的语气不重，可比数落更让人坐不住。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "ordinary-certificate",
+              "text": "信纸上只有半页字，校印盖在角落里。他走出校门时把信对着光看了看，又小心地放进内衣口袋。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "night-school-first",
+          "weight": 1,
+          "text": "{teacher}把他的练习本合上，说光凭这几页还推不动印刷厂，劝他先上夜校把簿记和德语修完，拿到证书她再写推荐。{subject}问清夜校在六区的哪条街、一学期多少学费，回家的路上拐过去看了一眼门口贴的课表。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 1,
+              "reason": "报名就近的夜校簿记课"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "夜校一学期报名费和课本钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "enrolled_night_school",
+              "add": true,
+              "reason": "老师建议先拿证书再推荐"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "记下了学费和课时怎么算"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "night-school-first",
+              "text": "夜校门口的布告被雨打湿，字有点洇。{subject}用手指顺着课表找簿记两个字，找到时手指停在纸面上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "night-school-first",
+              "text": "{teacher}说这话时不像在打发人，她翻开自己的排课簿给他看，哪几晚有课、哪几晚能来问问题。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "work"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.1,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    }
+  ]
+}

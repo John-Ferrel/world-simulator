@@ -1,0 +1,1001 @@
+{
+  "id": "p9-gap-adult-ordinary-day",
+  "title": "没有大事发生的一天",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 80
+  },
+  "tags": [
+    "adulthood",
+    "daily",
+    "leisure",
+    "neighborhood",
+    "ordinary"
+  ],
+  "baseRate": 0.13,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 80
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-gap-adult-ordinary-day.organ-grinder",
+      "title": "街角的手摇风琴",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "daily",
+        "music",
+        "street",
+        "leisure"
+      ],
+      "outcomes": [
+        {
+          "id": "organ-grinder.listen-coins",
+          "weight": 1,
+          "text": "{subject}站在面包店屋檐下听完两支圆舞曲，猴子端着帽子绕到面前时，她往帽子里放了一枚两赫勒的铜板。风琴师用指节敲了敲琴箱致谢，楼上又扔下一枚硬币，正好落在猴子脚边。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.02,
+              "reason": "给手摇风琴师的赏钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "听了几支曲子，心情松快了些"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "organ-grinder.listen-coins",
+              "text": "她本来只是去面包店买盐，被琴声绊住了脚。猴子蹲在帽沿上啃一颗栗子，风琴师脱下礼帽扇风，露出汗湿的额角。曲子完了，她数出两枚铜板放进帽子，听见身后有人吹口哨。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "organ-grinder.listen-coins",
+              "text": "琴箱的螺丝松了，每转一圈都发出吱呀声，可圆舞曲还是圆舞曲。她靠着墙听完，看见三楼窗台有人用绳子吊下一只小篮子收钱，绳子在风里晃。她摸出铜板时，猴子已经蹲在她脚边了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "organ-grinder.poured-water",
+          "weight": 1,
+          "text": "第二支曲子刚起头，二楼窗子哗地推开，一盆洗菜水泼在琴箱上。手摇风琴师骂了一句，猴子尖叫着跳上他的肩。围观的人哄笑着散开，{subject}往后退了两步，裤脚还是溅上了泥点。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被泼水的一幕搅了兴致"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "一起在街角看了这场热闹"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "organ-grinder.poured-water",
+              "text": "水从琴箱缝里淌下来，乐师用袖子擦着铜喇叭，嘴里嘟囔着谁也听不清的意大利话。{subject}低头看自己的裤脚，泥点像撒上去的胡椒。旁边卖烤栗子的老头说，这条街的窗户最爱泼水。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "organ-grinder.poured-water",
+              "text": "泼水的女人探出头说了声对不起，扔下一枚十赫勒的银币，硬币在湿石板上转了两圈。乐师捡起来对着光看了看，气消了一半，重新摇起琴。猴子抖了抖毛，水珠溅了{subject}一手。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "organ-grinder.follow-monkey",
+          "weight": 1,
+          "text": "{subject}跟着猴子走了半条巷子，它每隔几步就回头看看帽子里的铜板。走到面包店门口，乐师停下歇脚，跟她聊起这只猴子是去年在普拉特游乐园边捡的，还问她附近哪家店赊面包不记账。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "在面包店门口闲聊了一阵"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "和街头艺人搭话，多知道些街面上的事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "organ-grinder.follow-monkey",
+              "text": "猴子走在她前面，红绳在项圈后面拖着一截。乐师在面包店台阶上坐下，从兜里掏出一块干硬的面包掰成两半，一半给了猴子。他说这条巷子里只有面包店老板娘肯让他靠墙歇脚。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "organ-grinder.follow-monkey",
+              "text": "走到街角，猴子突然蹿上窗台，把人家晾的一串洋葱碰掉了。乐师连声道歉，{subject}帮着捡洋葱，两人笑了一阵。他说自己在二三区之间转，哪天转到她住的那条街，给她摇一支不收钱的。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-ordinary-day.wedding-procession",
+      "title": "邻居家的婚礼队伍",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        },
+        {
+          "kind": "householdSize",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighborB",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "tags": [
+        "daily",
+        "wedding",
+        "neighbor",
+        "celebration"
+      ],
+      "outcomes": [
+        {
+          "id": "wedding-procession.dragged-in",
+          "weight": 1,
+          "text": "{neighbor}一眼看见{subject}站在院门口，招手把她拉进长桌边，塞了一杯掺水的葡萄酒。{subject}摸出两克朗随礼，换回一块切得不齐的婚礼蛋糕和满耳朵的祝酒话。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "给邻居家婚礼的随礼"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "在婚礼席上吃到蛋糕和酒"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.06,
+              "reason": "被拉进婚礼席上喝了一杯"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wedding-procession.dragged-in",
+              "text": "长桌上铺着借来的白布，蛋糕是巷尾糕点铺烤的，奶油抹得高低不平。{subject}被按在一条长凳上，对面坐着不认识的表亲，一个劲给她倒酒。她咬了一口蛋糕，杏仁味很重，糖霜粘在上颚。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wedding-procession.dragged-in",
+              "text": "她本来只想在门外站一站，{neighbor}的丈夫却端着一盘李子烧酒出来，硬往她手里塞了一杯。她随了两克朗的礼，坐在靠墙的位置，看新娘解开嫁妆箱的铜锁给众人看里面的被面。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wedding-procession.watch-outside",
+          "weight": 1,
+          "text": "{subject}站在门外看了一会儿，撒纸花的孩子跑过她身边，纸屑粘在她的袖口上。院里传来手风琴声和碰杯声，她想起自己家里还没办过这样的席，站到巷子拐角才转身回去。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "看着别人的喜事，心里有些空落"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "在门外看了邻居家的婚礼"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wedding-procession.watch-outside",
+              "text": "新娘的婚纱是租的，裙摆上有一块洗过的痕迹，可她还是走得很小心，像踩在水面上。{subject}把粘在袖口的纸花弹掉，听见院里有人喊“新郎官唱一个”，接着是跑调的歌声和一阵拍手。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wedding-procession.watch-outside",
+              "text": "巷子太窄，宾客的帽子几乎碰着两边的墙。{subject}侧身让过一箱抬进去的嫁妆，箱角包着铁皮，沉得两个男人直喘。她闻到炖肉的香味从门里飘出来，站了片刻，还是往自家楼梯走。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wedding-procession.move-table",
+          "weight": 1,
+          "text": "婚礼队伍把巷子堵死了，长桌摆不开，{neighborB}招呼人手帮忙。{subject}和两个男人把桌子抬到墙根，碰倒了一只空酒瓶，{neighbor}过意不去，塞给她一包用红纸扭着的喜糖。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "帮搬长桌得到的喜糖"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "帮忙搬开长桌，邻居记着这份人情"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wedding-procession.move-table",
+              "text": "桌子是巷口酒馆借来的，桌腿有一只短了半寸，抬的时候总往一边歪。{subject}扶着桌角，指甲缝里嵌进木刺。{neighborB}用围裙擦手，说改天请她喝咖啡，转身又去搬凳子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wedding-procession.move-table",
+              "text": "她搬完桌子，站在墙根喘气，看见新娘的弟弟蹲在台阶上数礼金，铜板银币分成两摞。{neighbor}把喜糖塞过来时小声说，这糖是男方家从五区带来的，比巷口杂货铺的硬。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-ordinary-day.market-closing",
+      "title": "市场收摊前的降价",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "tags": [
+        "daily",
+        "market",
+        "food",
+        "bargain"
+      ],
+      "outcomes": [
+        {
+          "id": "market-closing.bruised-apples",
+          "weight": 1,
+          "text": "卖水果的把碰伤的苹果拢成一堆，喊十个赫勒全拿走。{subject}掏出十赫勒，兜了满满一裙兜，回家削掉烂处，加了桂皮煮成一锅苹果糊，够吃两天。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.1,
+              "reason": "买收摊前的碰伤苹果"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "煮了一锅苹果糊"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "market-closing.bruised-apples",
+              "text": "苹果堆里混着几个已经发软的，摊主用围裙兜着往她篮子里倒，说拿回去喂猪也不亏。{subject}在井边洗了半篮子，削皮时看见果核边有一圈褐色的痕，刀子挖下去，甜味还是冒出来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "market-closing.bruised-apples",
+              "text": "她蹲在菜市场湿漉漉的石板地上挑苹果，{neighbor}从旁边经过，说这种碰伤的煮出来最甜。她回家把苹果切成块，锅里水刚开就下了糖精片，满屋子都是煮水果的酸香。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "market-closing.share-spinach",
+          "weight": 1,
+          "text": "最后一把菠菜被{subject}和{neighbor}同时捏住，两人愣了一下，摊主摊手说就这一把了。{neighbor}笑着撕下半捆递过来，{subject}分了她两枚铜板，各自拎着菜往不同方向走。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.04,
+              "reason": "分买最后一把菠菜"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "分到半把菠菜"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "分菜时互相让了一步"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "market-closing.share-spinach",
+              "text": "那把菠菜根上还带着湿泥，叶子被压得有些蔫。{neighbor}先松了手，说你家人口少，拿半把够了。{subject}把菜装进篮子时，听见摊主开始收秤砣，铁盘碰得叮当响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "market-closing.share-spinach",
+              "text": "两人同时伸手，又同时缩回去。{neighbor}说自己本来想买回去做馅，{subject}说那正好一人一半。摊主用草绳把菜捆好，嘴里嘟囔着收摊了收摊了，把剩下的零钱扒拉进木匣。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "market-closing.fish-heads",
+          "weight": 1,
+          "text": "{worker}把案板上最后几个鱼头刮进纸里，顺手塞给{subject}，说拿回去熬汤比扔了强。她拎回家用姜片和醋煮了一锅，汤色浑白，腥味重得开窗才散得掉。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "用鱼头熬了一锅汤"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "喝上了热鱼汤"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "market-closing.fish-heads",
+              "text": "鱼头用报纸包着，报纸上还印着昨天的广告。{worker}一边刮冰一边说，回去多搁姜，别舍不得醋。{subject}把纸包拎在手里，能感觉到凉气从指缝里钻出来，走到家时报纸已经洇湿了一层。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "market-closing.fish-heads",
+              "text": "鱼摊案板上的冰碴子踩在脚下咯吱响。{worker}把鱼鳃抠干净了才递过来，说这几个头是今天卖剩的鲤鱼。{subject}回家烧了半锅水，姜片一下锅，厨房里那股腥气就压下去了一半。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-ordinary-day.wash-day",
+      "title": "洗衣日的院子",
+      "weight": 1,
+      "rate": 0.0208,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        },
+        {
+          "kind": "householdSize",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighborB",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "tags": [
+        "daily",
+        "laundry",
+        "neighbor",
+        "household"
+      ],
+      "outcomes": [
+        {
+          "id": "wash-day.wring-blanket",
+          "weight": 1,
+          "text": "{subject}洗完自己的被单，看见{neighbor}一个人对付一条厚羊毛毯，便上去搭手。两人各抓一头往反方向拧，水哗哗流到石板上，{subject}的手掌被粗布勒出红印，晾完毯子才觉得指节发酸。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "拧厚毯子把手勒得发酸"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.06,
+              "reason": "一起拧干了一条厚毯子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wash-day.wring-blanket",
+              "text": "毯子吸饱了水，沉得像一条死狗。{neighbor}说这毯子是她婆婆的嫁妆，一年只洗一回。{subject}咬着牙拧到最后一圈，水从毯缝里挤出来，在脚边汇成一小片温热。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wash-day.wring-blanket",
+              "text": "两个人拧毯子的时候，{neighborB}在旁边递肥皂水，说你们俩力气倒合得上。毯子抬上绳子时还在滴水，{subject}甩了甩手，看见自己掌纹里嵌着一道一道的布纹。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wash-day.shirt-in-mud",
+          "weight": 1,
+          "text": "一阵风把晾在绳上的白衬衫吹落到泥地里，{neighbor}说是{subject}这边绳子没夹牢，{subject}说是风从你家窗户那边灌过来的。两人争了几句，最后一起把衬衫重新过了一遍水，各自回屋时都没再多话。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "为衬衫掉进泥里争了几句"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "洗衣日添了一场口角"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wash-day.shirt-in-mud",
+              "text": "衬衫前襟沾了一大块泥，袖口还滚进了菜叶。{neighbor}拎着衣领抖了抖，说这泥是院子里的老泥，洗三遍都未必干净。{subject}没接话，从桶里舀了一瓢清水浇上去，泥水顺着布纹淌下来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wash-day.shirt-in-mud",
+              "text": "风是从巷口那栋新楼的方向刮过来的，绳子上的被单都鼓成了帆。衬衫落地时，几个搓衣的女人都停了手看。{subject}弯腰去捡，听见身后有人说风大就早点收，别等出了事再怪人。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wash-day.listen-gossip",
+          "weight": 1,
+          "text": "{neighbor}一边搓衣领一边讲三楼那户人家的事，说男的又几天没回家了。{subject}听着，没接茬，把被单抖开晾上绳子，用木夹子夹牢四角，拧干最后一件衬衣就端着盆回屋了。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "听了一耳朵院子里的闲话"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "在洗衣日聊了几句家常"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wash-day.listen-gossip",
+              "text": "肥皂沫从{neighbor}的指缝里冒出来，她说话时手里不停，衣领在搓板上蹭得吱吱响。{subject}把湿被单搭上绳子，被单沉甸甸地坠下来，她踮脚才够到第二根竹竿。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wash-day.listen-gossip",
+              "text": "院子里孩子们从湿石板之间跳过去，把晾衣绳碰得一晃。{neighbor}说到一半，被自家孩子喊回去添柴。{subject}乘机把最后一只木夹子夹好，端起木盆，盆底的水滴了一路。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-ordinary-day.lost-dog",
+      "title": "巷子里的一条走失的狗",
+      "weight": 1,
+      "rate": 0.0208,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "daily",
+        "animal",
+        "neighbor",
+        "ordinary"
+      ],
+      "outcomes": [
+        {
+          "id": "lost-dog.feed-bread",
+          "weight": 1,
+          "text": "{subject}掰了半块黑面包蹲下喂狗，它吃得很快，尾巴慢慢摇起来，跟着她走到院门口。正要关门，一个戴毛线帽的男人从巷口跑来，喊了声狗的名字，狗立刻窜过去，绕着他裤腿打转。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "喂了走失的狗半块面包"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "狗找到了主人，心里踏实"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lost-dog.feed-bread",
+              "text": "狗的项圈上嵌着一块铜牌，磨得字迹模糊。{subject}蹲在墙根，把面包撕成小块放在石板上，狗先闻了闻她的手指才低头吃。她摸了摸它的后颈，毛底下那根脊骨瘦得硌手。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "lost-dog.feed-bread",
+              "text": "巷子里卖煤的正往板车上装货，看见狗绕过来，说这狗在环城道那边就有人找。{subject}把面包递过去时，狗用鼻子拱了拱她的掌心。男人跑来时手里还攥着半截绳子，连声道谢，说这狗是替人看院子的。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lost-dog.return-address",
+          "weight": 1,
+          "text": "{subject}照着项圈铜牌上的街名和门牌找到那户人家，敲门没人应，邻居说主人去厂里上工了。她只好把狗牵到门房，看门的老头答应先拴在门廊下，她留下自己名字时，狗趴在门槛上看着她走远。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "帮着把走失的狗送到门房"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "送完狗回来，心里还有点挂念"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lost-dog.return-address",
+              "text": "铜牌上的门牌号在六区一条窄街上，楼梯间的墙皮起了鼓包，二楼有人在拉手风琴。{subject}牵着狗沿街走，狗时走时停，鼻子贴着一排门槛嗅过去。门房老头接过绳子时说了句这狗他认得，是四楼裁缝家的。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "lost-dog.return-address",
+              "text": "她照着铜牌一路问到那栋楼，门房说裁缝天不亮就出门了，天黑才回。{subject}把狗绳在栏杆上绕了两圈，蹲下来拍了拍狗脑袋，狗伸出舌头舔了舔她的手背，才跟着门房往门廊里走。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lost-dog.chase-two-streets",
+          "weight": 1,
+          "text": "狗突然被一个跑过的孩子喊住，跟着往巷口窜去，{subject}追了两条街，越追越远。等她停下喘气，鞋底已经磨得发薄，脚趾头能感觉石板路的凉气。她慢慢走回来，巷子里只剩卖煤的空板车。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "追狗跑得脚底发疼"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "补鞋底的开销"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lost-dog.chase-two-streets",
+              "text": "狗跑得不算快，可它拐弯时总挑窄巷子钻。{subject}跟着它穿过一条挂满洗好的床单的过道，床单扫过她的额头。等她站定，狗已经不见影了，脚上的旧鞋咧开了嘴，露出沾了泥的袜尖。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "lost-dog.chase-two-streets",
+              "text": "那孩子一边跑一边吹口哨，狗就跟着口哨声跑。{subject}追到街角时，罗盘钟正敲整点。她扶着墙喘，低头看见鞋底磨穿的洞，算着补鞋匠那里补一只要收六十赫勒。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-ordinary-day.flea-market-cup",
+      "title": "旧货摊上的一只杯子",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "tags": [
+        "daily",
+        "flea_market",
+        "object",
+        "ordinary"
+      ],
+      "outcomes": [
+        {
+          "id": "flea-market-cup.buy-cracked",
+          "weight": 1,
+          "text": "{subject}把杯子翻过来看底，裂纹细得像头发丝，摊主说装茶不成问题。她花四十赫勒买下，回家倒上茶，水从裂处慢慢洇出来，在桌面留下一个湿圈。她只好把杯子搁在柜顶上看，不再拿来用。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "买下有裂纹的描金边杯子"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "买了一只看着顺眼的旧杯子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "flea-market-cup.buy-cracked",
+              "text": "杯口描着金边，金已经磨掉了一半，露出底下的白瓷。摊主用一块脏布把杯子擦了擦，说这是老太太们喝咖啡用的。{subject}把它对着光看，裂纹里有一条淡淡的褐线，像渗进去的茶渍。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "flea-market-cup.buy-cracked",
+              "text": "她付钱时，摊主找了几个铜板，顺手把杯子用旧报纸裹上。回家拆开报纸，杯底那道裂纹在灯下看得更清楚。她还是倒了半杯茶进去试，看水从缝里渗出来，在桌上慢慢汪成一小片。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "flea-market-cup.haggle-cheap",
+          "weight": 1,
+          "text": "{subject}和摊主为那只杯子来回讲了半天价，从八十赫勒压到三十赫勒，{neighbor}在旁边帮着说了句“这杯子底都裂了”。摊主摆摆手让了，她把杯子裹进手帕，觉得自己占了便宜。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "还价后买下旧杯子"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "在旧货摊上练了一回讲价"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "flea-market-cup.haggle-cheap",
+              "text": "摊主是个戴眼镜的老头，开价时把杯子往摊布上一顿。{subject}指出杯口有个磕痕，{neighbor}又添了一句裂纹渗水。老头摘下眼镜擦了擦，说三十就三十，反正搁着也是搁着。她数出三枚十赫勒的硬币，心里算着比杂货铺的新杯子还是便宜。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "flea-market-cup.haggle-cheap",
+              "text": "她本来已经走开了两步，又回头还了个价。摊主说这杯子是从一位老小姐的遗产里收来的，光收旧货的车钱就不止这些。{subject}把三十赫勒排在摊布上，老头盯着看了一会儿，把杯子推过来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "flea-market-cup.walk-back-too-late",
+          "weight": 1,
+          "text": "{subject}看了半天，嫌杯底的裂纹不好，放下杯子往街口走。走到半路又想起那只金边，折回去时摊布上已经换了位置，摊主说杯子刚被一个戴面纱的女人买走。她站在摊前看了一会儿别的旧货，空手回了家。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "错过了一只中意的杯子"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "在旧货摊前碰见聊了几句"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "flea-market-cup.walk-back-too-late",
+              "text": "旧货摊收了一半，铁皮盒里的零钱叮当作响。{subject}问那只描金边的杯子，摊主用手背往街角一指，说刚有个女人挑走了，还说那裂纹其实拿胶补补能用。她低头看摊布上留下的一个圆印，是杯子搁久了压出来的。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "flea-market-cup.walk-back-too-late",
+              "text": "她走到街口又折回来，{neighbor}正在试一顶旧帽子，对着小镜子左右照。摊主摊手说杯子卖掉了，还说下回有好的瓷器给她留着。{subject}把手里攥着的四十赫勒放回口袋，硬币碰出轻轻一声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

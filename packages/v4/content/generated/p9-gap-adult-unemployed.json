@@ -1,0 +1,942 @@
+{
+  "id": "p9-gap-adult-unemployed",
+  "title": "没有固定工作的一天",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 60
+  },
+  "tags": [
+    "adulthood",
+    "unemployment",
+    "casual_labour",
+    "poverty",
+    "daily"
+  ],
+  "baseRate": 0.16,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 60
+    },
+    {
+      "kind": "employment",
+      "employed": false
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-gap-adult-unemployed.dock-morning",
+      "title": "码头清晨的零工",
+      "weight": 1,
+      "rate": 0.0288,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "unemployment",
+        "dock",
+        "casual_labour"
+      ],
+      "outcomes": [
+        {
+          "id": "dock-picked-coal",
+          "weight": 2,
+          "text": "{subject}被工头点中去卸一船煤，从清晨干到午后，铁锹柄磨得掌心发烫。卸完最后一筐时肩膀已经磨破，工头按日头算给四克朗二十赫勒，钱在手里还带着汗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4.2,
+              "reason": "卸煤半日的工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "扛煤筐磨破肩膀"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "dock-picked-coal",
+              "text": "多瑙河码头的雾还没散，工头捏着名单念了{subject}的名字。煤灰落在汗湿的脖颈上，{neighbor}在铁门边看着，说这活儿一天顶三天，可肩膀得疼上一个礼拜。"
+            },
+            {
+              "id": "alt",
+              "key": "dock-picked-coal",
+              "text": "同来的{worker}没被点上，骂了一声把麻绳甩上肩走了。{subject}跟着工头进了货栈，煤块从跳板滑进船舱，到午后点了四克朗二十赫勒，手指黑得洗不净。"
+            }
+          ]
+        },
+        {
+          "id": "dock-watched-tools",
+          "weight": 2,
+          "text": "等到中午也没被点上，{neighbor}要去巷口买面包，把一捆麻绳和铁钩托给{subject}看着。回来时塞来一碗热汤和半块黑面包，说反正没活儿，汤总得喝一口。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "替邻居看工具换来的一碗汤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.02,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0,
+              "reason": "替邻居看了一上午工具"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "dock-watched-tools",
+              "text": "河面的雾散尽时，码头上的人走了一半。{subject}蹲在石阶上替{neighbor}守着麻绳和铁钩，看装卸工在跳板上喊号子。汤送来时还烫嘴，豆子沉在碗底。"
+            },
+            {
+              "id": "alt",
+              "key": "dock-watched-tools",
+              "text": "工头第二次出来时眼皮都没抬。{neighbor}把工具往{subject}脚边一放，说去去就回，回来时用围裙兜着面包，汤罐用旧布裹着，两人在墙根分着吃完。"
+            }
+          ]
+        },
+        {
+          "id": "dock-shared-crates",
+          "weight": 1,
+          "text": "和{neighbor}合搬一车木箱，说好两人平分。工头结账时只算一个人的工钱，说箱子是两个人抬的没错，可名单上只写了一个名字。{neighbor}当场把扁担往地上一杵，工头才骂骂咧咧补了两个克朗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "争执后补到的搬运工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.03,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "一起和工头争工钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "dock-shared-crates",
+              "text": "木箱里装的是钉子，一车推上斜坡时{subject}在前头拉，{neighbor}在后头推。结账时工头只点了一个名字，{neighbor}的嗓门整条巷子都听得见，最后多给了两克朗。"
+            },
+            {
+              "id": "alt",
+              "key": "dock-shared-crates",
+              "text": "箱子棱角硌着肋骨的滋味到傍晚还没消。工头把工钱数给{subject}时少了一半，{neighbor}凑过来把扁担一横，说名单上少写一个，钱可不能少算一个。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-unemployed.pawnshop",
+      "title": "当铺柜台上的一只表",
+      "weight": 1,
+      "rate": 0.0272,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "min": 0,
+          "max": 12
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "unemployment",
+        "pawn",
+        "cash",
+        "poverty"
+      ],
+      "outcomes": [
+        {
+          "id": "pawn-accepted-watch",
+          "weight": 2,
+          "text": "伙计把怀表翻过来看后盖，又凑到耳边听了听，开出七克朗，三个月内赎回，月息一分。{subject}在当票上按了手印，出门时把它折成小方块塞进内袋，表链扣还在掌心留了个印子。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 7,
+              "reason": "当掉旧怀表所得"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "当掉随身旧物"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pawn-accepted-watch",
+              "text": "玛丽亚希尔夫街的当铺里点着煤油灯，柜台高得只看见伙计的袖套。他报出七克朗时，排在后头的{neighbor}探了探头。{subject}没还价，拿了钱和当票就往外走。"
+            },
+            {
+              "id": "alt",
+              "key": "pawn-accepted-watch",
+              "text": "怀表是黄铜壳，走起来慢半刻，伙计照样收了。七克朗换成纸钞加几枚镍币，{subject}数了两遍。当票上印着三个月期限，字小得像蚂蚁，折起来正好塞进表袋原来的位置。"
+            }
+          ]
+        },
+        {
+          "id": "pawn-refused-halfprice",
+          "weight": 1,
+          "text": "伙计只肯给三克朗，说表壳有划痕、机芯发涩，收回去也难出手。{subject}把表攥回手里，说这表走时准得很，转身出了门，{neighbor}在台阶下说隔壁街还有一家，只是那家的利息更狠。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "当物被压价后的憋闷"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "affection": 0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "一起跑了两家当铺"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pawn-refused-halfprice",
+              "text": "柜台上的铜盘里堆着别人当掉的戒指和顶针。伙计用指甲刮了刮表壳上的划痕，报三克朗。{subject}把表揣回兜里，听见{neighbor}在门口低声说，这条街的伙计都这样，先压一半再谈。"
+            },
+            {
+              "id": "alt",
+              "key": "pawn-refused-halfprice",
+              "text": "后面抱冬衣的人往前挪了一步。{subject}问能不能再添一克朗，伙计摇摇头，把表推回柜台边。出门时阳光刺眼，{neighbor}指着巷子另一头说，那家招牌上画着三个金球，可进门先扣两成。"
+            }
+          ]
+        },
+        {
+          "id": "pawn-neighbor-tops-up",
+          "weight": 1,
+          "text": "{neighbor}在柜台边听说只当七克朗，等出了门，从手帕里数出三克朗塞过来，说加上正好把表赎回来，下月领了工钱再还。{subject}捏着那三克朗，指节发白，到底没推回去。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "邻居垫付的赎表钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "affection": 0.05,
+              "obligation": 0.08,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "邻居垫钱帮忙赎表"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pawn-neighbor-tops-up",
+              "text": "台阶上风大，{neighbor}把手帕摊在膝盖上数钱，数出三克朗，又添了十几赫勒凑整。{subject}说下月一定还，{neighbor}摆摆手，说先把表拿回来要紧，怀表在当铺里过夜，总觉得不踏实。"
+            },
+            {
+              "id": "alt",
+              "key": "pawn-neighbor-tops-up",
+              "text": "伙计重新开票时抬眼看了看两个人。{neighbor}说表是她家老头子留下的，不能就这么折在柜台上。出门后{subject}把表重新戴上，表链贴着腕子，凉得叫人一激灵。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-unemployed.soup-kitchen",
+      "title": "救济厨房的长队",
+      "weight": 1,
+      "rate": 0.0272,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "church",
+          "kind": "organization",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 90,
+          "organizationKind": "church"
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "unemployment",
+        "relief",
+        "food",
+        "church"
+      ],
+      "outcomes": [
+        {
+          "id": "soup-got-scoop",
+          "weight": 2,
+          "text": "轮到{subject}时锅里还剩半勺，{official}把汤勺在锅沿上刮了刮，连汤带豆子倒进罐子，又掰了半块面包。{neighbor}让出墙根一块背风的地方，两人蹲着吃完，手指头才慢慢有了知觉。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "救济厨房的一勺汤和半块面包"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "热汤下肚驱了寒气"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "soup-got-scoop",
+              "text": "教堂后院的铁锅冒着白汽，排队的人把各种罐子捧在胸前。{official}穿着灰围裙一勺一勺地分，轮到{subject}时锅底已经露出来，勺子刮出响声，还是刮了半勺倒进罐里。"
+            },
+            {
+              "id": "alt",
+              "key": "soup-got-scoop",
+              "text": "风从教堂的拱廊里灌过来，队伍里没人说话，只听见罐子碰罐子的声音。{neighbor}排在前面，领完没走，站在墙根等{subject}，把自己的面包掰了一半递过去。"
+            }
+          ]
+        },
+        {
+          "id": "soup-pot-empty",
+          "weight": 1,
+          "text": "还没轮到锅就见了底。{official}把空锅拎到一边，说今天人来得太多，明天十一点开锅，早些来。{subject}空着罐子往巷口走，{neighbor}追上来，把自家罐里匀出的半碗倒进去。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居匀出的半碗汤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.04,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0,
+              "reason": "邻居在队伍散了后匀汤"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "soup-pot-empty",
+              "text": "前面还有七八个人时，{official}已经直起腰把锅盖扣上了。队伍没散，有人骂了一句，有人蹲下把罐子收进布袋。{subject}走到巷口，{neighbor}从后面赶上来，罐子还温着。"
+            },
+            {
+              "id": "alt",
+              "key": "soup-pot-empty",
+              "text": "锅底刮出焦味，{official}说今天就这些了，明天赶早。{subject}把空罐子夹在腋下往回走，石板路上结了薄冰，{neighbor}在拐角等着，二话没说把罐子递过来。"
+            }
+          ]
+        },
+        {
+          "id": "soup-helped-potatoes",
+          "weight": 1,
+          "text": "{subject}没急着排队，先帮{church}的杂役削了一筐土豆，指甲缝里嵌满泥。管事的多给了两份汤，{subject}用布包好一份，趁热端回{residence}，自己就着锅边喝了另一份。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "削土豆换来的两份汤"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "在救济厨房帮忙周旋"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "soup-helped-potatoes",
+              "text": "土豆堆在教堂后门的木盆里，{subject}蹲着削了半个钟头，刀口划过芽眼，手冻得不听使唤。管事的老太太看了一眼，说行了，拿两份走吧，别让汤凉了。"
+            },
+            {
+              "id": "alt",
+              "key": "soup-helped-potatoes",
+              "text": "排队的人从门口一直拐到巷子里。{subject}绕到后院问有没有活儿换饭，{church}的杂役指了指土豆筐。削完一筐，{official}从锅里舀了两勺，说下回还来帮忙。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-unemployed.labour-exchange",
+      "title": "职业介绍所的木牌",
+      "weight": 1,
+      "rate": 0.0272,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "unemployment",
+        "labour_exchange",
+        "bureaucracy"
+      ],
+      "outcomes": [
+        {
+          "id": "exchange-fee-lost",
+          "weight": 1,
+          "text": "{subject}交了一克朗登记费，拿到一张写着清扫地址的纸条。第二天按地址找去，工头说人昨天就招满了，纸条上没写日期。回到介绍所，{official}说登记费不退，下回有活儿优先通知。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "职业介绍所登记费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "交了钱却没拿到活"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "exchange-fee-lost",
+              "text": "介绍所的墙上钉着上百块木牌，大半翻过去露出灰白的背面。{official}收了一克朗，从抽屉里摸出纸条，墨水还没干透。第二天{subject}站在工厂门口，门房说清扫工昨天就齐了。"
+            },
+            {
+              "id": "alt",
+              "key": "exchange-fee-lost",
+              "text": "一克朗是{subject}身上最后一张整票。纸条上的地址在城郊，坐电车又花了几赫勒。工头叼着烟说你来晚了，{subject}攥着纸条站了一会儿，回程的路走了一个钟头。"
+            }
+          ]
+        },
+        {
+          "id": "exchange-trial-work",
+          "weight": 2,
+          "text": "没走介绍所的登记，{subject}把墙上翻过来的木牌逐块看了一遍，记下城郊一家洗衣房的地址，直接找上门去。老板娘让她试半天，熨完两打衬衫，留下做临时工，按件算钱，当天结了三克朗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "洗衣房试工半天按件计酬"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "在洗衣房学熨烫"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "exchange-trial-work",
+              "text": "洗衣房里蒸汽弥漫，熨斗压在衬衫领子上咝咝作响。老板娘翻了翻{subject}熨好的第一件，说领口还差些火候，手上倒还稳。两打熨完，三个克朗放在围裙口袋里，铜板还带着体温。"
+            },
+            {
+              "id": "alt",
+              "key": "exchange-trial-work",
+              "text": "介绍所里那个{worker}说木牌上的地址多半过时了，不如自己去问。{subject}走了四十分钟到洗衣房，院子里晾着床单。老板娘让她先熨一件试试，看完说留下吧，明天还这个时辰来。"
+            }
+          ]
+        },
+        {
+          "id": "exchange-swap-tips",
+          "weight": 1,
+          "text": "{subject}没交登记费，和旁边的{worker}在台阶上交换了消息。那人说北站货栈下午要雇人抄货单，工钱日结，但要自带铅笔；{subject}把地址抄在烟盒纸上，用半截铅笔头在背面记了时辰。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "has_work_lead",
+              "add": true,
+              "reason": "从工人处得到货栈招工消息"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.02,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0,
+              "reason": "交换招工消息"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "exchange-swap-tips",
+              "text": "台阶上蹲着几个等消息的人，{worker}把烟盒纸摊在膝盖上画路线，说北站货栈的管事认字就行，不认登记所那一套。{subject}把那半截铅笔头借来，在纸角写上时辰，折好收进内袋。"
+            },
+            {
+              "id": "alt",
+              "key": "exchange-swap-tips",
+              "text": "介绍所的门关到一半，里面还在喊下一位。{subject}和{worker}站在廊下，听着货栈、面粉厂、马厩各处的消息，最后只记住北站那条。烟盒纸塞进上衣口袋，走路时窸窸窣窣响。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-unemployed.factory-gate",
+      "title": "工厂门口的招工纸",
+      "weight": 1,
+      "rate": 0.0256,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "unemployment",
+        "factory",
+        "hiring"
+      ],
+      "outcomes": [
+        {
+          "id": "gate-name-taken",
+          "weight": 2,
+          "text": "门房把{subject}的名字写进本子，说第二天带身份证件和住址证明来，录不录用还得看{employer}的意思。{subject}走出几步又回头，问清要几张证明，门房不耐烦地敲了敲玻璃。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "factory_callback",
+              "add": true,
+              "reason": "工厂门房登记了名字"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "拿到次日复试机会"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gate-name-taken",
+              "text": "玻璃后面的招工纸被门房用尺子压平，{subject}的名字写在横线本上，墨迹歪着。旁边的{worker}凑过来看了一眼，说这厂子去年也招过两回，录用的多半是厂里老人的亲戚。"
+            },
+            {
+              "id": "alt",
+              "key": "gate-name-taken",
+              "text": "门房问会不会写字，{subject}说会，他就把本子推出来让{subject}自己写。写完他扫了一眼，说证件带齐，别像上回那人拿张教堂的纸条来糊弄。"
+            }
+          ]
+        },
+        {
+          "id": "gate-queue-clash",
+          "weight": 1,
+          "text": "{subject}挤到前面报了名字，后面的人立刻嚷嚷起来，说排队得有个先后。门房把本子一合，说都走都走，今天不记了。{official}从台阶下过来维持秩序，人群才慢慢散开，招工纸还压在玻璃后面。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "插队报名字引起争执"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "招工登记被一并取消"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gate-queue-clash",
+              "text": "前面的人贴得太紧，{subject}侧身挤到铁栅栏边刚开口，一个抱孩子的女人先骂了起来。门房敲着玻璃喊安静，最后索性把本子收进抽屉，说改天再来。"
+            },
+            {
+              "id": "alt",
+              "key": "gate-queue-clash",
+              "text": "招工纸上的工钱写得明白，一天三克朗八十赫勒。{subject}怕再等下去名额没了，从人缝里挤到前面，后面的{worker}一把拽住袖子。门房抬头看了看乱糟糟的队伍，把玻璃窗拉上了。"
+            }
+          ]
+        },
+        {
+          "id": "gate-price-check",
+          "weight": 1,
+          "text": "{subject}凑近玻璃把招工纸读完，发现工钱比巷子里传的少了一克朗，还要自备围裙和手套。身后的人还在往前挤，{subject}退出来，沿街往下一家作坊走，把招工纸的事丢在厂门口。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "招工条件不如传言"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "继续沿街找活"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gate-price-check",
+              "text": "招工纸上用小字写着工钱和自备物件，{subject}在心里算了算，围裙加手套差不多要一克朗，头一个月等于白干几天。{worker}还在门房跟前争，{subject}已经顺着街沿走远了。"
+            },
+            {
+              "id": "alt",
+              "key": "gate-price-check",
+              "text": "玻璃后面的纸上盖着红章，工钱一栏被涂改过。{subject}问门房怎么回事，他说按纸上的算，嫌少就别来。街角的面包房正卸面粉，{subject}走过去问要不要帮工。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-adult-unemployed.moving-job",
+      "title": "替人搬半天家",
+      "weight": 1,
+      "rate": 0.024,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "unemployment",
+        "moving",
+        "casual_labour",
+        "neighbor"
+      ],
+      "outcomes": [
+        {
+          "id": "moving-finished-paid",
+          "weight": 2,
+          "text": "柜子和床架从三楼抬下来，在窄楼梯的拐角卡了两回，{subject}的腰抵着墙才转过去。搬完{neighbor}数出三克朗，又端来一锅土豆炖肉，说趁热吃。夜里躺下时，腰酸得像被人从后面踹了一脚。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "帮鞋匠搬家的工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "搬重物腰背酸痛"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "moving-finished-paid",
+              "text": "楼梯窄得只容一个人侧身，{subject}和{worker}一前一后抬着柜子，{neighbor}在楼下喊当心磕墙。床架拆成两截，捆在手推车上推到城外新住处，回来时天已经擦黑。"
+            },
+            {
+              "id": "alt",
+              "key": "moving-finished-paid",
+              "text": "书箱比看起来沉，{subject}一个人抱下楼时膝盖直打颤。{neighbor}把午饭摆在新住处的窗台上，黑面包夹着咸肉，汤用旧罐子装着。工钱给的是铜币，数起来哗啦响。"
+            }
+          ]
+        },
+        {
+          "id": "moving-damaged-deducted",
+          "weight": 1,
+          "text": "柜脚在楼梯拐角磕出一道裂缝，{neighbor}蹲下来摸了半天，说这柜子还是结婚时打的。结账时扣了一克朗半，只给了一克朗二十赫勒，{subject}没争，接过钱时手背上划的印子还渗着血珠。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.2,
+              "reason": "搬家磕坏柜脚被扣工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "搬柜子时手背划伤"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "moving-damaged-deducted",
+              "text": "柜脚磕在石阶边缘那一声，{neighbor}在楼上就听见了。下来摸着裂缝，说这柜子跟了十几年，你们抬东西也太毛躁。{subject}把手在裤子上蹭了蹭，血印子蹭出一条。"
+            },
+            {
+              "id": "alt",
+              "key": "moving-damaged-deducted",
+              "text": "新住处的门框比旧屋矮，柜子抬进去时顶上的雕花蹭掉一块。{neighbor}没当场发作，结账时才从工钱里扣了去，说修补漆得花钱。{worker}在旁边直摇头，到底没帮着说话。"
+            }
+          ]
+        },
+        {
+          "id": "moving-heavy-books-bonus",
+          "weight": 1,
+          "text": "最沉的是两箱书，{subject}和{worker}抬到楼下时胳膊都在抖。{neighbor}打开箱盖看了一眼，说这些书是他攒了半辈子的，多给几个赫勒当辛苦钱。铜币塞进手里时，手心全是汗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.6,
+              "reason": "搬书箱额外给的辛苦钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.03,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "搬家时出力踏实"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "moving-heavy-books-bonus",
+              "text": "书箱用麻绳捆了两道，抬起来绳子往肉里勒。{worker}在前头喊慢点，{subject}闷着头下楼梯，数着台阶。{neighbor}在院子里看着，等箱子放稳，从马甲口袋里摸出几个赫勒。"
+            },
+            {
+              "id": "alt",
+              "key": "moving-heavy-books-bonus",
+              "text": "书箱落地时扬起一层灰，{neighbor}蹲下把绳子解开，说这些书比家具还金贵。{subject}靠着墙喘气，{worker}在边上笑，说下回这家的活儿还来。"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

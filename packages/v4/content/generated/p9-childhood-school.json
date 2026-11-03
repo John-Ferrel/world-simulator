@@ -1,0 +1,1051 @@
+{
+  "id": "p9-childhood-school",
+  "title": "国民学校的长凳",
+  "stage": "childhood",
+  "ageWindow": {
+    "min": 6,
+    "max": 14
+  },
+  "tags": [
+    "childhood",
+    "school",
+    "teacher",
+    "peers",
+    "lessons",
+    "truancy"
+  ],
+  "baseRate": 0.16,
+  "conditions": [
+    {
+      "kind": "education",
+      "in": [
+        "primary"
+      ]
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-childhood-school.spelling-and-cane",
+      "title": "黑板前的听写",
+      "weight": 1,
+      "rate": 0.032,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 9
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "school"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 9
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 6,
+          "maxAge": 11
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "spelling-all-correct",
+          "weight": 1,
+          "text": "他站在黑板前，粉笔在手里有点打滑，但每个词都拼对了。老师用指节敲了敲黑板沿，让全班跟着他念一遍，窗边的孩子也跟着张嘴。回座位时，同桌用胳膊肘碰了碰他。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.05,
+              "reason": "听写全对，拼写得到练习"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "respect": 0.04,
+              "reason": "老师对他留下好印象"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "spelling-all-correct",
+              "text": "粉笔灰落在他袖口上，他拼完最后一个词，听见老师嗯了一声，全班跟着念时声音嗡嗡的，像炉子上的水壶。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "spelling-all-correct",
+              "text": "他回座位时手心是干的，同桌凑过来看他石板上的划痕，后排有人小声说这不算什么，但老师已经翻开了下一页。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "spelling-stuck-word",
+          "weight": 1,
+          "text": "卡在一个带变音符号的长词上，他咬着嘴唇写错了两回。老师的手杖敲在他手心上，不重，但火辣辣地发麻。放学后他留在空教室里，把那个词抄了十遍，值日生扫地时绕开他的长凳。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "手心挨了手杖，发麻"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "当众受罚并留堂抄写"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "反复抄写那个长词"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "spelling-stuck-word",
+              "text": "手杖落下时他数着数，第三下之后老师让他回去。那个词在石板上越写越歪，教室里的煤炉快灭了，他呵气暖手指。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "spelling-stuck-word",
+              "text": "值日生把椅子倒扣在桌上，扫帚扫到他脚边时停了一下。他抄到第八遍，听见院子里雪被踩实的嘎吱声，知道同路的孩子已经走了。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "spelling-copied-from-neighbor",
+          "weight": 1,
+          "text": "他斜眼瞟见同桌石板上的拼法，照着写上去，居然全对。老师让他解释词尾为什么这么变，他张着嘴说不出话，脸烧起来，手指在石板边缘蹭来蹭去。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "抄同桌答案后心虚"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "同桌发现他偷看，有点不快"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "spelling-copied-from-neighbor",
+              "text": "同桌把石板往自己那边挪了挪，动作不大，但他看见了。老师还在等答案，窗外的雪光把黑板上的白字照得刺眼。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "spelling-copied-from-neighbor",
+              "text": "他听见自己的声音细得像蚊子，后面的孩子吃吃笑。老师摆摆手让他坐下，粉笔在手里转了个圈，接着叫下一个人。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-school.report-card",
+      "title": "成绩单上的红字",
+      "weight": 1,
+      "rate": 0.0288,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 9,
+          "max": 11
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "school"
+          ]
+        },
+        {
+          "kind": "householdSize",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 9,
+          "maxAge": 11
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "report-card-hidden",
+          "weight": 1,
+          "text": "他把成绩单折起来夹进课本，晚上等母亲去厨房，自己用蘸水笔在家长签字栏描了一个歪扭的名字。第二天老师翻到那一页，看了很久，把本子合上，只叫他课间到讲台边站一会儿。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "伪造签名被老师识破，心里发慌"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "reason": "老师发现他模仿家长签名"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "report-card-hidden",
+              "text": "蘸水笔尖刮纸，那个名字写得比算术题还慢。第二天老师用拇指蹭了蹭签名，什么也没说，只是让他把课本拿回去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "report-card-hidden",
+              "text": "课间他站在讲台边，看别的孩子分吃一块果酱面包。老师改作业时头也没抬，粉笔灰落在红字旁边。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "report-card-read-aloud",
+          "weight": 1,
+          "text": "母亲把成绩单递到楼下杂货铺，请老板娘念。红字被大声读出来时，母亲的手在围裙上擦了又擦。周末去普拉特的计划当场取消，他留在家里擦地板，肥皂水浸得指缝发白。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "红字被当众念出，周末计划取消"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.05,
+              "obligation": 0.04,
+              "reason": "母亲因成绩单失望，让他多做家务"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "report-card-read-aloud",
+              "text": "老板娘念到“上课说话”时抬了抬眉毛，母亲没吭声，把那张纸对折两次塞进围裙口袋。回家路上她走得很快，他跟在后面数石板缝。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "report-card-read-aloud",
+              "text": "擦地板时他闻到杂货铺带回来的咖啡渣味。母亲在灶台前削土豆，皮掉进盆里的声音比平时重。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "report-card-ask-retest",
+          "weight": 1,
+          "text": "他攥着成绩单去找老师，说想补算术。老师从眼镜上方看了他一会儿，从抽屉里抽出一张旧试卷，让他第二天中午来。母亲听说后，把晚饭的汤多盛了半勺给他。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "向老师争取补考机会"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "respect": 0.03,
+              "reason": "老师愿意给他一次机会"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "report-card-ask-retest",
+              "text": "试卷纸又薄又黄，上面印着去年的日期。老师用手指点了点第一道题，说先把这个弄明白，别的再说。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "report-card-ask-retest",
+              "text": "母亲没问补考的事，只是把汤碗推过来时多看了他一眼。汤里飘着一小片香肠，他拿面包蘸着吃完了。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-school.corner-punishment",
+      "title": "讲台边的墙角",
+      "weight": 1,
+      "rate": 0.0256,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 7,
+          "max": 11
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "school"
+          ]
+        },
+        {
+          "kind": "health",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 7,
+          "maxAge": 11
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "corner-full-lesson",
+          "weight": 1,
+          "text": "他举着石板站满了一整节课。下课铃响时胳膊像灌了铅，回座位时石板差点磕到桌角。后排有人学鸡叫，老师回头瞪了一眼，教室才安静下来。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "举石板站了一节课，胳膊酸痛"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被罚站并遭同学取笑"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "corner-full-lesson",
+              "text": "石板边缘硌着手指，他换了好几次手。窗外院子里的雪被踩成黑泥，别的孩子在煤堆旁追跑，声音隔着一层玻璃。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "corner-full-lesson",
+              "text": "回座位时同桌帮他托了一下石板底，他甩着胳膊坐下，听见自己肩膀咔地响了一声。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "corner-teacher-called-away",
+          "weight": 1,
+          "text": "老师被校长叫到走廊上，门虚掩着。同桌悄悄站起来，替他托住石板底，两人憋着笑。老师回来时同桌已经坐好，老师扫了一眼，没看出什么，让他把手放下。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "affection": 0.05,
+              "reason": "同桌冒险替他托石板"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "有人帮忙，心里好受些"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "corner-teacher-called-away",
+              "text": "同桌的手心全是汗，托了半分钟就缩回去。走廊上传来校长皮鞋踩在木地板上的声音，两人赶紧分开，石板晃了一下又稳住。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "corner-teacher-called-away",
+              "text": "老师回来时带进一股冷风，她翻开点名册，好像忘了墙角还站着人。他放下石板时胳膊已经不太听使唤。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "corner-slab-down-seen",
+          "weight": 1,
+          "text": "趁老师转身在黑板上写字，他把石板放到讲台边，甩了甩手。后排两个孩子看见了，其中一个举手喊了一声。老师让他重新举起来，这一回多站了半节课。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被加罚多站半节课"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "被后排同学告发"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "corner-slab-down-seen",
+              "text": "举报的孩子声音很响，老师粉笔停在半空。他弯腰重新拿起石板时，听见身后有人压低嗓子笑。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "corner-slab-down-seen",
+              "text": "多站的半节课里，他盯着黑板上那行字，每个字母都像在晃。铃声再响时，他学乖了，等老师走远才把石板放下。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-school.bench-friend",
+      "title": "长凳中间的位置",
+      "weight": 1,
+      "rate": 0.0288,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 7,
+          "max": 11
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "school"
+          ]
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "friend"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": false,
+          "minAge": 22,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "bench-share-bread",
+          "weight": 1,
+          "text": "他从口袋里掰了半块面包推过去，同桌愣了一下才接。放学两人同路走了一段，同桌在巷口说他就住在前面的煤铺楼上。第二天早上，同桌在长凳上给他留了一块烤土豆皮。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "分给同桌半块面包"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "affection": 0.08,
+              "reason": "分面包和同路回家，结下友谊"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "bench-share-bread",
+              "text": "面包掰开时掉了几粒渣在长凳缝里，同桌捡起来吃了。煤烟味混着面包的酸味，他不太习惯，但没挪开。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "bench-share-bread",
+              "text": "巷口的风把两人的帽子吹歪，同桌伸手替他按了按。烤土豆皮在口袋里捂到早上，还带着一点温热。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bench-follow-nickname",
+          "weight": 1,
+          "text": "他跟着别人叫了两声外号，同桌没回嘴，只是把石板往中间挪了挪，一整天没再说话。放学时他看见同桌一个人往煤铺方向走，书包带子断了一边，拖着地。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "跟别人叫外号后感到不舒服"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.06,
+              "reason": "叫同桌外号，伤害了对方"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "bench-follow-nickname",
+              "text": "外号喊出口时，旁边几个孩子笑起来。同桌低头用袖子擦石板，擦了很久，石板上的灰已经干净了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "bench-follow-nickname",
+              "text": "回家路上他老想起那条断书包带。母亲问学校里怎么样，他说没事，把土豆汤喝得呼噜响。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bench-duty-together",
+          "weight": 1,
+          "text": "他请同桌一起留下来做值日，两人抬水、倒煤灰。老师回来拿忘带的伞，看见他们并排扫地，就把两人的座位调开了，说上课还是少说话为好。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.03,
+              "reason": "一起做值日，关系拉近"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "老师认为两人上课会分心"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "bench-duty-together",
+              "text": "水桶很沉，两人一人提一边把手，水晃出来打湿了鞋面。老师撑开伞往外走，回头说了一句座位的事，语气不重。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "bench-duty-together",
+              "text": "煤灰倒进院角的箱子里，扑起一小团黑雾。同桌用袖子蹭了蹭鼻子，脸上多了一道灰印。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-school.truant-prater",
+      "title": "逃学的下午",
+      "weight": 0.9,
+      "rate": 0.0224,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 9,
+          "max": 11
+        },
+        {
+          "kind": "cash",
+          "max": 20
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "street",
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 9,
+          "maxAge": 11
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 9,
+          "maxAge": 12
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "truant-river-dark",
+          "weight": 1,
+          "text": "他和几个孩子在多瑙运河边看运煤船一直看到天黑。烤土豆的纸袋凉透了才回家，母亲在楼道门口拦住他，闻了闻他领子上的煤烟味和河水的腥气，一句话没说，只把门开得很大。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.02,
+              "reason": "花两赫勒买了烤土豆"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "回家被母亲发现逃学"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "一起逃学看船，多了共同秘密"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "truant-river-dark",
+              "text": "运煤船的汽笛在河面上滚过来，煤块从驳船上卸下时扬起黑尘。他蹲在岸边，土豆皮烤焦的那一面啃起来发苦。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "truant-river-dark",
+              "text": "楼道里灯还没点，母亲靠在门框上，围裙上沾着面粉。他低头换鞋，听见她叹了口气，然后门在身后合上。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "truant-caught-by-patrol",
+          "weight": 1,
+          "text": "走到桥头时，一个戴毡帽的学校巡查员拦住他们，问是哪所学校的。同伴撒腿就跑，他跑得慢，被记下名字。巡查员说会通知家长，还问了他家住哪条街。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "被巡查员记名，担心通知家长"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "fear": 0.05,
+              "reason": "被学校巡查员拦住并记名"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "truant-caught-by-patrol",
+              "text": "巡查员的毡帽檐上积着雪，他翻开小本子时，钢笔冻得写不出水，哈了好几口气。桥下的运河是灰绿色的，运煤船的绳子绷得很紧。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "truant-caught-by-patrol",
+              "text": "同伴跑过桥面时滑了一下，没回头。他站在那里看着巡查员把名字写完，觉得自己的鞋尖特别脏。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "truant-turned-back",
+          "weight": 1,
+          "text": "走到巷子口他停住了，说算术课要听写，还是回去吧。同伴骂了他一句，他一个人折回学校，从后门溜进教室，坐在长凳上心跳得厉害。下课时老师只看了他一眼，没点名。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "中途折返，心虚但庆幸"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "primary",
+              "level": 1,
+              "reason": "回到课堂，没有缺课"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "truant-turned-back",
+              "text": "后门的铰链响了一声，他猫着腰找到座位，石板上还留着上午的算术题。老师转过身时，他把手放在膝盖上，坐得比平时直。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "truant-turned-back",
+              "text": "巷子口的烤土豆摊还在冒烟，他摸了摸口袋里的两赫勒，没买。雪水从鞋底渗进来，脚趾又冷又湿。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-school.schoolyard-hat",
+      "title": "操场上的帽子",
+      "weight": 1,
+      "rate": 0.0224,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 8,
+          "max": 11
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "school"
+          ]
+        },
+        {
+          "kind": "health",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 11
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 9,
+          "maxAge": 14
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": false,
+          "minAge": 22,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hat-fight-in-snow",
+          "weight": 1,
+          "text": "他冲过去从雪堆里拽出帽子，高年级孩子伸脚一绊，两人滚在雪地上。他抓了一把雪按在对方脸上，后脑勺也被搡了一下。上课铃响，两人爬起来，谁也没再说话，帽檐已经踩歪了。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在雪地里扭打，磕碰了几下"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "抢回帽子，觉得没丢面子"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.08,
+              "reason": "为帽子打了一架"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hat-fight-in-snow",
+              "text": "雪灌进袖口，他咬着牙不吭声，雪地里翻了两圈才爬起来。帽子里缝的名字布条湿透了，贴着手指。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hat-fight-in-snow",
+              "text": "围观的孩子在铃声响时散开，有人喊了一声打得好。他拍了拍帽子上的雪，帽檐软塌塌地挂在耳朵边。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hat-wait-and-broken-brim",
+          "weight": 1,
+          "text": "他忍到上课，等院子里没人了才去墙根翻雪堆。帽子被踩得不成样子，帽檐裂了一道口子，名字布条也脱了线。回家母亲用黑线缝了两针，说下回别再让人抢。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "帽子被踩坏，心里憋闷"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.05,
+              "reason": "高年级孩子弄坏了他的帽子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hat-wait-and-broken-brim",
+              "text": "雪堆边有杂乱的脚印，他扒开冻硬的雪块，帽子像块湿抹布。教室里传出念书声，他蹲在那里把帽子抖了又抖。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hat-wait-and-broken-brim",
+              "text": "母亲穿针时眯着眼，黑线在灯下反光。缝完她把帽子扣在他头上，帽檐那道口子还是看得出来。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hat-report-to-teacher",
+          "weight": 1,
+          "text": "他跑去找老师，声音还有点抖。老师走到院子里，把高年级孩子叫到墙边，让他把帽子捡回来，当面说对不起。高年级孩子说得很小声，帽子递过来时还在滴水。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "respect": 0.04,
+              "reason": "老师替他主持公道"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "高年级孩子被迫道歉，不太服气"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hat-report-to-teacher",
+              "text": "老师没提高嗓门，只把手搭在墙边那孩子的肩上。院子里的雪被踩得乱七八糟，墙根的水痕一直渗到煤堆旁。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hat-report-to-teacher",
+              "text": "帽子捡回来时湿透了，他拧了拧，水滴在鞋面上。周围的孩子陆续往教室走，没人再看他。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

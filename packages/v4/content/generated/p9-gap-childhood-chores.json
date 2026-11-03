@@ -1,0 +1,1325 @@
+{
+  "id": "p9-gap-childhood-chores",
+  "title": "孩子在狭窄院子里的活计",
+  "stage": "childhood",
+  "ageWindow": {
+    "min": 6,
+    "max": 11
+  },
+  "tags": [
+    "childhood",
+    "household",
+    "chores",
+    "school",
+    "task",
+    "daily"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 6,
+      "max": 11
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "daily",
+    "goals": [
+      "family",
+      "survival"
+    ],
+    "needs": [
+      "food",
+      "cash",
+      "belonging"
+    ],
+    "baseUtility": 1.15,
+    "risk": 0.1,
+    "skills": [
+      "social",
+      "numeracy"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p9-gap-childhood-chores.fetch-coal",
+      "title": "去煤铺赊一筐煤",
+      "weight": 1,
+      "rate": 0.09,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 11
+        },
+        {
+          "kind": "householdSize",
+          "min": 3
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "min": 0,
+          "max": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "childhood",
+        "coal",
+        "errand",
+        "household"
+      ],
+      "outcomes": [
+        {
+          "id": "coal-half-credit",
+          "weight": 1,
+          "text": "{subject}把写着门牌号的纸递上去，煤铺掌柜看了一眼，说月底一起结，给装了半筐碎煤。{subject}一个人往家搬，绳勒得手心发红，过巷口时筐底漏了，碎渣撒了一路。回到{residence}，{parent}蹲下把完好的块煤捡回筐里，没说什么。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "家里有了烧火取暖的煤"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "搬煤勒伤手掌，路上吸入煤灰"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.02,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "独自把赊来的煤搬回家"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coal-half-credit",
+              "text": "煤铺里黑灰扑面，掌柜一边过秤一边听{subject}说完来意，用粉笔在门牌号旁记了一笔。{subject}把半筐煤拖上台阶，碎渣从筐缝里一路漏进院子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coal-half-credit",
+              "text": "柜台边的{neighbor}往旁让了让，{subject}伸手去接筐子，指尖立刻沾满煤黑。回家的巷子很短，筐却越来越沉，{subject}在半路歇了两次。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coal-refused-nuggets",
+          "weight": 1,
+          "text": "掌柜摆手，说这个月赊账的簿子已经满了，让{subject}回去告诉{parent}。{subject}在煤铺后墙的渣堆边蹲下，捡了几块没烧透的煤核，又用废纸包着去换了一小袋碎煤。到家时煤灰把脸抹得只剩眼白，{parent}用湿布给她擦了好一阵。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "赊煤被拒的难堪"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "捡回的煤核让小炉子撑过一晚"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "碰壁后学着换一种说法央求"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coal-refused-nuggets",
+              "text": "掌柜翻着那本卷边的赊账簿，一页页念出欠账的门牌号。{subject}把那张纸折回口袋，转身去后墙的渣堆里翻找，指甲缝里嵌满了黑。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coal-refused-nuggets",
+              "text": "排在前面的两个邻居也都空手出来。{subject}没再开口，绕到煤车后面捡煤核，纸包里的碎块还带着热气，一路硌着胳膊。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coal-neighbor-speaks",
+          "weight": 1,
+          "text": "{neighbor}替{subject}说了句好话，说这家人从不赖账，掌柜才把门牌号重新记上，装了小半筐煤，却要求在账上添两赫勒，明天先送来。{subject}点点头，抱着筐出门时听见掌柜交代伙计，明天见到这孩子先问钱。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.02,
+              "reason": "赊账添的两赫勒利息"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "赊得的小半筐煤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "邻居替孩子说了情"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coal-neighbor-speaks",
+              "text": "{neighbor}把手里的篮子往地上一放，指着{subject}说这孩子天天从这条巷子过，跑不了。掌柜哼了一声，在簿子上添了两赫勒。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coal-neighbor-speaks",
+              "text": "煤铺的秤砣落下来，掌柜数出几个数，让明天先还两赫勒。{subject}把筐往胸前抱紧，出门时特意绕开那只秤，怕再被叫住。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "family",
+          "survival"
+        ],
+        "needs": [
+          "food",
+          "cash"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.1,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-gap-childhood-chores.mind-sibling",
+      "title": "看住最小的弟妹",
+      "weight": 1,
+      "rate": 0.08,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 11
+        },
+        {
+          "kind": "householdSize",
+          "min": 4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 1,
+          "maxAge": 5
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "childhood",
+        "sibling",
+        "care",
+        "household"
+      ],
+      "outcomes": [
+        {
+          "id": "sibling-carried-afternoon",
+          "weight": 1,
+          "text": "{parent}走后，{sibling}一直往井台边挣，{subject}索性把她背在背上，围着{residence}的院子一圈圈走。走到傍晚，{sibling}趴在背上睡着了，{subject}的胳膊却酸得放不下来，晚饭时连木勺都握不稳。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "背弟妹走了一下午，胳膊酸痛"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "学会哄住哭闹的幼儿"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.08,
+              "affection": 0.06,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0,
+              "reason": "背着弟妹一下午"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sibling-carried-afternoon",
+              "text": "院门口不时有煤车碾过，{subject}把{sibling}往上颠了颠，绕开井台那圈湿滑的石头。屋檐下晾着的旧布被风吹得拍墙，声音一下一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sibling-carried-afternoon",
+              "text": "邻家的孩子还在敲铁皮桶，{sibling}一听见就想过去。{subject}把她抱回来，让她揪着自己的衣领，一圈又一圈走，直到太阳落到烟囱后面。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sibling-falls-at-well",
+          "weight": 1,
+          "text": "{subject}低头去捡滚到墙角的土豆，{sibling}已经挪到井台边，脚下一滑坐在湿石头上，哭得喘不上气。{neighbor}闻声从门里出来把孩子抱进屋擦脸。{parent}晚上回来，听完缘由把{subject}数落了一顿，罚她少领半份晚饭。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$sibling",
+              "amount": -0.03,
+              "reason": "在井台边摔了一跤"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "看护失手被母亲责骂"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.03,
+              "affection": -0.02,
+              "obligation": 0.02,
+              "fear": 0.04,
+              "respect": 0,
+              "reason": "没看住弟妹"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sibling-falls-at-well",
+              "text": "井台边的石头被桶水泼得发亮，{sibling}的鞋底一滑就坐了下去。{neighbor}抱起孩子时，{subject}还攥着那只捡了一半的土豆站在原地。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sibling-falls-at-well",
+              "text": "哭声从井台那边传过来，{subject}跑过去时{sibling}的裤腿已经湿了一片。{parent}傍晚进门，先把孩子抱起来看膝盖，再回头看{subject}，一句话没说，{subject}自己把碗放下了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sibling-shelter-missed-river",
+          "weight": 1,
+          "text": "{subject}把木盆翻过来，拿旧布搭了个小棚，{sibling}蜷在里面睡着。院里的同伴在巷口喊了两遍去河边，{subject}都摇头，等{parent}回来时天已经暗了。同伴第二天说她胆子小，{subject}没辩解，只把小棚拆了还回盆。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "错过和同伴去河边的约"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.05,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0,
+              "reason": "守着睡着的弟妹没离开"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": 0.02,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "母亲回家见弟妹安睡"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sibling-shelter-missed-river",
+              "text": "木盆扣在墙根，旧布从盆沿垂下来，{sibling}的呼吸慢慢匀了。巷口同伴的喊声过去又回来，{subject}只是坐着，用手压住被风吹起的布角。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sibling-shelter-missed-river",
+              "text": "河边的笑声顺着巷子飘进来，{subject}往盆里看了一眼，{sibling}翻了个身又睡了。她把散开的布角掖紧，听见自己的肚子在响。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "family",
+        "goals": [
+          "family",
+          "care"
+        ],
+        "needs": [
+          "care",
+          "belonging"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.15,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-gap-childhood-chores.market-line",
+      "title": "替家里排一次配给队",
+      "weight": 1,
+      "rate": 0.085,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 11
+        },
+        {
+          "kind": "householdSize",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 55
+        }
+      ],
+      "tags": [
+        "childhood",
+        "market",
+        "food",
+        "queue"
+      ],
+      "outcomes": [
+        {
+          "id": "line-half-flour",
+          "weight": 1,
+          "text": "{subject}把布袋抱在胸前，一步一步跟着队伍挪到面包房窗口，买到半袋面粉。后面的人往前挤，她的鞋跟被踩掉一只，找回来时已经沾满泥。回家路上她把布袋换到肩上，另一只手拎着那只鞋，赤脚走过石板。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "排到半袋面粉"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "赤脚走石板路磨伤脚底"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "在人堆里守住自己的位置"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "line-half-flour",
+              "text": "队伍从面包房拐到肉铺后墙，{subject}紧贴着前面人的背，怕被挤出队形。窗口的伙计把面粉往秤上一倒，吆喝声盖过了后面的抱怨。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "line-half-flour",
+              "text": "有人往前一挤，{subject}脚下一空，鞋跟留在了谁的鞋底下。她弯腰去捡，布袋差点脱手，旁边的人替她扶了一把。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "line-sold-out-potatoes",
+          "weight": 1,
+          "text": "轮到{subject}时，窗口的木板已经合上，伙计说面粉卖完了。她攥着几个硬币站在墙根，最后在旁边的摊子上买了几个土豆。回家时母亲数了钱和土豆，脸上的纹路松了一点，说面粉明天再去排。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "用剩下的钱买了几个土豆"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "排到窗口却扑了空"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "自己数钱买了土豆"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "line-sold-out-potatoes",
+              "text": "前面的人一个个空手退开，木板合上时发出干脆的一声。{subject}站着没动，直到伙计探头说没有就是没有，才把硬币摊在手心里数。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "line-sold-out-potatoes",
+              "text": "墙根下全是揉皱的纸和菜叶，{subject}蹲着挑了几个没发芽的土豆，用布袋兜着，走回家时袋子贴着腿一晃一晃。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "line-both-families",
+          "weight": 1,
+          "text": "{neighbor}从队里探出头，招手让{subject}站到她前面，说孩子站着不容易被挤。{subject}替两家都领了面包，回来在{residence}门口把两包分开。母亲回来后一包一包问清价钱和份量，{subject}把每笔数都说了出来。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "替两家领回的面包里分到的那份"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "affection": 0.04,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "互相照应着排队"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.03,
+              "reason": "分清两家的份量和找零"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "line-both-families",
+              "text": "窗口的伙计嫌孩子插队，{neighbor}隔着人喊这孩子在替她家排。{subject}抱着两包面包退出来，用指头按着纸包上的折痕，怕拿混了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "line-both-families",
+              "text": "队伍里有{worker}提着饭盒挤过去，{subject}往墙边让了让。{neighbor}塞给她几枚零钱，说照这个数找，别让谁家少了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "survival",
+          "family"
+        ],
+        "needs": [
+          "food",
+          "cash"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.1,
+        "skills": [
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p9-gap-childhood-chores.school-slate",
+      "title": "弄到一块能写字的石板",
+      "weight": 1,
+      "rate": 0.08,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 11
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "childhood",
+        "school",
+        "supplies",
+        "education"
+      ],
+      "outcomes": [
+        {
+          "id": "slate-borrowed-from-teacher",
+          "weight": 1,
+          "text": "放学后{subject}站在讲台边，把裂了缝的石板翻过来给{teacher}看。{teacher}从抽屉里取出一块旧石板，边角磨圆了，说可以借，但每天放学留下来把黑板擦净、把炉边的灰倒掉。{subject}点头，第二天起手上总带着一层粉笔末。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "有了能写字的石板"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.02,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "老师借出旧石板，孩子帮忙打扫"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "每天多留倒炉灰，沾上粉尘"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "slate-borrowed-from-teacher",
+              "text": "{teacher}把旧石板从抽屉里拖出来，用袖子抹了抹上面的白痕，又在石笔盒里挑出一支短的递给她。教室里的炉子还温着，窗上结着水汽。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "slate-borrowed-from-teacher",
+              "text": "黑板擦在{subject}手里显得太大，她踮着脚从黑板一头擦到另一头，粉笔灰落进袖口。{teacher}锁门前回头看了一眼地面，才把钥匙揣进兜里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "slate-homemade-wood-ash",
+          "weight": 1,
+          "text": "{parent}摊开手说家里实在拿不出买石板的钱，让{subject}先借同学的。{subject}从木料堆里捡了块薄木板，用湿煤灰在上面练字，写完用手一抹，字迹立刻糊成一片黑。第二天她带着木板去{school}，被同学笑了一路。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.02,
+              "reason": "在木板上反复练字"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被同学取笑自制的练习板"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.02,
+              "affection": 0,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0,
+              "reason": "明白家里没有余钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "slate-homemade-wood-ash",
+              "text": "煤灰和水调成糊，{subject}用木片蘸着在板上写数字，写完用手掌一抹，掌纹里全是黑。她把板子立在墙角晾着，怕蹭到别人。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "slate-homemade-wood-ash",
+              "text": "{parent}低头缝补，没有抬眼，只说再等一个月。{subject}没再问，把木板夹在腋下出门，路过面包房时闻见热气，加快了脚步。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "slate-bought-secondhand",
+          "weight": 1,
+          "text": "{parent}把攒在罐底的几个赫勒倒出来，数了两遍，带{subject}去旧货摊上挑了一块二手石板，边上刻着别人的名字，{parent}让摊主用砂纸磨掉。回家后{subject}用旧布把石板包好，第二天一早抱在怀里去{school}。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.08,
+              "reason": "买二手石板和石笔"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.04,
+              "reason": "终于有自己的一块石板"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.06,
+              "affection": 0.05,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "母亲拿出攒下的钱买石板"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "slate-bought-secondhand",
+              "text": "旧货摊上堆着缺口的碗和歪把的勺，{parent}挑石板时把每块都翻过来看背面。摊主用砂纸磨了磨，石粉落在摊布上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "slate-bought-secondhand",
+              "text": "{subject}把包着布的石板贴在胸口走，怕磕着。{parent}在旁边提着菜篮，路过面包房时只往里看了一眼，没有停。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "belonging"
+        ],
+        "baseUtility": 1.25,
+        "risk": 0.05,
+        "skills": [
+          "literacy"
+        ]
+      }
+    },
+    {
+      "id": "p9-gap-childhood-chores.laundry-help",
+      "title": "帮邻居晾一院子的床单",
+      "weight": 1,
+      "rate": 0.08,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 11
+        },
+        {
+          "kind": "householdSize",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 55
+        }
+      ],
+      "tags": [
+        "childhood",
+        "laundry",
+        "work",
+        "neighbor"
+      ],
+      "outcomes": [
+        {
+          "id": "laundry-three-heller",
+          "weight": 1,
+          "text": "{subject}站在木凳上递夹子，把湿床单一点点拉过绳子，碱水顺着胳膊往下淌。天擦黑时最后一条挂好，{neighbor}数出三赫勒放进她手心。{subject}的手指被碱水泡得发白，回家数钱时才发现虎口裂了一条小口。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.03,
+              "reason": "帮邻居晾床单挣的三赫勒"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "碱水泡手，虎口裂开"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.03,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "干完了一院子床单"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "laundry-three-heller",
+              "text": "绳上的床单比{subject}还高，她踮脚把木夹子一个个卡上去，水珠顺着布角滴在脖子里。{neighbor}在盆边拧干下一条，抬头说再挂三条就完了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "laundry-three-heller",
+              "text": "院子里全是碱水和湿布的气味，{subject}的两只袖子一直湿到肘弯。天暗下来时{neighbor}从围裙口袋里摸出几枚硬币，按在她手心里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "laundry-dragged-docked-pay",
+          "weight": 1,
+          "text": "{subject}抱着一条床单往绳子那边拖，布角拖过院里的煤渣地，蹭出一道灰。{neighbor}看见后脸一沉，扣了一半工钱，只给了一赫勒，还让她把脏的那角重新用清水过一遍。{subject}蹲在盆边搓了很久，指节都红了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.01,
+              "reason": "被扣后只剩一赫勒"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "弄脏床单被扣工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "affection": -0.02,
+              "obligation": 0.03,
+              "fear": 0.02,
+              "respect": 0,
+              "reason": "干活毛糙被扣工钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "laundry-dragged-docked-pay",
+              "text": "床单落地那一下闷闷的，{neighbor}弯腰拎起布角，抖了抖上面的灰，说这得重洗。{subject}没敢回嘴，把水盆往自己跟前挪。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "laundry-dragged-docked-pay",
+              "text": "院里的{worker}正好进来送桶，看了一眼地上的灰印。{neighbor}当着他的面把钱数给{subject}，声音比刚才高了些。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "laundry-bread-with-friend",
+          "weight": 1,
+          "text": "{neighbor}家的孩子也来帮忙，两个人在绳子两头递夹子，把床单绷得平平的。晾完最后一条，{neighbor}从厨房端出一包剩面包，掰开分给她。{subject}把面包揣在围裙里带回家，路上没舍得咬一口。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居给的一包剩面包"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.05,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "和邻居家孩子一起干完活"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "和同龄人配合着干活"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "laundry-bread-with-friend",
+              "text": "两个孩子在绳子两端对着走，夹子从一手递到另一手。{neighbor}在门槛上看着，等最后一条挂好才转身进厨房。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "laundry-bread-with-friend",
+              "text": "面包还带着炉子的余温，纸包上洇出油印。{subject}把它塞进围裙兜，走回家时用手按着，怕掉出来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "survival",
+          "work"
+        ],
+        "needs": [
+          "cash",
+          "food"
+        ],
+        "baseUtility": 1.15,
+        "risk": 0.1,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-gap-childhood-chores.stay-after-school",
+      "title": "求老师让自己留下来补课",
+      "weight": 1,
+      "rate": 0.085,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 11
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "childhood",
+        "school",
+        "teacher",
+        "learning"
+      ],
+      "outcomes": [
+        {
+          "id": "stay-twice-cleaning",
+          "weight": 1,
+          "text": "{subject}攥着写满错题的纸站到讲台边，{teacher}收好教案，说每周可以留两次，但得先把教室的炉灰倒到后院，再擦一遍课桌。{subject}当天就提着灰桶出去，桶比膝盖还高，风把灰吹回她脸上。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "留下补算术，学会竖式"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.02,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.06,
+              "reason": "求得老师每周补课两次"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "倒炉灰吸入灰尘"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stay-twice-cleaning",
+              "text": "炉灰从桶沿飘起来，落在{subject}的眉毛上。她把桶拎到后院墙根倒掉，回来时{teacher}已经在黑板上写下一道竖式，粉笔敲了敲板面。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stay-twice-cleaning",
+              "text": "课桌擦过一遍，抹布黑得拧不出清水。{subject}把错题纸摊在讲台上，{teacher}用手指顺着她写歪的那一列往下划。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stay-list-instead",
+          "weight": 1,
+          "text": "{teacher}一边收教案一边说要赶去另一所学校兼课，锁门的人已经在走廊里等了。她从本子上撕下一页，写了几道练习题，让{subject}回家自己算。{subject}把纸折成小方块放进衣兜，走出校门时天还亮着，却不知道该去问谁。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "照着练习清单自己算"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "没能留下补课"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "affection": 0.01,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "老师给了练习但没有时间"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stay-list-instead",
+              "text": "走廊里传来钥匙串的响动，{teacher}把写好的纸递过来，笔尖在最后一题上顿了一下。{subject}接过来，纸边还带着本子的毛茬。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stay-list-instead",
+              "text": "教室里的窗已经关好，炉火压成一层暗红。{subject}把那张纸对着窗光看了一遍，有几个字没认全，还是折好收起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stay-early-morning",
+          "weight": 1,
+          "text": "{subject}鼓起勇气开口，声音小得几乎听不见。{teacher}停了一下，让她第二天早到半小时，在黑板前单独讲一遍。第二天{subject}天没亮就出门，教室里只有炉子刚生起的烟味，老师用粉笔把竖式一笔一笔拆开讲给她看。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.05,
+              "reason": "清早单独补了一课"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "天没亮出门，早春的冷"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "affection": 0.03,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.08,
+              "reason": "老师愿意早到单独教她"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stay-early-morning",
+              "text": "黑板上的粉笔线一根根排开，{teacher}的手停在进位那一格，让{subject}自己填。窗外街上的扫帚声一下一下，教室里的烟还没散。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "stay-early-morning",
+              "text": "{subject}进门时手指冻得解不开围巾，{teacher}没催她，先在黑板上写下题，等她坐定才开始讲。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "belonging"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.05,
+        "skills": [
+          "numeracy",
+          "literacy"
+        ]
+      }
+    }
+  ]
+}

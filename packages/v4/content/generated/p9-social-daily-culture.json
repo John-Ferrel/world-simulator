@@ -1,0 +1,1215 @@
+{
+  "id": "p9-social-daily-culture",
+  "title": "站票、咖啡馆与星期天的远足",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 16,
+    "max": 80
+  },
+  "tags": [
+    "daily",
+    "culture",
+    "leisure",
+    "cafe",
+    "music",
+    "walk"
+  ],
+  "baseRate": 0.1,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 16,
+      "max": 80
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "culture",
+    "goals": [
+      "rest",
+      "belonging"
+    ],
+    "needs": [
+      "belonging",
+      "status"
+    ],
+    "baseUtility": 1,
+    "risk": 0.05,
+    "skills": [
+      "social"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p9-social-daily-culture.last-standing-ticket",
+      "title": "剧院顶层的最后一张站票",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 80
+        },
+        {
+          "kind": "cash",
+          "min": 1
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "p9-social-daily-culture.last-standing-ticket.got-ticket",
+          "weight": 1,
+          "text": "{subject}挤到窗口前，把四十赫勒硬币推进凹槽，换回一张印着座号的薄纸片。顶层站席的栏杆被前面的人汗湿，{subject}侧身找了个能看见舞台边的位置，倚着烫手的铁栏看完两幕，散场时小腿发麻，但嘴里还哼着刚听到的曲调。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "约瑟夫施塔特剧院顶层站票"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "在顶层站席看完两幕歌剧"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "与邻座挤在栏杆边交谈"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.last-standing-ticket.got-ticket",
+              "text": "窗口里的女人数出找零，指甲在铜板上敲了两下。{subject}把票叼在嘴里，腾出手来系紧围巾，跟着人流从侧门绕上顶层，脚下的木楼梯吱呀作响。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.last-standing-ticket.got-ticket",
+              "text": "幕间休息时，{neighbor}从楼下带上来半块面包，两人靠在栏杆上分着吃。剧院里热得发闷，{subject}解开领口，看见乐池里第一小提琴手正在擦汗。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.last-standing-ticket.church-organ",
+          "weight": 1,
+          "text": "{subject}数了数前面攒动的人头，把口袋里的硬币又攥紧了些，转身离开队伍。走到街角的教堂时，管风琴正从敞开的门里传出来，{subject}在最后一排长凳上坐下，听完了整段前奏曲，没有花一个赫勒，只是膝盖跪得发酸。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在教堂听免费的管风琴"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "与一同排队的邻居在教堂门口道别"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.last-standing-ticket.church-organ",
+              "text": "队伍末尾又挤上来两个穿工装的人，问窗口还剩几张。{subject}把位置让开，沿墙根走到教堂门前，石阶上落着几片梧桐叶，管风琴的低音震得门框发颤。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.last-standing-ticket.church-organ",
+              "text": "长凳上坐着几个同样没买到票的人，彼此并不交谈。{subject}盯着祭坛上摇晃的烛火，等最后一个和弦散尽才起身，口袋里那枚四十赫勒还带着体温。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.last-standing-ticket.buy-for-elder",
+          "weight": 1,
+          "text": "前面的老人掏零钱时手抖得厉害，数了三遍也没凑够。{subject}替他把四十赫勒递进窗口，老人连声道谢，硬塞回一枚十赫勒铜板。等{subject}自己买票时，窗口已经挂出“售罄”的牌子，只好站在剧院门廊下听里面隐约的乐声，脚底冰凉。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "替排队的老人垫付站票钱"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.1,
+              "reason": "老人硬塞回的铜板"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "在售票队伍里替老人垫钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "自己没买到票站在门廊下"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.last-standing-ticket.buy-for-elder",
+              "text": "老人把找回的零钱一张张捋平，夹进一本磨破边的祈祷书里。{subject}没再往前挤，退到人行道上，看见{neighbor}从队尾探出头来，摊了摊手。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.last-standing-ticket.buy-for-elder",
+              "text": "窗口里的女人拉下小铁帘，哗啦一声。{subject}倚着剧院的石柱，听见里面调音的弦声断断续续，直到开场铃响，才裹紧外套往家走。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "culture",
+        "goals": [
+          "rest",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.05,
+        "risk": 0.05,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-social-daily-culture.cafe-newspaper",
+      "title": "咖啡馆窗边的第三杯 Melange",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 80
+        },
+        {
+          "kind": "cash",
+          "min": 1
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "p9-social-daily-culture.cafe-newspaper.read-all",
+          "weight": 1,
+          "text": "{subject}把木架上的《新自由报》从头版读到讣告栏，中间续了两次水，第三杯 Melange 端上来时奶泡已经塌了。侍者把找零的铜板拍在桌上，没有催的意思；{subject}折好报纸夹回木架，走出门时雨还没停，但脑子里装满了议会辩论的细节。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "三杯 Melange 的咖啡钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "在咖啡馆读报消磨整个下午"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "仔细阅读整份报纸"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.cafe-newspaper.read-all",
+              "text": "窗玻璃上的水痕把电车拉成一条条歪斜的影子。{subject}用指头蘸着杯底的水，在桌面上划出铁路新线的走向，直到侍者过来添水才抹掉。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.cafe-newspaper.read-all",
+              "text": "邻桌两个老头在争地方新闻，声音越来越大。{subject}把报纸翻到体育版，假装没听见，杯里的咖啡凉了也没叫人换热。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.cafe-newspaper.talk-tram",
+          "weight": 1,
+          "text": "{subject}把报纸推到一边，和{neighbor}聊起电车票价要涨的传闻。两人拿过糖罐当算盘，在桌布上比划通勤开销，争论得忘了时间，直到窗外的煤气灯亮起来。{subject}起身时发现大衣下摆沾了咖啡渍，而晚饭的点早就过了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "两杯咖啡的价钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "在咖啡馆长谈电车票价"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "与邻桌聊得投机"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.cafe-newspaper.talk-tram",
+              "text": "侍者把第三把椅子搬过来时，{neighbor}正拿方糖代表克朗，在桌面上排出一条线路图。{subject}用指尖拨弄着糖块，嘴里念叨着月票的差价。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.cafe-newspaper.talk-tram",
+              "text": "窗外一把黑伞底下两个人吵了起来，{subject}和{neighbor}停了话头看了一会儿。等再回到票价上，糖罐已经空了，账单压在杯托下面。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.cafe-newspaper.give-seat",
+          "weight": 1,
+          "text": "{subject}只喝了半杯就看见门口站着等位的老主顾，手里转着帽子。{subject}把报纸叠好放回木架，起身让出窗边的位子，侍者点头致意，没再收第二杯的钱。走出门时雨小了些，{subject}站在檐下理了理衣领，觉得这半个下午也不算白来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "一杯 Melange 的价钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在咖啡馆主动给等位的人让座"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "简短但体面的咖啡馆歇脚"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.cafe-newspaper.give-seat",
+              "text": "等位的人把湿伞靠在桌边，连声道谢。{subject}从衣钩上取下外套，袖口还带着咖啡馆里的暖气，推门时铜铃叮当响了一声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.cafe-newspaper.give-seat",
+              "text": "侍者收拾杯子时朝{subject}的方向微微欠身。{subject}没看见，已经走到街对面，踩过一片积水，鞋底湿了半边。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "rest",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1,
+        "risk": 0.05,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-social-daily-culture.lending-library",
+      "title": "借书处的押金",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 80
+        },
+        {
+          "kind": "cash",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "p9-social-daily-culture.lending-library.pay-deposit",
+          "weight": 1,
+          "text": "{subject}从内袋里数出两克朗压在柜台上，{worker}翻开借书卡，用铅笔把上次迟还的四天圈出来，还是把小说递了过来。{subject}把书塞进外套里侧，出门就翻到第一页，边走边读，差点撞上推手推车的菜贩。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "租书店借小说的押金"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.05,
+              "reason": "借阅小说并坚持阅读"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "借到想读的小说"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.lending-library.pay-deposit",
+              "text": "书架间只容一人侧身，{subject}的胳膊肘蹭过一排游记的书脊。{worker}把印章在借书卡上按了两下，墨色有点淡，又补按了一次。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.lending-library.pay-deposit",
+              "text": "铜板在柜台上排成一列，{worker}一枚枚拨进抽屉，嘴里念着迟还的规矩。{subject}没争辩，只把书抱在胸前，闻见旧纸和浆糊的味道。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.lending-library.volksbibliothek",
+          "weight": 1,
+          "text": "{subject}听{worker}报出押金数目，把伸进内袋的手又抽了回来。问清免费阅览处的位置后，{subject}穿过两条街，在 Volksbibliothek 的阅览室门口登记了姓名，坐在长桌边读了一下午，只是不能把书带回家，天黑前就得还回去。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在免费阅览室读了一下午书"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.04,
+              "reason": "在阅览室持续阅读"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "向租书店管理员打听免费阅览处"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.lending-library.volksbibliothek",
+              "text": "{worker}用铅笔尖点了点墙上的告示，说押金是店里的规矩，改不了。{subject}道了谢，出门右拐，沿着电车轨道一直走到免费阅览室所在的街角。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.lending-library.volksbibliothek",
+              "text": "阅览室里有人咳嗽，有人翻页，安静得能听见窗外马蹄声。{subject}把手表摘下来放在桌角，提醒自己关门前要赶上还书。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.lending-library.read-in-aisle",
+          "weight": 1,
+          "text": "{subject}站在书架前抽出一本厚小说，就着门口的光读了半章，{worker}在柜台后抬起眼皮看了一眼，没说话。读到要紧处，{subject}摸出铅笔头把页码记在车票背面，把书插回原处，说下次带够押金再来。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.02,
+              "reason": "在书店书架前站着读书"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "白读半章小说"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "在租书店白读未借被管理员看在眼里"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.lending-library.read-in-aisle",
+              "text": "门口的光斜照进来，正好落在书页中间。{subject}用拇指压住书脊，怕书页自己合上，读到精彩处脚趾在鞋里蜷了一下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.lending-library.read-in-aisle",
+              "text": "{worker}终于开口说关门前要理书。{subject}把车票背面记的页码又默念一遍，才把书塞回架子，出门时差点被门槛绊一下。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "knowledge",
+        "goals": [
+          "knowledge",
+          "rest"
+        ],
+        "needs": [
+          "knowledge",
+          "autonomy"
+        ],
+        "baseUtility": 1.05,
+        "risk": 0.05,
+        "skills": [
+          "literacy"
+        ]
+      }
+    },
+    {
+      "id": "p9-social-daily-culture.singing-club",
+      "title": "酒馆后厅的合唱排练",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 80
+        },
+        {
+          "kind": "cash",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "p9-social-daily-culture.singing-club.join-second-row",
+          "weight": 1,
+          "text": "{subject}把四十赫勒月费和徽章钱一起放在啤酒渍斑斑的桌上，{neighbor}在名册上添了一行。钢琴缺的那个音在排练中途又卡住，{subject}站在第二排跟着哼，声音被两边的人盖住，但胸腔里震得发麻，散场时还能把副歌完整唱下来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "合唱团月费和铜徽章钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "在工人合唱团排练中唱歌"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "经邻居介绍加入合唱团"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.04,
+              "reason": "在合唱团与团员一起排练"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.singing-club.join-second-row",
+              "text": "后厅的墙皮有些剥落，旗帜下摆卷了边。{neighbor}递给{subject}一枚铜徽章，背面刻着团的缩写，别在衣襟上有点坠。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.singing-club.join-second-row",
+              "text": "钢琴师用拳头砸了一下琴键，缺音照旧闷着。{subject}跟着众人重新起头，唱到高音时下意识踮起脚，惹得旁边的人咧了咧嘴。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.singing-club.listen-only",
+          "weight": 1,
+          "text": "{subject}坐在后厅角落的啤酒箱上听完整场排练，{neighbor}中途走过来问要不要在名册上签字，{subject}说再想想。散场时人们三三两两去前厅续杯，{subject}把空杯子放回柜台，顺着酒馆后门的巷子走回家，嘴里还留着半段旋律。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "旁观合唱团排练"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "被邀请入团但暂未答应"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.singing-club.listen-only",
+              "text": "后厅的门半开着，{subject}靠在门框上看了一会儿，才找地方坐下。啤酒箱的木条硌着大腿，台上的人正练到最难的和声段落。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.singing-club.listen-only",
+              "text": "名册摊在桌上，纸边卷起，密密麻麻签着名字。{subject}看了一眼，把双手插回口袋里，没有拿起那支拴着线的铅笔。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.singing-club.ask-fare",
+          "weight": 1,
+          "text": "{subject}向{neighbor}问清下个月郊外演唱会的车费由谁出，{neighbor}说团里只贴一半，另一半要团员自己凑。{subject}把四十赫勒硬币在指间转了两圈，最终没有放进收款盒，说等发了工钱再来。出门时{worker}正扛着啤酒桶进后厅，两人侧身让过。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "因车费分摊犹豫未入合唱团"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "向邻居仔细打听合唱团费用"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "盘算入会与郊游车费开销"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.singing-club.ask-fare",
+              "text": "{neighbor}掰着手指算车票和酒棚的花销，{subject}听着，目光落在墙上的褪色旗帜上。后厅里有人在试音，一个长音拖得老长。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.singing-club.ask-fare",
+              "text": "{worker}扛着桶经过时，桶底磕在门框上闷响一声。{subject}往旁边让了让，手里那几枚铜板还是热的，最后揣回了内袋。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "belonging",
+          "status"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.15,
+        "risk": 0.15,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-social-daily-culture.sunday-hill",
+      "title": "星期天去卡伦山的路",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 80
+        },
+        {
+          "kind": "cash",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "p9-social-daily-culture.sunday-hill.reach-summit",
+          "weight": 1,
+          "text": "{subject}和{friend}按原计划沿葡萄园间的土路往上走，鞋子沾满黄泥，到山顶时风把汗湿的衬衫吹得冰凉。下山在第一个酒棚坐下，两人合点了一壶新酒和一块面包，{subject}喝到第二杯时脸颊发烫，把剩下的半块面包包进手帕带回家。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "卡伦山酒棚的新酒和面包"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "带回半块面包"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "星期天登山远足"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.06,
+              "reason": "一同走到卡伦山顶"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "山顶远足并在酒棚喝新酒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.sunday-hill.reach-summit",
+              "text": "山道旁的葡萄架下摆着长凳，酒农用木勺从桶里舀出新酒。{subject}靠在棚柱上喘气，看见{friend}的帽檐滴着汗，两人对看了一眼就笑起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.sunday-hill.reach-summit",
+              "text": "山顶的风把远处多瑙河的弯道吹得很清楚。{subject}把外套铺在草坡上坐了一会儿，下山时膝盖发软，进酒棚第一件事就是把杯子推给{friend}先倒。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.sunday-hill.first-winery",
+          "weight": 1,
+          "text": "{subject}和{friend}在第一个酒棚就坐下了，要了一壶新酒，{neighbor}摸出一副磨损的纸牌。三人打到下午，太阳偏西也没再往上爬，{subject}输了几个铜板，倒赢回一肚子笑话。回程的电车上，{subject}靠着窗，酒意上来，差点坐过站。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "酒棚的新酒和牌局输的铜板"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.04,
+              "reason": "一起在酒棚打牌消磨下午"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "与邻座酒客打牌相识"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "在酒棚打牌度过星期天"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.sunday-hill.first-winery",
+              "text": "酒棚的桌上刻满了名字和日期，{neighbor}洗牌时指甲刮得纸面沙沙响。{subject}抓了一手散牌，{friend}在旁边笑得直拍桌子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.sunday-hill.first-winery",
+              "text": "新酒有点酸，{subject}抿了一口就放下，倒是面包夹火腿吃得干净。太阳把棚布晒得发烫，牌局散时没人再提山顶的事。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.sunday-hill.rain-turn-back",
+          "weight": 1,
+          "text": "走到半路雨点砸下来，山道立刻变得溜滑。{subject}和{friend}躲进路边的酒棚檐下，商量了几句，决定改乘电车回家。{subject}把带去的面包掰开分给同车躲雨的人，自己站在车尾，湿透的裤脚贴着腿，一路打着哆嗦。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "改乘电车回家的车票"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "把带去的面包分给同车人"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "淋雨后穿着湿衣服乘车"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "远足被雨打断"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.03,
+              "reason": "一起躲雨并改道回家"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.sunday-hill.rain-turn-back",
+              "text": "雨顺着棚布边缘往下淌，{friend}把外套顶在头上跑去追电车。{subject}把面包纸包解开，掰成几份，先递给了抱着孩子的女人。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.sunday-hill.rain-turn-back",
+              "text": "车厢里全是湿羊毛和泥巴的气味。{subject}抓着吊环，看窗外的葡萄园在雨里糊成一片绿，鞋里的水随着车轮一顿一顿地晃。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "rest",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "autonomy"
+        ],
+        "baseUtility": 1,
+        "risk": 0.05,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-social-daily-culture.pictures-or-concert",
+      "title": "影戏棚与音乐厅之间",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 80
+        },
+        {
+          "kind": "cash",
+          "min": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "p9-social-daily-culture.pictures-or-concert.cheap-picture",
+          "weight": 1,
+          "text": "{subject}和{friend}买了影戏棚最便宜的边座，一刻钟的活动影戏里火车朝观众冲过来，棚里有人叫出了声。散场后两人还站在门口看下一场的招牌，{subject}把剩下几个铜板在口袋里攥得发热，又买了两粒糖，一人一粒含回家。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "影戏棚边座和两粒糖"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "第一次看活动影戏"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "一起在影戏棚看新奇玩意"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.pictures-or-concert.cheap-picture",
+              "text": "棚里的钢琴师照着画面弹进行曲，琴凳跟着晃。{subject}伸长脖子，看见手绘招牌上的火车头画得歪歪扭扭，棚布被风吹得鼓起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.pictures-or-concert.cheap-picture",
+              "text": "边座的木条凳没有靠背，{subject}坐得腰酸，但银幕上的人一出场就忘了。{friend}在旁边小声说那钢琴比酒馆后厅的还旧。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.pictures-or-concert.box-seat",
+          "weight": 1,
+          "text": "{subject}咬牙买了音乐厅楼座的票，又向人借来一件硬领衬衫，领子磨得后颈发红。演奏到慢板时，{subject}手心里的汗把节目单边角浸软，却连咳嗽都憋着，生怕在周围体面人中间出声。散场后{friend}等在门口，问值不值，{subject}只把节目单折好收进口袋。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2.5,
+              "reason": "音乐厅楼座票价"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "听了一场完整的贝多芬音乐会"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "出入音乐厅楼座"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "在音乐会场合注意举止"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.pictures-or-concert.box-seat",
+              "text": "楼座的栏杆漆得发亮，{subject}把借来的硬领又正了正，节目单上的德文名字认不全，但乐声起来时就不去想了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.pictures-or-concert.box-seat",
+              "text": "中场时{neighbor}从旁边递来一句“慢板不错”，{subject}点头，没敢多搭话。回程的电车上硬领硌着下巴，到家才松下来。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-social-daily-culture.pictures-or-concert.skip-both",
+          "weight": 1,
+          "text": "{subject}在影戏棚和音乐厅之间走了两趟，最后哪处都没进。{subject}拐进常去的酒馆，花几赫勒要了半升啤酒，听角落里有人拉琴，拉得不准但很响。{friend}找到{subject}时，桌上的杯子已经空了一半，省下的票钱还在口袋里叮当响。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "酒馆半升啤酒"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在酒馆听人拉琴"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.02,
+              "reason": "被朋友找到并一起喝酒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-social-daily-culture.pictures-or-concert.skip-both",
+              "text": "酒馆角落的琴手闭着眼拉，弓毛松了几根也不管。{subject}把杯子转着圈，看啤酒沫挂在杯壁上，慢慢淌下来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-social-daily-culture.pictures-or-concert.skip-both",
+              "text": "{friend}把门推开又合上，带进一股街上的凉气。{subject}朝对面条凳抬了抬下巴，算是招呼，省下的钱在桌面上叠成一小摞。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "culture",
+        "goals": [
+          "rest",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.1,
+        "risk": 0.1,
+        "skills": [
+          "social"
+        ]
+      }
+    }
+  ]
+}

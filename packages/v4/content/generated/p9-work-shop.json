@@ -1,0 +1,1186 @@
+{
+  "id": "p9-work-shop",
+  "title": "柜台、赊账与送货",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 16,
+    "max": 65
+  },
+  "tags": [
+    "work",
+    "shop",
+    "retail",
+    "merchant",
+    "credit",
+    "delivery"
+  ],
+  "baseRate": 0.15,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 16,
+      "max": 65
+    },
+    {
+      "kind": "placeKind",
+      "in": [
+        "shop"
+      ]
+    },
+    {
+      "kind": "employment",
+      "employed": true
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-work-shop.rich-customer",
+      "title": "戴皮手套的太太",
+      "weight": 1,
+      "rate": 0.027,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 65
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "shop"
+          ]
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 65
+        },
+        {
+          "key": "customer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65,
+          "sex": "female"
+        },
+        {
+          "key": "shopkeeper",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "shopBoy",
+          "kind": "worker",
+          "required": false,
+          "minAge": 14,
+          "maxAge": 19
+        }
+      ],
+      "tags": [
+        "customer",
+        "wealth",
+        "credit",
+        "delivery"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-shop.rich-customer.outcome-deliver-later-pay",
+          "weight": 1,
+          "text": "你让送货的孩子裹上毯子歇着，自己把咖啡和细布包好，先记在太太名下，月底再结。她皮手套在柜台上轻轻一敲，说务必准时。你提着包裹走过三条街，把货送到她公寓门口，回来时掌柜在账本上皱了皱眉，铅笔尖在“未付”两个字上停了一会儿。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "替生病的送货孩子跑腿，把货准时送到，街坊看在眼里。"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "自己贴了电车票钱去送货。"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shop_credit_trusted",
+              "add": true,
+              "reason": "掌柜把记在太太名下的赊账交给你经手。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.rich-customer.outcome-deliver-later-pay",
+              "text": "你把那匹细布夹在腋下，怕雪水洇了边，用油纸裹了两层。太太的公寓在三条街外，门房认得包裹上的字号，接过去时手套都没摘。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.rich-customer.outcome-deliver-later-pay",
+              "text": "掌柜翻开账本，笔尖悬在太太的名字下面，先看了你一眼才落下去。后屋传来送货孩子咳嗽的声音，你系紧围巾出门，冷风灌进领口。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.rich-customer.outcome-demand-cash",
+          "weight": 1,
+          "text": "你按掌柜平时的规矩请太太付现钱，说可以立刻让学徒跑一趟。她的皮手套停在半空，嘴角绷紧，说在这家铺子买了十年东西，头一回被当成讨账的。她只买了咖啡，细布放回架子上，出门时铃铛响得格外刺耳。掌柜从后头出来，看了看架上的布，没说话。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "太太觉得受了怠慢，出门时脸色难看。"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "柜台前争执被别的顾客看见。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$customer",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "reason": "坚持要现钱，让老主顾在柜台前丢了面子。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.rich-customer.outcome-demand-cash",
+              "text": "细布落回货架时扬起一点灰。太太把硬币一枚一枚排在柜面上，数到咖啡钱为止，皮手套压住最后一枚，像按住什么不想再谈的东西。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.rich-customer.outcome-demand-cash",
+              "text": "学徒从后屋探出头来，被你摆手挡回去。太太已经走到门口，围巾重新系紧，玻璃门上的铃铛还在晃。掌柜留在柜台后面数硬币，一枚枚叠起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.rich-customer.outcome-deliver-self",
+          "weight": 1,
+          "text": "你没等掌柜发话，自己把两磅咖啡和一整匹细布捆在手推车上，踩着雪送到太太公寓。门房验货签收，你拿到一张写着“已收”的纸条。回到铺子时卷帘门已经放下，掌柜从里面拉开一条缝，说你误了打烊，扣了半小时工钱。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.15,
+              "reason": "回来晚了，被扣半小时工钱。"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "雪天推车走远路，鞋袜湿透。"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shop_delivery_experienced",
+              "add": true,
+              "reason": "独自给老主顾送过大宗货，得了收货凭条。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.rich-customer.outcome-deliver-self",
+              "text": "车轮在雪泥里发出闷响，细布包在油布里，边角还是被溅湿了一小块。你在公寓后门等门房签名，手指冻得握不住铅笔。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.rich-customer.outcome-deliver-self",
+              "text": "铺子的卷帘门只拉起半人高。掌柜探头看你手里的签收条，又看看你湿到膝盖的裤脚，说工钱里扣半小时，你明天早点来把炉子生上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-shop.credit-ledger",
+      "title": "赊账本上的一行字",
+      "weight": 1,
+      "rate": 0.0255,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 65
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "shop"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 65
+        },
+        {
+          "key": "customer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75,
+          "sex": "female"
+        },
+        {
+          "key": "shopkeeper",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "credit",
+        "poverty",
+        "ledger"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-shop.credit-ledger.outcome-record-and-advance",
+          "weight": 1,
+          "text": "你从围裙口袋里摸出四十赫勒，替她把今天的账垫上，又在账本上添了一行。掌柜的铅笔停在第二页末尾，没抬头，只说月底对账时别差了他的数。洗衣妇把三赫勒推回来，你摇摇头，她把面粉和蜡烛装进篮子，出门时低声说了句什么，风把它吹散了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "替洗衣妇垫付今天的面粉和盐钱。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$customer",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "在账本上替她记下这一笔，还垫了钱。"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "亲手记赊账、对数目。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.credit-ledger.outcome-record-and-advance",
+              "text": "账本纸面起了毛边，你舔了舔铅笔头，把“面粉一公斤、蜡烛两支、盐一小袋”逐个写上去。洗衣妇盯着你的手，像怕你多写一个字母。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.credit-ledger.outcome-record-and-advance",
+              "text": "四十赫勒在柜面上滚了半圈。掌柜眼也没抬，只把三赫勒和你的硬币一起扫进抽屉，抽屉合上时发出闷响，像盖住了一声叹气。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.credit-ledger.outcome-refuse",
+          "weight": 1,
+          "text": "你照着掌柜的意思把账本轻轻合上，说不能再赊了。洗衣妇的手停在面粉袋上，慢慢把它推回柜台，袋口没扎紧，落了一点白粉在木板上。她的孩子在门口往里看，鼻尖贴着玻璃。掌柜把铅笔插回耳朵后面，转身去整理货架。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "当着孩子的面拒绝赊账，心里堵得慌。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$customer",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "按掌柜的话拒绝了这次赊账。"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shop_credit_refused",
+              "add": true,
+              "reason": "亲手合上赊账本，拒绝了一位老主顾。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.credit-ledger.outcome-refuse",
+              "text": "面粉袋回到货架底层，发出干燥的沙沙声。洗衣妇把三赫勒收回口袋，铜板碰着线头，没有响。她拉起孩子的手，孩子还回头看了一眼柜台上的蜡烛。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.credit-ledger.outcome-refuse",
+              "text": "掌柜在货架那头掸灰，鸡毛掸子一下一下敲着木箱。你听见门口的风声大了些，洗衣妇的篮子空着，孩子踩过门槛时踢了一下门框。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.credit-ledger.outcome-barter-eggs",
+          "weight": 1,
+          "text": "你提议用半打鸡蛋抵掉一部分旧账。洗衣妇犹豫片刻，从篮底摸出六只蛋，一只只排在柜台上，蛋壳上还沾着草屑。你数了两遍，在账本上划去两行，又给她称了一公斤面粉。掌柜走过时看了一眼鸡蛋，什么也没说。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "六只蛋抵了部分赊账，铺子里多了点吃食。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$customer",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "想出用鸡蛋抵账的法子，双方都能接受。"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.04,
+              "reason": "在掌柜和洗衣妇之间周旋，把僵局解开了。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.credit-ledger.outcome-barter-eggs",
+              "text": "鸡蛋排在账本旁边，圆的那头朝一个方向。洗衣妇看着你划账，每划一道她肩膀就松一点。面粉重新过秤时，她主动把袋口撑开。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.credit-ledger.outcome-barter-eggs",
+              "text": "掌柜从货架后绕出来，拿起一只蛋对着门口的光看了看，放回去时没有磕碰。他把铅笔递给你，自己走去后屋，门帘晃了两下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-shop.bad-debt",
+      "title": "收不回来的欠账",
+      "weight": 1,
+      "rate": 0.0255,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 65
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "shop"
+          ]
+        },
+        {
+          "kind": "cash",
+          "max": 70
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 65
+        },
+        {
+          "key": "debtor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "shopkeeper",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "debt",
+        "collection",
+        "credit"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-shop.bad-debt.outcome-partial-wage-docked",
+          "weight": 1,
+          "text": "你按地址找到法沃里滕那条后院巷子，敲了三次门。老主顾开门时衬衫领子发黄，说手头只有两克朗，下月一定补上。你拿着两克朗回去，掌柜把欠条和工钱袋并排放着，从里面扣了七克朗差额，一句话没多讲。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -7,
+              "reason": "上门只收回两克朗，掌柜从工钱里扣了差额。"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "没收回欠账，工钱被扣，胸口发闷。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$debtor",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "上门讨账，对方只拿得出两克朗。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.bad-debt.outcome-partial-wage-docked",
+              "text": "后院巷子的楼梯间有股酸菜味，二号门上的漆皮翘起来。老主顾从裤兜里摸出两枚克朗，一枚有豁口，在你掌心里还带着体温。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.bad-debt.outcome-partial-wage-docked",
+              "text": "掌柜把工钱袋摊在柜面上，一枚枚数出七克朗，推到他自己那边。欠条还压在账本下面，露出一个角，你看见上面有你自己的签名。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.bad-debt.outcome-doorstep-promise",
+          "weight": 1,
+          "text": "你到的时候男人不在家，他妻子把门开了一条缝，听你说明来意后，回屋翻了一阵，拿出五十赫勒，说以后每周还这么多。你留下欠条副本，约好下星期六再来。回铺子的路上电车叮当响，你数了数口袋里的零钱，够买半公斤土豆。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.5,
+              "reason": "首次收回五十赫勒还款。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$debtor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "留下欠条副本，约定分周还款。"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 0.5,
+              "reason": "用收回的零钱买了半公斤土豆。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.bad-debt.outcome-doorstep-promise",
+              "text": "门缝里递出来的五十赫勒包在一角旧报纸里。女人说话时眼睛看着巷口，手指一直绞着围裙带子，屋里传来婴儿断断续续的哼声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.bad-debt.outcome-doorstep-promise",
+              "text": "你把欠条副本从本子上撕下来，她接过去对折两次，塞进窗台上一只空罐子里。下星期六这个时辰，她重复了一遍，像在背一条规矩。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.bad-debt.outcome-sell-to-collector",
+          "weight": 1,
+          "text": "你把欠条拿到街角收债人那里。那人坐在烟草店后面的小桌旁，数出四克朗五十赫勒推过来，把欠条收进皮夹。你回铺子交钱，掌柜点了点，说少了一半。后来那家人再没进过店门，巷子里有人朝铺子的方向啐了一口。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4.5,
+              "reason": "把欠条转给收债人，拿回一半面值。"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "街坊知道欠条被转给了收债人。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$debtor",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "reason": "欠条被转卖，对方一家不再进铺子。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.bad-debt.outcome-sell-to-collector",
+              "text": "收债人的皮夹里塞满了折角的纸条，他翻欠条时指甲在纸面上刮出细响。四克朗五十赫勒排在你面前，少了的那一半他连提都没提。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.bad-debt.outcome-sell-to-collector",
+              "text": "掌柜把四克朗五十赫勒拢进抽屉，合上账本，说这样也好，省得再跑。窗外巷子口，那家的女人正拉着孩子快步走过，没有转头。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-shop.stocktake",
+      "title": "盘点少了半袋糖",
+      "weight": 1,
+      "rate": 0.024,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 65
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "shop"
+          ]
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 65
+        },
+        {
+          "key": "shopkeeper",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "apprentice",
+          "kind": "worker",
+          "required": false,
+          "minAge": 14,
+          "maxAge": 19
+        }
+      ],
+      "tags": [
+        "inventory",
+        "stocktake",
+        "suspicion"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-shop.stocktake.outcome-recount-error",
+          "weight": 1,
+          "text": "你提议重新过秤。糖袋搬上磅秤三次，每次都是九公斤半。翻账本才发现上月进货时，两袋糖记成了每袋六公斤，实际只有五公斤。掌柜把错处改过来，差额还在，他拿铅笔把三公斤划掉，说下回进货自己盯着点。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.05,
+              "reason": "重新过秤、核对进货记录，找出记账错误。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$shopkeeper",
+              "kind": "employer",
+              "trust": 0.06,
+              "respect": 0.04,
+              "reason": "查出账本出错，掌柜没再追究。"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shop_stocktake_resolved",
+              "add": true,
+              "reason": "盘点差额查明是记账错误，没有闹到搜包。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.stocktake.outcome-recount-error",
+              "text": "糖袋底下的潮印还在，你蹲下去摸了一把，手指上黏着几粒结块的糖。账本上一行数字被橡皮擦得发灰，掌柜凑近看了半天，鼻息喷在纸面上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.stocktake.outcome-recount-error",
+              "text": "学徒把磅秤挪开，扫掉墙角的谷壳和老鼠屎。你指着进货单上的日期和数字，掌柜用铅笔尾端敲了敲脑门，回身去翻另一本旧册子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.stocktake.outcome-search-bags",
+          "weight": 1,
+          "text": "掌柜坚持把每个人的围裙口袋和包都翻一遍。学徒把帆布包整个倒过来，掉出一本识字课本和半截蜡烛头，没有糖。他站在柜台前脸涨得通红，第二天没有来上工，掌柜只说少一个人照样开门。糖的差额最后算在损耗里。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "当众被翻包，心里不是滋味。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$apprentice",
+              "kind": "colleague",
+              "trust": -0.05,
+              "reason": "学徒被搜包后第二天没来，你目睹了全过程。"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shop_search_witnessed",
+              "add": true,
+              "reason": "铺子里搜包，学徒受辱离开。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.stocktake.outcome-search-bags",
+              "text": "学徒的帆布包倒扣在柜台上，识字课本滑出来，封面上有一道铅笔写的名字。他把书捡回去，手指在封面上抹了两下，像要抹掉什么。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.stocktake.outcome-search-bags",
+              "text": "掌柜翻完最后一只口袋，站在磅秤旁边不说话。后屋门开着，学徒的围裙挂在钉子上，人已经出了巷口，雪地上留下一串新脚印。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.stocktake.outcome-pay-difference",
+          "weight": 1,
+          "text": "你把差额揽在自己身上，从工钱里数出两克朗四十赫勒放在磅秤上。掌柜收下钱，把仓库钥匙推过来，说以后糖和面粉的进出由你记。你接过钥匙，铜的，还带着他手心的温度。学徒在后屋咳了一声，没出来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2.4,
+              "reason": "自己赔了盘亏的糖钱。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$shopkeeper",
+              "kind": "employer",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "主动赔钱，掌柜把仓库钥匙交给你。"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "开始负责仓库进出记账。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.stocktake.outcome-pay-difference",
+              "text": "两克朗四十赫勒叠在磅秤托盘上，秤杆微微翘起。掌柜看了一眼秤，又看了一眼你，把钥匙从裤腰上解下来，放在钱旁边。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.stocktake.outcome-pay-difference",
+              "text": "钥匙在你掌心里留着体温，齿口有些磨圆了。掌柜转身去关后屋的灯，经过学徒的围裙时停了一步，没有伸手。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-shop.delivery",
+      "title": "雪里的送货小车",
+      "weight": 1,
+      "rate": 0.024,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 65
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "shop"
+          ]
+        },
+        {
+          "kind": "health",
+          "min": 0.5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 65
+        },
+        {
+          "key": "porter",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "cafeKeeper",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "delivery",
+        "winter",
+        "errand"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-shop.delivery.outcome-on-time-tip",
+          "weight": 1,
+          "text": "你推着车过桥，车轮在雪泥里吱呀作响，到咖啡馆门口时天刚亮。咖啡馆老板验了蜡烛和面粉，从围裙兜里摸出二十赫勒小费，说雪天能准时的不多了。你回铺子时裤脚湿到膝盖，脚趾在鞋里冻成一排硬块。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.2,
+              "reason": "雪天准时送到，咖啡馆老板给了小费。"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "雪水中跋涉，裤脚湿透，脚趾冻僵。"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "准时送货到运河对岸的咖啡馆。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.delivery.outcome-on-time-tip",
+              "text": "桥面的雪被马蹄踩成黑泥，车轮陷进去又拔出来。咖啡馆门口挂着一盏还没灭的煤气灯，老板拿钥匙开锁时，你看见自己呼出的白气喷在蜡烛箱上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.delivery.outcome-on-time-tip",
+              "text": "二十赫勒在手套外面也发凉。老板把蜡烛数了一遍，又掂了掂面粉袋，转身时围裙带子扫过门槛上的雪。你推着空车回去，轮子轻快了不少。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.delivery.outcome-spill-candles",
+          "weight": 1,
+          "text": "车轮卡进电车轨道的积雪里，车身一歪，半箱蜡烛摔在桥面上，断的断、碎的碎。你把没碎的捡回箱子里，到咖啡馆时老板只收下还在的半箱和那袋面粉，按价扣了钱。回铺子掌柜照价让你赔，你数出三克朗放在柜台上，指甲缝里全是蜡屑。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "摔碎半箱蜡烛，照价赔偿。"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "雪地翻车，赔了钱，心里懊丧。"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "chilblains",
+              "add": true,
+              "reason": "雪水里走了大半天，脚上生了冻疮。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.delivery.outcome-spill-candles",
+              "text": "蜡烛滚了一地，有几支被车轮碾扁，蜡芯露在外面。你蹲在桥面上捡，电车从旁边驶过，铃声震得耳朵发麻，溅起的雪泥落在你后颈上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.delivery.outcome-spill-candles",
+              "text": "掌柜把三克朗拢进抽屉，扫了一眼你冻红的指节，说蜡烛钱算铺子的损耗，但你那半箱工钱别想再要。咖啡馆老板没说什么，只把碎蜡扫进了垃圾桶。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.delivery.outcome-two-trips-late",
+          "weight": 1,
+          "text": "你分两趟送，先推面粉过去，再回来装蜡烛。第二趟到咖啡馆时炉子已经生上，老板接过蜡烛，说面粉是按时到了，蜡烛可晚了半个钟头。他数出一半的运费，把硬币按在你掌心里，没有多余的话。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.15,
+              "reason": "第二趟迟到，只拿到一半运费。"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "来回推车两趟，胳膊酸沉。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$cafeKeeper",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "第二趟迟到，咖啡馆老板不太满意。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.delivery.outcome-two-trips-late",
+              "text": "第二趟过桥时雪小了些，桥栏上的积雪开始化水。你把蜡烛箱搬上台阶，咖啡馆的炉烟从门缝里钻出来，混着咖啡味。老板看了看钟，又看了看箱子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.delivery.outcome-two-trips-late",
+              "text": "硬币在掌心里排成一排，凉的。老板转身去照看炉子，你站在门口把车掉头，听见里面有人问蜡烛怎么才来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-shop.shoplifting",
+      "title": "柜台前的一只空袖子",
+      "weight": 1,
+      "rate": 0.024,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 65
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "shop"
+          ]
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 65
+        },
+        {
+          "key": "boy",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 10,
+          "maxAge": 20
+        },
+        {
+          "key": "shopkeeper",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "shoplifting",
+        "theft",
+        "police",
+        "neighborhood"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-work-shop.shoplifting.outcome-catch-and-work-off",
+          "weight": 1,
+          "text": "你走到门口拦住男孩，把他带回后屋。罐头从袖子里滑出来，标签蹭皱了一角。你说每周六来擦地板、搬货，抵到罐头钱为止。男孩点头，眼睛盯着地面。掌柜在前头拨算盘，珠子响了一阵，没问后屋的事。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$boy",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "obligation": 0.1,
+              "reason": "没叫巡警，让男孩每周来干活抵罐头钱。"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "男孩的母亲后来托人捎了句话，说谢谢。"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "自己拿主意处理偷窃，没惊动巡警。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.shoplifting.outcome-catch-and-work-off",
+              "text": "罐头落在地上，纸标签沾了后屋的煤灰。男孩把空袖子卷起来，小臂上有一道旧疤。你把罐头捡起来放回货架，他跟着你走到水桶旁边。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.shoplifting.outcome-catch-and-work-off",
+              "text": "掌柜在柜台后头拨算盘，珠子一颗颗往回推。后屋传来水桶拖过石板地的声音，男孩跪在地上擦，你听见他在数擦过的地砖。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.shoplifting.outcome-call-patrol",
+          "weight": 1,
+          "text": "你按掌柜的意思走到门口招呼巡警。男孩被带出去时没有挣扎，旧外套的肘部磨得发亮。第二天洗衣房的女人来巷口取水，看见铺子的招牌就别过头去。之后几个常客也不再赊账，宁肯多走两条街。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "叫来巡警带走偷罐头的男孩，街坊冷淡下来。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$boy",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "reason": "男孩被巡警带走，街坊都知道是你招呼的。"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "巡警带走男孩后，心里不安。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.shoplifting.outcome-call-patrol",
+              "text": "巡警的手按在男孩肩上，像按一只想飞的鸟。男孩经过柜台时看了你一眼，袖口里还露出罐头商标的一角，被巡警顺手塞了回去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.shoplifting.outcome-call-patrol",
+              "text": "掌柜在门口和巡警说了几句，签了一张单子。巷子里有人探出窗子看，又缩回去。你把柜台上的沙丁鱼罐头摆正，商标朝着外面。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-work-shop.shoplifting.outcome-pretend-not-see",
+          "weight": 1,
+          "text": "你装作没看见，等男孩出了门才低头理货。月底盘点时沙丁鱼罐头少了一只，掌柜翻着账本问那天谁当班。你从围裙里数出六十赫勒补上，说是自己记漏了。掌柜看了你一会儿，合上账本。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "自己垫了罐头钱，说是记漏了账。"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$shopkeeper",
+              "kind": "employer",
+              "trust": -0.03,
+              "reason": "掌柜起过疑心，但没再追问。"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "放走男孩，赔了钱，但心里没那么堵。"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p9-work-shop.shoplifting.outcome-pretend-not-see",
+              "text": "男孩出门时袖子晃了一下，沙丁鱼罐头的棱角在布底下顶出一个包。你转过身去把饼干盒码齐，盒子边缘有一道锈迹。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p9-work-shop.shoplifting.outcome-pretend-not-see",
+              "text": "月底掌柜把账本摊在柜台上，沙丁鱼那一行空着。你数出六十赫勒放在他手边，他拿起来对着光看了看，放进钱匣，没再说什么。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

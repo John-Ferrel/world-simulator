@@ -1,0 +1,1271 @@
+{
+  "id": "p9-childhood-adolescence",
+  "title": "街角、第一份工与不能说的话",
+  "stage": "adolescence",
+  "ageWindow": {
+    "min": 12,
+    "max": 17
+  },
+  "tags": [
+    "adolescence",
+    "friendship",
+    "identity",
+    "work",
+    "school",
+    "secret",
+    "church"
+  ],
+  "baseRate": 0.13,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 12,
+      "max": 17
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-childhood-adolescence.courtyard-gang",
+      "title": "院子里的那伙人",
+      "weight": 1,
+      "rate": 0.026,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 15
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "street",
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 15
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 17
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 32,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "gang-prater-locked-out",
+          "weight": 1,
+          "text": "{subject}跟着{neighbor}穿过普拉特大街，看人放完焰火才想起回家。院门已经上了闩，母亲的灯灭了，{subject}在楼梯间坐到后半夜，膝盖冻得发僵。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在冰冷的楼梯间过夜"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.06,
+              "affection": 0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "一起在普拉特玩到深夜"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被锁在门外"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gang-prater-locked-out",
+              "text": "焰火在运河对岸炸开，{neighbor}拍着巴掌，{subject}闻到他袖口上码头的鱼腥味，转身跑回院子时门板已经合死。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gang-prater-locked-out",
+              "text": "夜里湿气贴在脖子上，{subject}坐在楼梯的第三级，听见楼上开门又关上，没有人喊{subject}的名字。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gang-corner-turn-back",
+          "weight": 1,
+          "text": "{subject}只把{neighbor}送到巷口的煤油灯下就折回去。第二天在水泵边，{neighbor}学{subject}走路的样子，几个人跟着笑，{subject}拎起水桶没有接话。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "affection": -0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "被那伙人嘲笑"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "第二天挨了嘲笑"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gang-corner-turn-back",
+              "text": "灯芯噼啪响了一下，{subject}说母亲要{subject}回去打水，{neighbor}只是耸了耸肩，把帽子往后一推就跟着别人走了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gang-corner-turn-back",
+              "text": "水桶带回来的水溅在鞋面上，{subject}站在自家门口听见巷口那伙人的笑声拐了个弯，才慢慢上楼。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gang-bring-younger-neighbor",
+          "weight": 1,
+          "text": "{subject}拉上隔壁更小的{neighbor}一起去桥下，回程时那孩子的母亲堵在院门口，说{subject}带坏了她家孩子，声音大得半条街都听见。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被邻居当街数落"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "affection": 0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "一起出门却连累对方母亲"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "被堵在门口责骂"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gang-bring-younger-neighbor",
+              "text": "那母亲一只手叉腰一只手攥着{neighbor}的领子，{subject}被问得答不上话，只觉得背后的汗贴着衬衫发凉。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gang-bring-younger-neighbor",
+              "text": "运河边的风把纸屑卷到脚边，{subject}本来还想辩解，看见{neighbor}低着头，就把话咽回去了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gang-help-with-bread",
+          "weight": 1,
+          "text": "面包房关门前{subject}和{neighbor}凑了四赫勒，分到一块凉了的面包。夜里母亲问{subject}吃了什么，{subject}只答在院子里喝的水。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "在外面买剩面包吃"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "凑钱买面包"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.04,
+              "affection": 0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "分吃同一块面包"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gang-help-with-bread",
+              "text": "纸包着的面包还是温的，{subject}把它掰成两半，{neighbor}接过去先咬了一大口，剩下的一半在{subject}手心里。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gang-help-with-bread",
+              "text": "面包房里飘出烤焦的糖味，{subject}数了数掌心里的硬币，又回头看看站在灯影里的{neighbor}。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-adolescence.first-errand-job",
+      "title": "第一份跑腿钱",
+      "weight": 1,
+      "rate": 0.0234,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 17
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        },
+        {
+          "kind": "cash",
+          "max": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "shopkeeper",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 50
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "errand-paid-and-second",
+          "weight": 1,
+          "text": "{shopkeeper}掂了掂空筐，把二十赫勒放在{subject}手里，又说客栈后面还有一包糖。{subject}抱着糖包走过电车轨道时，鞋底被烫热的铁轨硌了一下，回来时口袋里有四十赫勒。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 40,
+              "reason": "跑两趟腿的工钱"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "学着和客栈伙计打交道"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "挣到第一笔钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "errand-paid-and-second",
+              "text": "硬币在裤袋里碰出声响，{subject}回家路上数了两遍，还是把四十赫勒塞进厨房的陶罐。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "errand-paid-and-second",
+              "text": "{shopkeeper}在账簿上画了一道，头也没抬，{subject}盯着自己的手指，觉得比出门时稳当些。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "errand-pressed-bread-half-pay",
+          "weight": 1,
+          "text": "电车轮子擦过街心时{subject}急着跳开，筐里的面包压扁了一角。{shopkeeper}翻检了两遍，扣下十赫勒，只给十赫勒，还说下次要看路。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 10,
+              "reason": "面包压坏扣了一半工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被扣工钱"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "见识了送货的路数"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "errand-pressed-bread-half-pay",
+              "text": "扁掉的那只面包被{shopkeeper}用两个指头拈起来，{subject}想说什么，却只看见老板娘在柜台后面摇了摇头。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "errand-pressed-bread-half-pay",
+              "text": "电车铃铛响得人心里发紧，{subject}退到人行道上，筐子一歪，纸包里就软塌下去一块。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "errand-refuse-go-docks",
+          "weight": 1,
+          "text": "{subject}摇头说这不算正经活，{shopkeeper}把二十赫勒收回围裙口袋。{subject}绕到码头上问搬运工，{worker}从肩上放下麻袋，说这儿的活要等明天早上工头来挑人。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "去码头打听正经工作"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "在码头问过工"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "空手而归"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "errand-refuse-go-docks",
+              "text": "码头上麻袋蹭着石阶发出沙沙声，{worker}说话时并没停下抹脖子上的汗，{subject}站在一摊水渍边上等他说完。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "errand-refuse-go-docks",
+              "text": "杂货铺里的面包味跟着{subject}走了一段路才散，{subject}低头看自己比{shopkeeper}还长的胳膊，往码头去了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-adolescence.church-club",
+      "title": "教区青年会的长凳",
+      "weight": 0.9,
+      "rate": 0.0208,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 17
+        },
+        {
+          "kind": "cash",
+          "min": 1
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "church",
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 17
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 20
+        },
+        {
+          "key": "parishYouth",
+          "kind": "organization",
+          "required": false,
+          "organizationKind": "church"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "club-sign-up-hike",
+          "weight": 1,
+          "text": "{subject}把十赫勒放在桌上的铁皮盒里，翻到歌本最后一页，用铅笔写下自己的名字。{neighbor}在后面戳{subject}的背，说乡下的草地能躺着听云。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -10,
+              "reason": "青年会远足车费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "affection": 0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "一起报名远足"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "盼着乡下远足"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "club-sign-up-hike",
+              "text": "教堂侧厅的长凳硬得硌腿，{subject}把歌本翻得哗哗响，铅笔尖在纸角断了一小截。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "club-sign-up-hike",
+              "text": "修女的鞋跟敲在石板地上，{neighbor}凑过来小声说自己带了双结实的鞋，{subject}把名字写大了一点。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "club-one-visit-only",
+          "weight": 1,
+          "text": "{subject}去了一个下午，看那些旧歌本里夹着褪色的圣像卡，工厂来的几个年轻人在最后一排用手指敲长凳打拍子。第二个星期天{subject}没再去，在院子里帮母亲晾被单。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "没再去青年会"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "帮家里干活"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "见过教区里不同的人"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "club-one-visit-only",
+              "text": "被单在绳子上鼓成一团，{subject}从布缝里看街道，教堂钟声响了两下，{subject}没有动。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "club-one-visit-only",
+              "text": "那几个年轻人敲凳子的声音还留在耳朵里，{subject}把木夹子一个个捏紧，没跟母亲提青年会的事。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "club-follow-without-paying",
+          "weight": 1,
+          "text": "{subject}口袋里没有十赫勒，却还是跟着队伍走到车站。修女在栅栏边拦住{subject}，翻了翻名册，说没交钱的孩子不能上车；{neighbor}在车厢门口回头看。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "没交钱被修女当众拦下"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "隔着栅栏看着远足队伍离开"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被留在车站"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "club-follow-without-paying",
+              "text": "火车的烟飘到站台上，{subject}攥着栅栏的凉铁条，看见{neighbor}的脸从车窗后缩回去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "club-follow-without-paying",
+              "text": "修女合上名册的动作很轻，旁边几个大人却都转过来看，{subject}把空口袋按在大腿上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-adolescence.borrowed-coin",
+      "title": "借来的硬币",
+      "weight": 1,
+      "rate": 0.0208,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 17
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "friend",
+          "minTrust": 0.2
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home",
+            "street"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "friendMother",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "coin-keep-secret",
+          "weight": 1,
+          "text": "{subject}点了头。{neighbor}松了口气，把两克朗在掌心里翻了个面。从那以后{subject}绕开那家面包店的台阶，{friendMother}在门口掸围裙时，{subject}低着头快走过去。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.04,
+              "affection": 0,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0,
+              "reason": "替朋友守住拿钱的秘密"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "心里压着事"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "躲着朋友母亲"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coin-keep-secret",
+              "text": "煤油灯的烟把楼梯间熏得发黄，{subject}听见楼下大人数数的声音，把两克朗往他制服口袋里按了按。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coin-keep-secret",
+              "text": "第二天清早{subject}路过面包店，门帘后有个影子动了动，{subject}加快了脚步，鞋跟敲在石板上很响。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coin-persuade-return",
+          "weight": 1,
+          "text": "{subject}让{neighbor}趁没人看见把钱放回围裙口袋，{neighbor}犹豫了一刻钟还是照做了。结果口袋里的数目早被记下，钱多出来，{friendMother}当晚把孩子骂了一遍，{subject}也在自己家挨了几句。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.03,
+              "affection": 0.02,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "劝朋友把钱放回"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被牵连进这件事"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "挨了自家人数落"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coin-persuade-return",
+              "text": "{neighbor}捏着钱在煤油灯下站了很久，最后从后门溜回去，{subject}蹲在楼梯口听着楼上的动静。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coin-persuade-return",
+              "text": "厨房里有人把盘子摞得叮当响，{subject}在门边站定，听见母亲的声音不高，却一句一句都清楚。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coin-tell-mother",
+          "weight": 1,
+          "text": "{subject}回家把这件事说给母亲听。母亲解下围裙就上楼去敲了那家的门，{friendMother}站在过道里，两个大人压低声音说了很久，{neighbor}从门缝里看{subject}，一句话也没说。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": -0.05,
+              "affection": -0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "把秘密告诉了自家人"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "大人们觉得{subject}做得对"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "朋友不再看{subject}"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coin-tell-mother",
+              "text": "母亲的围裙带子在身后晃，{subject}听见门那边先是沉默，后来是{friendMother}把门开大了一点。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coin-tell-mother",
+              "text": "{neighbor}在门缝后站着，灯影把半张脸切暗，{subject}想开口，脚却往后退了一步。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-adolescence.secret-in-the-stairwell",
+      "title": "楼梯间的秘密",
+      "weight": 0.9,
+      "rate": 0.0182,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 17
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "friend",
+          "minTrust": 0.1
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home",
+            "street",
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 55
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 32,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "secret-bread-and-blanket",
+          "weight": 1,
+          "text": "{subject}从厨房橱柜里掰下一块面包，又把柜底的旧毯子卷起来，趁母亲在灶边低头时溜出去。{neighbor}在纸料间接过毯子，把脸埋进去好一会儿才说谢谢。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "给朋友带面包"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "affection": 0.04,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0,
+              "reason": "又送吃的又送毯子"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "旧毯子拿走没添置"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "secret-bread-and-blanket",
+              "text": "纸料间的旧报纸被压成硬块，{neighbor}的手指冻得发红，接过面包就着咸味慢慢嚼。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "secret-bread-and-blanket",
+              "text": "{subject}的鞋踩在印刷厂的碎纸边上没有声音，窗缝里进来的风吹得报纸角一下一下地动。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "secret-mother-sets-place",
+          "weight": 1,
+          "text": "{subject}还是把这件事告诉了母亲。母亲没多问，在厨房案板旁多摆了一副碗筷，晚上让{neighbor}睡在炉边的旧垫子上，说先住下，别的事明早再想。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.04,
+              "affection": 0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "让朋友住进自家"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "多一个人吃饭"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "朋友有了落脚处"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "secret-mother-sets-place",
+              "text": "炉子上的水壶盖轻轻跳，母亲用围裙擦了一只碗，放到{neighbor}面前，什么也没问。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "secret-mother-sets-place",
+              "text": "旧垫子摊开时扬起一层灰，{neighbor}站着不敢坐，{subject}把碗筷又往前推了一寸。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "secret-ask-worker",
+          "weight": 1,
+          "text": "{subject}去找{worker}，问能不能让{neighbor}留在纸料间。{worker}搓着手上洗不掉的墨，说要照规矩通知教区，否则厂里担不起。{subject}回来的路上一直看自己的鞋尖。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0.02,
+              "respect": 0.02,
+              "reason": "为朋友去求工头"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": -0.02,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "没能守住秘密"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被规矩挡回来"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "secret-ask-worker",
+              "text": "印刷机在墙后轰隆一声接一声，{worker}把话说完，又低头去理手上的活，没有再看{subject}。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "secret-ask-worker",
+              "text": "巷口的风把纸料间的碎纸吹到{subject}脚边，{subject}拾起一片，上面印着模糊的教会通告。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-adolescence.school-leaving-exam",
+      "title": "离校证明",
+      "weight": 1,
+      "rate": 0.0208,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 15
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "school"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 15
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 55
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65,
+          "organizationKind": "factory"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "exam-pass-print-apprentice",
+          "weight": 1,
+          "text": "{subject}把卷子从头到尾写满，{teacher}看完点了点头，把离校证明和一张推荐纸条一起递过来。{parent}当天就带着{subject}去印刷厂找{employer}，学徒位还剩一个。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 1,
+              "reason": "拿到离校证明并谈成学徒位"
+            },
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "印刷厂学徒",
+              "wage": 8,
+              "workplaceId": "$workplace",
+              "reason": "通过考试后进印刷厂"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "老师给了推荐"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "考试通过"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "exam-pass-print-apprentice",
+              "text": "墨迹在推荐纸条上还没干透，{employer}在印刷厂的油墨味里翻看证明，用指节敲了敲柜台。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "exam-pass-print-apprentice",
+              "text": "{teacher}把讲台上的报名表收进抽屉，{subject}的算术本被压在最上面，边角卷着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "exam-fail-arithmetic-runner",
+          "weight": 1,
+          "text": "{subject}的算术没及格，卷面上红笔圈了两处，{teacher}只给了一张肄业证明。{parent}叹了口气，第二天托人把{subject}送去做跑腿，一天挣六个赫勒。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "primary",
+              "level": 0,
+              "reason": "算术没及格只有肄业证明"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "先做起跑腿零活"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": -0.02,
+              "reason": "算术没过关"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "考试失利"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "exam-fail-arithmetic-runner",
+              "text": "教室窗外的雨点打在两块碎玻璃上，{subject}把肄业证明折起来放进口袋，纸角戳着腿侧。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "exam-fail-arithmetic-runner",
+              "text": "黑板上的日期还没擦，{teacher}把红笔帽扣上，{parent}在走廊里等着，手里攥着一顶旧帽子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "exam-absent-coal",
+          "weight": 1,
+          "text": "考试那天早晨煤车到了楼下，{parent}要人帮着把煤搬进地窖。{subject}搬完最后半筐时，学校的钟已经敲过两下，{teacher}把留着的证明锁进抽屉，说这学期不会再发。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "primary",
+              "level": 0,
+              "reason": "缺考只有原来的学历"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "搬煤累坏了身子"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": 0.02,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0,
+              "reason": "替家里搬煤"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "错过考试"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "exam-absent-coal",
+              "text": "煤灰嵌进{subject}的指甲缝，楼下地窖门敞着，学校的钟响过之后街上安静得只剩铁锹声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "exam-absent-coal",
+              "text": "母亲的围裙上落了一层黑，{subject}把手在裤子上蹭了蹭，学校的方向传来孩子们散课的动静。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

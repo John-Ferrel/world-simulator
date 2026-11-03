@@ -1,0 +1,1147 @@
+{
+  "id": "p9-childhood-household",
+  "title": "灶台边的孩子",
+  "stage": "childhood",
+  "ageWindow": {
+    "min": 3,
+    "max": 11
+  },
+  "tags": [
+    "childhood",
+    "family",
+    "household",
+    "home",
+    "siblings",
+    "illness",
+    "neighbors"
+  ],
+  "baseRate": 0.18,
+  "conditions": [
+    {
+      "kind": "placeKind",
+      "in": [
+        "home"
+      ]
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-childhood-household.supper-bowl",
+      "title": "一锅土豆汤",
+      "weight": 1,
+      "rate": 0.036,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 3,
+          "max": 8
+        },
+        {
+          "kind": "householdSize",
+          "min": 4
+        },
+        {
+          "kind": "cash",
+          "max": 45
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 3,
+          "maxAge": 8
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 50
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 2,
+          "maxAge": 14
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "gave-potato-to-younger",
+          "weight": 1,
+          "text": "{subject}把自己碗里那块最大的土豆拨到{sibling}碗里，只用汤水泡面包。{parent}看见了，没说话，把自己那片薄香肠掰下一半，悄悄放进{subject}的碗底，锅底刮得吱吱响。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "分食让全家这顿勉强吃饱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.08,
+              "affection": 0.1,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0,
+              "reason": "让出土豆给更小的弟妹"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "被母亲暗中照顾"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gave-potato-to-younger",
+              "text": "五点钟天已黑透，楼道里有人提着煤筐上楼，铁皮桶碰着栏杆。{subject}数着锅里剩下的片数，把土豆夹给{sibling}，自己舔汤勺上的盐味。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gave-potato-to-younger",
+              "text": "锅底只剩一层糊汤。{parent}转身去添柴时，{subject}把土豆按进{sibling}碗里，那孩子低头吃得飞快，汤溅到桌板上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "caught-adding-ladle",
+          "weight": 1,
+          "text": "{subject}趁{parent}转身去灶口添煤，又把勺子伸进锅里刮下半个土豆。父亲从桌边抬眼，什么也没说，只把碗往桌中央推了推；{subject}立刻把勺子放下，坐得笔直，手心发烫。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被父亲看见后感到羞愧"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": -0.02,
+              "obligation": 0.05,
+              "fear": 0.06,
+              "respect": 0.04,
+              "reason": "父亲沉默的管教"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "caught-adding-ladle",
+              "text": "勺子碰到锅底那一声很轻，可屋里太静。父亲放下刀叉，把烟斗往桌上一搁，{subject}连汤也不敢再舀，只盯着自己碗里浮着的油星。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "caught-adding-ladle",
+              "text": "煤火从灶口蹿出来，映得墙上的挂历发红。{subject}的勺子停在半空，父亲用指节敲了两下桌面，母亲便把那口锅端到灶后头去了。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "saved-bread-for-morning",
+          "weight": 1,
+          "text": "{subject}说自己在外头已经吃过，把分到的黑面包留在桌上，用布盖好。夜里肚子叫得睡不着，翻来覆去听着{sibling}的呼吸声；天亮时那块面包还在，边缘硬得能敲响桌面，{parent}把它掰成三份。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "省下的面包留到次日早餐"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "夜里空腹未进食"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.06,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "母亲看出孩子懂事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "saved-bread-for-morning",
+              "text": "面包搁在炉边，被余温烘得外壳发脆。{subject}躺在草垫上翻了个身，听见楼下院子里的水龙头还在滴，肚子一阵一阵地空。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "saved-bread-for-morning",
+              "text": "第二天清早，{parent}揭开那块布，面包已经硬了。她没问缘由，只拿刀切成三块，把最厚的一块推到{subject}面前。",
+              "tone": [
+                "warm"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-household.water-and-coal",
+      "title": "上学前的两桶水",
+      "weight": 1,
+      "rate": 0.036,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 11
+        },
+        {
+          "kind": "householdSize",
+          "min": 4
+        },
+        {
+          "kind": "health",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 3,
+          "maxAge": 12
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "late-for-school",
+          "weight": 1,
+          "text": "{subject}先把两桶水一级一级提上四楼，水沿楼梯板缝往下漏，又被煤球筐压得膝盖发软。赶到学校时七点的钟早敲过，老师在本子上记下名字，罚站在走廊直到第一节课下课。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "提水抬煤累得手臂发酸"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "迟到被记名"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被罚站在走廊"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "late-for-school",
+              "text": "天没亮的院子里排着木桶，铁龙头冻得发白。{subject}把水桶提上楼，桶沿撞着栏杆一声声闷响，等放下最后一桶，胡同口的钟声已经在远处敲完了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "late-for-school",
+              "text": "走廊上站着的还有两个迟到的孩子。{subject}的鞋面被水浸黑，脚趾在里头冻得发麻，老师用指节敲了敲讲台，把名字写进登记簿。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "helped-neighbor-for-bread",
+          "weight": 1,
+          "text": "楼下{neighbor}的煤筐散在门槛前，{subject}停下帮着把煤球一颗颗捡回筐里，又顺手抬进门。老人从抽屉里摸出一块面包塞过来，等{subject}跑到学校，已经迟了半节课，手心里还留着煤灰的印子。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居给的一块面包"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.06,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "帮老人搬煤"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "迟到半节课"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "helped-neighbor-for-bread",
+              "text": "煤球滚进楼梯间的角落，{subject}蹲下去一颗一颗摸出来，指尖黑得发亮。老人扶着门框道谢，把面包按在孩子手里，还带着炉子的余温。",
+              "tone": [
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "helped-neighbor-for-bread",
+              "text": "学校钟声咚咚响过街口时，{subject}正提着空水桶跑。老师问为什么迟到，孩子张开煤黑的手掌，什么也没解释，只被赶回座位。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ignored-mother-call",
+          "weight": 1,
+          "text": "{parent}在灶台边喊着再提一桶水，{subject}装作没听见，空手跑下楼梯。放学回来，水缸是空的，{subject}被罚在院子里来回挑了四趟水，直到天完全黑下来。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "傍晚被罚挑水四趟"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.05,
+              "affection": -0.03,
+              "obligation": 0.04,
+              "fear": 0.05,
+              "respect": 0.02,
+              "reason": "逃避家务被罚"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ignored-mother-call",
+              "text": "楼梯口传来母亲喊名字的声音，{subject}把帽子往头上一扣就往下跑，木屐敲着石阶。回家时母亲不说话，只把两只空桶并排放在门口，水龙头在院子里等着。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "ignored-mother-call",
+              "text": "夜里院子里的灯笼已经挂起来，{subject}提着满桶的水上最后一趟，肩膀被桶梁勒出红印，听见自家窗户里弟弟在咳嗽。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-household.half-bed",
+      "title": "半张床的界线",
+      "weight": 1,
+      "rate": 0.0288,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 5,
+          "max": 11
+        },
+        {
+          "kind": "householdSize",
+          "min": 5
+        },
+        {
+          "kind": "overcrowded",
+          "value": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 11
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 3,
+          "maxAge": 16
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "chalk-line",
+          "weight": 1,
+          "text": "{subject}从学校带回来一小截粉笔，在床板正中划了条白线，谁越过就用胳膊肘顶回去。半夜{sibling}翻身压过线来，两人推搡几回，被子扯到地上，第二天谁都没睡好。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "夜里推搡没睡踏实"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.04,
+              "affection": -0.05,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "为被子划界争吵"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "chalk-line",
+              "text": "粉笔线在草垫上一蹭就糊了。{subject}翻身把被子掖到下巴底下，听见{sibling}的膝盖在木床板上磨出声，线的那一头又慢慢挪了过来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "chalk-line",
+              "text": "屋里只有窗外煤气灯的一点黄光。{subject}用手掌压住被角，{sibling}干脆把整条被子卷成筒抱在怀里，两个人背对背各占半张床板。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gave-wall-side",
+          "weight": 1,
+          "text": "{subject}把靠墙那块最暖的位置让给最小的弟妹，自己睡到床尾，脚正好顶着门缝灌进来的风。{sibling}半夜没再滚下床，{subject}的脚踝却冻得发木，天亮了还得多搓几下才站得稳。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "睡床尾受冷风"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.07,
+              "affection": 0.1,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "把暖处让给更小的弟妹"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "gave-wall-side",
+              "text": "墙皮一到夜里就往下掉白灰。{subject}把最小的那个往里推，又把枕头摆正，自己缩在床尾，脚趾扳着床板边取暖。",
+              "tone": [
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "gave-wall-side",
+              "text": "门缝底下漏着楼道里的冷气，{subject}把外套盖在自己腿上，听见床里头的弟妹呼吸渐渐匀了，才闭上眼。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "slept-on-kitchen-bench",
+          "weight": 1,
+          "text": "被子又被扯走之后，{subject}抱着一件外套到厨房去睡长凳，后背贴着灶口的余温。第二天清早父亲起来生火，看见长凳上的孩子，什么也没问，只把自己的毯子盖了上去。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "睡长凳受了凉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.06,
+              "affection": 0.05,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "父亲夜里给孩子盖毯子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "slept-on-kitchen-bench",
+              "text": "厨房的长凳窄得翻身就要掉下来，灶膛里还有暗红的灰。{subject}把外套叠成枕头，闻着煤烟和剩汤的气味，看窗外院子里的灯笼慢慢灭掉。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "slept-on-kitchen-bench",
+              "text": "天蒙蒙亮，父亲弯腰往灶里塞柴，回头看见那条毯子滑到地上，便重新盖好，火柴划了两次才点着。",
+              "tone": [
+                "gentle"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-household.fever-night",
+      "title": "夜里的湿毛巾",
+      "weight": 1,
+      "rate": 0.0324,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 3,
+          "max": 10
+        },
+        {
+          "kind": "health",
+          "max": 0.8
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 3,
+          "maxAge": 10
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 50
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hospital-deposit",
+          "weight": 1,
+          "text": "{parent}用围巾把{subject}整个裹住，抱下楼梯去坐电车。综合医院的急诊要先交押金，母亲数出几张揉皱的克朗纸币放在柜台上，{subject}被留在观察室里，头顶挂着一盏白得刺眼的灯。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "医院急诊押金和电车票"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "在医院接受处理"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被留在陌生观察室"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hospital-deposit",
+              "text": "电车在湿轨上叮当响，{parent}一只手抱着{subject}，一只手数着裤袋里的硬币。医院走廊的地砖冰凉，护士掀开围巾探了探额头，让先去柜台。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hospital-deposit",
+              "text": "观察室里还有别的孩子，隔着帘子听见有人低声哭。{subject}想抓母亲的手，母亲被拦在门边，说天亮下工前再来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "called-corner-doctor",
+          "weight": 1,
+          "text": "{parent}请{neighbor}去叫街角的老医生。医生提着皮包上来，听了听胸口，从纸包里抖出几撮退烧药粉，收下两克朗，又用铅笔头在处方纸上写了条饮食单：稀粥、温水、别吃面包皮。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "出诊费和药粉"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "服药后热退了些"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.04,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "邻居半夜帮忙跑腿"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "called-corner-doctor",
+              "text": "{neighbor}披着外套下楼，脚步声在院子里回荡。医生把听诊器在掌心捂了捂才贴到{subject}背上，母亲端着油灯凑近那张饮食单。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "called-corner-doctor",
+              "text": "药粉拌在温水里有一股涩味，{subject}捏着鼻子分三口咽下。医生收起皮包时说夜里要看着，母亲就把椅子搬到床边。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "vinegar-compress",
+          "weight": 1,
+          "text": "家里没有多余的钱请医生，{parent}用冷水和醋轮换着敷额头，整夜坐在床边量着体温。天亮时{subject}的汗把枕布浸湿了一片，热血退了些，母亲的手指却被醋水泡得发白发皱。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "湿敷后退了烧"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "母亲守了一整夜"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.08,
+              "affection": 0.08,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "母亲通宵照看"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "vinegar-compress",
+              "text": "醋味在狭小的屋子里散不开，湿布换了一次又一次。{subject}半睡着听见母亲起身去舀水，铁盆边碰出很轻的一声。",
+              "tone": [
+                "gentle"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "vinegar-compress",
+              "text": "窗纸缝里透进胡同第一班送奶车的铃声。{parent}把最后一块湿布搭在{subject}额上，用手背贴了贴自己的眼窝，才把灯芯拧小。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-household.name-day-gift",
+      "title": "名字日的纸包",
+      "weight": 0.9,
+      "rate": 0.0252,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 4,
+          "max": 11
+        },
+        {
+          "kind": "cash",
+          "max": 60
+        },
+        {
+          "kind": "worldYear",
+          "min": 1900,
+          "max": 1935
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 4,
+          "maxAge": 11
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 50
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "wooden-horse",
+          "weight": 1,
+          "text": "旧报纸一层层剥开，里头是只巴掌大的木马，鬃毛用刀刻出几道纹。{subject}一整天把它揣在衣襟里，上楼梯时怕磕着，到睡觉时把它摆在枕头边上，袖口还沾着报纸的油墨。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "收到心爱的木马"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.08,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "母亲省下钱买了礼物"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wooden-horse",
+              "text": "晨光刚照到桌面，纸包已经摆在那里。{subject}捏着木马的腿来回看，连早饭的粥凉了都没察觉，母亲在灶边笑了一声。",
+              "tone": [
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wooden-horse",
+              "text": "{neighbor}路过门口探头，说木马刻得像样。{subject}把马贴在胸口，晚上翻身时先伸手摸一摸枕头边，才安心闭眼。",
+              "tone": [
+                "gentle"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "passed-gift-to-younger",
+          "weight": 1,
+          "text": "{subject}把纸包里的小木马转手塞进弟妹怀里，自己只挑了那本从旧书摊买来的图画书，纸页边上还有别人的铅笔字。母亲愣了一下，把剩下的报纸叠平收进了抽屉。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.06,
+              "affection": 0.06,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "把礼物让给弟妹"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "看书看得入神"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "likes_reading",
+              "add": true,
+              "reason": "第一次认真翻图画书"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "passed-gift-to-younger",
+              "text": "弟妹把木马抱得紧紧的，嘴角还挂着粥。{subject}蹲在炉边翻图画书，一页一页指着那几笔画出来的马车和钟楼。",
+              "tone": [
+                "warm"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "passed-gift-to-younger",
+              "text": "母亲本想说点什么，最后只把书角压平。{subject}读到一半抬头问窗外的教堂是不是就画上那座，母亲擦了擦手，凑过来看。",
+              "tone": [
+                "gentle"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "old-shoes",
+          "weight": 1,
+          "text": "报纸里是一双补过底的旧鞋，鞋头有磨白的痕。{subject}把脚伸进去试了试，说合脚，其实脚趾在里头蜷着。母亲蹲下来按了按鞋帮，说明年还能穿，然后把自己的针线盒推到一边。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "礼物不是想要的却忍着"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.04,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "体谅母亲的难处"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "鞋挤脚走路发疼"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "old-shoes",
+              "text": "鞋底补过的那块皮比别处硬。{subject}在地上跺了两下，说正合适，母亲看了孩子一眼，把针线盒盖子扣上，屋里静了一会儿。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "old-shoes",
+              "text": "上学的路上，{subject}走得比平时慢，脚跟被磨得发红，到了校门口还是把鞋面擦干净才进去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-childhood-household.strap-by-the-door",
+      "title": "门后的皮带",
+      "weight": 1,
+      "rate": 0.0216,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 5,
+          "max": 11
+        },
+        {
+          "kind": "householdSize",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 11
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "took-punishment",
+          "weight": 1,
+          "text": "{subject}把手伸出来，挨了几下后自己拿扫帚把碎瓷片扫进簸箕，又把灶台擦了一遍。{parent}把皮带重新挂回门后，坐在桌边抽了半支烟，谁也没先开口。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "挨了几下皮带"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "挨罚后憋着不说话"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.03,
+              "affection": -0.02,
+              "obligation": 0.05,
+              "fear": 0.07,
+              "respect": 0.02,
+              "reason": "挨罚后的隔阂"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "took-punishment",
+              "text": "碎瓷片在地上散成一小片白。{subject}扫得很慢，听见皮带扣碰着门板的轻响，扫完把簸箕里的碎片倒进灶边的灰堆。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "took-punishment",
+              "text": "楼道里有人放慢了脚步又走开。{parent}把皮带挂回去，坐下时椅子吱呀一声，{subject}站在水缸边，手掌心火辣辣地疼。",
+              "tone": [
+                "tense"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "strap-raised-then-dropped",
+          "weight": 1,
+          "text": "{parent}把皮带举起来又放下，最后只罚{subject}晚饭后不许出门，坐在桌边把碎碗片一片片捡进纸里包好。窗外的孩子还在胡同里追逐，{subject}隔着玻璃听着，手指被瓷片划出一道细口。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被关在家里看别人玩"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "手指被瓷片划破"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.02,
+              "affection": 0.02,
+              "obligation": 0.03,
+              "fear": 0.03,
+              "respect": 0.02,
+              "reason": "父亲终究没有动手"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "strap-raised-then-dropped",
+              "text": "皮带在半空停了一下，{parent}把它卷起来握在手里，最后只说了一句坐好。{subject}把瓷片包进旧报纸，包成一个小方块，放在桌角。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "strap-raised-then-dropped",
+              "text": "胡同里的叫声一阵阵传进来。{subject}把脸贴着玻璃，指头按在凉处，听见身后母亲收拾灶台的声音比平时轻。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "neighbor-interrupted",
+          "weight": 1,
+          "text": "门外传来敲门声，{neighbor}探头说家里没盐了想借一撮。{parent}把皮带挂回门后，改口骂了几句，声音抬高又落下。{subject}趁这会儿退到灶台后头，等人走了才敢挪出来。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.03,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "邻居敲门打断了训斥"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "躲在灶台后发抖"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.02,
+              "affection": -0.01,
+              "obligation": 0.03,
+              "fear": 0.05,
+              "respect": 0,
+              "reason": "被当众责骂"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "neighbor-interrupted",
+              "text": "盐装在一只小碗里递过门槛。{subject}缩在灶台和柴堆之间，听见{parent}的声音一句高一句低，直到门重新关上。",
+              "tone": [
+                "tense"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "neighbor-interrupted",
+              "text": "{neighbor}走时往屋里瞥了一眼，什么也没说。皮带还挂在门后的钉子上晃，{subject}等到脚步声上完楼梯，才从柴堆后面出来。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

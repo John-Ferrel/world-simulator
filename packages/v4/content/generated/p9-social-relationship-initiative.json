@@ -1,0 +1,1335 @@
+{
+  "id": "p9-social-relationship-initiative",
+  "title": "开口、道歉与把两张床并到一间房里",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 17,
+    "max": 45
+  },
+  "tags": [
+    "courtship",
+    "friendship",
+    "family",
+    "social",
+    "initiative",
+    "housing"
+  ],
+  "baseRate": 0.1,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 17,
+      "max": 45
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "social",
+    "goals": [
+      "belonging",
+      "family"
+    ],
+    "needs": [
+      "belonging",
+      "autonomy"
+    ],
+    "baseUtility": 1.2,
+    "risk": 0.25,
+    "skills": [
+      "social"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p9-social-relationship-initiative.invite-to-theatre",
+      "title": "请人去看星期天的轻歌剧",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 17,
+          "max": 45
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        },
+        {
+          "kind": "cash",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 45
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 45
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 17,
+          "maxAge": 45
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "two-gallery-tickets",
+          "weight": 1,
+          "text": "在柜台前把话问出口，对方愣了一下，说星期天下午可以。两张楼座票一共两克朗二十赫勒，约在剧院侧门前见。对方把那叠乐谱往旁边推了推，说散场后可以沿环城道走一段。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2.2,
+              "reason": "两张星期天轻歌剧楼座票"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.06,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "一起看了一场轻歌剧，散场后沿环城道走了半圈"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "开口成功，星期天有了着落"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "two-gallery-tickets",
+              "text": "有人把两张楼座票压在柜台边的玻璃板上，说侧门见。对方低头看了看票根上的排号，把包乐谱的麻绳又绕了一圈，说到时候别迟到。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "two-gallery-tickets",
+              "text": "散场时楼座的木栏杆还嗡嗡响，两人跟着人流往下挤。有人问下次还来不来，对方把披肩往上拉了拉，说看情况，先记着这个星期天。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "walk-instead-of-tickets",
+          "weight": 1,
+          "text": "票在口袋里被手指捏出折痕，话到嘴边却改成了请对方沿多瑙运河走一段。两人从桥下走到水闸，买了两只热栗子，一共十六赫勒。剧院的事谁也没有提起，票根还留在外套内袋里。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.32,
+              "reason": "两只热栗子和来回电车"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "affection": 0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "在运河边走了半个下午，话不多但彼此不别扭"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "没敢提剧院的事，回家路上有点懊恼"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "walk-instead-of-tickets",
+              "text": "水面上有煤驳的油气，对方把围巾压在下巴底下，说天气再冷就不好走了。有人在口袋里摸到那两张硬纸片，最终只摸出了买栗子的硬币。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "walk-instead-of-tickets",
+              "text": "走到水闸时天已经暗下来，对方说该回去给炉子添煤了。有人站在桥头看了一会儿水面，把外套内袋里的票根又按平了一次。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "unsigned-note",
+          "weight": 1,
+          "text": "开口成了问路，对方指完方向就转身去整理那叠乐谱。当晚有人坐在租来的房间里，把一张信纸写了撕、撕了写，最后只剩一句“星期天下午剧院有楼座”，没有署名，信封上写了书店的地址，邮票六赫勒。第二天投进街角的邮筒，此后三天经过书店都绕着走。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.12,
+              "reason": "邮票和信纸"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "话没出口，只寄出一张没署名的便条"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "acquaintance",
+              "trust": 0.01,
+              "affection": 0.01,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "一张没有回音的便条，关系停在点头之交"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "unsigned-note",
+              "text": "巷口的邮筒漆皮已经掉了，投信口有些涩。有人把信封塞进去，听见它落到底的声音，然后快步往回走，围巾一路没扎好。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "unsigned-note",
+              "text": "书店的玻璃窗后，对方正把一捆乐谱往架上搬。有人从对街走过没有停，眼睛盯着鞋尖，假装是在数人行道的石缝。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "autonomy"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.2,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-social-relationship-initiative.apology-at-bakery",
+      "title": "面包店门口的那句道歉",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 17,
+          "max": 45
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "friend",
+          "minTrust": 0.05
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 45
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 45
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "settle-the-account",
+          "weight": 1,
+          "text": "七点刚过，对方照例来买一只 Semmel。有人把紫罗兰往柜台上一放，把上回算错的账一笔一笔说清：借出去的是八克朗，记成了十克朗，是自己记错了。对方听完没马上说话，把零钱数进围裙口袋，最后说中午过来喝碗汤。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "一小束紫罗兰和两只 Semmel"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.12,
+              "affection": 0.06,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "在面包店柜前把账算清，误会解开"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "道歉说出口，胸口松下来"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "settle-the-account",
+              "text": "面包店里全是热面团味，柜台后的妇人拿铁夹子夹起 Semmel。有人把话讲得慢，一句是一句，对方一边听一边把围裙上的面粉拍掉，最后伸手接了那束花。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "settle-the-account",
+              "text": "两个星期不来往，门口碰见时两人都先看别处。这次先开口的人把账本里的一页撕下来摊在柜台上，说数字是自己写错的。对方看了半天，说下回别在酒馆里算账。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "violets-on-the-step",
+          "weight": 1,
+          "text": "话在喉咙里滚了几遍，终究没有等到对方进门。门一响，有人就把紫罗兰放在门槛边，转身往街角走。花被早晨的扫帚拨到墙根，对方捡起来闻了闻，追到巷口只看见一个拐弯的背影，午后托人捎来一句话，说钱的事再算。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.24,
+              "reason": "一束紫罗兰"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.05,
+              "affection": 0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": -0.02,
+              "reason": "没有当面道歉，只留下花"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "转身走开时心里发虚"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "violets-on-the-step",
+              "text": "石阶上还有夜里的潮气，花束靠门放着，紫色在灰石头前显得很轻。扫街的人推着车过来，看了花一眼，抬脚从旁边绕过去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "violets-on-the-step",
+              "text": "巷口的风把包装纸吹开一角。对方弯腰把花拾起来，往街上左右看了两回，只看见早班的人流和一辆电车拐过去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "semmel-no-words",
+          "weight": 1,
+          "text": "在柜台前买了两只 Semmel，递过一只，自己咬另一只，旧账一个字没提。对方接过面包，两人并肩站在店门口，把那点热气吃完。钱的事还横在中间，但对方说星期六照旧来喝咖啡，别又躲着。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.14,
+              "reason": "两只 Semmel"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "面包店买回的一只面包"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.06,
+              "affection": 0.03,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0,
+              "reason": "用一只面包破冰，旧账暂时不提"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "僵局松了一点，虽然话没说透"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "semmel-no-words",
+              "text": "面包还是温的，纸袋上透出油印子。两人站在门口的台阶上，各自低头嚼，谁也没有先提那八克朗，只谈起街角那家肉铺的价钱。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "semmel-no-words",
+              "text": "对方吃完拍了拍手上的碎屑，说星期六老时候。有人点点头，心里清楚账还没清，但两个星期的沉默算是过去了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "belonging",
+          "care"
+        ],
+        "needs": [
+          "belonging",
+          "safety"
+        ],
+        "baseUtility": 1.15,
+        "risk": 0.15,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-social-relationship-initiative.borrow-handcart",
+      "title": "借一辆手推车和十克朗",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 17,
+          "max": 45
+        },
+        {
+          "kind": "cash",
+          "max": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 45
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 45
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "handcart-and-ten",
+          "weight": 1,
+          "text": "星期天搬家的前一晚，有人坐在印厂友人家的厨房里把事说全：车要借，十克朗也要借。对方合上账本，从抽屉里数出两张五克朗，说月底先还三克朗，剩下的按月摊。手推车的轮轴有点响，搬之前得先上油。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 10,
+              "reason": "友人借给搬家应急的十克朗"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.1,
+              "affection": 0.04,
+              "obligation": 0.12,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "开口借车借钱，写下还款日期"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "房租的窟窿补上了，但也添了债"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "handcart-and-ten",
+              "text": "厨房桌上摊着孩子的作业本和一只没洗的杯子。对方把借条写好，让签字画押，说朋友归朋友，账要清楚。有人把借条折好放进内袋。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "handcart-and-ten",
+              "text": "手推车停在楼后的院子里，木板上还有上一回运煤留下的黑印。有人蹲下去转了转轮子，听见轴响，说明天一早先借点机油。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "only-the-cart",
+          "weight": 1,
+          "text": "开口时只提了手推车，钱的事咽回去。对方爽快地把车钥匙样的铁钩递过来，说用完了搁回院里就行。十克朗改去当铺想办法，一件旧外套和一只怀表抵了十二克朗，赎期三个月，票据折好收在证件夹里。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 12,
+              "reason": "当铺抵当旧外套和怀表换来的钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.04,
+              "affection": 0.02,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0,
+              "reason": "只借车，没有开口借钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "债没欠到朋友头上，可怀表不在口袋里了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "only-the-cart",
+              "text": "当铺柜台高过人的胸口，伙计把怀表盖翻开看了看，报出数目。有人点头，接过票据和纸币，把外套的扣子重新系好才推门出去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "only-the-cart",
+              "text": "朋友一直送他到巷口，还在说钱不够就讲一声。有人只说够了，回家路上摸了摸空下来的马甲口袋，那地方原来有表链的响动。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hire-the-movers",
+          "weight": 1,
+          "text": "站在门口把借钱的话过了两遍，最后没有开口。转身去找了街角的搬运行，一辆板车加两个帮工，一趟一克朗五十赫勒。家里能当的都当了，现钱只够这一趟，搬完当天连买煤的钱都要现算。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "搬运行一趟的工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.02,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "宁可花钱也不向朋友开口，朋友后来才知道"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "事情办成了，可现钱见了底"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "hire-the-movers",
+              "text": "搬运行的两个帮工把床架绑上板车，绳子勒得木头吱响。有人跟在车后走，一路上算着剩下的赫勒，连孩子要的一只小面包都没敢买。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "hire-the-movers",
+              "text": "经过印厂友人家门口时，板车正好拐弯。对方在窗后抬了抬手，有人只点了一下头，没停下，绳子在手里攥得很紧。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "survival",
+          "belonging"
+        ],
+        "needs": [
+          "cash",
+          "autonomy"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.3,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p9-social-relationship-initiative.share-one-room",
+      "title": "把两张床并到一间房里",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 45
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner",
+          "minTrust": 0.3
+        },
+        {
+          "kind": "cash",
+          "min": 10
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "merge-into-one-room",
+          "weight": 1,
+          "text": "先同房东谈，再跑警察局报备，地址合成一处。退掉朝北那间时拿回半个月的押金，两张床并进离印厂近的这一间，煤箱挪到床尾。第一夜墙上再没有水汽，可两个人翻身都得先打招呼。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "退掉一间房拿回的押金，扣下报备和搬运的花销"
+            },
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-wien-leopoldstadt-tenement",
+              "reason": "退掉朝北的房间，把两人的住址并到印厂附近的十区租屋"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.1,
+              "affection": 0.1,
+              "obligation": 0.08,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "住到一处，白天各上工，晚上同用一只煤箱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "屋子小，但炉子一直是热的"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "merge-into-one-room",
+              "text": "看门人靠在门框上数了数两张床的位置，说别把走廊堵了。有人把煤箱挪到床尾，膝盖磕了一下箱角，疼得吸了口气，还是笑着说不碍事。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "merge-into-one-room",
+              "text": "警察局的窗口前排了一会儿队，报备单填了两遍，地址栏写得工工整整。出门时对方把那张盖了章的纸对折两次，塞进手提包的内层。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "address-only",
+          "weight": 1,
+          "text": "两人商量到半夜，决定先只把地址报在一起，省得警察局和房东两边多话。房租仍旧各付各的，家具一件不动，只是晚上多走一段路。对方的房间还是朝北，冬天墙上的水汽照旧，有人每次去都带一块旧布擦窗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "警察局报备的印花和两次电车"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.05,
+              "affection": 0.04,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0,
+              "reason": "地址报在一起，生活仍分开，彼此都留了退路"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "address-only",
+              "text": "房东太太收下报备单的抄件，眼镜往下滑了滑，说随你们，只要房租按时。两人下楼时都没说话，走到街口才商量晚饭在哪吃。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "address-only",
+              "text": "朝北的房间里，窗玻璃上的水珠顺着木框往下淌。有人把旧布拧出水来，说过冬前得给窗缝糊上纸，对方应了一声，从抽屉里翻出浆糊。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "family-says-no",
+          "weight": 1,
+          "text": "对方家里托人捎了话，说没办手续就住到一处，往后不好看。事情只好搁下，各自保留原来的房间。有人把已经量好尺寸的那块床板又退给木匠，定金没能要回来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "退床板损失的木匠定金"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.02,
+              "affection": -0.02,
+              "obligation": 0.02,
+              "fear": 0.04,
+              "respect": 0.02,
+              "reason": "家里反对，同住的事搁下，两人仍各自租房"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "事情没能办成，夜里空落落的"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "family-says-no",
+              "text": "木匠把定金收据推回来，说板子已经开了料，退不了。有人把那张纸折起来，塞进证件夹，和当票放在一起，手指在夹口停了一会儿。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "family-says-no",
+              "text": "对方来送信时站在楼梯口，没有进门。话说得很轻，说等一等，等家里松口。楼道里的灯灭了两次，两人谁也没去按开关。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "family",
+        "goals": [
+          "family",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "autonomy"
+        ],
+        "baseUtility": 1.35,
+        "risk": 0.4,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p9-social-relationship-initiative.introduce-two-people",
+      "title": "咖啡馆里多摆一把椅子",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 17,
+          "max": 45
+        },
+        {
+          "kind": "cash",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 45
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 45
+        },
+        {
+          "key": "friendB",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "let-them-talk",
+          "weight": 1,
+          "text": "星期天下午窗边三把椅子，介绍只用了两句，随后就任两人自己聊。老友讲印厂的油墨味，缝纫女工讲机针怎么断。有人只管叫侍者续咖啡，三杯一共九十赫勒，坐在旁边听了一下午。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.9,
+              "reason": "三杯咖啡和给侍者的小费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.04,
+              "affection": 0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "介绍得体，没有抢话"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friendB",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.04,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "在咖啡馆认识，聊了一下午"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.04,
+              "reason": "学着在两个人之间少说话"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "看着两边聊得起来，心里踏实"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "let-them-talk",
+              "text": "窗玻璃上蒙着一层水汽，侍者用抹布抹出一条透亮的缝。三只杯子见了底，有人抬手又要了一壶热水，把话题留在原来的地方。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "let-them-talk",
+              "text": "缝纫女工说机针断的时候差点扎进手指，印厂老友笑起来说油墨进眼睛更难受。两人互相看了看，又都低头搅咖啡。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "overpraise",
+          "weight": 1,
+          "text": "介绍时把两边都夸过了头，说老友是印厂里最靠得住的人，说女工的手艺整条街都找不出第二个。话太多，两人反倒拘谨起来，各自看窗外。咖啡凉了，坐了不到一个钟头就散了，出门时谁也没提再见面。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.9,
+              "reason": "三杯咖啡和点心"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.02,
+              "affection": -0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": -0.03,
+              "reason": "被当众夸得尴尬，觉得被安排了"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friendB",
+              "kind": "acquaintance",
+              "trust": 0,
+              "affection": -0.01,
+              "obligation": 0,
+              "fear": 0,
+              "respect": -0.02,
+              "reason": "介绍变成了说媒，彼此都不自在"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "场面冷下来，觉得自己多说了话"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "overpraise",
+              "text": "侍者把点心碟收走时，桌上没人动过那块方糖。有人还想找话说，张了张嘴，看见两人的目光都落在街上的一辆马车上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "overpraise",
+              "text": "话说出口才觉得过了头。老友在桌下用手碰了碰膝盖，女工把杯垫翻过来又翻过去，最后说家里还有活，先走一步。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "leave-them-alone",
+          "weight": 1,
+          "text": "介绍完就找了个由头先走，说家里炉子还烧着，账只结了自己的那一杯。晚上回到楼里，缝纫女工在楼梯上碰见，只说那人挺有意思，没再多讲。老友第二天在印厂什么也没提，这事就搁在那里。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "自己那一杯咖啡"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.01,
+              "affection": 0.01,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "介绍完就退开，给两人留了余地"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friendB",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "affection": 0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.01,
+              "reason": "认识了，但没有深谈"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "事情做完了，结果如何不归自己管"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leave-them-alone",
+              "text": "有人把帽子从椅背上取下来，说炉子没封好，得回去看看。走到门口回头看了一眼，两个人已经凑近了些，正说那只断在衣服里的机针。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leave-them-alone",
+              "text": "楼里的煤气灯刚点上，缝纫女工上楼时说了一句挺有意思，语气平常。有人应了一声，没有多问，把钥匙在手里转了一圈。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "belonging",
+          "status"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.15,
+        "risk": 0.15,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p9-social-relationship-initiative.cut-the-guarantee",
+      "title": "替人作保的那张纸",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 17,
+          "max": 45
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "friend",
+          "minTrust": 0.05
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 45
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 45
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "refuse-to-sign",
+          "weight": 1,
+          "text": "把那张字据推回去，说房租和母亲的药费都在桌上摆着，这名字不能签。前两次的借条从证件夹里翻出来放在一起，摊平让对方看清。对方把纸卷起来收进外套，门带得比平常重，此后在街上碰见只当没认出来。",
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "reason": "拒绝了第三次借款与担保，两人断了来往"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "少了多年交情，但工资袋还在自己手里"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "邻居听说他不肯替赌债作保，觉得这人靠得住"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "refuse-to-sign",
+              "text": "两张旧借条铺在桌面上，纸边已经起毛。有人用手指按住其中一张，说这上面的数目还没清，再添一张就是坑。对方盯着桌角看，没再争，把字据折成四方。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "refuse-to-sign",
+              "text": "楼梯间里能听见院子里的水声。对方走的时候没有回头，外套下摆擦过扶手。有人站在门口，把那三张纸按大小叠齐，才关上门。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pay-small-part",
+          "weight": 1,
+          "text": "替他还了四克朗，剩下的数目不碰，条件是把赌债字据交出来，当天就去戒酒会挂个名。对方把字据给了，人却没去挂名。四克朗从工资袋里出去，母亲那瓶药只好再等十天，晚上咳得更紧。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "替友人偿还部分赌债"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "母亲的药钱被挪去还债，家里几夜没睡好"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.03,
+              "affection": 0.02,
+              "obligation": 0.12,
+              "fear": 0,
+              "respect": -0.02,
+              "reason": "拿钱换字据，对方答应戒酒却没有做到"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "既替人担了钱，又觉得被人拿话哄了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pay-small-part",
+              "text": "戒酒会门口的告示贴了半年，边角卷起来。有人陪着走到门口，对方说改天再来，拐进旁边的巷子。四克朗换来的字据被折好，放在铁盒底下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pay-small-part",
+              "text": "夜里母亲咳了两阵，有人起来把炉子拨旺，药瓶已经见了底。桌上那张字据边角发白，看一眼就想起白天巷口那个拐弯的背影。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "settle-at-the-tavern",
+          "weight": 1,
+          "text": "没有签字，陪对方去酒馆把账当面谈清。掌柜的把欠条一张张摆在桌上，一共二十八克朗。有人替着说了几句好话，讲明利息怎么算、按月还多少，请掌柜的宽限到月底。谈下来先还五克朗，余下的立了新据，担保人一栏空着，掌柜的临走时瞪了一眼。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "酒馆里替对方先垫的第一笔款子和两杯酒"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.06,
+              "affection": 0.04,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "陪他去酒馆谈账，但没有作保"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "酒馆掌柜觉得他多管闲事"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "账谈下来了，名字没签上去"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "settle-at-the-tavern",
+              "text": "酒馆的桌面上有烟头烫出的洞，掌柜的把欠条一张张摊开，指头点在总数上。有人把话说得慢，请他把利息和期数讲明白，对方在边上一直低头转杯子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "settle-at-the-tavern",
+              "text": "新写的据纸上担保人一栏留着空白，掌柜的用笔杆敲了敲那处。有人把杯子推过去，说月底来还第一笔，名字就不必写了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "survival",
+          "belonging"
+        ],
+        "needs": [
+          "safety",
+          "autonomy"
+        ],
+        "baseUtility": 1.4,
+        "risk": 0.35,
+        "skills": [
+          "social"
+        ]
+      }
+    }
+  ]
+}

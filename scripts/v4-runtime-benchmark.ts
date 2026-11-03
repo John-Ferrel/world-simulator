@@ -1,7 +1,7 @@
 import { performance } from 'node:perf_hooks';
 import { advanceV4Year } from '../packages/v4/engine.js';
 import { defaultMacroState } from '../packages/v4/macro.js';
-import { GENERATED_TASKS } from '../packages/v4/content/generated/index.js';
+import { ALL_TASKS, GENERATED_TASKS } from '../packages/v4/content/generated/index.js';
 import type {
   Household,
   Person,
@@ -138,7 +138,12 @@ for (let i = 0; i < years; i += 1) {
     economy: { enabled: false },
     eventRuntime: true,
     agency: true,
-    tasks: process.env.V4_BENCH_TASKS === '0' ? [] : GENERATED_TASKS,
+    tasks:
+      process.env.V4_BENCH_TASKS === '0'
+        ? []
+        : process.env.V4_BENCH_TASKS === 'p8'
+          ? GENERATED_TASKS
+          : ALL_TASKS,
     maxOrdinaryEventsPerPerson: 3,
   });
   current = result.world;
@@ -150,6 +155,12 @@ console.log(
   JSON.stringify({
     persons: count,
     years,
+    tasks:
+      process.env.V4_BENCH_TASKS === '0'
+        ? 0
+        : process.env.V4_BENCH_TASKS === 'p8'
+          ? GENERATED_TASKS.length
+          : ALL_TASKS.length,
     macro: Boolean(world.macro),
     timings: lastTimings,
     events,

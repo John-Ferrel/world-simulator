@@ -482,8 +482,17 @@ export function compileGeneratedPack(pack: GeneratedPack): SceneDefinition[] {
     tags: [...new Set([...pack.tags, ...(node.tags ?? [])])],
     triggerTags: node.triggerTags,
     rate: (rawRates[index] ?? 0) * scale,
+    // The same concrete event should not resolve for the same person in
+    // consecutive years. This mirrors the task cooldown and keeps a large
+    // event pool from turning into annual repetition of one vivid scene.
+    cooldownYears: 2,
     weight: node.weight ?? 1,
-    subjectProvenance: ['birth', 'initial'],
+    // Published generated events are not scripts for a named protagonist only.
+    // Materialized and historically activated people are full named persons and
+    // must be able to encounter the same ordinary life content. Otherwise a
+    // growing content pool only reaches birth/initial characters, and the
+    // candidate audit shows tasks without any passive events for everyone else.
+    subjectProvenance: ['birth', 'initial', 'materialized_population', 'historical_activation'],
     outcomes: node.outcomes.map<SceneOutcome>((outcome) => ({
       id: outcome.id,
       weight: outcome.weight,

@@ -1,0 +1,1171 @@
+{
+  "id": "p9-work-transport",
+  "title": "汽笛、货场与夜班",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 60
+  },
+  "tags": [
+    "work",
+    "factory",
+    "railway",
+    "transport",
+    "shift",
+    "labour"
+  ],
+  "baseRate": 0.13,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 60
+    },
+    {
+      "kind": "employment",
+      "employed": true
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-work-transport.shift-change",
+      "title": "早班电车误了点",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "reliefWorker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "shift",
+        "commute",
+        "tram",
+        "lateness"
+      ],
+      "outcomes": [
+        {
+          "id": "shift-change-late-mark",
+          "weight": 1,
+          "text": "{foreman}把考勤簿推到{subject}面前，铅笔头点在迟到那一栏。{subject}签了名，一刻钟的工钱从当天扣掉，合四十赫勒。{reliefWorker}把沾着棉絮的围裙解下来递过去，说自己在机床边多站了一班，腿肚子发硬，随后拎着饭盒慢慢走出西门。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "迟到一刻钟被扣的工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "在考勤簿上签迟到"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$reliefWorker",
+              "kind": "colleague",
+              "trust": 0.04,
+              "obligation": 0.03,
+              "reason": "老人替他多顶了一班"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "shift-change-late-mark",
+              "text": "十区的道口栏杆还没抬起来，货车一节一节往东挪。{subject}沿着煤渣路跑，鞋底沾了泥，到厂门口时汽笛早停了。考勤簿摊在门房窗台上，{foreman}的铅笔在迟到栏敲了两下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "shift-change-late-mark",
+              "text": "更衣室里还留着夜班的煤油味。{reliefWorker}靠着墙揉膝盖，说这半班不白站，明天让他晚来一刻钟。{subject}把扣钱的事应下，钩子上挂着的工装还没凉透。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shift-change-warning-slip",
+          "weight": 1,
+          "text": "{subject}说货车在道口堵了六分钟，{foreman}没听完就把一张印好的书面警告拍在工具柜上，说这个月第二次就交到人事那里。{subject}把纸条折进内袋，回机床边站定；{reliefWorker}在门口摇了摇头，把剩下的半个黑面包掰了一块塞过来。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被工头记了书面警告"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "解释未被接受"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "老人分给的一块面包"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "shift-change-warning-slip",
+              "text": "警告单上印着厂徽和日期，{foreman}用铅笔在角落写了“屡次”两个字。{subject}盯着那两个字母，没再开口，把单子按着折痕压平，塞进胸前的口袋。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "shift-change-warning-slip",
+              "text": "{reliefWorker}换下工装时低声说，这条道上的人谁没被货车堵过，争也没用。他把面包掰开，一半放在{subject}的工具箱盖上，转身去等下一趟电车。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shift-change-trade-half-hour",
+          "weight": 1,
+          "text": "{subject}和{reliefWorker}在更衣柜前商量：老人剩下的半小时由{subject}接着干，考勤簿上写成换班，不算迟到。{foreman}翻着簿子咕哝了一句，还是照写了。{subject}干到午后一点才吃上饭，手上多了一层油泥，老人走时拍了拍他的肩。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "补完老人剩下的半小时"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "多接手一段机床活"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$reliefWorker",
+              "kind": "colleague",
+              "trust": 0.06,
+              "affection": 0.03,
+              "reason": "两人私下换了班"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "shift-change-trade-half-hour",
+              "text": "两人蹲在更衣柜之间的长凳上算时间，{reliefWorker}说他家老太婆今天要去药房，早走半小时正好。{foreman}在簿子上落笔时啧了一声，把“换班”写得又小又挤。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "shift-change-trade-half-hour",
+              "text": "机床的皮带声里，{subject}多站了半小时，午饭的汤在饭盒里凉成一层面皮。老人临走把那副旧手套留在钩子上，指头处磨得发亮。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-transport.machine-speed",
+      "title": "皮带轮又转快了一格",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "machine",
+        "speedup",
+        "piecework",
+        "safety"
+      ],
+      "outcomes": [
+        {
+          "id": "machine-speed-keep-up",
+          "weight": 1,
+          "text": "{subject}和{worker}跟着加快的皮带干了整个下午，车床震得台面上的划针直跳。散工时计件簿上多记了一小笔，约合七十赫勒；{subject}走出厂门，两只耳朵里还嗡嗡响，晚饭时把汤匙碰得叮当。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.7,
+              "reason": "赶急活多记的计件钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "长时间在震动的车床前操作"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "耳朵持续嗡响"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "machine-speed-keep-up",
+              "text": "皮带在快槽上甩出细响，{subject}的送料手跟着节拍往前挪。{worker}在对面瞪着眼数件数，谁也没空说话，只有护罩上那张旧告示纸被风带得一起一落。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "machine-speed-keep-up",
+              "text": "下班铃响过好一会儿，{subject}才觉出指尖发麻，工装袖口沾满铁屑。回家路上电车过石子路，耳里的嗡声怎么也压不下去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "machine-speed-slow-belt",
+          "weight": 1,
+          "text": "趁{foreman}去账房送单子，{subject}踩着垫木把皮带拨回慢槽。刚下地，{worker}就在门口咳了一声——工头回来正好看见。第二天晨会上点了他的名字，记一笔，这个月的急活奖金没了。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "私自改动传动皮带被记一笔"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "把机器拨回安全的速度"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.02,
+              "reason": "工友看见了却没拦住"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "machine-speed-slow-belt",
+              "text": "垫木是修理工留下的，{subject}搬来时手心全是汗。皮带归位那一下，车床的颤声明显缓下来，可门口站着的人不是来送料的。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "machine-speed-slow-belt",
+              "text": "{worker}压低声音说何必呢，工头的耳朵比皮带还灵。两人各回机床，谁也没再提；晨会上{foreman}把簿子翻得哗哗响。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "machine-speed-union-guard",
+          "weight": 1,
+          "text": "{subject}和{worker}趁午休去找工会代表，说护罩没装好就不能开机。代表记在本子上，答应晚上带去活动室说。{foreman}脸色难看，当天没再让挪皮带，但把两人的计件单压在抽屉底，拖到星期五才结算。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "为护罩的事找工会代表"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.2,
+              "reason": "计件钱被压到周五才结"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.05,
+              "obligation": 0.03,
+              "reason": "一同去找工会代表"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "machine-speed-union-guard",
+              "text": "工会代表在食堂角落的小桌上写字，铅笔短得快捏不住。{worker}把袖口卷起来给他看上次刮的疤，{subject}在旁边补了一句：慢一格不耽误多少活。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "machine-speed-union-guard",
+              "text": "下午皮带一直挂在原来那一格，{foreman}路过时看了护罩一眼，什么也没说。到星期五结算，{subject}捏着薄下去的钱袋，没作声。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-transport.loading-yard",
+      "title": "货场上的一只木箱",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "health",
+          "min": 0.5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "loading",
+        "freight",
+        "injury",
+        "yard"
+      ],
+      "outcomes": [
+        {
+          "id": "loading-yard-two-men",
+          "weight": 1,
+          "text": "{subject}和{worker}一人抓一个箱角，踩着结冰的跳板往上挪。箱角裂口里漏出刨花，{subject}腰上一沉，像被什么东西揪了一下，两人还是把箱子顶上了敞车。{foreman}在下面拍手，说这才叫干活；{subject}扶着车皮喘气，知道明天弯不下腰。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "抬重箱时闪了腰"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "把重箱硬抬上了车"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.04,
+              "obligation": 0.02,
+              "reason": "两人一起抬了重箱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "loading-yard-two-men",
+              "text": "跳板上的薄冰被靴底蹭出白印。{worker}在箱尾喊了一声起，{subject}咬牙跟着抬，刨花顺着裂口撒了一地，装车工在轨边看着没伸手。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "loading-yard-two-men",
+              "text": "箱子上车那一声闷响过后，{subject}扶着车皮站了好一会儿，右手按在后腰上。{foreman}拍拍他的背，说晚上回去拿热水敷敷就好。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "loading-yard-handcart",
+          "weight": 1,
+          "text": "{subject}看了标签上的一百二十公斤，摇头，走去棚子那边推来一辆手推车，又垫了两块木板。{foreman}在旁边骂耽误工夫，可箱子稳稳上了车，{worker}的腕子也没事。半小时的工钱就这么没了，磅房的人却朝{subject}点了点头。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.15,
+              "reason": "耽误半小时的工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "没有徒手硬抬，避免了伤腰"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "按规矩把重箱安全装车"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "loading-yard-handcart",
+              "text": "手推车的轮子在冰上打滑，{subject}和{worker}一前一后压着车把，木板垫在跳板边当坡。{foreman}抱着胳膊站在煤堆旁，嘴里念着误了车皮的点。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "loading-yard-handcart",
+              "text": "磅房的老头探出窗口看了一眼，说了句“这条道上总算有人用脑子”。{subject}把车推回棚里时，{worker}在旁边甩着腕子，说这半小时省的是手腕。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "loading-yard-newcomer-drop",
+          "weight": 1,
+          "text": "{subject}让刚进场的年轻工人抬另一头，自己只搭了个手。跳板当中那人脚下一滑，箱子磕在车皮边上，裂口整个撕开，里面的搪瓷件滚了一地。货主下午就来了，站在碎瓷片中间听{foreman}说话，目光在几个人脸上转。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "箱子上车时摔裂，货主来查"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "看着新工人滑倒"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.03,
+              "reason": "年轻工友觉得被推去顶了重头"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "loading-yard-newcomer-drop",
+              "text": "碎瓷片在枕木之间散开，几只搪瓷碗滚到排水沟边。年轻工人站在原地，手套上全是划痕，{foreman}蹲下去捡起一片，翻过来看底下的厂号。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "loading-yard-newcomer-drop",
+              "text": "货主的外套料子比工长的新，他说话声音不高，问的是谁让这么装的。{subject}张了张嘴，{worker}已经蹲下去收拾碎瓷，谁也没先接话。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-transport.coupling-injury",
+      "title": "两节车厢之间",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "health",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "yardMaster",
+          "kind": "worker",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        },
+        {
+          "key": "brakeman",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 55
+        }
+      ],
+      "tags": [
+        "railway",
+        "shunting",
+        "injury",
+        "accident"
+      ],
+      "outcomes": [
+        {
+          "id": "coupling-injury-infirmary",
+          "weight": 1,
+          "text": "{brakeman}先跑过来，把{subject}半扶半架到值班室旁的小医务室。脚踝肿成一块，铁路按事故保险付了药膏和包扎的钱，{yardMaster}在事故单上写了“调车受伤”，随后通知本月起把他调离调车组，去看仓库的收发簿。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "缓冲器撞伤小腿与脚踝"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.6,
+              "reason": "事故保险报销的药费"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "moved_off_shunting_crew",
+              "add": true,
+              "reason": "被调离调车组"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coupling-injury-infirmary",
+              "text": "医务室的灯是盏煤气灯，护士用碘酒擦伤口，{subject}捏着凳沿，听见外面{yardMaster}在跟人核车厢号。值班簿摊在桌上，墨水瓶被撞得歪了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coupling-injury-infirmary",
+              "text": "{brakeman}的灯笼挂在门钉上，光晃得墙上的挂图一阵白。{subject}的裤腿被剪开，靴子脱不下来，最后是用刀划开的。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coupling-injury-hide",
+          "weight": 1,
+          "text": "{subject}咬着牙把车钩推上去，掣链拉紧，自己走回棚里坐下。夜里脚一阵阵地跳，第二天靴口卡在脚背上，才一拐一拐去找{yardMaster}。站长把事故单往桌上一摔，说拖到隔天，保险那边要问话；药钱先由自己垫了八克朗。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "压伤后硬撑一夜，肿得厉害"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "自己先垫的医药钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "迟报事故被站长数落"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coupling-injury-hide",
+              "text": "棚子里只有一盏守夜灯，{subject}把靴子脱在长凳底下，脚背已经发亮发硬。天亮后他一只脚穿鞋一只脚拖着走，{yardMaster}看在眼里，脸一下沉下来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coupling-injury-hide",
+              "text": "车钩那一下合上时，远处信号灯又晃了一晃。{subject}站直身子把掣链绕好，疼得说不出话，只朝来车方向摆了摆手，让人继续退。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coupling-injury-quarrel",
+          "weight": 1,
+          "text": "事故单上印着一行“自身疏忽”，{yardMaster}把笔递过来让{subject}画押。{subject}把单子推回去，说信号灯挂在暗处，谁都会弯错腰。两人在值班室门口吵起来，站长最后写了个“态度不逊”，停班一周，扣的这一周工钱得自己想法补上。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "为事故单和站长争执"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4.5,
+              "reason": "停班一周少拿的工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "受伤的腿没得到及时处理"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$yardMaster",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "事故单上起了争执"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "coupling-injury-quarrel",
+              "text": "{subject}一条腿站着，把单子摊在桌上指着那行小字。值班室里的钟走得很响，{yardMaster}把笔往墨水瓶里一杵，墨水溅到账页上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "coupling-injury-quarrel",
+              "text": "站长说话时，门外几个夜班工人放慢了脚步。{subject}最后把单子叠好揣走，没画押，一拐一拐穿过整个调车场去挂上车棚的门闩。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-transport.foreman-favor",
+      "title": "加班名单上的名字",
+      "weight": 1,
+      "rate": 0.0208,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "overtime",
+        "foreman",
+        "favoritism"
+      ],
+      "outcomes": [
+        {
+          "id": "foreman-favor-stove",
+          "weight": 1,
+          "text": "周末{subject}提着一小袋煤球去{foreman}在十五区租的院子，蹲在灶间把瘪掉的烟道重新砌上，弄了一手黑。第二天名单上添了他的名字，星期天双班拿了两克朗四十赫勒；{worker}看他的眼神冷下来，敲钉子时故意敲得很响。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2.4,
+              "reason": "星期天双班挣的工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "蹲着修炉子累了一下午"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "obligation": 0.05,
+              "reason": "替工头修好了家里的炉子"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.05,
+              "reason": "工友不满他挤上名单"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "foreman-favor-stove",
+              "text": "灶间的烟道塌了半截，{subject}用旧砖和新泥重新垒起来，{foreman}的妹子在旁边烧水，递给他一块粗布擦手。名单贴出来时，他的姓名写在倒数第二个。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "foreman-favor-stove",
+              "text": "更衣室门口围着人看名单，{worker}把他从头看到脚，说这年头会修炉子比会开车床管用。{subject}把工装扣好，没接话，往车间里走。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "foreman-favor-yield",
+          "weight": 1,
+          "text": "{subject}在更衣室门口对{foreman}说，名额让给家里有病人的工友，自己家里还撑得住。工头盯着他看了几秒，把名字划掉又重新写。那人的夜班费有了着落；过了几天，{foreman}把一批轻活的单子派给了{subject}，说这活不累，钱不少。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "让出的加班费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "把加班名额让给有病的工友"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.07,
+              "reason": "工头记下这个人情"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "让出名额后的平静"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "foreman-favor-yield",
+              "text": "更衣室的墙上有股肥皂和机油混着的味道，{foreman}一边划名单一边念叨，说家里有事的人多着呢。{subject}站在门外，看他用指甲把那个名字从纸上抠掉。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "foreman-favor-yield",
+              "text": "那个工友听说后，在车间角落攥着{subject}的手腕说了两遍谢谢，手很凉。第二天领活时，{subject}的工票上多了一行“轻活，照旧价”。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "foreman-favor-ask",
+          "weight": 1,
+          "text": "{subject}在工间休息时走到{foreman}面前，问加班到底按什么排。工头头也没抬，说名单是车间主任批的，就这八个人，嫌多事可以去隔壁车间问问。名单最终没改，{subject}回到机床边，{worker}递过来一支烟，也没说话。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "当面追问加班名单的排法"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "名单未改的憋闷"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.03,
+              "reason": "工友递烟表示同情"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "foreman-favor-ask",
+              "text": "{foreman}的桌上摊着工票和一支咬扁的铅笔，他听完，把铅笔在纸上敲了敲，说这个月的活就是这么分。车间里车床声压过来，两人的话都像被吃掉半截。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "foreman-favor-ask",
+              "text": "午饭的汤还冒着热气，{worker}靠在墙边听了一会儿，把烟卷递过来。{subject}接了，却没点，夹在耳朵上继续去送料。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-work-transport.strike-rumor",
+      "title": "更衣室里的罢工传闻",
+      "weight": 1,
+      "rate": 0.0208,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "unionMember",
+          "kind": "union_member",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "strike",
+        "rumor",
+        "union",
+        "solidarity"
+      ],
+      "outcomes": [
+        {
+          "id": "strike-rumor-sign",
+          "weight": 1,
+          "text": "下班后{subject}沿着玛利亚希尔夫大街走到工会活动室，屋里烟雾腾腾，木椅上坐满了人。{unionMember}念了几条要求，每小时加两赫勒，每班有固定的休息。{subject}在名单上签了字，捐了二十赫勒进罢工箱，但没答应站到队伍最前面去。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.2,
+              "reason": "捐给罢工箱的钱"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "参加工会活动室的会议"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$unionMember",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "在工会会议上签了名"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "strike-rumor-sign",
+              "text": "长桌上铺着写满字的纸，墨水瓶边搁着一截蜡烛。{unionMember}念到工时时有人拍桌，{subject}把名字写得慢，签完把笔往旁边一搁，听见外面电车叮叮地过去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "strike-rumor-sign",
+              "text": "活动室的窗子蒙着水汽，有人靠在墙边打盹。{subject}签完名走出门，夜里的风把衣领吹硬，他想的是明早六点那趟汽笛。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "strike-rumor-tell-foreman",
+          "weight": 1,
+          "text": "第二天清早{subject}在门房把活动室的事跟{foreman}说了一遍。工头没表态，可中午之后更衣室里没人再跟他搭话，柜门上不知谁用粉笔写了“告密的”。{worker}从他身边过去，肩膀蹭了一下，没停。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "被工友当成告密的人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.08,
+              "reason": "工友刻意疏远"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "向工头报告了罢工传闻"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "strike-rumor-tell-foreman",
+              "text": "粉笔字写在柜门正中间，字迹压得很重。{subject}用袖子擦，擦不干净，只留下灰白的一层。车间的汽笛响起来，谁也没过来帮他。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "strike-rumor-tell-foreman",
+              "text": "{foreman}听完只嗯了一声，把烟头在鞋底按灭。午饭时{subject}端着饭盒走向长凳，那一头的人往旁边挪了挪，空出一整段木头给他一个人坐。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "strike-rumor-keep-quiet",
+          "weight": 1,
+          "text": "{subject}什么也没说，照常上工。罢工那天厂门口只来了一半人，汽笛拉过两遍，车间里的皮带挂着没动。{foreman}在门房里点名，把到的人记下，把没到的人也记下。{subject}站在车床前，听见外面远处的喊声，手里的活没停。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "罢工日仍照常上工的心绪"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "被工头看作靠得住的人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "罢工日到岗留下好印象"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "strike-rumor-keep-quiet",
+              "text": "车间里空得能听见水龙头的滴声，皮带挂在槽上凉着。{subject}把料一件件送进车床，门房那边{foreman}的嗓音一阵阵传过来，念的是一串姓氏。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "strike-rumor-keep-quiet",
+              "text": "厂门外的喊声被风卷进来又卷走。{subject}停下喝了一口水壶里的凉水，看见窗外几个人举着一块磨掉漆的牌子走过去，谁也没往车间里看一眼。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1071 @@
+{
+  "id": "p9-gap-elderhood-daily",
+  "title": "老年生活里的窗口、炉子和旧人",
+  "stage": "elderhood",
+  "ageWindow": {
+    "min": 60,
+    "max": 85
+  },
+  "tags": [
+    "elderhood",
+    "daily",
+    "pension",
+    "housing",
+    "care"
+  ],
+  "baseRate": 0.14,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 60,
+      "max": 85
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p9-gap-elderhood-daily.pension-window",
+      "title": "养老金窗口前的队",
+      "weight": 1,
+      "rate": 0.0238,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 85
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "pension",
+        "bureaucracy",
+        "cash"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-gap-elderhood-daily.pension-window.reduced",
+          "weight": 1,
+          "text": "{subject}把布袋按在窗口的铜栏上，{official}数出纸币和硬币，比上月少了四十赫勒，说是扣了保险附加。队伍里有人踮脚张望，{subject}把找零一枚枚码进布袋，听见身后开始低声数还差几个月的人。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "当月养老金扣除保险附加后到手"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "到手的钱比上月少了一截"
+            }
+          ],
+          "narration": [
+            {
+              "id": "window",
+              "key": "p9-gap-elderhood-daily.pension-window.reduced",
+              "text": "窗玻璃上蒙着哈气，{official}把册子翻得哗哗响，{subject}盯着他手边那截铅笔，等他在自己名字旁画上勾，再一张张把票子抹平。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "queue",
+              "key": "p9-gap-elderhood-daily.pension-window.reduced",
+              "text": "队伍从楼梯口拐上走廊，{neighbor}站在{subject}前头，回头压低声说保险费又扣了。{subject}没接话，只把旧工资册往腋下又夹紧些，怕风把纸页翻乱。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.pension-window.missing-page",
+          "weight": 1,
+          "text": "{official}在窗口里翻到第三遍，说{subject}的工资册缺了一页，缺的那年工龄对不上，这个月只能先按低档发。窗口递出来一张纸条，要她下周带着原雇主或见证人的证明再来；{neighbor}凑近看了一眼，说自己在同一家厂干过，可以替她说话。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "按低档先发的当月养老金"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "答应下周到窗口替她证明工龄"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "pension_gap_pending",
+              "add": true,
+              "reason": "工资册缺页，养老金按低档暂发"
+            }
+          ],
+          "narration": [
+            {
+              "id": "note",
+              "key": "p9-gap-elderhood-daily.pension-window.missing-page",
+              "text": "{subject}接过纸条对着门口的光看，字写得密，末尾盖的方章颜色发淡。她把纸条折成四折，塞进内衣口袋，手掌在外头按了按，像怕它化掉。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "neighbor-speaks",
+              "key": "p9-gap-elderhood-daily.pension-window.missing-page",
+              "text": "{neighbor}的手一直扶着栏杆，听完就把自己那本工资册翻开，指着两个相同的车间号说，这能对上。{official}抬了抬眼皮，说下周一块儿带来，别等快下班的时候。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.pension-window.recovered",
+          "weight": 1,
+          "text": "{neighbor}站在窗口边替{subject}说了工龄，报出旧厂的名号和车间位置，{official}又去后面翻了一阵册子，回来补了少算的六个月。{subject}把多出的两克朗收在布袋最里层，走到楼梯口才觉得膝盖有些发软。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "补发少算的六个月养老金差额"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.12,
+              "reason": "到窗口替她作证补回工龄"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "少算的养老金补了回来"
+            }
+          ],
+          "narration": [
+            {
+              "id": "after-window",
+              "key": "p9-gap-elderhood-daily.pension-window.recovered",
+              "text": "补发的钱里有几张是新的，边角硬挺。{subject}在楼梯拐角数了两遍，把两克朗折成一小块，和锁匙串分开放，免得一起掏袋子时带出来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "official-lean",
+              "key": "p9-gap-elderhood-daily.pension-window.recovered",
+              "text": "{official}从后面柜子回来，把册子摊在窗台上，用铅笔在{subject}名字旁添了一道小线，说下次别再缺页。{neighbor}在旁边点了点头，没再说什么。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-elderhood-daily.landlord-heat",
+      "title": "房东来查暖气",
+      "weight": 1,
+      "rate": 0.0238,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "housing",
+        "heating",
+        "winter"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-gap-elderhood-daily.landlord-heat.more-hour",
+          "weight": 1,
+          "text": "{neighbor}把温度计从窗台拿下来给{subject}看，说煤价涨归涨，老人屋里不能只烧两小时。房东松口说早晚各多烧半小时，月租却加了一克朗二十赫勒，当场记进小本子；{worker}蹲在炉边没抬头，只把敲下来的烟灰扫进铁簸箕。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "暖气加时后上涨的月租"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "chilled",
+              "add": true,
+              "reason": "屋里温度仍低，打了一冬的寒噤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "帮着跟房东说暖气的事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "thermometer",
+              "key": "p9-gap-elderhood-daily.landlord-heat.more-hour",
+              "text": "温度计的水银停在一道细线上，{subject}用指甲在旁边的墙纸上划了个记号，想记住今天烧到哪儿。窗外院里的水管包着草绳，风一过还是嘎嘎响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "notebook",
+              "key": "p9-gap-elderhood-daily.landlord-heat.more-hour",
+              "text": "房东的小本子边角卷起，铅笔写数时用力很重。{neighbor}靠在门框上看他写完，才回头对{subject}说，先这么着，煤的事下月再提。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.landlord-heat.chimney",
+          "weight": 1,
+          "text": "{worker}清了烟道，捅出一堆黑灰和碎瓦，屋里倒烟，呛得{subject}咳了好一阵，才慢慢暖起来。{subject}把攒下的一摞旧报纸捆好递过去，{worker}在围裙上擦擦手接住，说这纸好烧，谢了一声就下楼了。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "烟道通了，屋里不再倒烟"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "cold_hands",
+              "add": true,
+              "reason": "清烟道时手指冻得发僵"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "炉子终于暖和起来"
+            }
+          ],
+          "narration": [
+            {
+              "id": "soot",
+              "key": "p9-gap-elderhood-daily.landlord-heat.chimney",
+              "text": "铁簸箕里的烟灰还热着，{subject}用炉钩拨了一下，看见底下压着半片旧瓦。{worker}说烟道拐弯处堵久了，不是一两天的事。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "newspapers",
+              "key": "p9-gap-elderhood-daily.landlord-heat.chimney",
+              "text": "旧报纸用麻绳捆得方方正正，{subject}的指节上沾了油墨。{worker}把捆往肩下一夹，看了一眼擦干净的炉门，说下回别把湿柴塞太满。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.landlord-heat.small-stove",
+          "weight": 1,
+          "text": "{subject}跟房东争了几句，嗓子发干，最后没再等他点头，自己去旧货摊花三克朗买了一只小铁炉，从厨房接出铁皮烟囱。{neighbor}来帮忙抬时，炉膛里的火噼啪响，屋里比炉筒漏烟的味道更先热起来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "旧货摊买的小铁炉和铁皮烟囱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "下楼搬炉子和烟囱时累着了"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "reason": "过来帮她抬炉子、接烟囱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "argument",
+              "key": "p9-gap-elderhood-daily.landlord-heat.small-stove",
+              "text": "房东站在楼梯口说爱怎么烧怎么烧，但煤自理。{subject}没再回嘴，只把厨房门关上，听着自己脚步声在砖地上响，数了数手绢里包着的克朗。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "pipe",
+              "key": "p9-gap-elderhood-daily.landlord-heat.small-stove",
+              "text": "铁皮烟囱一节套一节，{neighbor}蹲在灶台边对齐接口，手里拿着钳子。{subject}在一旁递螺丝，嘴里念叨着摊主说这炉子烧木柴也成。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-elderhood-daily.old-colleague-funeral",
+      "title": "旧同事的葬礼",
+      "weight": 1,
+      "rate": 0.0224,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 50,
+          "maxAge": 85
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 50,
+          "maxAge": 80
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "funeral",
+        "colleague",
+        "memory"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-gap-elderhood-daily.old-colleague-funeral.stood-long",
+          "weight": 1,
+          "text": "葬礼在城外公墓，{subject}穿着袖口磨亮的黑外套，在墓前站得比旁人久，靴底让冻土冰得发麻。回来的电车上她把旧工资册翻开，一页页看那些签名和日期，邻座的{neighbor}问起，她才说起那同事当年替她顶过一班夜工。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "在墓前站久了，心里发沉"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "冻土上久站，脚趾发木"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "回来路上说起旧同事当年的事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "cemetery",
+              "key": "p9-gap-elderhood-daily.old-colleague-funeral.stood-long",
+              "text": "公墓围墙外是敞开的田野，风把送葬人的衣角都吹向一边。{subject}盯着土坑边码好的花圈，看一只麻雀落在挽带上又飞走。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "paybook",
+              "key": "p9-gap-elderhood-daily.old-colleague-funeral.stood-long",
+              "text": "工资册的封皮裂了，{subject}用拇指压平一页，上面的铅笔签名淡得几乎看不见。电车过道里有人提着煤篮挤过去，她把册子往大衣里侧收了收。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.old-colleague-funeral.late",
+          "weight": 1,
+          "text": "电车在路上误了半小时，{subject}赶到公墓门口时，送葬的人已经散了，土坑边的花圈歪着。她在门口的签名簿上找到旧同事的名字，在旁边一笔一画写下自己，又看见{worker}从里面出来，两人站在门柱旁说了一会儿话，各自搓着手。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "没能赶上仪式"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.06,
+              "reason": "在公墓门口遇上，站着说了一会儿话"
+            }
+          ],
+          "narration": [
+            {
+              "id": "book",
+              "key": "p9-gap-elderhood-daily.old-colleague-funeral.late",
+              "text": "签名簿摊在门房小屋的窗台上，墨水瓶里插着一支蘸水笔。{subject}写完把笔搁回去，笔尖在瓶口碰出很轻的一声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "pillar",
+              "key": "p9-gap-elderhood-daily.old-colleague-funeral.late",
+              "text": "门柱上贴着黑边的讣告，纸角被雨打卷。{worker}把帽子在手里转了转，说墓边的土冻得硬，掘坟的工人费了半天劲。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.old-colleague-funeral.reunion",
+          "weight": 1,
+          "text": "葬礼上，{subject}在人群里认出了多年不见的{worker}，两人在公墓门外的小酒馆檐下站着说话，说起旧车间的班次和食堂的汤。{worker}把自己地址写在纸片上，约好下月到{residence}附近的咖啡馆喝茶，{subject}把纸片压在工资册里夹好。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "friend",
+              "trust": 0.08,
+              "affection": 0.04,
+              "reason": "葬礼重逢，约好下月喝茶"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "遇见多年不见的旧工友"
+            }
+          ],
+          "narration": [
+            {
+              "id": "paper-slip",
+              "key": "p9-gap-elderhood-daily.old-colleague-funeral.reunion",
+              "text": "纸片是从烟盒上撕下来的，背面还印着商标。{worker}用铅笔写下街名和门牌，{subject}凑近看了一眼，说那条街她认得。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "eaves",
+              "key": "p9-gap-elderhood-daily.old-colleague-funeral.reunion",
+              "text": "酒馆檐下滴水，两人站在干处说话，呼出的白气互相撞在一起。{worker}说如今手也抖了，刻版做不了，只能给铺子看门。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-elderhood-daily.lodger-night",
+      "title": "年轻房客住进来的第一夜",
+      "weight": 1,
+      "rate": 0.0238,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        },
+        {
+          "kind": "householdSize",
+          "min": 1,
+          "max": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 35
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "lodger",
+        "housing",
+        "household"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-gap-elderhood-daily.lodger-night.quiet",
+          "weight": 1,
+          "text": "{subject}夜里被木板墙后面的响动惊醒两次，都是箱子拖动的闷声。天没亮，{neighbor}已经在厨房把炉台擦得发亮，煤球一块块码齐，说好一个月八克朗，先付了第一周；{subject}数了数硬币，把说好的规矩又低声重说一遍。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "房客先付的第一周租金"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "房客早起擦净炉台，守规矩"
+            }
+          ],
+          "narration": [
+            {
+              "id": "board-wall",
+              "key": "p9-gap-elderhood-daily.lodger-night.quiet",
+              "text": "木板墙后面传来衣架碰墙的声音，很轻，隔一会儿才又响一下。{subject}躺在枕上数着，把被角拉到下巴，听隔壁终于静了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "bright-stove",
+              "key": "p9-gap-elderhood-daily.lodger-night.quiet",
+              "text": "炉台被擦得能照见人影，煤球码成小堆。{neighbor}把手在围裙上擦干，说在乡下也天天烧灶，这些活她会做。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.lodger-night.guest",
+          "weight": 1,
+          "text": "半夜里门外有男人的靴声，{subject}披上衣服敲了敲木板墙，说好过不带人过夜。{neighbor}把门开了一条缝，语气很客气，说只是同乡来送东西，马上就走；第二天早上两人在厨房碰上，都顿了顿，才提起烧水的事。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "夜里带人回来，被提醒后只说是同乡"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "半夜被靴声惊醒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "knock",
+              "key": "p9-gap-elderhood-daily.lodger-night.guest",
+              "text": "靴声从楼梯口上来，在门外停了一会儿。{subject}握着门把，听见隔壁的门开又关上，才把耳朵从冰凉的木板墙上移开。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "morning",
+              "key": "p9-gap-elderhood-daily.lodger-night.guest",
+              "text": "早上的厨房很冷，水壶还没响。{neighbor}站在灶旁，头发没梳齐，说昨夜那人已经走了，下回不会再来。{subject}没再说，只把茶壶往炉上放。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.lodger-night.no-rent",
+          "weight": 1,
+          "text": "{neighbor}在厨房门口站了好一会儿，说工钱要月底才发，第一个月租金交不出来。{subject}让她先住下，把八克朗分两次付的话说清楚，还找出半块面包和一小罐猪油放在桌上；{official}上楼登记住户时，她把房客名字报得慢，怕说错。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "先接济房客半块面包和猪油"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.04,
+              "reason": "宽限房客第一个月租金"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "分给房客的口粮"
+            }
+          ],
+          "narration": [
+            {
+              "id": "doorway",
+              "key": "p9-gap-elderhood-daily.lodger-night.no-rent",
+              "text": "{neighbor}手指绞着围裙带子，说话时眼睛看着灶台。{subject}把罐子推过去，罐底在桌面上蹭出一点油印。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "register",
+              "key": "p9-gap-elderhood-daily.lodger-night.no-rent",
+              "text": "{official}翻开住户登记簿，笔尖在格子上点了点。{subject}站在门边报出{neighbor}的名字，又把街名重复了一遍，生怕他听岔。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-elderhood-daily.coal-basket",
+      "title": "冬天的煤筐",
+      "weight": 1,
+      "rate": 0.0238,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "min": 0,
+          "max": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "coal",
+        "winter",
+        "poverty"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-gap-elderhood-daily.coal-basket.shared",
+          "weight": 1,
+          "text": "{neighbor}从自家门口出来，看见{subject}筐里露着底的煤块，回屋端了半筐出来，说先匀给她。{subject}在墙角的旧账本上记下数目，写明下月发了钱一定还；煤块倒进筐里时碎屑落了一地，{neighbor}摆摆手，说都是院里住的人。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "省下的钱先买了吃的"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.06,
+              "reason": "分给她半筐煤"
+            }
+          ],
+          "narration": [
+            {
+              "id": "ledger",
+              "key": "p9-gap-elderhood-daily.coal-basket.shared",
+              "text": "旧账本上的行线褪了色，{subject}用铅笔记下日期和筐数，写完把本子压在腌菜罐底下，免得风吹走。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "crumbs",
+              "key": "p9-gap-elderhood-daily.coal-basket.shared",
+              "text": "煤块落进筐底时扬起一层黑灰，{neighbor}用手背抹了抹鼻尖，说这煤碎是碎，烧起来倒经烧。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.coal-basket.carried",
+          "weight": 1,
+          "text": "{subject}自己拖着空煤筐去煤铺，路上在面包房墙外歇了三次，回来的筐里只有一小袋煤，二十赫勒的找零攥在手里。楼梯口的窗户结着薄冰，她一级一级往上挪，筐底蹭得石阶直响；到了门口，喘了好一会儿才掏钥匙。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.9,
+              "reason": "煤铺里买的一小袋煤"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "拖煤筐上楼，气喘腿沉"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "路上歇了三回，误了饭点"
+            }
+          ],
+          "narration": [
+            {
+              "id": "steps",
+              "key": "p9-gap-elderhood-daily.coal-basket.carried",
+              "text": "石阶上薄冰化成水，又被新雪盖住。{subject}一手提筐一手扶栏杆，在两级台阶之间停住，听见自己胸口里的声音很响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "change",
+              "key": "p9-gap-elderhood-daily.coal-basket.carried",
+              "text": "找零的硬币在布袋里碰响，{subject}坐在门槛上把它们一枚枚捻开，看煤铺老板有没有少找。走廊尽头有人开门又关门，风从那头灌过来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.coal-basket.credit",
+          "weight": 1,
+          "text": "{worker}把煤车停在院门口，听完{subject}的数说，答应先赊一筐给她，但要在圣诞节前结清。{subject}点头，把欠账写进本子；煤筐抬上楼时，{worker}在楼梯口嘱咐，碎煤掺着烧，别一次塞满炉膛。",
+          "effects": [
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "cold_hands",
+              "add": true,
+              "reason": "院子里站着记煤账，手冻得发僵"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.04,
+              "reason": "赊煤给老人，节前结清"
+            }
+          ],
+          "narration": [
+            {
+              "id": "coal-cart",
+              "key": "p9-gap-elderhood-daily.coal-basket.credit",
+              "text": "煤车的轮子在雪里压出两道黑印。{worker}掀开麻布，煤块上还带着煤场的潮气，他用手掂了掂筐底，说这筐算足秤。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "deadline",
+              "key": "p9-gap-elderhood-daily.coal-basket.credit",
+              "text": "{subject}在本子上写完“圣诞前”，又抬头问了一句日子，{worker}说最迟平安夜那天，他还要来院里送别家。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p9-gap-elderhood-daily.church-fair",
+      "title": "教堂义卖的旧桌",
+      "weight": 1,
+      "rate": 0.0224,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "church",
+          "kind": "organization",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 90,
+          "organizationKind": "church"
+        }
+      ],
+      "tags": [
+        "elderhood",
+        "church",
+        "charity",
+        "social"
+      ],
+      "outcomes": [
+        {
+          "id": "p9-gap-elderhood-daily.church-fair.candlestick",
+          "weight": 1,
+          "text": "{subject}在长桌后坐了一下午，收钱、找零、把卖出的东西从桌上撤下，钱箱里的铜币越积越沉。收摊前她自己花了一克朗五十赫勒买下那只铜烛台，{neighbor}在旁边说便宜，{subject}把烛台揣进布袋，听见教堂穹顶下有杂音在响。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "义卖上买下的铜烛台"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "在桌后忙了一下午，买下喜欢的旧物"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在义卖桌后帮忙收钱找零"
+            }
+          ],
+          "narration": [
+            {
+              "id": "table",
+              "key": "p9-gap-elderhood-daily.church-fair.candlestick",
+              "text": "桌布上摆着针线盒、卷边的祈祷书和一排改过腰身的旧衣。{subject}把铜币按面值码在小盒里，手指碰到找零的赫勒，凉得很。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "candlestick",
+              "key": "p9-gap-elderhood-daily.church-fair.candlestick",
+              "text": "铜烛台底部有一圈磨痕，{subject}用袖口擦了擦，露出黄亮的本色。她把价签翻过来看，又放回原处，过一会儿才重新拿起来去交钱。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.church-fair.misread-price",
+          "weight": 1,
+          "text": "一个年轻人抓起铜烛台，把价签上的“一克朗五十”念成一克朗五赫勒，{subject}隔着桌子纠正，两人先愣了愣，随后都笑出声。年轻人照价付了钱，说回去给母亲，{neighbor}在旁把零钱数了两遍才递过去。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.5,
+              "reason": "义卖上多收的零钱归入钱箱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "念错价签的小插曲让桌后的人都笑了"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "在义卖桌边一起收钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "laugh",
+              "key": "p9-gap-elderhood-daily.church-fair.misread-price",
+              "text": "年轻人把价签拿近又拿远，耳根有点红。{subject}没有提高声音，只把手指点在那行数字上，桌上的针线盒被碰得轻轻一响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "coins",
+              "key": "p9-gap-elderhood-daily.church-fair.misread-price",
+              "text": "钱箱里的硬币混在一起，{neighbor}把银币和铜币分开码，嘴唇跟着数。教堂门口有人抬进来一箱旧鞋，鞋底带着泥。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p9-gap-elderhood-daily.church-fair.leftover-clothes",
+          "weight": 1,
+          "text": "义卖散场时剩下一箱旧衣，{subject}在箱里挑了两件能改的，一件灰呢外套、一条厚裙，叠好放进自己的布袋。剩下的她跟{neighbor}一起抬去救济厨房，管事的说这些能拆了给小孩做夹衣；回来路上布袋压着肩，{subject}在教堂台阶上歇了一脚。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "救济厨房分回的一小份汤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "一起把剩下的旧衣送去救济厨房"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "抬衣箱来回，腰背发酸"
+            }
+          ],
+          "narration": [
+            {
+              "id": "box",
+              "key": "p9-gap-elderhood-daily.church-fair.leftover-clothes",
+              "text": "旧衣箱里有樟脑和潮气的味道，{subject}把灰呢外套抖开对着窗光看，肘部磨薄了，袖口倒还齐整。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "kitchen",
+              "key": "p9-gap-elderhood-daily.church-fair.leftover-clothes",
+              "text": "救济厨房的灶上煮着菜汤，管事的女人围着围裙，接过衣箱时用手按了按箱盖，说拆了做夹衣正合适。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

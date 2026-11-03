@@ -16,6 +16,10 @@ import {
   GENERATED_PACKS,
   GENERATED_SCENES,
   GENERATED_TASKS,
+  ALL_EVENT_SCENES,
+  ALL_TASKS,
+  PHASE9_EVENT_SCENES,
+  PHASE9_TASKS,
 } from '../packages/v4/content/generated/index.js';
 import { validateGeneratedPack } from '../packages/v4/generated.js';
 
@@ -45,7 +49,7 @@ const scenes = [
   ...VIENNA_HISTORY_SCENES,
   ...VIENNA_DEVELOPMENT_SCENES,
   ...VIENNA_FAMILY_RUNTIME_SCENES,
-  ...GENERATED_SCENES,
+  ...ALL_EVENT_SCENES,
 ];
 const events: EventFact[] = [];
 const sceneInstances: SceneInstance[] = [];
@@ -69,7 +73,7 @@ for (let i = 0; i < years; i += 1) {
     economy: { enabled: true },
     eventRuntime: true,
     agency: true,
-    tasks: process.env.V4_AUDIT_TASKS === '0' ? [] : GENERATED_TASKS,
+    tasks: process.env.V4_AUDIT_TASKS === '0' ? [] : ALL_TASKS,
     maxOrdinaryEventsPerPerson: 4,
   });
   world = result.world;
@@ -94,7 +98,7 @@ for (let i = 0; i < years; i += 1) {
 }
 
 const sceneById = new Map(scenes.map((scene) => [scene.id, scene]));
-const generatedFamilyIds = new Set(GENERATED_PACKS.map((pack) => pack.id));
+const generatedFamilyIds = new Set(ALL_EVENT_SCENES.map((scene) => scene.familyId ?? scene.id));
 
 function eventScene(event: EventFact) {
   const sceneId = event.action.split('/')[0]!;
@@ -177,17 +181,15 @@ for (const pack of GENERATED_PACKS) {
   }
 }
 
-const generatedOutcomes = GENERATED_PACKS.flatMap((pack) =>
-  pack.nodes.flatMap((node) => node.outcomes),
-);
-const generatedNarrations = generatedOutcomes.reduce(
-  (sum, outcome) => sum + (outcome.narration?.length ?? 0),
+const generatedOutcomes = ALL_EVENT_SCENES.flatMap((scene) => scene.outcomes ?? []);
+const generatedNarrations = ALL_EVENT_SCENES.reduce(
+  (sum, scene) => sum + (scene.narration?.length ?? 0),
   0,
 );
 
 const familyCounts = [...familyEventCounts.entries()]
   .map(([id, count]) => {
-    const definition = GENERATED_SCENES.find((scene) => scene.familyId === id);
+    const definition = ALL_EVENT_SCENES.find((scene) => scene.familyId === id);
     return {
       id,
       title: definition?.title ?? id,
@@ -294,14 +296,20 @@ const report = {
     processes: historicalProcesses,
   },
   generated: {
-    packs: GENERATED_PACKS.length,
-    taskEvents: events.filter((event) => event.action.startsWith('task-')).length,
-    tasks: GENERATED_TASKS.length,
-    taskDomains: GENERATED_TASKS.reduce<Record<string, number>>((counts, task) => {
+    packs: new Set(ALL_EVENT_SCENES.map((scene) => scene.familyId ?? scene.id)).size,
+    taskEvents: events.filter((event) =>
+      ALL_TASKS.some((task) => event.action.startsWith(`${task.id}/`)),
+    ).length,
+    tasks: ALL_TASKS.length,
+    phase8Tasks: GENERATED_TASKS.length,
+    phase9Tasks: PHASE9_TASKS.length,
+    taskDomains: ALL_TASKS.reduce<Record<string, number>>((counts, task) => {
       counts[task.task.domain] = (counts[task.task.domain] ?? 0) + 1;
       return counts;
     }, {}),
-    scenes: GENERATED_SCENES.length,
+    scenes: ALL_EVENT_SCENES.length,
+    phase8Scenes: GENERATED_SCENES.length,
+    phase9Scenes: PHASE9_EVENT_SCENES.length,
     outcomes: generatedOutcomes.length,
     narrations: generatedNarrations,
     familiesTriggered: triggeredGeneratedFamilies.length,
