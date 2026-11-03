@@ -1,0 +1,229 @@
+{
+  "generatedAt": "2026-11-03T14:52:33.288Z",
+  "packs": 8,
+  "nodes": 48,
+  "outcomes": 144,
+  "findings": [
+    {
+      "pack": "p10-edu-thresholds",
+      "node": "p10-edu-thresholds.realschule-scholarship",
+      "outcome": "grant-approved",
+      "cue": "employment",
+      "effects": [
+        "education",
+        "cash",
+        "reputation",
+        "relation"
+      ],
+      "text": "校长在推荐栏里写了“勤勉、算术突出”。{parent}从厂里要来盖红章的工资单，房东的租金收据也凑齐了。星期三中午{subject}把表格递进窗口，{official}翻了一遍，说学费减半，书本费还得自家出。"
+    },
+    {
+      "pack": "p10-edu-thresholds",
+      "node": "p10-edu-thresholds.realschule-scholarship",
+      "outcome": "grant-missed",
+      "cue": "marriage",
+      "effects": [
+        "mood",
+        "cash",
+        "knowledge"
+      ],
+      "text": "表格上缺一张租金收据。{subject}先跑房东家，铁门锁着；再跑一趟，房东太太说收据本在她丈夫身上。等他拿着纸条赶回学校，星期五中午的窗口已经关上，玻璃后面只剩一张椅子。{official}让他明年再申请。"
+    },
+    {
+      "pack": "p10-edu-thresholds",
+      "node": "p10-edu-thresholds.leave-school-for-work",
+      "outcome": "keep-enrollment",
+      "cue": "education",
+      "effects": [
+        "employment",
+        "flag",
+        "relation",
+        "mood"
+      ],
+      "text": "{teacher}写了一封半工半读的申请，学校同意保留学籍到学年末，厂里只肯按日结钱，没有固定工位。{subject}每逢星期一、三、五去上工，回来时天已经黑透，就在厨房桌上补课。父亲的工钱仍少一成，但家里没有断粮。"
+    },
+    {
+      "pack": "p10-edu-thresholds",
+      "node": "p10-edu-thresholds.apprentice-review",
+      "outcome": "splinter-redo",
+      "cue": "education",
+      "effects": [
+        "mood",
+        "skill",
+        "relation",
+        "flag"
+      ],
+      "text": "一记榫头敲下去，木料沿着纹理裂开一道口子。{master}盯着裂口看了很久，让他再做一件，出师推迟三个月。师兄弟{worker}递来新料，没多说话。作坊里的钟滴答作响，碎木屑踩在脚下像细沙。"
+    },
+    {
+      "pack": "p10-edu-thresholds",
+      "node": "p10-edu-thresholds.apprentice-review",
+      "outcome": "master-holds-back",
+      "cue": "education",
+      "effects": [
+        "mood",
+        "reputation",
+        "knowledge",
+        "flag"
+      ],
+      "text": "他做的活合格，角度和接缝都挑不出毛病。{master}看完却说作坊缺人手，出师证明要等明年，眼下按学徒的工钱照旧。{subject}把工具一件件擦干净放回架上，没说留下也没说不留。"
+    },
+    {
+      "pack": "p10-edu-thresholds",
+      "node": "p10-edu-thresholds.technische-hochschule-entrance",
+      "outcome": "drawing-fail",
+      "cue": "education",
+      "effects": [
+        "cash",
+        "mood",
+        "skill",
+        "flag"
+      ],
+      "text": "考试费交了，制图题把比例写错，图的右下角挤出了框。{official}收卷时扫了一眼没有说话。未被录取，{subject}把那张图纸带回家，用图钉贴在床头墙上，正好盖住旧课表留下的四个针眼。"
+    },
+    {
+      "pack": "p10-edu-work-tasks",
+      "node": "p10-edu-work-tasks.apply-scholarship",
+      "outcome": "p10-edu-work-tasks.apply-scholarship.granted",
+      "cue": "employment",
+      "effects": [
+        "cash",
+        "education",
+        "mood",
+        "flag"
+      ],
+      "text": "他把工资单、房租收据和两封推荐信按顺序摊在窗口的铜台上，手写的申请写满两页。基金会的官员核过数目，用蓝笔在表格上批了减免一半学费，条件是每学期末交一份成绩单，缺一页就停。他走出门时还捏着那张回执。"
+    },
+    {
+      "pack": "p10-edu-work-tasks",
+      "node": "p10-edu-work-tasks.apply-scholarship",
+      "outcome": "p10-edu-work-tasks.apply-scholarship.missing-letter",
+      "cue": "employment",
+      "effects": [
+        "cash",
+        "mood",
+        "reputation"
+      ],
+      "text": "他缺第二封推荐信——{teacher}只肯写一封，说另一封该由雇主出。窗口的{subject}被告知明天下午再来。他第二天请假赶到时，走廊里贴出新告示：本学期名额已满。官员建议他等下一学期，他把材料收回布里，没说话。"
+    },
+    {
+      "pack": "p10-edu-work-tasks",
+      "node": "p10-edu-work-tasks.apply-scholarship",
+      "outcome": "p10-edu-work-tasks.apply-scholarship.rejected",
+      "cue": "education",
+      "effects": [
+        "mood",
+        "knowledge",
+        "flag"
+      ],
+      "text": "官员翻完工钱单，说家庭收入证明由房东签字不足为凭，还要户籍局盖章。申请被退回，理由写在纸条上：收入材料不充分。他当天傍晚去问夜校，簿记班的学费低得多，也收工龄够的人。他把那张退回的纸条留作书签。"
+    },
+    {
+      "pack": "p10-edu-work-tasks",
+      "node": "p10-edu-work-tasks.save-for-night-school",
+      "outcome": "p10-edu-work-tasks.save-for-night-school.taken",
+      "cue": "education",
+      "effects": [
+        "cash",
+        "relation",
+        "flag"
+      ],
+      "text": "母亲在他上工后翻出火柴盒，把钱拿去交了煤费。晚上他没吵，只把空盒子放在桌上。第二天他去夜校，{teacher}听完说可以先听课，学费分三个月补，缺课不等人。他当晚就坐在了最后一排。"
+    },
+    {
+      "pack": "p10-family-fate",
+      "node": "p10-family-fate.widow-inheritance",
+      "outcome": "widow-renounce-move",
+      "cue": "marriage",
+      "effects": [
+        "death",
+        "residence",
+        "cash"
+      ],
+      "text": "{subject}放弃继承，免得债务跟着过来。房子退给房东，箱子里只装得下棉衣、结婚证和那只断链怀表，其余家具折给楼下的旧货商，换了两克朗。她搬去克洛斯特新堡姑妈的老屋。"
+    },
+    {
+      "pack": "p10-family-tasks",
+      "node": "p10-family-tasks.propose-marriage",
+      "outcome": "propose-marriage.wait",
+      "cue": "employment",
+      "effects": [
+        "cash",
+        "mood",
+        "flag"
+      ],
+      "text": "对方的父亲让来者先找到固定工作，说零工不算数。来者把招工条摊在桌上，父亲看了一遍，说下个月再来。{partner} 送到楼梯口，说再等等。来者把酒提回去，点心留下了。"
+    },
+    {
+      "pack": "p10-migration-tasks",
+      "node": "p10-migration-tasks.emigrate",
+      "outcome": "emigrate-sell-and-sail",
+      "cue": "birth",
+      "effects": [
+        "cash",
+        "mood",
+        "condition",
+        "knowledge"
+      ],
+      "text": "他把木工工具和床架折价卖给旧货商，又找工友凑了几个克朗，才在领事馆交出出生证明、无犯罪记录和体检单，买下去的里雅斯特上船的统舱票。行李只剩一只箱子，检票员在票角打了孔，他把箱子抱在膝上坐了一夜。"
+    },
+    {
+      "pack": "p10-migration-tasks",
+      "node": "p10-migration-tasks.emigrate",
+      "outcome": "emigrate-missing-paper",
+      "cue": "birth",
+      "effects": [
+        "cash",
+        "mood",
+        "relation"
+      ],
+      "text": "窗口后的官员把他的出生证明推回来，说教区印章不清楚，要重开一份。他跑了两天教区办公室，船期已经过了，退票扣了二十克朗手续费。他把剩下的钱换成去汉堡的火车票，同乡说那边港口有更便宜的船。"
+    },
+    {
+      "pack": "p10-work-career",
+      "node": "p10-work-career.wage-shortfall",
+      "outcome": "p10-work-career.wage-shortfall.itemize",
+      "cue": "employment",
+      "effects": [
+        "knowledge",
+        "cash",
+        "mood"
+      ],
+      "text": "{subject}把工资袋拿回柜台，请{bookkeeper}把扣款逐项写清楚。会计翻了翻簿子，只在纸条上写“材料损耗”，签了名。他把纸条折好夹进工资册，硬币在口袋里一路响到楼梯口。"
+    },
+    {
+      "pack": "p10-work-career",
+      "node": "p10-work-career.wage-shortfall",
+      "outcome": "p10-work-career.wage-shortfall.collective",
+      "cue": "employment",
+      "effects": [
+        "cash",
+        "relation",
+        "flag"
+      ],
+      "text": "{subject}和{worker}等几个人一起去找{employer}，把工资袋摆在办公桌上。厂主听了几句，说下不为例，让会计补回一半。走出办公室时{worker}说，别到处讲，讲了下次就没这么好说话。"
+    },
+    {
+      "pack": "p10-work-career",
+      "node": "p10-work-career.workplace-injury",
+      "outcome": "p10-work-career.workplace-injury.self-treated",
+      "cue": "employment",
+      "effects": [
+        "health",
+        "condition",
+        "cash"
+      ],
+      "text": "{subject}用布条缠住手，说不用去医院，接着上工。月底伤处化脓，{foreman}才让门房叫了{doctor}。厂里只按病假扣钱，工资袋比平时薄了一截。"
+    }
+  ],
+  "byPack": {
+    "p10-crisis-migration": 0,
+    "p10-edu-thresholds": 6,
+    "p10-edu-work-tasks": 4,
+    "p10-family-fate": 1,
+    "p10-family-tasks": 1,
+    "p10-migration-tasks": 2,
+    "p10-politics-tasks": 0,
+    "p10-work-career": 3
+  }
+}

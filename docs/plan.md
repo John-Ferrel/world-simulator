@@ -1,5 +1,7 @@
 # 完整游戏关键路径
 
+> 2026-11-03 Phase 10 关键路径：见 [v4/phase-10-plan.md](v4/phase-10-plan.md)。
+>
 > 2026-11-03 Phase 9 关键路径：见 [v4/phase-9-plan.md](v4/phase-9-plan.md)。
 >
 > 2026-11-03 Phase 8 关键路径：见 [v4/phase-8-plan.md](v4/phase-8-plan.md)。
@@ -121,3 +123,13 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - 长期人生：45 年 11,349 事件 / 1,516 Task / 73 种 Task；88 年 playtest 31,567 事件 / 3,673 Task。
 - 性能：160 人真实内容 105.8→139.8 ms/年；20k 合成 Task 最坏 2,363 ms/年、400 MB。
 - 未完成：童年内容仍薄（平均 2.00 个 Task 候选）；46/110 Task 单样本未触发；Task 仍替代部分 Agency 与历史过程（7 vs 9 developments）；无 20k 完整内容 + PostgreSQL/API 生产验收。
+
+## Phase 10 执行状态（2026-11-03）
+
+- 内容：24 authored 重大事件 + 6 authored 任务 + 8 个生成 Family（48 nodes）；Phase 10 新增 78 nodes / 233 outcomes。
+- 总池：140 Task / 333 Event definitions（254 generated + 79 authored），共 473 个可执行定义。
+- 45 年重大审计：6,741 事件 / 1,048 major；employment 2→11、unemployment 7→18、move 19→37、residence 24→50、death 97→122。
+- 文学：Critic 13 样本首轮 5 通过；定向改写后 11 个 P0 节点全部 ≥36/50（2 个窄过）。
+- 88 年 playtest：27,510 事件 / 3,490 Task；44 个重复 offender；0 未解析 token、0 死亡后事件。
+- UI：稳定 ID 人物/事件/进程高亮、Hover 档案、事件/进程 modal；e2e 通过。
+- 未完成：不是百万/千级定义库；教育/出生覆盖下降；64/140 Task 单样本未触发；无正式逮捕/养老金/租金持久 effect；无 20k 完整内容+DB/API 验收。
