@@ -26,7 +26,7 @@ import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-fami
 import { VIENNA_POSTWAR_SCENES } from '../packages/v4/content/vienna-postwar.js';
 import { VIENNA_HISTORY_SCENES } from '../packages/v4/content/vienna-history.js';
 import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
-import { GENERATED_SCENES } from '../packages/v4/content/generated/index.js';
+import { GENERATED_SCENES, GENERATED_TASKS } from '../packages/v4/content/generated/index.js';
 
 export type PlaytestOptions = {
   /** Hard horizon in simulated years from 1912. Defaults to 88 (1912–2000). */
@@ -424,6 +424,7 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
       economy: { enabled: economyEnabled },
       eventRuntime: true,
       agency: true,
+      tasks: process.env.V4_PLAYTEST_TASKS === '0' ? [] : GENERATED_TASKS,
       maxOrdinaryEventsPerPerson,
       ...(maxScenesPerPerson === undefined ? {} : { maxScenesPerPerson }),
     });
@@ -696,6 +697,7 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
         viennaFamily: VIENNA_FAMILY_RUNTIME_SCENES.length,
         viennaPostwar: VIENNA_POSTWAR_SCENES.length,
         generated: GENERATED_SCENES.length,
+        generatedTasks: GENERATED_TASKS.length,
       },
     },
     totalPersons: persons.length,
@@ -709,6 +711,7 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
     statisticalDeaths,
     macroDeathsLastYear: macroDeaths,
     events: allEvents.length,
+    taskEvents: allEvents.filter((event) => event.action.startsWith('task-')).length,
     eventsDuringRun: runEvents.length,
     eventsPerYear: Number((allEvents.length / Math.max(1, yearsRun)).toFixed(2)),
     perYear: yearly,

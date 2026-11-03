@@ -36,13 +36,14 @@ import {
   VIENNA_1912_SCENES,
 } from '../../packages/v4/content/vienna-1912.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../../packages/v4/content/vienna-family.js';
-import { GENERATED_SCENES } from '../../packages/v4/content/generated/index.js';
+import { GENERATED_SCENES, GENERATED_TASKS } from '../../packages/v4/content/generated/index.js';
 import { VIENNA_LIFE_SCENES } from '../../packages/v4/content/vienna-life.js';
 import {
   VIENNA_POSTWAR_CHRONICLE,
   VIENNA_POSTWAR_SCENES,
 } from '../../packages/v4/content/vienna-postwar.js';
 import { VIENNA_HISTORY_SCENES } from '../../packages/v4/content/vienna-history.js';
+import { buildLifePassages } from '../../packages/v4/passages.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../../packages/v4/content/vienna-developments.js';
 
 const sha = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -402,6 +403,12 @@ export function makeV4Api() {
       worldEvents: detail.worldEvents
         .filter((event) => event.visibility === 'public')
         .map((event) => projectEvent(event, detail.lookups)),
+      lifePassages: buildLifePassages(
+        detail.events.filter(
+          (event) => isOwner || !detail.person.ownerId || event.visibility === 'public',
+        ),
+        { maxPassages: 12 },
+      ),
       historicalProcesses: Object.values(macro?.developments ?? {})
         .filter((development) => development.historical?.participants[detail.person.id])
         .map((development) => {
@@ -566,6 +573,7 @@ const sceneTitles = new Map(
     ...VIENNA_DEVELOPMENT_SCENES,
     ...VIENNA_FAMILY_RUNTIME_SCENES,
     ...GENERATED_SCENES,
+    ...GENERATED_TASKS,
   ].map((scene) => [scene.id, scene.title]),
 );
 

@@ -8,6 +8,10 @@ import type {
   SceneStage,
   RoleRequirement,
   Sex,
+  TaskDefinition,
+  TaskDomain,
+  TaskNeed,
+  PersonAgencyGoal,
 } from './domain.js';
 
 /**
@@ -15,8 +19,21 @@ import type {
  * nodes inside it. It is intentionally narrower than the full runtime schema so
  * generated JSON can be validated and compiled without arbitrary code.
  */
+export type GeneratedTaskMeta = {
+  domain: string;
+  goals: string[];
+  needs: string[];
+  baseUtility: number;
+  risk?: number;
+  skills?: string[];
+  capability?: string;
+};
+
 export type GeneratedPack = {
   id: string;
+  /** Event packs are scheduled by rate; task packs are chosen by Agency. */
+  kind?: 'event' | 'task';
+  task?: GeneratedTaskMeta;
   title: string;
   stage: SceneStage;
   ageWindow: { min: number; max: number };
@@ -36,6 +53,8 @@ export type GeneratedNode = {
   outcomes: GeneratedOutcome[];
   tags?: string[];
   triggerTags?: string[];
+  /** Node-level task metadata overrides the pack-level defaults. */
+  task?: GeneratedTaskMeta;
 };
 
 export type GeneratedOutcome = {
@@ -51,6 +70,42 @@ export type GeneratedOutcome = {
 };
 
 const VALID_SKILLS = new Set(['literacy', 'numeracy', 'craft', 'social']);
+const VALID_TASK_DOMAINS = new Set<TaskDomain>([
+  'education',
+  'work',
+  'family',
+  'social',
+  'daily',
+  'culture',
+  'health',
+  'politics',
+  'history',
+  'knowledge',
+  'migration',
+  'special',
+]);
+const VALID_TASK_GOALS = new Set<PersonAgencyGoal>([
+  'survival',
+  'work',
+  'family',
+  'belonging',
+  'status',
+  'cause',
+  'care',
+  'rest',
+  'knowledge',
+]);
+const VALID_TASK_NEEDS = new Set<TaskNeed>([
+  'cash',
+  'food',
+  'health',
+  'belonging',
+  'status',
+  'care',
+  'knowledge',
+  'safety',
+  'autonomy',
+]);
 const VALID_EDUCATION = new Set([
   'none',
   'home',
@@ -138,6 +193,34 @@ export type GeneratedValidation = {
   warnings: string[];
 };
 
+function validateTaskMeta(
+  meta: GeneratedTaskMeta | undefined,
+  label: string,
+  errors: string[],
+): void {
+  if (!meta) {
+    errors.push(`${label}: task metadata missing`);
+    return;
+  }
+  if (!VALID_TASK_DOMAINS.has(meta.domain as TaskDomain))
+    errors.push(`${label}: invalid task domain ${meta.domain}`);
+  if (!Array.isArray(meta.goals) || meta.goals.length === 0)
+    errors.push(`${label}: task goals missing`);
+  for (const goal of meta.goals ?? [])
+    if (!VALID_TASK_GOALS.has(goal as PersonAgencyGoal))
+      errors.push(`${label}: invalid task goal ${goal}`);
+  if (!Array.isArray(meta.needs) || meta.needs.length === 0)
+    errors.push(`${label}: task needs missing`);
+  for (const need of meta.needs ?? [])
+    if (!VALID_TASK_NEEDS.has(need as TaskNeed)) errors.push(`${label}: invalid task need ${need}`);
+  if (!(meta.baseUtility >= 0.1 && meta.baseUtility <= 3))
+    errors.push(`${label}: baseUtility must be 0.1..3`);
+  if (meta.risk !== undefined && !(meta.risk >= 0 && meta.risk <= 1))
+    errors.push(`${label}: risk must be 0..1`);
+  for (const skill of meta.skills ?? [])
+    if (!VALID_SKILLS.has(skill)) errors.push(`${label}: invalid task skill ${skill}`);
+}
+
 export function validateGeneratedPack(pack: GeneratedPack): GeneratedValidation {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -150,12 +233,16 @@ export function validateGeneratedPack(pack: GeneratedPack): GeneratedValidation 
   )
     errors.push('invalid ageWindow');
   if (!(pack.baseRate >= 0 && pack.baseRate <= 1)) errors.push('baseRate must be 0..1');
+  const taskPack = pack.kind === 'task' || pack.task !== undefined;
+  if (taskPack) validateTaskMeta(pack.task, `${pack.id}`, errors);
   if (!Array.isArray(pack.nodes) || pack.nodes.length === 0) errors.push('pack has no nodes');
   const ids = new Set<string>();
   for (const node of pack.nodes ?? []) {
     if (!node.id || ids.has(node.id)) errors.push(`node id missing/duplicate: ${node.id}`);
     ids.add(node.id);
     if (!node.title) errors.push(`${node.id}: title missing`);
+    if (taskPack && !pack.task && !node.task) errors.push(`${node.id}: task metadata missing`);
+    if (node.task) validateTaskMeta(node.task, node.id, errors);
     if (node.rate !== undefined && !(node.rate >= 0 && node.rate <= 1))
       errors.push(`${node.id}: rate must be 0..1`);
     if (!Array.isArray(node.roles) || !node.roles.some((role) => role.kind === 'subject'))
@@ -412,6 +499,56 @@ export function compileGeneratedPack(pack: GeneratedPack): SceneDefinition[] {
     historicalBasis:
       'Generated Vienna event family; validated against the bounded event grammar before publication.',
   }));
+}
+
+export function compileGeneratedTasks(pack: GeneratedPack): TaskDefinition[] {
+  if (pack.kind !== 'task' && pack.task === undefined) return [];
+  return pack.nodes.map((node, index) => {
+    const meta = { ...(pack.task ?? {}), ...(node.task ?? {}) } as GeneratedTaskMeta;
+    const outcomes = node.outcomes.map<SceneOutcome>((outcome) => ({
+      id: outcome.id,
+      weight: outcome.weight,
+      conditions: outcome.conditions,
+      immediateText: outcome.text,
+      effects: outcome.effects,
+      followupSceneIds: outcome.followupIds,
+      followupTargets: outcome.followupTargets,
+      narrationKey: outcome.id,
+      significance: outcome.significance,
+    }));
+    return {
+      id: node.id,
+      version: 1,
+      packId: 'generated-task-vienna',
+      familyId: pack.id,
+      title: node.title,
+      stage: pack.stage,
+      ageWindow: { ...pack.ageWindow },
+      roles: node.roles,
+      conditions: [...(pack.conditions ?? []), ...(node.conditions ?? [])],
+      tags: [...new Set([...pack.tags, ...(node.tags ?? []), 'task', `task:${meta.domain}`])],
+      triggerMode: 'action',
+      rate: 0,
+      // A content task is not an annual random event; two years is a simple
+      // guard against one attractive task monopolising every actor's year.
+      cooldownYears: 2,
+      weight: node.weight ?? 1,
+      subjectProvenance: ['birth', 'initial', 'materialized_population', 'historical_activation'],
+      outcomes,
+      narration: node.outcomes.flatMap((outcome) => outcome.narration ?? []),
+      task: {
+        domain: meta.domain as TaskDomain,
+        goals: (meta.goals ?? []) as PersonAgencyGoal[],
+        needs: (meta.needs ?? []) as TaskNeed[],
+        baseUtility: meta.baseUtility ?? 1,
+        risk: meta.risk,
+        skills: (meta.skills ?? []) as (keyof import('./domain.js').PersonLife['skills'])[],
+        capability: meta.capability,
+      },
+      historicalBasis:
+        'Generated Vienna active task; task choice uses utility and feasibility, not a prewritten life script.',
+    } satisfies TaskDefinition;
+  });
 }
 
 export function assertGeneratedPack(pack: GeneratedPack): void {

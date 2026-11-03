@@ -3,7 +3,7 @@ import { advanceV4Year } from '../../packages/v4/engine.js';
 import { createV4Birth } from '../../packages/v4/birth.js';
 import { VIENNA_1912_SCENES, VIENNA_1912_SEED } from '../../packages/v4/content/vienna-1912.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../../packages/v4/content/vienna-family.js';
-import { GENERATED_SCENES } from '../../packages/v4/content/generated/index.js';
+import { GENERATED_SCENES, GENERATED_TASKS } from '../../packages/v4/content/generated/index.js';
 import { defaultMacroState } from '../../packages/v4/macro.js';
 import { applyViennaHistoricalWorld } from '../../packages/v4/content/vienna-history-world.js';
 import { enqueueV4MacroProposal } from '../../packages/v4/macro-store.js';
@@ -144,6 +144,7 @@ while (!stopped) {
           economy: { enabled: economyEnabled },
           eventRuntime: true,
           agency: true,
+          tasks: GENERATED_TASKS,
           maxOrdinaryEventsPerPerson: 4,
         },
       );

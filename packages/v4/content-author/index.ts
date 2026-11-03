@@ -1,6 +1,8 @@
 export { PHASE3_FAMILY_BRIEFS } from './phase3-briefs.js';
 export { PHASE4_FAMILY_BRIEFS } from './phase4-briefs.js';
 export { PHASE7_FAMILY_BRIEFS } from './phase7-briefs.js';
+export { PHASE8_TASK_BRIEFS } from './phase8-briefs.js';
+export type { GeneratedPack } from '../generated.js';
 export {
   PHASE2_FAMILY_BRIEFS,
   briefById,

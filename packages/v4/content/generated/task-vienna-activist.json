@@ -1,0 +1,1288 @@
+{
+  "id": "task-vienna-activist",
+  "title": "工会、政党与街头的名单",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 60
+  },
+  "tags": [
+    "politics",
+    "activism",
+    "union",
+    "party",
+    "leaflet",
+    "meeting"
+  ],
+  "baseRate": 0.1,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 59
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "politics",
+    "goals": [
+      "cause",
+      "belonging"
+    ],
+    "needs": [
+      "belonging",
+      "status"
+    ],
+    "baseUtility": 1.3,
+    "risk": 0.35,
+    "skills": [
+      "social",
+      "literacy"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "task-vienna-activist.join-union",
+      "title": "工会活动室的入会表",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 59
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        },
+        {
+          "kind": "notHasRole",
+          "role": "union_member"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "unionMember",
+          "kind": "union_member",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "union",
+          "kind": "organization",
+          "required": true,
+          "organizationKind": "union"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "join-union-signed",
+          "weight": 1,
+          "text": "他接过钢笔，在入会表上写下自己的名字和住所，每周从工钱里扣二十赫勒交会费。老会员把名字誊进蓝皮会员册，又指了指门边的木牌说下周会议要抬去市场。出门时他摸了摸口袋里剩下的克朗，觉得比刚才轻了一点。",
+          "effects": [
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "union_member",
+              "add": true,
+              "reason": "签署入会表并开始缴纳会费"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "首月会费与入会登记费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$unionMember",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.05,
+              "reason": "老会员见证他入会并誊写名册"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "join-union-signed",
+              "text": "钢笔尖在表上洇开一小团墨，他把“职业”一栏填成印刷厂杂工。老会员用拇指点了点会费数字，说罢工基金另算，他点了点头。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "join-union-signed",
+              "text": "蓝皮册子翻到新的一页，老会员念出他的姓，让他确认拼写。墙上的会费表用图钉钉着，二十赫勒一栏被红笔圈过好几次。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "join-union-refuse-strike-fund",
+          "weight": 1,
+          "text": "他去了一次周会，坐在最后一排听人念会费账目。散会前老会员递来罢工基金承诺书，他看了看家里剩下的面包票，把纸推回去，说先只交普通会费。对方没再勉强，只把他名字记在册子边上，画了个小圈。",
+          "effects": [
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "union_member",
+              "add": true,
+              "reason": "加入工会但未签罢工基金承诺"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "union_member_no_strike_fund",
+              "add": true,
+              "reason": "拒绝在会费之外签罢工基金承诺"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$unionMember",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "老会员接受他暂不签罢工基金"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "join-union-refuse-strike-fund",
+              "text": "承诺书上的油墨还没干透，他捏着纸角犹豫了一会儿。老会员说没关系，可册子边上那个小圈画得很慢。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "join-union-refuse-strike-fund",
+              "text": "后屋的钟敲了八下，有人开始穿外套。他把承诺书折好放回桌上，说下个月再看，老会员把蓝皮册子合上，没接话。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "join-union-foreman-warning",
+          "weight": 1,
+          "text": "入会的事第二天就传到车间。工头在过道里拦住他，说厂里不反对工人交朋友，但下个月的排班要看表现。他回到机器旁，发现自己的工具柜被挪到了最靠门的位置，冷风直往领口灌。",
+          "effects": [
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "union_member",
+              "add": true,
+              "reason": "名字已记入工会名册"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "工头暗示排班受影响"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "foreman_watching_union_activity",
+              "add": true,
+              "reason": "入会消息传到车间，工头开始注意他"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "join-union-foreman-warning",
+              "text": "工具柜底下积着一层铁屑，他弯腰去推，手指蹭到冰凉的柜角。工头说完就走，皮靴声在过道里拖得很长。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "join-union-foreman-warning",
+              "text": "午休时没人坐到他旁边，只有个学徒悄悄问蓝皮册子长什么样。他把面包掰成两半，听见工头在办公室门口和人低声说话。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "politics",
+        "goals": [
+          "cause",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "safety"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.3,
+        "skills": [
+          "social",
+          "literacy"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-activist.recruit-coworker",
+      "title": "午饭时的空座位",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 59
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        },
+        {
+          "kind": "hasRole",
+          "role": "union_member"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 59
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "recruit-coworker-joins",
+          "weight": 1,
+          "text": "年轻工友听完请愿的事，把汤勺搁在盘沿上，问会费能不能从下周工钱里扣。第二天他带来同车间的两个学徒，三个人在活动室门口排队签字，老会员翻册子的手都快了些。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.12,
+              "respect": 0.08,
+              "reason": "工友接受邀请并带来同伴入会"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "在工会活动室成功介绍新会员"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "在食堂动员工友"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "recruit-coworker-joins",
+              "text": "食堂的汤冒着热气，他把请愿日期说得很慢。年轻工友用指头蘸着汤在桌上画了个圈，说家里还有母亲和妹妹，得算算。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "recruit-coworker-joins",
+              "text": "第二天早上，两个学徒站在活动室门口搓手，其中一个鞋底还沾着车间油泥。蓝皮册子摊在桌上，老会员把钢笔递过去时哼了一声小调。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "recruit-coworker-reported",
+          "weight": 1,
+          "text": "下午刚开工，工头就把他叫到成品堆后面，说有人反映他在食堂拉人入会。工头没提名字，只让他把手里那批活计先放下，去仓库清点废纸。年轻工友整个下午都避着他的目光。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "被工头叫去问话并被调离原岗位"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.1,
+              "reason": "怀疑工友把谈话告诉工头"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "recruitment_reported_to_foreman",
+              "add": true,
+              "reason": "在食堂动员的事被报告给工头"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "recruit-coworker-reported",
+              "text": "成品堆后面光线很暗，工头说话时手指敲着一卷包装纸。他回到车间时，年轻工友正低头擦机器，抹布拧得比平时紧。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "recruit-coworker-reported",
+              "text": "仓库里全是废纸和麻绳的气味，他一边点数一边听见外面机器重新转起来。晚饭时那个工友没来食堂，空座位上的汤盘被人收走了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "recruit-coworker-promises-never-signs",
+          "weight": 1,
+          "text": "年轻工友答应来听一次会，还问要不要带纸笔。可到了那天晚上，活动室的长凳上始终没有他的影子。后来在车间碰见，他只说家里临时有事，下次一定去，但名册上始终空着一行。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "工友答应赴会却始终没来"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "工友口头答应但未兑现，关系停留在泛泛之交"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "尝试动员但未成功，积累了经验"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "recruit-coworker-promises-never-signs",
+              "text": "会前他特意在门边留了个位子，还跟老会员说可能有新人来。钟敲过八点，那个位子上坐的是个来借报纸的老头。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "recruit-coworker-promises-never-signs",
+              "text": "第二天在车间，年轻工友远远抬了抬下巴算打招呼，然后弯腰去搬木箱。他手里攥着蓝皮册子的边角，册页被捏出一道折痕。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "politics",
+        "goals": [
+          "cause",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.25,
+        "risk": 0.4,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-activist.publish-leaflet",
+      "title": "油印机旁的夜班",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 59
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        },
+        {
+          "kind": "hasRole",
+          "role": "printer"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 59
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "union",
+          "kind": "organization",
+          "required": true,
+          "organizationKind": "union"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "publish-leaflet-distributed",
+          "weight": 1,
+          "text": "他和工友摇了一夜油印机，天蒙蒙亮时把传单塞进更衣柜缝隙和面包袋之间。午休铃一响，楼梯间已经有人小声念那行“十小时工作，十小时休息”。油墨蹭在他袖口上，洗了两遍也没掉。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "传单成功分发，工会内获得认可"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "与工友一起连夜油印并分发传单"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "操作油印机并掌握分发时机"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "publish-leaflet-distributed",
+              "text": "油印机的摇柄摸上去又冷又黏，他数着张数，工友在旁把印歪的挑出来。窗外马车铃响过第一遍时，他们刚好把最后一摞码齐。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "publish-leaflet-distributed",
+              "text": "更衣柜的铁门一开，传单就滑进去半截。他听见身后有人抽出一张，折起来塞进工装内袋，动作快得像在藏一块面包。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "publish-leaflet-confiscated",
+          "weight": 1,
+          "text": "警察在厂门口挨个搜包，油墨味还没散尽的传单被翻出来，直接扔进一只铁皮箱。他收到一张传唤单，纸上写着时间地点，边角被雨打湿。回车间时，工友们都低头干活，没人问他结果。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "传单被没收并收到警察传唤单"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在工友间被看作敢发传单的人"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "police_summons_leaflet",
+              "add": true,
+              "reason": "因分发传单被警察登记并传唤"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "publish-leaflet-confiscated",
+              "text": "铁皮箱合上时发出闷响，警察把传唤单递过来，指尖压着纸面。他看见自己那摞传单最上面一张印着歪斜的标题，边缘还蹭着油墨。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "publish-leaflet-confiscated",
+              "text": "雨不大，传唤单却很快软了。他把纸折好放进内袋，经过门房时，老门房别过脸去，假装在拨弄炉子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "publish-leaflet-handwritten",
+          "weight": 1,
+          "text": "排字工把手按在油印机上说这机器今天不能开，他也没再争。回家翻出半截铅笔和几张包面包的牛皮纸，手抄了三份传单，趁天没亮贴到市场附近的告示板上。字歪歪扭扭，但“缩短工时”几个字够大。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "排字工拒绝开机，只能手抄传单"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "手抄传单贴出，虽少但有人看见"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.03,
+              "reason": "排字工拒绝配合，双方有了隔阂"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "publish-leaflet-handwritten",
+              "text": "排字工的手一直没从机器上拿开，他只好把牛皮纸铺在厨房桌上。铅笔芯断了一次，他用牙咬出木头茬子，接着写。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "publish-leaflet-handwritten",
+              "text": "市场刚开市，卖菜妇把菜筐挪了挪，好让他够着告示板。浆糊冻得发硬，他呵了几口气才抹开。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "politics",
+        "goals": [
+          "cause",
+          "status"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.35,
+        "risk": 0.55,
+        "skills": [
+          "literacy",
+          "craft"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-activist.speak-meeting",
+      "title": "后屋的发言顺序",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 59
+        },
+        {
+          "kind": "hasRole",
+          "role": "union_member"
+        },
+        {
+          "kind": "developmentType",
+          "type": "social_change"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 59
+        },
+        {
+          "key": "chair",
+          "kind": "union_member",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "union",
+          "kind": "organization",
+          "required": true,
+          "organizationKind": "union"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "speak-meeting-motion-passed",
+          "weight": 1,
+          "text": "他站起来把工价和工时一笔一笔报清楚，说计件单价三个月里降了两成。后屋安静下来，只有那只钟在走。主持人敲了敲啤酒瓶，动议以二十三票对九票通过，有人当场把数字记在烟盒背面。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "在会议上清晰陈述工价问题并推动动议通过"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.05,
+              "reason": "面对四十多人发言并说服会议"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$chair",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.06,
+              "reason": "主持人认可他的发言效果"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "speak-meeting-motion-passed",
+              "text": "他手里捏着一张工价条，念到第三个数字时声音稳了下来。靠墙站着的人往前挪了半步，长凳吱呀响了一声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "speak-meeting-motion-passed",
+              "text": "烟盒背面写满了正字，主持人把半瓶啤酒推到桌角，好腾地方放名单。表决时手臂举得高低不齐，但数下来够了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "speak-meeting-shouted-down",
+          "weight": 1,
+          "text": "他刚说到罢工基金，靠门那排就有人喊“先顾眼前”。话头被截断两三次，后屋分成两片声音，主持人敲桌子也没压住。散会时一个老工人拍拍他肩膀说太急了，他出门才发现手心全是汗。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "发言被嘘声打断，会议出现分裂"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "部分会员认为他操之过急"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$chair",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "发言引发争执，主持人难以控制会场"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "speak-meeting-shouted-down",
+              "text": "“罢工基金”四个字刚出口，门边就有人把帽子往桌上一摔。他停了两秒想接话，另一个声音又从角落顶上来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "speak-meeting-shouted-down",
+              "text": "主持人把钟往桌中间推了推，可没人看时间。散会后长凳挪得横七竖八，半瓶啤酒还立在桌角没动。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "speak-meeting-yields-floor",
+          "weight": 1,
+          "text": "他站到桌边，看见旁边老工人的手一直举着，指节上全是裂口。他把发言让了出去，自己坐回长凳上听。老工人讲完，主持人问还有没有补充，他摇了摇头，把口袋里写好的提纲又折了一道。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "让出发言机会，略感失落但平静"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$chair",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "主动让出发言，主持人记下他的自制"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yielded_floor_at_meeting",
+              "add": true,
+              "reason": "在会议上把发言机会让给老工人"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "speak-meeting-yields-floor",
+              "text": "老工人站起来时膝盖响了一声，后屋自动静了。他把提纲塞回内袋，纸角戳着肋骨，不怎么舒服。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "speak-meeting-yields-floor",
+              "text": "主持人朝老工人点了点头，又看了他一眼。他摆摆手，把长凳往墙边挪了挪，给后来的人腾出站的地方。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "politics",
+        "goals": [
+          "cause",
+          "status"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.45,
+        "skills": [
+          "social",
+          "literacy"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-activist.negotiate-employer",
+      "title": "厂长办公室里的三个人",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 59
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        },
+        {
+          "kind": "hasRole",
+          "role": "union_member"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 59
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "negotiate-employer-partial",
+          "weight": 1,
+          "text": "厂长用指甲刮着怀表盖，听完被扣工资的数目，答应先补一半，下月再谈工时。门外的工人接过补发的几张克朗，数了两遍。厂长把常春藤上枯掉的叶子摘了一片，说到此为止，一刻钟刚好。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.5,
+              "reason": "争取到部分补发工资"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "在谈判中为工人争取到部分补偿"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "被扣工资的工人拿到部分补偿"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "negotiate-employer-partial",
+              "text": "怀表盖弹开又合上，厂长把那张写满数字的纸转了个方向。门外工人接过钱时，拇指在纸币边缘来回搓。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "negotiate-employer-partial",
+              "text": "窗台上的常春藤耷拉着，厂长摘掉一片枯叶才开口。他听完补一半的数，把纸折好，没再追问工时的条款。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "negotiate-employer-locked-out",
+          "weight": 1,
+          "text": "厂长没等他说完就叫来门房，说今天谈不出结果。第二天车间门口贴出停工通知，纸边用四颗图钉钉着，他去问门房，门房只指了指通知上的日期。两个被扣工资的工人站在旁边，谁也没说话。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "印刷工",
+              "wage": 0,
+              "workplaceId": "$workplace",
+              "reason": "被厂长叫门房请出后车间停工"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "谈判破裂导致停工通知"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.15,
+              "fear": 0.08,
+              "reason": "厂长拒绝谈判并采取停工手段"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "negotiate-employer-locked-out",
+              "text": "门房的手掌抵在他后背上，不算用力，但方向很明确。他回头看，厂长已经把怀表收进马甲口袋，常春藤在窗台上晃了晃。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "negotiate-employer-locked-out",
+              "text": "停工通知上的墨迹还新，他把四个图钉逐个按了按，确认钉牢了。两个工人站在他身后，其中一个把帽子摘下来攥在手里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "negotiate-employer-committee",
+          "weight": 1,
+          "text": "市政厅的官员把双方请到一间摆了绿色台灯的小办公室，谈了两个小时。厂长最后同意设一个委员会，但没有期限，也没有写进补偿数字。官员合上本子说这是良好开端，被扣工资的工人在走廊里把帽子转了又转。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "官员介入调停，双方建立联系"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "谈判只促成无期限委员会，实际收获有限"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "committee_without_deadline",
+              "add": true,
+              "reason": "参与设立没有期限的劳资委员会"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "negotiate-employer-committee",
+              "text": "绿色台灯把每个人的手照得发青，官员的钢笔在纸上戳出好几个点。厂长靠在椅背上，说委员会可以，但得按他的章程来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "negotiate-employer-committee",
+              "text": "走廊的瓷砖很凉，工人把帽子从左手转到右手。他听见办公室里椅子挪动的声音，知道谈完了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "politics",
+        "goals": [
+          "work",
+          "cause"
+        ],
+        "needs": [
+          "cash",
+          "safety"
+        ],
+        "baseUtility": 1.5,
+        "risk": 0.6,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-activist.contact-adler",
+      "title": "社会民主党总部的一封信",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 59
+        },
+        {
+          "kind": "hasRole",
+          "role": "union_member"
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "social_movement"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 59
+        },
+        {
+          "key": "adler",
+          "kind": "historical",
+          "required": true,
+          "minAge": 58,
+          "maxAge": 66,
+          "historicalId": "Q366845"
+        },
+        {
+          "key": "party",
+          "kind": "organization",
+          "required": false,
+          "organizationKind": "party"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "contact-adler-reply-yes",
+          "weight": 1,
+          "text": "Adler 的回信写在印有党徽的信笺上，字迹细而密，答应派一位演说者，还随信附来一叠小册子。他把信读了两遍，把演说日期抄在活动室的黑板上，粉笔灰沾了一手。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$adler",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "respect": 0.08,
+              "reason": "Adler 回信答应派演说者并附小册子"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "成功邀请到党领袖派员演讲"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "反复修改信件并阅读回信与小册子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "contact-adler-reply-yes",
+              "text": "信笺的边角印着小小的党徽，他摸了摸那层凸起的墨。小册子摞在桌上，最上面一本的封面有点卷。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "contact-adler-reply-yes",
+              "text": "他把日期抄上黑板时，老会员凑过来看了看，说这回得借几排长凳。粉笔在黑板上划出吱吱的响声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "contact-adler-reply-no",
+          "weight": 1,
+          "text": "回信很客气，说总部排不出人到郊区，建议先和本地支部联系。他把信纸翻过来看背面，空白的，没有附任何小册子。走出邮局时雨刚停，他踩着水洼往活动室走，把信折成四折塞进内袋。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "总部回信婉拒派人演讲"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$adler",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "收到客气但无实质帮助的回信"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.02,
+              "reason": "写信并阅读回信"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "contact-adler-reply-no",
+              "text": "邮局的玻璃窗上全是水汽，他把信凑近看了两遍。信封上的地址是印刷体，只有签名是手写的。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "contact-adler-reply-no",
+              "text": "活动室门边靠着上次集会用的木牌，他把信的内容跟老会员说了。老会员用指甲剔着桌缝，说本地支部也不是不能请。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "contact-adler-in-person",
+          "weight": 1,
+          "text": "信在编辑部压了两个星期没有回音，他索性搭电车进城，在党部门口等到散会。Adler 出来时夹着一摞文件，听完他结结巴巴的请求，只说了一句“把地址留给秘书”。回来的电车票花掉了他半天的工钱。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "往返市区的电车票钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$adler",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.04,
+              "reason": "当面见到 Adler 并留下地址"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "在党部门口等待并当面交涉"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "contact-adler-in-person",
+              "text": "党部的楼梯很窄，散会的人从他身边挤过去，有人夹着报纸，有人还在争论。他把写好的地址纸条攥出了汗。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "contact-adler-in-person",
+              "text": "Adler 的眼镜片反着走廊的光，说完话就低头去看文件了。他退到墙边，等秘书接过纸条，才转身下楼。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "politics",
+        "goals": [
+          "cause",
+          "status"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.4,
+        "risk": 0.4,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    }
+  ]
+}

@@ -16,7 +16,7 @@ import { VIENNA_HISTORY_SCENES } from '../packages/v4/content/vienna-history.js'
 import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../packages/v4/content/vienna-developments.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
-import { GENERATED_SCENES } from '../packages/v4/content/generated/index.js';
+import { GENERATED_SCENES, GENERATED_TASKS } from '../packages/v4/content/generated/index.js';
 import { defaultMacroState, syncMacroPressures } from '../packages/v4/macro.js';
 
 let world = applyViennaHistoricalWorld(structuredClone(VIENNA_1912_SEED));
@@ -56,6 +56,7 @@ for (let year = 0; year < 80; year += 1) {
     economy: { enabled: true },
     eventRuntime: true,
     agency: true,
+    tasks: GENERATED_TASKS,
     maxOrdinaryEventsPerPerson: 4,
   });
   world = result.world;

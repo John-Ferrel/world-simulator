@@ -41,6 +41,7 @@ import {
   type SceneOutcome,
   type SceneStage,
   type ScheduledEvent,
+  type TaskDefinition,
   type WorldDate,
   type WorldState,
 } from './domain.js';
@@ -56,7 +57,13 @@ import {
   type PendingMacroAction,
   type WorldDevelopment,
 } from './macro.js';
-import { agencyActorIds, planAgencyAction, planBottomUpProcess } from './agency.js';
+import {
+  agencyActorIds,
+  planAgencyAction,
+  planBottomUpProcess,
+  refreshAgencyGoal,
+} from './agency.js';
+import { taskUtility } from './tasks.js';
 import {
   advanceHistoricalProcesses,
   ensureHistoricalProcess,
@@ -121,6 +128,8 @@ export type V4AdvanceOptions = {
   agency?: boolean;
   /** Maximum ordinary adults sampled for initiative per year. Defaults to 48. */
   maxAgencyActorsPerYear?: number;
+  /** Content-authored active tasks, chosen by utility rather than event rate. */
+  tasks?: TaskDefinition[];
   /** Soft cap for ordinary statistical events per person-year. Fact events bypass. */
   maxOrdinaryEventsPerPerson?: number;
   /** Allow required missing roles to be taken from the background cohort. */
@@ -215,6 +224,8 @@ type EngineContext = {
   sceneHistory: Map<string, number>;
   definitions: SceneDefinition[];
   triggerIndex: Map<string, SceneDefinition[]>;
+  tasks: TaskDefinition[];
+  tasksByStage: Map<SceneStage, TaskDefinition[]>;
   materializedCount: number;
 };
 
@@ -395,6 +406,8 @@ export function advanceV4Year(
     sceneHistory: resolvedSceneHistory(draft),
     definitions: [],
     triggerIndex: new Map(),
+    tasks: [],
+    tasksByStage: new Map(),
     materializedCount: 0,
   };
 
@@ -402,6 +415,19 @@ export function advanceV4Year(
     (definition) => !(draft.macro && definition.tags?.includes('baseline_mortality')),
   );
   context.definitions = definitions;
+  const taskDefinitions = usableDefinitions(
+    (options.tasks ?? []) as unknown as SceneDefinition[],
+    diagnostics,
+  ).filter((definition): definition is TaskDefinition => {
+    const task = (definition as TaskDefinition).task;
+    return Boolean(task && typeof task.domain === 'string' && Array.isArray(task.goals));
+  });
+  context.tasks = taskDefinitions;
+  for (const task of taskDefinitions) {
+    const list = context.tasksByStage.get(task.stage) ?? [];
+    list.push(task);
+    context.tasksByStage.set(task.stage, list);
+  }
   for (const definition of definitions) {
     for (const tag of definition.triggerTags ?? []) {
       const list = context.triggerIndex.get(tag) ?? [];
@@ -549,6 +575,126 @@ export function advanceV4Year(
     events: context.newEvents,
     scenes: context.newScenes,
     diagnostics,
+  };
+}
+
+export type V4CandidatePoolAudit = {
+  personId: Id;
+  date: WorldDate;
+  stage: SceneStage;
+  goal?: string;
+  events: { id: string; title: string; familyId?: string }[];
+  tasks: { id: string; title: string; score: number; domain: string }[];
+  eventCount: number;
+  taskCount: number;
+};
+
+/**
+ * Read-only feasibility audit for content coverage and Phase 8 acceptance.
+ * It uses the same eligibility, casting and outcome filters as the engine, but
+ * never commits an event or mutates the world.
+ */
+export function auditCandidatePools(
+  world: WorldState,
+  personId: Id,
+  date: WorldDate,
+  scenes: SceneDefinition[],
+  tasks: TaskDefinition[] = [],
+): V4CandidatePoolAudit | undefined {
+  const person = world.persons[personId];
+  if (!person || person.died) return undefined;
+  const from = { ...date };
+  const diagnostics: V4AdvanceDiagnostics = {
+    from,
+    to: from,
+    personsConsidered: 0,
+    sceneInstancesCreated: 0,
+    scenesResolved: 0,
+    scenesBlocked: 0,
+    eventsCreated: 0,
+    deaths: [],
+    statistical: { deaths: 0, infections: 0, recoveries: 0, materialized: 0 },
+    materializations: [],
+    economy: {
+      months: 0,
+      wagesPaid: 0,
+      wagesUnpaid: 0,
+      revenue: 0,
+      transfers: 0,
+      rentPaid: 0,
+      obligationsPaid: 0,
+      foodSpent: 0,
+      foodConsumed: 0,
+      foodShortageMonths: 0,
+      overcrowdedMonths: 0,
+    },
+    warnings: [],
+  };
+  const definitions = usableDefinitions(scenes, diagnostics);
+  const context: EngineContext = {
+    world,
+    target: date,
+    options: normalizeOptions({
+      eventRuntime: true,
+      agency: true,
+      tasks,
+      materializePopulation: false,
+    }),
+    diagnostics,
+    newEvents: [],
+    newScenes: [],
+    nextSceneOrdinal: 0,
+    sceneHistory: resolvedSceneHistory(world),
+    definitions,
+    triggerIndex: new Map(),
+    tasks,
+    tasksByStage: new Map(),
+    materializedCount: 0,
+  };
+  for (const task of tasks) {
+    const list = context.tasksByStage.get(task.stage) ?? [];
+    list.push(task);
+    context.tasksByStage.set(task.stage, list);
+  }
+  const eventPool: V4CandidatePoolAudit['events'] = [];
+  for (const definition of definitions) {
+    if (!sceneEligible(context, definition, person, date)) continue;
+    const cast = castSceneRoles(context, definition, person, date);
+    if (cast.missing.length > 0) continue;
+    const selection = selectOutcome(context, definition, person, cast.roles, date);
+    if (!selection) continue;
+    eventPool.push({
+      id: definition.id,
+      title: definition.title,
+      familyId: definition.familyId,
+    });
+  }
+  const taskPool: V4CandidatePoolAudit['tasks'] = [];
+  for (const definition of context.tasksByStage.get(stageForAge(ageAt(person, date))) ?? []) {
+    if (!sceneEligible(context, definition, person, date)) continue;
+    const score = taskUtility(world, person, definition, date);
+    if (score <= 0.1) continue;
+    const cast = castSceneRoles(context, definition, person, date);
+    if (cast.missing.length > 0) continue;
+    const selection = selectOutcome(context, definition, person, cast.roles, date);
+    if (!selection) continue;
+    taskPool.push({
+      id: definition.id,
+      title: definition.title,
+      score: Number(score.toFixed(3)),
+      domain: definition.task.domain,
+    });
+  }
+  taskPool.sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
+  return {
+    personId,
+    date: { ...date },
+    stage: stageForAge(ageAt(person, date)),
+    goal: person.agency?.goal,
+    events: eventPool,
+    tasks: taskPool,
+    eventCount: eventPool.length,
+    taskCount: taskPool.length,
   };
 }
 
@@ -1070,12 +1216,16 @@ function personMatchesRole(
 ): boolean {
   if (person.died || !aliveAt(person, date)) return false;
   if (!ageFits(person, requirement, date)) return false;
-  if (
-    requirement.kind === 'historical' &&
-    requirement.historicalId !== undefined &&
-    person.historicalIdentity?.id !== requirement.historicalId
-  ) {
-    return false;
+  if (requirement.kind === 'historical') {
+    // A historical person cannot contact themselves through a task that names
+    // their own stable identity.
+    if (person.id === subject.id) return false;
+    if (
+      requirement.historicalId !== undefined &&
+      person.historicalIdentity?.id !== requirement.historicalId
+    ) {
+      return false;
+    }
   }
   const expectedSex =
     requirement.sex === 'opposite' ? (subject.sex === 'male' ? 'female' : 'male') : requirement.sex;
@@ -2933,17 +3083,87 @@ function runPendingMacroActions(context: EngineContext, date: WorldDate): void {
   state.pendingActions = actions.slice(-40);
 }
 
+type ContentTaskSelection = {
+  definition: TaskDefinition;
+  roles: Record<Id, Id>;
+  selection: OutcomeSelection;
+  score: number;
+};
+
+function chooseContentTask(
+  context: EngineContext,
+  person: Person,
+  date: WorldDate,
+  rng: () => number,
+): ContentTaskSelection | undefined {
+  const tasks = context.tasksByStage.get(stageForAge(ageAt(person, date))) ?? [];
+  if (tasks.length === 0) return undefined;
+  const ranked: { definition: TaskDefinition; weight: number; score: number }[] = [];
+  for (const definition of tasks) {
+    if (!sceneEligible(context, definition, person, date)) continue;
+    const score = taskUtility(context.world, person, definition, date);
+    if (score <= 0.1) continue;
+    ranked.push({ definition, weight: score, score });
+  }
+  if (ranked.length === 0) return undefined;
+  const picked = weightedPick(ranked, rng);
+  if (!picked) return undefined;
+  const cast = castSceneRoles(context, picked.definition, person, date);
+  if (cast.missing.length > 0) return undefined;
+  const selection = selectOutcome(context, picked.definition, person, cast.roles, date);
+  if (!selection) return undefined;
+  return {
+    definition: picked.definition,
+    roles: cast.roles,
+    selection,
+    score: picked.score,
+  };
+}
+
 function runAgencyYear(context: EngineContext, date: WorldDate, ordinaryLimit: number): void {
   const world = context.world;
   const actorIds = agencyActorIds(world, date, ordinaryLimit).slice(0, ordinaryLimit + 80);
   for (const personId of actorIds) {
     const person = world.persons[personId];
     if (!person || person.died) continue;
+    refreshAgencyGoal(world, person, date);
     const rng = seededRng(world.seed, 'agency', personId, date.year, date.month);
     const plan = planAgencyAction(world, personId, date, rng);
-    if (!plan) continue;
+    const content = chooseContentTask(
+      context,
+      world.persons[personId]!,
+      date,
+      seededRng(world.seed, 'task-choice', personId, date.year, date.month),
+    );
+    const chooseContent =
+      content !== undefined &&
+      (plan === undefined || content.score > plan.score * (0.82 + rng() * 0.36));
     const subject = world.persons[personId];
     if (!subject || subject.died) continue;
+    if (chooseContent && content) {
+      const event = resolveScene(
+        context,
+        content.definition,
+        subject,
+        content.roles,
+        content.selection,
+        date,
+        0,
+      );
+      if (!event) continue;
+      subject.agency = {
+        ...(subject.agency ?? {
+          goal: content.definition.task.goals[0] ?? 'work',
+          summary: content.definition.title,
+          since: { ...date },
+        }),
+        lastAction: { ...date },
+        lastActionKind: `task:${content.definition.task.domain}`,
+        attempts: (subject.agency?.attempts ?? 0) + 1,
+      };
+      continue;
+    }
+    if (!plan) continue;
     const participants = [
       { personId, role: 'subject' },
       ...plan.participants.filter((entry) => entry.personId !== personId),
@@ -3374,7 +3594,7 @@ function resolveScene(
   date: WorldDate,
   depth = 0,
   causeEventId?: Id,
-): void {
+): EventFact | undefined {
   const instanceId = nextSceneId(context);
   const outcome = selection.outcome;
   const choiceActorId =
@@ -3419,7 +3639,7 @@ function resolveScene(
     },
     true,
   );
-  if (!event) return;
+  if (!event) return undefined;
 
   // A birth effect creates the child inside the scene commit. Record the
   // child's own birth fact after the parent event exists, so its cause chain
@@ -3485,6 +3705,7 @@ function resolveScene(
   };
   appendScene(context, instance);
   context.sceneHistory.set(sceneKey(definition.id, subject.id), monthIndex(date));
+  return event;
 }
 
 // ---------------------------------------------------------------------------

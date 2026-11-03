@@ -12,7 +12,11 @@ import { VIENNA_HISTORY_SCENES } from '../packages/v4/content/vienna-history.js'
 import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
 import { VIENNA_DEVELOPMENT_SCENES } from '../packages/v4/content/vienna-developments.js';
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
-import { GENERATED_PACKS, GENERATED_SCENES } from '../packages/v4/content/generated/index.js';
+import {
+  GENERATED_PACKS,
+  GENERATED_SCENES,
+  GENERATED_TASKS,
+} from '../packages/v4/content/generated/index.js';
 import { validateGeneratedPack } from '../packages/v4/generated.js';
 
 const years = Number(process.argv[2] ?? 80);
@@ -65,6 +69,7 @@ for (let i = 0; i < years; i += 1) {
     economy: { enabled: true },
     eventRuntime: true,
     agency: true,
+    tasks: process.env.V4_AUDIT_TASKS === '0' ? [] : GENERATED_TASKS,
     maxOrdinaryEventsPerPerson: 4,
   });
   world = result.world;
@@ -290,6 +295,12 @@ const report = {
   },
   generated: {
     packs: GENERATED_PACKS.length,
+    taskEvents: events.filter((event) => event.action.startsWith('task-')).length,
+    tasks: GENERATED_TASKS.length,
+    taskDomains: GENERATED_TASKS.reduce<Record<string, number>>((counts, task) => {
+      counts[task.task.domain] = (counts[task.task.domain] ?? 0) + 1;
+      return counts;
+    }, {}),
     scenes: GENERATED_SCENES.length,
     outcomes: generatedOutcomes.length,
     narrations: generatedNarrations,

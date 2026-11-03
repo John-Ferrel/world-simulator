@@ -4,6 +4,8 @@
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
 
+> 2026-11-03 Phase 8 更新：内容驱动 Task Pool (`TaskDefinition`/`taskUtility`/`auditCandidatePools`) 已接入；真实模型发布 48 个 task（另 2 个 authored 补充），144 outcomes/288 narrations，148,566 tokens（含重试）；同一世界五种人生产生 690 task events、36/50 unique tasks；88 年 treatment 24,991 events / 159 repeat offenders vs control 21,021 / 325。证据见 [phase-8-report.md](phase-8-report.md)、[phase-8-content-batch.json](phase-8-content-batch.json)、[phase-8-candidates.json](phase-8-candidates.json)、[phase-8-lives.json](phase-8-lives.json)。
+
 > 2026-11-03 Phase 7 更新：确定性自主行动 (`agency.ts`)、组织主动行为、底部历史进程、进程 `suspended`/分裂、持久 `MacroState.legacy`、Director 可执行 `actions`、legacy 生活内容、canonical 死亡时序已接入。自由演化 A–F 证据见 [phase-7-experiments.json](phase-7-experiments.json)；真实 Director 6,143 + 10,263 tokens，提出 6 条行动、5 条执行、1 条无进程 reform 跳过，见 [phase-7-director-demo.json](phase-7-director-demo.json)；Content Author 9,674 + 9,125 tokens，见 [phase-7-content-author.json](phase-7-content-author.json)。完整验收见 [phase-7-report.md](phase-7-report.md)。
 
 > 2026-11-02 Phase 6 更新：可参与历史进程 (`WorldDevelopment.historical`)、4 位维也纳真实人物、13 个历史场景、Director historicalMoves、真实 Content Author 历史内容、战争/疫情/反事实测试已接入。88 年审计 381 人/217 在世/87.99 事件每年，历史事件 48 条；真实 Director 4,506 + 8,158 tokens，Content Author 8,744 tokens。验收见 [phase-6-report.md](phase-6-report.md)；这仍不是全球历史/20k 生产验收。
@@ -43,6 +45,11 @@
 | 真实历史人物         | 完成（4 人）       | Freud/Adler/Kraus/Schnitzler；稳定 Person/QID/来源/活动窗口；真实死亡只作参考                                                                                                |
 | 历史参与与因果       | 完成（垂直）       | 地点/组织/费用/关系渠道；participation/influence/knowledge effects；反事实 mobilizing→institutionalizing                                                                     |
 | 历史 Director/内容   | 完成（真实调用）   | 4,506 + 8,158 tokens、historicalMoves；Content Author 8,744 tokens、4/12/24、实际触发 2 条生成历史事件                                                                       |
+| Task Pool            | 完成（内容驱动）   | `TaskDefinition` + `taskUtility` + `auditCandidatePools`；50 个 Task；无需为新行为改 Engine switch                                                                           |
+| 真实 Task 内容       | 完成               | 8 族/48 个模型生成 Task + 2 authored；144 outcomes/288 narrations；148,566 tokens；0 语义重复                                                                                |
+| 五种差异人生         | 完成               | 同一世界 45 年；贫穷学徒/富裕青年/医生/活动者/特殊能力；690 task events、36/50 unique tasks；历史人物接触与 legacy 并存                                                      |
+| 候选审计             | 完成               | 按人物年龄/职业/教育/关系/能力统计；50 个定义对具体人物仅 2–7 个有效候选；事件候选 3–34                                                                                      |
+| 重复与叙事           | 部分完成           | treatment 159 vs control 325 prefix offenders；LifePassage 从已提交事实组织；仍有长期邻里/医疗重复，不能禁止真实持续照护                                                     |
 | 自主行动循环         | 完成（确定性）     | `agency.ts`；人物/组织每年最多一次；历史人物、组织领袖、普通成年人均可行动；儿童不执行成人组织行动                                                                           |
 | 组织主动行为         | 完成               | 招募/会议/会费/出版/互助/成立运动；真实 membership/treasury/project/relation/event；正式或非正式领袖                                                                         |
 | 自下而上历史         | 完成（自由演化）   | 1912–1950 自由运行；印刷工会 1915 由持续行动生成 `development:initiative-org-printers-union-1915`，Director 未预先批准                                                       |
@@ -66,22 +73,22 @@ pnpm typecheck
 
 ### v4 测试
 
-Phase 7 最终 v4 专项：
+Phase 8 最终 v4 专项：
 
 ```text
 pnpm exec vitest run tests/v4-*.test.ts
-→ Test Files 23 passed | 2 skipped (25)
-→ Tests 152 passed | 8 skipped (160)
-→ 14.86s
+→ Test Files 25 passed | 2 skipped (27)
+→ Tests 163 passed | 8 skipped (171)
+→ 15.68s
 ```
 
-Phase 7 最终全量仓库测试（包含冻结的 v1–v3 测试与 v4）：
+Phase 8 最终全量仓库测试（包含冻结的 v1–v3 测试与 v4）：
 
 ```text
 pnpm test
-→ Test Files 72 passed | 7 skipped (79)
-→ Tests 432 passed | 36 skipped (468)
-→ 157.28s
+→ Test Files 74 passed | 7 skipped (81)
+→ Tests 443 passed | 36 skipped (479)
+→ 157.50s
 ```
 
 旧测试通过不等于 v4 完成；v4 的独立证据是专项、长期试玩、浏览器与真实模型调用。
@@ -91,11 +98,11 @@ pnpm test
 ```text
 pnpm test:e2e --config playwright.v4.config.ts
 → Running 1 test using 1 worker
-→ ✓ register, give birth, read a concrete log and inspect the map (3.4s)
-→ 1 passed (7.0s total)
+→ ✓ register, give birth, read a concrete log and inspect the map (9.3s)
+→ 1 passed (13.3s total)
 ```
 
-`pnpm build` 同时通过（Vite production bundle，2.93s）。
+`pnpm build` 同时通过（Vite production bundle，2.89s）。
 
 该流程使用独立 `living_world_e2e` 数据库，实际：
 

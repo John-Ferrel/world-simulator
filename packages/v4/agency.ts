@@ -52,6 +52,8 @@ export type AgencyPlan = {
   organizationId?: Id;
   processId?: Id;
   projectId?: Id;
+  /** Utility score of the selected hardcoded action. */
+  score: number;
 };
 
 type Candidate = {
@@ -196,12 +198,27 @@ function goalFor(world: WorldState, person: Person, date: WorldDate): PersonAgen
   );
   let goal: PersonAgencyGoal = 'work';
   let summary = '维持工作与家庭生活，寻找更稳定的收入。';
-  if (person.historicalIdentity) {
-    goal = 'cause';
-    summary = `继续以${person.historicalIdentity.occupation}的身份活动，扩大公开影响并维持组织关系。`;
-  } else if (person.health.vitality < 0.38) {
+  if (person.health.vitality < 0.38) {
     goal = 'rest';
     summary = '身体已经吃不消，先减少外出和重活。';
+  } else if (person.historicalIdentity) {
+    const identity =
+      `${person.historicalIdentity.occupation} ${person.historicalIdentity.publicRole}`.toLowerCase();
+    if (/politik|party|sozialdemokrat|staatsmann|abgeordnet/.test(identity)) {
+      goal = 'cause';
+      summary = `继续以${person.historicalIdentity.occupation}的身份活动，争取组织与政策上的实际结果。`;
+    } else if (/arzt|psychoanal|psycholog|forscher|wissenschaft|professor/.test(identity)) {
+      goal = 'knowledge';
+      summary = `继续以${person.historicalIdentity.occupation}的身份工作，推进病例、写作、研究或教学。`;
+    } else if (
+      /schriftsteller|dichter|publizist|journalist|kritiker|schauspieler|editor/.test(identity)
+    ) {
+      goal = 'knowledge';
+      summary = `继续以${person.historicalIdentity.occupation}的身份写作、出版和公开表达。`;
+    } else {
+      goal = 'status';
+      summary = `维持${person.historicalIdentity.publicRole}的公开位置，并处理随之而来的关系与责任。`;
+    }
   } else if (sickKin) {
     goal = 'care';
     summary = `照顾家里的${sickKin.name}，同时想办法补上收入和食物。`;
@@ -214,6 +231,14 @@ function goalFor(world: WorldState, person: Person, date: WorldDate): PersonAgen
   } else if (process) {
     goal = 'cause';
     summary = '继续参与自己已经卷入的历史进程，争取它不要半途消失。';
+  } else if (
+    person.employment &&
+    /arzt|lehrer|schriftsteller|journalist|forscher|professor|schauspieler|publizist/i.test(
+      person.employment.occupation,
+    )
+  ) {
+    goal = 'knowledge';
+    summary = `继续以${person.employment.occupation}的身份积累专业能力，处理病人、学生、读者或研究问题。`;
   } else if (heldOrganizations(world, person.id).length > 0) {
     goal = 'belonging';
     summary = '维持组织里的位置，让同伴和会费继续撑下去。';
@@ -1131,6 +1156,7 @@ export function planAgencyAction(
     placeId: selected.placeId,
     significance,
     success,
+    score: selected.score,
     organizationId: selected.organizationId,
     processId: selected.processId,
     projectId:

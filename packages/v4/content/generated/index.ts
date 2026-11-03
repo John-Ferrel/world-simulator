@@ -70,3 +70,5 @@ export function generatedPackErrors(): string[] {
     validateGeneratedPack(pack).errors.map((error) => `${pack.id}: ${error}`),
   );
 }
+
+export { GENERATED_TASKS } from './tasks.js';

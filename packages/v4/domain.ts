@@ -96,7 +96,7 @@ export type HistoricalProcess = {
 };
 
 export type PersonAgencyGoal =
-  'survival' | 'work' | 'family' | 'belonging' | 'status' | 'cause' | 'care' | 'rest';
+  'survival' | 'work' | 'family' | 'belonging' | 'status' | 'cause' | 'care' | 'rest' | 'knowledge';
 
 export type PersonAgency = {
   goal: PersonAgencyGoal;
@@ -715,6 +715,52 @@ export type SceneDefinition = {
   /** If true, only one focal scene per person per age window. */
   oncePerPerson?: boolean;
   cooldownYears?: number;
+};
+
+export type TaskDomain =
+  | 'education'
+  | 'work'
+  | 'family'
+  | 'social'
+  | 'daily'
+  | 'culture'
+  | 'health'
+  | 'politics'
+  | 'history'
+  | 'knowledge'
+  | 'migration'
+  | 'special';
+
+export type TaskNeed =
+  | 'cash'
+  | 'food'
+  | 'health'
+  | 'belonging'
+  | 'status'
+  | 'care'
+  | 'knowledge'
+  | 'safety'
+  | 'autonomy';
+
+/**
+ * A content-authored active task. It reuses the scene casting/condition/effect
+ * grammar but is entered from Agency rather than the random event schedule.
+ * `baseUtility` and the tags are preferences, not success guarantees.
+ */
+export type TaskMeta = {
+  domain: TaskDomain;
+  goals: PersonAgencyGoal[];
+  needs: TaskNeed[];
+  baseUtility: number;
+  /** 0..1; cautious or exhausted people discount risky tasks. */
+  risk?: number;
+  skills?: (keyof PersonLife['skills'])[];
+  /** Optional birth-contract capability that makes this task more attractive. */
+  capability?: string;
+};
+
+export type TaskDefinition = SceneDefinition & {
+  task: TaskMeta;
 };
 
 export type ScheduledEvent = {

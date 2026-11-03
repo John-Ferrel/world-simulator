@@ -7,6 +7,7 @@ import { VIENNA_HISTORY_SCENES } from '../packages/v4/content/vienna-history.js'
 import { VIENNA_FAMILY_RUNTIME_SCENES } from '../packages/v4/content/vienna-family.js';
 import { GENERATED_SCENES } from '../packages/v4/content/generated/index.js';
 import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
+import { refreshAgencyGoal } from '../packages/v4/agency.js';
 
 const scenes = [
   ...VIENNA_1912_SCENES,
@@ -138,5 +139,20 @@ describe('autonomous living world', () => {
     expect(process.metrics.support).toBeGreaterThan(0.3);
     expect(result.world.macro!.pendingActions?.[0]?.status).toBe('applied');
     expect(result.world.macro!.pendingActions?.[0]?.eventId).toBe(event!.id);
+  });
+
+  it('gives historical people different goals from occupation and public role', () => {
+    const current = world();
+    const goals = new Map(
+      [
+        'person-sigmund-freud',
+        'person-victor-adler',
+        'person-karl-kraus',
+        'person-arthur-schnitzler',
+      ].map((id) => [id, refreshAgencyGoal(current, current.persons[id]!, current.date).goal]),
+    );
+    expect(goals.get('person-victor-adler')).toBe('cause');
+    expect(goals.get('person-sigmund-freud')).toBe('knowledge');
+    expect(new Set(goals.values()).size).toBeGreaterThan(1);
   });
 });

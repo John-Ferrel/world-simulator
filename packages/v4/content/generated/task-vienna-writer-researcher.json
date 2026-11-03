@@ -1,0 +1,1295 @@
+{
+  "id": "task-vienna-writer-researcher",
+  "title": "稿子、图书馆与朗读夜",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 16,
+    "max": 75
+  },
+  "tags": [
+    "knowledge",
+    "culture",
+    "writing",
+    "editor",
+    "library",
+    "publication"
+  ],
+  "baseRate": 0.1,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 59
+    },
+    {
+      "kind": "education",
+      "in": [
+        "secondary",
+        "higher"
+      ]
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "knowledge",
+    "goals": [
+      "knowledge",
+      "status"
+    ],
+    "needs": [
+      "knowledge",
+      "status"
+    ],
+    "baseUtility": 1.2,
+    "risk": 0.2,
+    "skills": [
+      "literacy"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "task-vienna-writer-researcher.submit-piece",
+      "title": "编辑部窗下的稿子",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 59
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "higher"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "editor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65,
+          "occupation": "Redakteur"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "submit-accepted",
+          "weight": 2,
+          "text": "{subject}把信封投进铜口时手指被金属毛边划了一下。九天后回信到了：{editor}附了一张稿费单，十二克朗，删改处用蓝铅笔标出，两段被划掉，页边写着“短些，再短些”。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 12,
+              "reason": "副刊刊用短文所得稿费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "名字第一次印在《新自由报》副刊上"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "被采用的稿子带来短暂振奋"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "按编辑删改意见重读自己的文字"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "submit-accepted",
+              "text": "门房递来一个薄信封，里面是三张十克朗的票子和一张短信。{subject}在环城大道的人行道上站了很久，把稿费单折成小方块塞进内袋，指头上那道划痕还渗着血珠。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "submit-accepted",
+              "text": "刊出的那天他买了同一份报纸，在咖啡馆靠窗的位子上找到自己的名字，排在讣告和铁路时刻表之间。{editor}的蓝铅笔字迹留在退回来的校样上，像一道淡淡的伤口。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "submit-rejected",
+          "weight": 2,
+          "text": "稿子退回时信封已经磨毛。{editor}没有署名，只在页边留了一行字：题目太大，细节太少，请从一间屋子写起。{subject}数了数退稿的页数，缺了一页，大概落在编辑部堆咖啡杯的窗台上。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "退稿和潦草的批语带来的沮丧"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.02,
+              "reason": "反复揣摩编辑那句批评"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "重新誊抄时买的三张信纸和一支新铅笔"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "submit-rejected",
+              "text": "他在煤气灯下把退稿翻过来，背面还能看见编辑部别一张台面的墨迹。那行“从一间屋子写起”被人用指甲划过，纸面起了毛，{subject}用拇指抹了几次也抹不平。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "submit-rejected",
+              "text": "同一批回信里还有一封给{worker}的，说投稿太多、篇幅有限。{subject}把自己那封折进书里，没再拆开第二遍，只记得信封右下角沾着咖啡渍，颜色像旧木头。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "submit-held",
+          "weight": 1,
+          "text": "{editor}在门口拦住他，说稿子“先留着，等下一期有篇幅再谈”，又回头嘱咐{worker}把楼上那篇加急的校样送印刷所。{subject}递出去的信封至今没拆，压在编辑部一堆配稿底下，没有人说退，也没有人说用。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "悬而不决的等待"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$editor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "编辑记住了他的名字和面孔"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.2,
+              "reason": "为再去编辑部问消息而多买的车票"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "submit-held",
+              "text": "编辑部里打字机声和烟味混在一起，{worker}抱着一摞校样侧身让路。{editor}说“留着”的时候眼睛已经看着下一封电报，{subject}只好点头，把想问的话咽回去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "submit-held",
+              "text": "他走出环城大道时天开始落细雨，铜口旁积了一小滩水。稿子安静地躺在二楼某张桌上，像一件寄存却没给号牌的行李，他开始每天绕路多走十分钟经过那扇窗。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "knowledge",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "status",
+          "knowledge"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.35,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-writer-researcher.editor-feedback",
+      "title": "红铅笔划过的校样",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 59
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "higher"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 59
+        },
+        {
+          "key": "editor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65,
+          "occupation": "Redakteur"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "feedback-explained",
+          "weight": 2,
+          "text": "{editor}在楼梯口停下来，抽走校样逐段说：这句是社论腔，那段该让邻居自己开口。{subject}记满一张纸，红铅笔的快划声一直跟到二楼。编辑说完夹起帽子走了，留下半截铅笔和一句“明天上午拿来”。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.05,
+              "reason": "逐段听取删改理由"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$editor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "编辑肯花十分钟细谈"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "终于知道哪些句子该留"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "feedback-explained",
+              "text": "楼梯转角的窗户开着，外面有人在卸煤。{editor}用红铅笔敲着某一段说，“这里你替人物哭了，读者就不用哭了。”{subject}低头写笔记，铅笔尖短得几乎捏不住。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "feedback-explained",
+              "text": "他把记满的纸对折两次塞进外套，走下楼梯时还在默念“删掉解释性的第一段”。门口卖烤栗子的小贩正在收摊，空气里一股焦糖味，和他纸上那些红道子一起留在记忆里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "feedback-brushoff",
+          "weight": 2,
+          "text": "{editor}只说“你自己再看一遍”，把校样从腋下抽出来塞回{subject}手里，帽檐一低便进了会议室。红铅笔印子从标题一直延到末页，有几处划得纸都破了，{subject}站在走廊里听到门锁咔哒一声，才发现自己没问上任何一句话。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被简慢打发的失落"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.02,
+              "reason": "独自辨认红笔批注的用意"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$editor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "编辑的态度显得不耐烦"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "feedback-brushoff",
+              "text": "走廊里只剩他和一排湿伞。{subject}把校样对着窗光看，发现最要命的一段整段被方框圈起，一个字没改。他数着红笔划痕走下四层楼，耳边是印刷机从深处传来的闷响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "feedback-brushoff",
+              "text": "他在街角把校样摊在报摊的台子上借光，看清页边其实没有字——编辑连批语都懒得写。报摊老板催着关灯，{subject}买了一份不打算读的晚报，只为能多站一会儿。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "feedback-repurpose",
+          "weight": 1,
+          "text": "{editor}翻了两页便放下红铅笔，说这种写法更像社论，不像小说，建议换题目：与其写“维也纳的夜”，不如写“一个守夜人的夜”。{subject}把校样折起来，走出门时满脑子是守夜人的形象，自己的稿子倒像别人的东西。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "repurposed_draft",
+              "add": true,
+              "reason": "决定把手头稿子改写成更小的题材"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "领会题目大小与叙事视角的关系"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "新方向带来一点兴奋"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "feedback-repurpose",
+              "text": "编辑部楼下的钟指着五点半。{subject}在台阶上站住，反复念叨“一个守夜人的夜”，觉得这题目比原来那个小得多，也真实得多。口袋里那张校样硌着裤子，他摸到的时候愣了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "feedback-repurpose",
+              "text": "回家路上他绕进一条没有电灯的窄巷，数着哪几扇窗还亮着。守夜人的灯笼在街口一晃，他忽然明白编辑说的“像社论”是什么意思，脚步慢下来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "knowledge",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.15,
+        "risk": 0.15,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-writer-researcher.library-research",
+      "title": "闭馆前的最后一张桌子",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 59
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "higher"
+          ]
+        },
+        {
+          "kind": "cash",
+          "min": 5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "librarian",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "library-found",
+          "weight": 2,
+          "text": "{librarian}手里晃着最后一串钥匙往门口走，{subject}在第一千零几页上找到那条引文，页码、年份、出版地全都对得上。管理员看了一眼长桌上的三本书，破例把没编目的那一册借给他，收了两赫勒押金。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.04,
+              "reason": "核对引文出处"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.02,
+              "reason": "向管理员缴纳的借书押金"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "赶在闭馆前找到关键引文"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$librarian",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "获准借出未编目的册子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "library-found",
+              "text": "阅览室的高窗已经暗下去，管理员在另一头碰撞椅腿。{subject}把卡片一张张叠好，手指停在那行小字上，听见自己的呼吸在空桌子之间回响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "library-found",
+              "text": "两赫勒从内袋滚到{subject}掌心，铜的凉意。他把那册书夹在腋下，和{librarian}一起走下台阶，管理员在锁门前看了眼他的借书条，什么也没多问。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "library-closed",
+          "weight": 2,
+          "text": "档案室比阅览室更早关门。{subject}刚写明要调阅的登记号，管钥匙的人已经挂上了铁钩。他只能凭记忆把脚注补个大概，用半截铅笔在信封背面写下“待核”两个字，走出图书馆时天已全黑。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.2,
+              "reason": "次日再跑一趟所需的电车票"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "资料不齐的忐忑"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.02,
+              "reason": "练习凭记忆整理材料"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "library-closed",
+              "text": "{subject}站在贴满告示的柜台前，那串登记号还在舌尖上打转。走廊尽头管理员推着一车旧报纸经过，车轮吱吱响，像在提醒他所有窗口都关了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "library-closed",
+              "text": "他把三本互相矛盾的书按开本码齐，一本本推回还书车。铅笔只剩短短一截，写下的半个脚注笔画发虚，他合上笔记本，决定明早赶头班车再来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "library-neighbor",
+          "weight": 1,
+          "text": "邻桌的{neighbor}探过身，指出{subject}翻的那一卷里有印刷错漏，还把自己抄的笔记推过来，约他第二天下午在咖啡馆核对。两人当场交换了各自查到的出处，纸页上一来一往全是不同的铅笔颜色。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "colleague",
+              "trust": 0.08,
+              "respect": 0.05,
+              "reason": "交换笔记与史料出处"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "学会辨别版本错漏"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "遇到愿意认真讨论的同伴"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "约定咖啡馆续谈时预计的花销"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "library-neighbor",
+              "text": "{neighbor}的笔记本封皮磨得发亮，里面夹着剪报和一张电车月票。他把两条页码指给{subject}看，又用指甲在错字上点了点，声音压得很低，因为{librarian}已经在收桌。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "library-neighbor",
+              "text": "两人收好东西一起下楼，{neighbor}说自己在写一篇关于郊区工人伙食的札记。{subject}把咖啡馆的名字重复了一遍，怕记错，在门厅的灯下又在笔记本封底写了一遍。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "knowledge",
+        "goals": [
+          "knowledge"
+        ],
+        "needs": [
+          "knowledge",
+          "autonomy"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.1,
+        "skills": [
+          "literacy",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-writer-researcher.public-reading",
+      "title": "咖啡馆后厅的朗读夜",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 59
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "higher"
+          ]
+        },
+        {
+          "kind": "hasRole",
+          "role": "writer"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 59
+        },
+        {
+          "key": "schnitzler",
+          "kind": "historical",
+          "required": false,
+          "minAge": 48,
+          "maxAge": 56,
+          "historicalId": "Q44331"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "reading-full",
+          "weight": 2,
+          "text": "后厅二十把椅子坐了十三把，{neighbor}在前排占了个位子，进门费收了近两克朗。读完有人问起小说里那个厨娘为什么不肯解释，{subject}答得满头汗，门口的小桌上 nonetheless 卖掉四本手印小册子。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.8,
+              "reason": "朗读夜门票与小册子收入"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "在小型听众中获得关注"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "朗读后有人提问"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "当众面对听众的追问"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "reading-full",
+              "text": "煤气灯把后厅照得发黄，桌面上有水渍和烟灰。{subject}读到一半听见有人在笑厨娘的台词，抬眼看见{neighbor}也在笑，便把下面一段念得快了些。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "reading-full",
+              "text": "散场时杯盘在托盘上叮当作响，{subject}在门口收那四本小册子的零钱，一枚克朗落进围裙口袋，身上那股紧张才慢慢退下去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "reading-small",
+          "weight": 2,
+          "text": "只来了七个人，其中一位始终没脱大衣。{subject}读到第三页有点慌，却听见那位听众在结尾提出一个尖锐的问题：厨娘为什么从不自己开口。后厅里静了几秒，{neighbor}替他把话筒往桌中间挪了挪。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "少数听众中的认真讨论"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "应对听众的尖锐问题"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "小场合里的意外收获"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.9,
+              "reason": "七张门票的收入"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "reading-small",
+              "text": "后厅空位很多，{neighbor}和另一个人坐在中间。那位没脱大衣的听众等所有人走后才起身，问问题的声音不高，却让{subject}发现自己从没想过厨娘为何沉默。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "reading-small",
+              "text": "散场时咖啡馆老板来收椅子，问下次还办不办。{subject}把七张票根在桌上摆开，票面印着小小的店名，边角已经卷了，像被人捏了一晚上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "reading-cancelled",
+          "weight": 1,
+          "text": "下午报上那篇尖刻的剧评果然带走了不少人，开场前退票四张。{subject}在门口站到七点一刻，干脆取消朗读，回家把稿子重新誊了一遍，第二天用挂号寄给{neighbor}推荐的那位编辑，邮资花了十四赫勒。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "开场前退票带来的挫败"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.85,
+              "reason": "退还部分门票钱与挂号邮资"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mailed_piece",
+              "add": true,
+              "reason": "把稿子挂号寄给编辑"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.04,
+              "reason": "接受推荐并告知结果"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "reading-cancelled",
+              "text": "{subject}把椅子一张张推回墙边，咖啡馆老板没说什么，只把送来的两杯水端回去。玻璃门外电车叮当响过，他忽然觉得取消比硬着头皮读更体面。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "reading-cancelled",
+              "text": "退票的人里有一个还问下次日期。{subject}含糊应了一声，出门时在邮局关门前赶到，把信封按到柜台上，十四赫勒硬币排成一列。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "culture",
+        "goals": [
+          "status",
+          "knowledge"
+        ],
+        "needs": [
+          "status",
+          "belonging"
+        ],
+        "baseUtility": 1.15,
+        "risk": 0.3,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-writer-researcher.correspond-kraus",
+      "title": "给《火炬》编辑的一封信",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 59
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "higher"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 59
+        },
+        {
+          "key": "kraus",
+          "kind": "historical",
+          "required": true,
+          "minAge": 36,
+          "maxAge": 44,
+          "historicalId": "Q44328"
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "kraus-reply",
+          "weight": 2,
+          "text": "{kraus}回了一张措辞尖刻的明信片，潦草地说他把批评收下了，“只是收下的方式很难看”。下期《火炬》里果然有一处引用，{subject}在咖啡馆把它读了三遍，邻桌的人抬头看他。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "被《火炬》引用短文"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kraus",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "respect": 0.06,
+              "reason": "批评被部分接受"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "被引用的快意"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "kraus-reply",
+              "text": "明信片上的字细得像针，墨水是深蓝的。{subject}把卡片夹进书里，又在咖啡馆的烟味中翻开新一期《火炬》，找到那句引用时杯子都忘了端。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "kraus-reply",
+              "text": "{worker}从洛林街回来，说编辑台的灯亮到很晚。两天后明信片到了，邮戳清晰。{subject}注意到卡片背面还粘着一小片剪报，正是那处被引用的句子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "kraus-silent",
+          "weight": 2,
+          "text": "信寄出后一个月没有回音，原稿被退回来，页边多了几处红笔批注，字迹和{kraus}在《火炬》上的口气一样冷。{subject}数了数那几处，有的只更正一个标点，却在最后一个逗号旁写了“此处不实”。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "长时间无回音后的退稿"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.04,
+              "reason": "从批注中体会句法与事实的分寸"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.24,
+              "reason": "挂号信和退稿的邮资"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "kraus-silent",
+              "text": "退稿是上午到的，邮差把它和一份账单一起塞进门缝。{subject}在楼梯口拆开，红笔的墨迹浓淡不一，显然批注分了几次才写完。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "kraus-silent",
+              "text": "他把那几页摊在窗台上逐条比对，发现“此处不实”指的是自己随手举的一个例子。楼下孩子放学跑过，他听见笑声，却继续盯着那行红字。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "kraus-invite",
+          "weight": 1,
+          "text": "{kraus}没有回信，却托{worker}带话，请{subject}去参加下一场朗读会，还特意说“带上那封六页的信”。{subject}当晚把信抄了一份，发现句子太长，剪掉两段后只剩四页半，心里的那点争胜之意消了大半。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kraus",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.04,
+              "reason": "被邀请参加朗读会"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.02,
+              "reason": "重读时自觉删繁就简"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "收到邀请的意外之喜"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "kraus-invite",
+              "text": "{worker}在街角把话带到，说完自己先笑了。{subject}回家点灯重抄那封信，剪掉两段时剪刀在纸上停顿了一下，掉下来的碎纸落进煤油灯罩里。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "kraus-invite",
+              "text": "朗读会的地址写在一张便条上，字迹潦草。{subject}把便条压在玻璃镇纸下，翻出那封六页的信默读，读到第三页时忽然觉得语气太冲，自己先摇了摇头。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "knowledge",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.25,
+        "risk": 0.25,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-writer-researcher.abandon-project",
+      "title": "写到一半的手稿",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 59
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "higher"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "editor",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "project-reworked",
+          "weight": 2,
+          "text": "{subject}把第三十七页从本子上撕下来，碎纸丢进废纸篓，从第一人称重新起笔。三个月里他改成一部五十页的短稿，用挂号寄给{editor}，信封和稿纸花掉一点二克朗，母亲的药费是向{neighbor}借了五克朗才垫上的。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.06,
+              "reason": "改换人称重写全书"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.06,
+              "obligation": 0.05,
+              "reason": "为药费借款"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "挂号寄稿的纸张与邮资"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "重写后感到稿子更紧凑"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "project-reworked",
+              "text": "撕纸的声音很轻，{subject}却听了两遍。新起的第一句只有十几个字，他写在本子边角上，又划掉两个形容词，才誊到首页。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "project-reworked",
+              "text": "三个月后他把五十页稿纸码齐，边缘用锥子扎孔穿线，像装订一本私印的书。{neighbor}在楼道里问起进展，他只说“短了”，没说借的五克朗几时能还。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "project-sold",
+          "weight": 2,
+          "text": "房租催到门口，{subject}把已写的章节卖给一家小报，换了八克朗，够付一个月房租和两顿热饭。长篇锁进抽屉，钥匙搁在盐罐后面，{neighbor}问起时他只说“先不提了”，第二天照常去上工。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "小报买下章节的稿酬"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "长篇被搁置的憋闷"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "小报上的通俗连载"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "novel_shelved",
+              "add": true,
+              "reason": "长篇手稿暂时锁进抽屉"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "project-sold",
+              "text": "小报的编辑在柜台后数出八克朗，纸币边角发软。{subject}把稿子推过去，手指在最后一页上多停了一瞬，那页写着一个没来得及收场的家庭晚餐。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "project-sold",
+              "text": "回家路上他买了面包和一小块黄油。抽屉里的手稿用旧报纸包着，钥匙搁在盐罐后面，他伸手去拿盐时碰到那把钥匙，没把它取出来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "project-split",
+          "weight": 1,
+          "text": "{subject}把已写的章节拆成三篇随笔，分别寄给两家报纸和一份文学月刊。两家用了，一家没回，稿费一共十一克朗；他把长篇的骨架记在卡片盒里，留作以后，眼下先靠这十一克朗对付药费和煤钱。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 11,
+              "reason": "拆篇发表的稿费"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "练习把长篇材料切成短章"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "部分文字得到刊用"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$editor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "其中一篇由编辑采用"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "project-split",
+              "text": "卡片盒里按章节排着标题和几句提要，{subject}用铅笔在每张卡片角上标了可寄的报纸。十一克朗到手那天，他先付了煤钱，剩下的压在药包下面。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "project-split",
+              "text": "《文学月刊》的回信最短，只说“留作后用”。{subject}把那封信和两张稿费单夹在一起，重新翻开长篇的第三十七页，这一次没有撕，只在页边写了个问号。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "knowledge",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "autonomy",
+          "status"
+        ],
+        "baseUtility": 1.1,
+        "risk": 0.2,
+        "skills": [
+          "literacy"
+        ]
+      }
+    }
+  ]
+}

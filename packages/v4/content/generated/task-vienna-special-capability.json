@@ -1,0 +1,1239 @@
+{
+  "id": "task-vienna-special-capability",
+  "title": "一门手艺、一副身体与一张纸",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 12,
+    "max": 60
+  },
+  "tags": [
+    "special",
+    "capability",
+    "literacy",
+    "numeracy",
+    "craft",
+    "care"
+  ],
+  "baseRate": 0.1,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 59
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "special",
+    "goals": [
+      "knowledge",
+      "status"
+    ],
+    "needs": [
+      "knowledge",
+      "autonomy"
+    ],
+    "baseUtility": 1.2,
+    "risk": 0.2,
+    "skills": []
+  },
+  "nodes": [
+    {
+      "id": "task-vienna-special-capability.decipher-document",
+      "title": "抽屉里的手写契据",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 59
+        },
+        {
+          "kind": "capability",
+          "capability": "literacy"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "favorable-clause",
+          "weight": 60,
+          "text": "{subject}把契据举到窗边，念出小字里补写的期限比正文晚了两周，又指出摊派只针对顶层的住户。{neighbor}攥着纸角，立刻去楼下找另外两家核对，省下了原本要替亡夫补交的一克朗二十赫勒。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.2,
+              "reason": "邻居按契据旧条款免去额外摊派，分给识读的人一点谢礼"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "帮邻居读出对她有利的旧条款"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "院子里传开他识字又肯帮忙"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "favorable-clause",
+              "text": "他把纸铺在厨房桌上，手指顺着被咖啡渍晕开的行尾移动，念到“限十四日内”时停住，又翻到背面找见一行更浓的墨水：期限自通告之日起算。{neighbor}听完拍了下桌沿，说那还来得及。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "favorable-clause",
+              "text": "楼梯间的灯很暗，{subject}干脆蹲下来，把契据凑向门口透进来的天光，一个词一个词地读。读到摊派只写“顶层住户”时，{neighbor}伸手把那行字摸了一遍，像要确认它是真的，然后转身去敲隔壁的门。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "missed-deadline",
+          "weight": 25,
+          "text": "{subject}把补在小字里的申诉期限读早了一天。{neighbor}次日赶到市政厅时窗口已经换了告示，材料被退回来，得重新填一张申诉表，还多付了四十赫勒的誊写费；她在走廊里坐了一会儿才起身。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "重新誊写申诉材料的费用"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "读错期限让邻居白跑一趟"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "邻居因错过期限而有些埋怨"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "missed-deadline",
+              "text": "他把“八日”看成了“六日”，念的时候还很笃定。{neighbor}第二天中午回来，把退回来的纸往他面前一放，只说了一句“窗口说昨天就截止了”，便弯腰去捡掉在地上的纽扣。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "missed-deadline",
+              "text": "契据上的日期被水渍泡得发胀，{subject}眯着眼辨认，说最迟是六日。{neighbor}七号一早出门，回来时鞋底沾着市政厅院里的泥，手里那张表上盖着“逾期”的蓝章，誊写员收了她四十赫勒。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wait-for-clerk",
+          "weight": 15,
+          "text": "{subject}反复看那条小字，不敢确定“摊派”是否包括厨灶的烟道，只把能认的字抄在纸条上，请{neighbor}等市政厅的书记员路过时再问。书记员三天后才来，期限已经压到眼前，{neighbor}只好先按原数把钱交了。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "拿不准小字的意思，心里不踏实"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "邻居虽没省下钱，但认可他谨慎"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "邻居按原数交摊派后手头紧，他借出一克朗周转"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "wait-for-clerk",
+              "text": "他把那条小字描了三遍，越描越觉得“烟道”两个字像又不像。{neighbor}坐在门槛上等他的准话，他把纸条折起来说，还是等穿制服的人来看吧。三天后书记员来了，只说了一句“按纸面办”。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "wait-for-clerk",
+              "text": "厨房里飘着煮土豆的汽，{subject}把契据推远又拉近，最后承认自己没把握。{neighbor}把纸收回围裙口袋，说那就等市政厅的人。期限到的那天她数出硬币，一枚一枚排在桌上，他站在旁边没说话。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "knowledge",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "autonomy"
+        ],
+        "baseUtility": 1.25,
+        "risk": 0.1,
+        "skills": [
+          "literacy"
+        ],
+        "capability": "literacy"
+      }
+    },
+    {
+      "id": "task-vienna-special-capability.calculate-debt",
+      "title": "利息滚到第几周",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 59
+        },
+        {
+          "kind": "capability",
+          "capability": "numeracy"
+        },
+        {
+          "kind": "cash",
+          "max": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "overcharged-week",
+          "weight": 60,
+          "text": "{subject}把赊账本上的两种数字按周拆开，用铅笔在报纸边角重算，发现店主把还过的那一周又算进了利息。{neighbor}拿着算出的行数去对质，店主嘟囔着翻账，退给她十八赫勒，正好够买半磅粗面粉。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 0.18,
+              "reason": "邻居拿回多算的一周利息，分给他一点零钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "reason": "他算清了赊账，邻居少付了利息"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.03,
+              "reason": "反复核对周息算法"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "overcharged-week",
+              "text": "他把账本横过来，一周一周地画竖线，嘴里念着“这周还了，这周还了”。算到第七根线时他停住，把铅笔尖点在店主多写的那一格上。{neighbor}凑过来看，先是不信，随后把账本推到柜台里面，声音不高但很稳。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "overcharged-week",
+              "text": "杂货店里一股酸菜和煤油混着的味道。{subject}没动秤上的东西，只借了张包糖的旧报纸，把三次还款的日期抄下来，再用指节敲着柜台算。店主起先摆手，等他把错处说明白，才从钱匣里数出十八赫勒。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "shopkeeper-refuses",
+          "weight": 25,
+          "text": "{subject}的算法没有错，可店主把账本一合，说赊账的规矩一直这么算，嫌贵就别赊。{neighbor}怕断了赊账的路子，最后还是按原数付了，回来的路上把围裙带子攥得很紧，一句话也没说。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "算对了账却没能帮上忙"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "邻居知道他是真心帮忙"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.1,
+              "reason": "他替邻居垫了差的那点零头"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "shopkeeper-refuses",
+              "text": "店主把铅笔从{subject}手里抽回去，在账本封面上敲了两下，说这条街上都是这么算的。{neighbor}看看他又看看柜台，最后从手帕里数出硬币。出门时她把找零的赫勒一枚枚塞进口袋，指甲刮着布面。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "shopkeeper-refuses",
+              "text": "算到第三遍，{subject}把报纸上那几行数字指给店主看，店主却转身去招呼别的客人。{neighbor}拉了拉他的袖子，低声说算了，下星期还要来买面包。她付了钱，出门时把门帘掀得很用力。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "installment-plan",
+          "weight": 15,
+          "text": "{subject}见两边僵着，便建议把余账分六周还，每周数目写在账本封底，谁改了都要按手印。店主想了想答应，{neighbor}每周多还不了几赫勒，却不用再被一次算清，回家路上把封底那行数字念了两遍。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "debt_mediator",
+              "add": true,
+              "reason": "在赊账纠纷中提出分期办法"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "帮邻居把赊账改成可承受的分期"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "杂货店店主也认他能把账说清"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "installment-plan",
+              "text": "{subject}把账本翻到封底，用店主那支秃铅笔写下“每周六还，共六次”，又让双方各按一个指印。{neighbor}盯着那行字看，嘴唇动了动，像是在心里排每周的菜钱。店主收账本时哼了一声，没再提利息。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "installment-plan",
+              "text": "柜台上的煤油灯结了灯花，{subject}把灯芯挑亮，指着账本说这样一次算清谁都上火。他提议分六周，每周的数目小到{neighbor}点头。店主起先不肯，后来看见门口又进来人，才摆摆手说按指印来吧。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "cash",
+          "autonomy"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.15,
+        "skills": [
+          "numeracy"
+        ],
+        "capability": "numeracy"
+      }
+    },
+    {
+      "id": "task-vienna-special-capability.mediate-dispute",
+      "title": "院子里的两把钥匙",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 59
+        },
+        {
+          "kind": "capability",
+          "capability": "social_insight"
+        },
+        {
+          "kind": "householdSize",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "firstParty",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "secondParty",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "rota-agreed",
+          "weight": 55,
+          "text": "{subject}把两家人叫到水龙头边，提议单周{firstParty}家星期天先用炉子，双周归{secondParty}家，钥匙各留一把，孩子藏水桶的事就此作罢。两家人当面点了头，还一起把炉台擦了一遍。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$firstParty",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.02,
+              "reason": "他主持了分炉方案"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$secondParty",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.02,
+              "reason": "他主持了分炉方案"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "院子里的人觉得他会说话"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "rota-agreed",
+              "text": "水龙头还在滴水，{subject}蹲下来用粉笔在门框上画了两格，写单周、双周。{firstParty}和{secondParty}各站一边，起先都不看对方，等他把钥匙的事说清，{secondParty}先嗯了一声，{firstParty}才跟着点头。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "rota-agreed",
+              "text": "他把两家的孩子也叫到跟前，说水桶再藏一次就谁家都不用。{firstParty}把手里那把小钥匙在围裙上蹭了蹭，递给{secondParty}看，说各留一把也好。炉台上的灰被两双手一起抹掉，谁也没再多说。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "renewed-quarrel",
+          "weight": 30,
+          "text": "两家人当面答应得好好的，过了几天又为一块掉在炉边的煤渣吵起来。{firstParty}说{secondParty}家扫得不干净，{secondParty}说钥匙给早了。{subject}再去劝，两家都只让他评理，不肯退半步。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "调解后两家又起争执"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$firstParty",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "他觉得他偏袒另一家"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$secondParty",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "他觉得他偏袒另一家"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "renewed-quarrel",
+              "text": "那块煤渣还躺在炉脚边，{firstParty}用鞋尖把它拨到{secondParty}家门口。{subject}听见声音从屋里出来，手里还拿着没放下的汤勺。两家同时开口，各说各的理，他站在中间，汤勺慢慢垂了下去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "renewed-quarrel",
+              "text": "才安静了三天，走廊里又响起钥匙开锁的急响。{secondParty}说单周双周的纸条被谁撕了一角，{firstParty}说风刮的。{subject}把纸条捡起来拼，两家人已经隔着水龙头站定了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "one-family-leaves",
+          "weight": 15,
+          "text": "调解没成，{firstParty}家开始托人找房子，说宁可多付两克朗房租也不共用炉子。月底他们搬走时只交回一把钥匙，厨房里那半面墙空出来，{secondParty}把水桶拎回自家门口，脸上也不见高兴。",
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$firstParty",
+              "kind": "acquaintance",
+              "reason": "对方搬离院子，往来中断"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "调解失败，邻居搬走"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "他帮着搬家误了自家一顿饭"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "one-family-leaves",
+              "text": "搬家那天{firstParty}把钥匙放在窗台上，钥匙环上还系着一小截红线。{subject}帮着抬了一只箱子下楼，箱角磕在楼梯扶手上，掉下几片干墙皮。{secondParty}站在厨房门口看着，没上前搭手。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "one-family-leaves",
+              "text": "月底的院子安静得反常，孩子也不追跑了。{firstParty}最后出来时手里提着一只水桶，走到门口又回头看了一眼水龙头，才把桶递给{secondParty}，说留着用吧。{subject}站在楼梯口，没找到该说的话。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "belonging",
+          "family"
+        ],
+        "needs": [
+          "belonging",
+          "safety"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.2,
+        "skills": [
+          "social"
+        ],
+        "capability": "social_insight"
+      }
+    },
+    {
+      "id": "task-vienna-special-capability.repair-machine",
+      "title": "停转的踏车",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 59
+        },
+        {
+          "kind": "capability",
+          "capability": "craft_affinity"
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home",
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "bearing-fixed",
+          "weight": 55,
+          "text": "{subject}让{worker}扶住机头，自己拆开轴套，用锉刀把磨出毛刺的边口修平，又刮掉旧油泥换上一点新脂。飞轮先涩涩地转了两圈，随后顺了，傍晚踏车重新响成缝纫的嗒嗒声。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "亲手修好踏车的轴套与飞轮"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "裁缝铺里传开他能修机器"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.05,
+              "reason": "一起把停转的踏车弄转起来"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "bearing-fixed",
+              "text": "铺子里全是机油和熨布的气味。{subject}把轴套搁在膝上，锉刀一下一下地走，铁屑落在围裙上。{worker}在旁边扶着机头，等他把飞轮装回去，两个人一起听那声音从刮擦变成均匀的嗒嗒。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "bearing-fixed",
+              "text": "他先转半圈，停下来用指腹摸轴颈，再转半圈。{worker}递来一小团棉纱，他把旧油泥擦净，发现磨痕只在一边，便拿锉刀轻轻修过去。装好后他踩了两下踏板，飞轮带着皮带转起来，像有人在屋里轻轻拍手。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "temporary-fix",
+          "weight": 25,
+          "text": "{subject}把松动的螺丝拧紧，又垫了一小片皮子，机器当天转得动，婚礼礼服赶出了一半。可第二天早上飞轮又卡住，{employer}还是去请了城里的技师，修完说轴已经磨偏，得换件。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "临时修法没能撑过第二天"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "从失败里看出轴已磨偏"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.03,
+              "reason": "两人一起熬到傍晚赶活"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "temporary-fix",
+              "text": "皮子垫进去时{subject}就有些犹豫，但{worker}已经把料子递到针下。机器转了一下午，第二天清早又发出那种刮擦声。技师蹲下看了看，说轴偏了，临时垫的东西顶不了多久。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "temporary-fix",
+              "text": "他把螺丝挨个紧了一遍，手背蹭上黑油。{employer}站在门口问能不能撑到星期天，他点了点头。第二天机器又停住时，店铺还没开门，{worker}在门口跺脚，他蹲在踏车边，一时没再伸手。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "watch-and-learn",
+          "weight": 20,
+          "text": "{subject}没敢自己拆，请技师来修，自己蹲在旁边递扳手、接油盘，把拆下的零件按顺序摆在报纸上，每一步都记在纸条背面。修完他照着纸条复述了一遍，{worker}说下回可以先拆到轴套为止。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "记下拆装顺序和轴套结构"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.2,
+              "reason": "技师修完收的工钱里，他分摊了一点茶钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.04,
+              "reason": "两人一起看会了拆装"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "watch-and-learn",
+              "text": "技师把零件一个一个卸下来，{subject}就跟着一个一个摆到报纸上，手指点着位置记。油盘快满时他端去倒掉，回来正赶上装机，便蹲得更近，看技师怎样把轴套敲回原位。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "watch-and-learn",
+              "text": "纸条上被他画满了圈和箭头，{worker}凑过来看，说这像小孩子画的马路。{subject}没笑，只问轴套那头为什么敲三下。技师走后他把纸条叠好塞进内袋，又在踏车旁站了一会儿才走。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "cash",
+          "status"
+        ],
+        "baseUtility": 1.35,
+        "risk": 0.25,
+        "skills": [
+          "craft"
+        ],
+        "capability": "craft_affinity"
+      }
+    },
+    {
+      "id": "task-vienna-special-capability.hard-journey",
+      "title": "去疗养院的三次换车",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 59
+        },
+        {
+          "kind": "capability",
+          "capability": "frail_body"
+        },
+        {
+          "kind": "health",
+          "max": 0.7
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "arrived-at-sanatorium",
+          "weight": 50,
+          "text": "{subject}把箱子分出一半交给{neighbor}提着，每到一个站台就坐下来歇一阵，赶上了最后一班窄轨小火车。天黑前到了松树林，六周后回维也纳，咳嗽轻了，胸口也不再整夜发紧。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "在松树林疗养六周，咳嗽减轻"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "三次换车的车票和疗养院伙食费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "邻居一路帮着提箱子换车"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "arrived-at-sanatorium",
+              "text": "第二个站台上风很大，{subject}把围巾又绕了一圈，坐在长椅上数着行李。{neighbor}把箱子换到另一只手，说还赶得上。窄轨车开动时他靠着车窗，看树往后走，胸口那股紧劲慢慢松开。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "arrived-at-sanatorium",
+              "text": "每次换车他都先找墙根坐下，把药瓶从内袋摸出来看一眼再放回去。{neighbor}没催他，只把车票按站次排好，一张一张递过去。松树林的气味从车窗灌进来时，他第一次把身子坐直了。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "collapsed-at-transfer",
+          "weight": 30,
+          "text": "{subject}在第二次换车时胸口一紧，眼前发黑，倒在站台的石板上。站务员把他扶到候车室，喂了水，又叫来一辆出租马车送回维也纳。疗养的事只能推到明年，车票退了一半的钱。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "在站台晕倒，路上折腾加重了虚弱"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "退票折价和马车费"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sanatorium_delayed",
+              "add": true,
+              "reason": "疗养计划推迟到明年"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "collapsed-at-transfer",
+              "text": "{subject}记得自己是去够行李架上的箱子，接着石板地就到了眼前。醒来时后脑勺垫着一件叠起来的外套，{neighbor}蹲在旁边拍他的脸。出租车夫把箱子绑在车顶时，他还在冒冷汗。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "collapsed-at-transfer",
+              "text": "站台上的人围了半圈，有人递水，有人问要不要叫医生。{subject}能听见声音，却觉得隔着一层布。{neighbor}把箱子放在他脚边，跟站务员说了好一会儿，最后马车来的时候，他扶着车门才站直。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cancelled-for-stove",
+          "weight": 20,
+          "text": "{subject}看着退票窗口排的队，到底没递上车票，转头把{neighbor}请到家里，托她照看炉子和钥匙，自己改去城里的门诊。药粉一周一包，咳嗽起起伏伏，但家里总算没断过火。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.8,
+              "reason": "门诊挂号、药粉和答谢邻居的茶钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.09,
+              "obligation": 0.05,
+              "reason": "邻居受托照看炉子和钥匙"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "没能去成松树林，心里有些空"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cancelled-for-stove",
+              "text": "他站在售票厅里，看着前面的人把票递进去又拿回来。{neighbor}在门口等着，他把车票折好放进内袋，说还是不去了。回家路上他买了包药粉，又把钥匙多配了一把交给{neighbor}。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cancelled-for-stove",
+              "text": "炉子的事他反复想了三遍：煤球谁添，烟囱什么时候扫，钥匙交给谁。退票窗口的铃响了一声，他转身出了门。门诊的医生说药粉要按时吃，他点头，回家把药包放在炉台上最显眼的地方。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "health",
+        "goals": [
+          "survival",
+          "care"
+        ],
+        "needs": [
+          "health",
+          "safety"
+        ],
+        "baseUtility": 1.1,
+        "risk": 0.4,
+        "skills": [],
+        "capability": "frail_body"
+      }
+    },
+    {
+      "id": "task-vienna-special-capability.nurse-patient",
+      "title": "隔壁床的夜班",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 59
+        },
+        {
+          "kind": "capability",
+          "capability": "health"
+        },
+        {
+          "kind": "health",
+          "min": 0.5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 80
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "three-nights",
+          "weight": 55,
+          "text": "{subject}在隔壁守了三夜，按时喂药，用冷布擦病人的额头，把汗湿的床单换下来搭在椅背上。第四天早上烧退了，{parent}从洗衣房回来，把这一周的工钱分了一半给他，一共一克朗六十赫勒。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.6,
+              "reason": "病人家属分给他的一半工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "他连守三夜照顾病人"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "熬夜守病人，身子发虚"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "three-nights",
+              "text": "走廊的水龙头整夜滴着，{subject}就着那声音给病人换额头上的布。第二夜病人要水，他扶起他的时候，能摸到后背的汗把衬衣浸透。第四天{parent}推门进来，先看床，再看他，然后从手帕里数钱。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "three-nights",
+              "text": "他把药粉倒进小勺，兑上温水，等病人咽下去才坐回椅子。椅背硌着脊梁，他也没动。天亮时窗外的送奶车叮当响，病人说想喝一口热汤，{parent}进门时正看见他端着碗吹气。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "caregiver-falls-ill",
+          "weight": 30,
+          "text": "病人退烧了，{subject}自己却开始咳嗽，夜里额头滚烫。他怕传给自家孩子，只好把夜班交给另一个邻居，回家躺了两天。{parent}过意不去，端来一锅汤和四个土豆，在门口站了一会儿才走。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "照顾流感病人后自己染病"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "病人家属送来汤和土豆"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "他病倒后对方上门答谢"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "caregiver-falls-ill",
+              "text": "咳嗽是第三天下午开始的，他起先以为是走廊里的灰。到了夜里，他摸着自家床沿才觉得不对，额头烫，膝盖发软。第二天他把钥匙从窗口递出去，说今夜换人守，声音哑得自己都陌生。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "caregiver-falls-ill",
+              "text": "他回家倒头就睡，醒来时窗帘缝里已经是白天的光。{parent}把汤放在门槛上，没进门，只隔着门问他家里还有没有煤球。他说有，嗓子却像被砂纸擦过，话没说完就咳弯了腰。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fetch-doctor",
+          "weight": 15,
+          "text": "后半夜病人的呼吸越来越急，胸口起伏像拉风箱。{subject}不再等天亮，披上外套去敲街角医生的门，预付了三十赫勒出诊费。医生来放了血、开了药，天亮时呼吸才慢下来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "连夜请医生的出诊费"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "寒夜里跑出去请医生，受了凉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.08,
+              "reason": "他半夜请来医生救了急"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fetch-doctor",
+              "text": "病人的指甲在床单上抓出细响，{subject}把耳朵凑近，听见胸口里拉风箱似的声。他摸黑下楼，街面的石板冻得发白，医生家的门铃拽了三下才有人应。回来时他手里攥着药包，指头已经僵了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "fetch-doctor",
+              "text": "他顾不上穿好外套，只把围巾在下巴底下一塞就出了门。医生提着灯进屋，他站在床边举着灯，看病人的肩膀怎样一上一下。药灌下去后，屋里只剩炉子里煤渣塌落的轻响。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "health",
+        "goals": [
+          "care",
+          "survival"
+        ],
+        "needs": [
+          "health",
+          "care"
+        ],
+        "baseUtility": 1.25,
+        "risk": 0.2,
+        "skills": [
+          "social"
+        ],
+        "capability": "health"
+      }
+    }
+  ]
+}

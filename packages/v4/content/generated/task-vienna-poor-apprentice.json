@@ -1,0 +1,1270 @@
+{
+  "id": "task-vienna-poor-apprentice",
+  "title": "穷学徒的作坊与工钱",
+  "stage": "adolescence",
+  "ageWindow": {
+    "min": 12,
+    "max": 30
+  },
+  "tags": [
+    "adolescence",
+    "apprentice",
+    "work",
+    "education",
+    "poverty",
+    "printshop"
+  ],
+  "baseRate": 0.1,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 12,
+      "max": 17
+    },
+    {
+      "kind": "cash",
+      "max": 60
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "work",
+    "goals": [
+      "work",
+      "status"
+    ],
+    "needs": [
+      "cash",
+      "status"
+    ],
+    "baseUtility": 1.2,
+    "risk": 0.15,
+    "skills": [
+      "craft"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "task-vienna-poor-apprentice.ask-responsibility",
+      "title": "多要一道工序",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 17
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "apprenticeship"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "foreman-agrees-morning-ink",
+          "weight": 1,
+          "text": "师傅用墨刀敲了敲压印机的铁架，让他明天早到半小时，先学给整版上墨。工钱不变，墨辊要自己洗干净。他点头，把墙角那摞纸按尺寸重新码齐。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "开始学上墨工序"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": 0.08,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "师傅愿意多教一道工序"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "头一次被允许碰印版"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "foreman-agrees-morning-ink",
+              "text": "压印机旁的煤油灯还没熄，师傅把墨刀往桶沿一搁，说早来半小时，先学上墨。学徒捏着抹布的手松了一下，又赶紧低头去数墙角的纸。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "foreman-agrees-morning-ink",
+              "text": "他第二天天没亮就到作坊，钥匙还挂在门框钉子上。师傅把整版递过来，让他从上往下匀墨，别让铅字边角吃厚了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "foreman-defers-until-rush-done",
+          "weight": 1,
+          "text": "师傅说这批发往利奥波德城的急活赶完再教，眼下只叫他继续搬纸。学徒把纸捆抱上木台，指节被麻绳勒出红印；学会上版的话，他留到下次再问。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "请求被推到以后"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "整日搬纸捆勒伤手指"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": 0.02,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "师傅没有翻脸也没有答应"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "foreman-defers-until-rush-done",
+              "text": "急活的纸捆堆到窗台高，师傅头也不抬，说赶完这批再说。学徒把麻绳往掌心绕了两圈，继续往木台上递纸。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "foreman-defers-until-rush-done",
+              "text": "墙角那摞没裁的纸还是原样。他站了一会儿，听见裁纸刀切进纸边的闷响，只好回去把纸捆一捆捆抱上木台。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "foreman-rebukes-overreach",
+          "weight": 1,
+          "text": "师傅嫌他越级多事，说学徒先管好自己的活，别盯着别人手上的墨刀。他退到机器后头，脸有些热，心里盘算着下工后去街对面那家作坊的门口看看招工牌。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "被师傅当众斥退"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在车间被认作不安分"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "looking_at_other_printshops",
+              "add": true,
+              "reason": "开始留意别的作坊"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "foreman-rebukes-overreach",
+              "text": "师傅把墨刀往台上一拍，说学徒先学会别弄坏东西。周围没人抬头，可他总觉得每个后背都在听。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "foreman-rebukes-overreach",
+              "text": "他退到洗墨桶旁，手上沾的墨被冷水冲成灰线。街对面的招工牌他早上路过时看过一眼，这会儿又想起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "autonomy",
+          "status"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.1,
+        "skills": [
+          "craft"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-poor-apprentice.request-advance",
+      "title": "预支一周的工钱",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 15,
+          "max": 17
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "cash",
+          "max": 25
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 17
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "advance-granted-half",
+          "weight": 1,
+          "text": "师傅数出几枚克朗硬币，预支了下周一半工钱，说下周连本带利从工资袋里扣回去。他把钱塞进衬里口袋，下楼时房东还等在楼梯口，他先递出这个月的房租。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "预支到下周一半工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": 0.06,
+              "affection": 0,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0,
+              "reason": "师傅破例预支工钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "advance-granted-half",
+              "text": "柜台上的账本摊开着，谁欠工具钱一目了然。师傅数了六克朗推过来，说下周扣，他把硬币一枚枚按进衬里口袋。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "advance-granted-half",
+              "text": "房东在楼梯口听见钱响，脸色松了些。学徒把租金点清交出去，手心里只剩两枚赫勒硬币硌着掌纹。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "advance-refused-no-custom",
+          "weight": 1,
+          "text": "师傅把工资袋推回来，说厂里没有预支的规矩，还提醒他别让房东牵着鼻子走。他捏着薄薄的工资袋下楼，跟房东说宽限三天，对方撂下一句下不为例。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "预支被拒还要面对房东"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "房东在楼里说了几句难听话"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": -0.02,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "开口借钱被当面驳回"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "advance-refused-no-custom",
+              "text": "师傅把工资袋推回柜台这边，说厂里没有这个规矩。他看着袋口露出的硬币边，没有伸手。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "advance-refused-no-custom",
+              "text": "房东在楼梯转角等着，他把空话说了两遍，对方才让开半步。楼道里的煤油味混着煮白菜的气味，他把工资袋揣回怀里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "borrow-from-workmates",
+          "weight": 1,
+          "text": "他没再向师傅开口，转身找两个年纪大些的工友各借了两克朗，答应发薪当天就还。人家让他写在烟盒背面按了指印，他把烟盒折好塞进帽檐。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "向工友借钱应急"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": 0.03,
+              "affection": 0,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "没让师傅难做反而得了默许"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "borrow-from-workmates",
+              "text": "烟盒背面写了两个名字和数目，他按了拇指印。工友把四克朗数给他，说发薪那天别装忘。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "borrow-from-workmates",
+              "text": "他把烟盒折成小方块压在帽檐里，走回机器旁时帽子有点歪。师傅看了他一眼，什么也没说。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "survival",
+          "work"
+        ],
+        "needs": [
+          "cash",
+          "autonomy"
+        ],
+        "baseUtility": 1.5,
+        "risk": 0.3,
+        "skills": [
+          "numeracy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-poor-apprentice.better-workshop",
+      "title": "隔着街的另一家作坊",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 17
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "journeyman",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 40
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "trial-week-agreed",
+          "weight": 1,
+          "text": "新作坊的工头翻看他的袖口，答应让他试工一周，工钱等试工结束再谈，午饭管一顿。他把旧作坊的活儿做到月底，工头记下他的名字，叫星期一早上七点来。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "trial_at_new_printshop",
+              "add": true,
+              "reason": "拿到一周试工机会"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "新作坊工头愿给试工"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "trial-week-agreed",
+              "text": "门口的招工牌写着缺一个学徒。新工头捏了捏他袖口的油墨，说试一周，午饭管饱，工钱回头再谈。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "trial-week-agreed",
+              "text": "玻璃门里映出他沾墨的袖子，工头让他星期一七点来。他把这句记在脑子里，一路走回去数着要跟旧师傅怎么开口。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "no-vacancy-left-name",
+          "weight": 1,
+          "text": "新作坊没有空缺，只把名字抄在一张纸角上，说有人走了再叫他。他转身时邻街的伙计认出了他；第二天旧作坊里就有人问，是不是想跳槽。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "没有空缺又被人看见"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "跳槽的话传到旧作坊"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "noticed_looking_elsewhere",
+              "add": true,
+              "reason": "被旧作坊的人察觉在另找门路"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "no-vacancy-left-name",
+              "text": "伙计把名字写在纸角，压在字盘底下。他站在门口多看了一眼那台新压印机，然后被同街的熟人瞧见。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "no-vacancy-left-name",
+              "text": "回旧作坊时师傅不在，可旁边工位的两个人凑在一起说话，见他就散了。他把抹布挂回钉子上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "return-ask-written-terms",
+          "weight": 1,
+          "text": "看完招工牌他又回到旧作坊，趁师傅收工前要求一份写明工钱的字据。师傅嫌他学城里那些花样，最后在账本边上添了一行数目，说按月十克朗，年底再看。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "敢开口要字据"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "工钱写进了账本"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": 0.04,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "师傅最终写下工钱数目"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "return-ask-written-terms",
+              "text": "账本边上多出一行铅笔字：按月十克朗，年底再看。师傅写字时嘴里嘟囔，他站在阴影里看清每个数字。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "return-ask-written-terms",
+              "text": "他把字据的事说得尽量平，师傅先是皱眉，后来还是翻开账本。铅笔尖在纸上顿了顿，留下一道工钱的数目。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "cash",
+          "autonomy"
+        ],
+        "baseUtility": 1.35,
+        "risk": 0.35,
+        "skills": [
+          "craft",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-poor-apprentice.learn-specialty",
+      "title": "老排字工的手势",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 16
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "colleague",
+          "minTrust": 0.2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 16
+        },
+        {
+          "key": "oldWorker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "old-worker-teaches-after-hours",
+          "weight": 1,
+          "text": "老排字工让他在下班后留下来，手把手教他把一版小广告的铅字夹紧。走时街灯已经点上，他记熟了三个字母的位置，肩膀酸得像压过一夜的纸。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.07,
+              "reason": "学会夹紧松动铅字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$oldWorker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "affection": 0.03,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.08,
+              "reason": "老工人下班后单独教他"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "old-worker-teaches-after-hours",
+              "text": "车间灯只留一盏，老排字工的手指在字盘里摸来摸去，说松动的字要这样夹。他跟着做了一遍，铁框里不再晃。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "old-worker-teaches-after-hours",
+              "text": "出门时街灯已经点上，他把记熟的三个字母在脑子里又过一遍。肩膀像压过整夜纸捆，可心里是热的。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "old-worker-demonstrates-once",
+          "weight": 1,
+          "text": "老排字工只演示了一遍，说剩下的靠眼睛和手腕自己记。学徒练到第三版时排歪了一行，只好拆掉重排，油墨把手纹染得发黑。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "靠观察摸索排字手法"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "久坐练排字腰背僵硬"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$oldWorker",
+              "kind": "colleague",
+              "trust": 0.03,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "老工人不肯多讲只做示范"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "old-worker-demonstrates-once",
+              "text": "老排字工把手一摊，说看好了。演示完就回自己位子，留下他对着铁框把歪掉的一行拆掉重来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "old-worker-demonstrates-once",
+              "text": "第三版又排歪了，他把活字一颗颗捡回字盘，油墨渗进指缝。老排字工从眼镜上方看了一眼，没说话。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "old-worker-sends-back-to-paper",
+          "weight": 1,
+          "text": "老排字工把他赶回纸堆，说学徒先学会不弄坏别人的铅字，前几日他挪字盘碰掉了一角。他蹲回去码纸，听老人把活字一颗颗归位，声音很轻。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被赶回去搬纸"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$oldWorker",
+              "kind": "colleague",
+              "trust": -0.02,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0.02,
+              "respect": 0.03,
+              "reason": "老工人不满他碰坏铅字"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "old-worker-sends-back-to-paper",
+              "text": "老排字工指了指墙角那摞纸，说先去学会不碰坏别人的东西。他站起来，膝盖麻了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "old-worker-sends-back-to-paper",
+              "text": "活字一颗颗归位的轻响一直响到他码完半摞纸。他低头看自己指甲缝里的黑印，没再往字盘那边凑。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "work"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.25,
+        "risk": 0.1,
+        "skills": [
+          "craft",
+          "literacy"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-poor-apprentice.cover-coworker",
+      "title": "替病倒的工友顶一班",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 15,
+          "max": 17
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "health",
+          "min": 0.5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 17
+        },
+        {
+          "key": "sickWorker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 50
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "cover-shift-overtime-pay",
+          "weight": 1,
+          "text": "他顶完后半班，工头按钟点多给了两克朗加班费。回家时手指抖得端不住汤碗，母亲把碗推到他跟前，他先摸出硬币放在桌上。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "顶班拿到加班费"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "连班后手指发抖浑身发虚"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sickWorker",
+              "kind": "colleague",
+              "trust": 0.08,
+              "affection": 0.02,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "替病倒的工友顶了班"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cover-shift-overtime-pay",
+              "text": "机器一直转到晚上八点。他把两克朗加班费摊在桌上，母亲盛汤的手停了停，他的手指还在抖。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cover-shift-overtime-pay",
+              "text": "顶完班，他把油墨擦了两遍才敢拿碗。汤碗在手里晃，他先低头把硬币推到桌心。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "foreman-promises-rest-forgets",
+          "weight": 1,
+          "text": "工头答应下星期补他半天休，到了下星期却装作忘了，只在他问时含糊说以后一并算。他站回机器旁，加班费也没提，气存在胸口里没处放。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "补休被工头赖掉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": -0.06,
+              "affection": 0,
+              "obligation": -0.03,
+              "fear": 0.02,
+              "respect": 0,
+              "reason": "工头食言不认补休"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "foreman-promises-rest-forgets",
+              "text": "星期一他提了半句，工头说以后一并算，转身去查纸单。机器声里他把后半句咽回去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "foreman-promises-rest-forgets",
+              "text": "补休的事没人再提，排班表上他的班还是照旧。他把抹布拧干挂好，胸口那股气下不去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sick-worker-asks-errand",
+          "weight": 1,
+          "text": "病倒的工友不要他替班，只求他顺路去药房买一包退烧药。他花十二赫勒买了药，又爬上三层楼送到病友家门口，回来时晚饭已经凉了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "替病友买退烧药"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "绕路爬楼回去误了晚饭"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sickWorker",
+              "kind": "colleague",
+              "trust": 0.09,
+              "affection": 0.04,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "替病友跑腿买药"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "sick-worker-asks-errand",
+              "text": "药房伙计从木格子里夹出一包药粉，收十二赫勒。他爬上三层楼，把纸包从门缝递进去，听见里面咳了两声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "sick-worker-asks-errand",
+              "text": "回来时家里汤已经凉了，母亲问怎么晚这么久。他把空了的药房纸袋折起，没多解释。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "care"
+        ],
+        "needs": [
+          "cash",
+          "status"
+        ],
+        "baseUtility": 1.4,
+        "risk": 0.35,
+        "skills": [
+          "craft",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-poor-apprentice.foreman-introduction",
+      "title": "亲戚在厂门口等他",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 17
+        },
+        {
+          "kind": "cash",
+          "max": 50
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 17
+        },
+        {
+          "key": "relative",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "relative-introduces-trial-half-day",
+          "weight": 1,
+          "text": "亲戚把他带到工头面前，工头让他下星期来试半天，先看裁纸和搬版。母亲熨平的衬衫领子还是硬得硌脖子，他站在厂门口把姓名说了两遍。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "half_day_trial_at_big_printshop",
+              "add": true,
+              "reason": "获得半天试工机会"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "affection": 0,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "经亲戚引荐见过工头"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "有了试半天工的机会"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "relative-introduces-trial-half-day",
+              "text": "厂门口挂着铜字招牌，亲戚先进去说了几句，工头出来打量他。下星期试半天，先学裁纸。他把姓名报得很清楚。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "relative-introduces-trial-half-day",
+              "text": "衬衫领子硬得硌脖子，母亲烫它时用了半个上午。他站在门口听工头吩咐时间，把每句话在脑子里重放一遍。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "foreman-records-name",
+          "weight": 1,
+          "text": "工头说暂时没有空缺，但答应把他的名字记在招工簿上。亲戚在旁边补了两句好话，工头只点点头；他走出来时，招工簿还摊在门房的木台上。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "name_in_hiring_book",
+              "add": true,
+              "reason": "名字被记进招工簿"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "工头答应记名"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "没有空缺只有空头答应"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "foreman-records-name",
+              "text": "门房的木台上摊着招工簿，工头用钢笔写下名字，说有人走就叫人。他盯着那行字看，墨还没干。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "foreman-records-name",
+              "text": "亲戚在门口又赔了两句好话。工头点头，把笔搁回墨水瓶，没有抬头。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "relative-refuses-guarantee",
+          "weight": 1,
+          "text": "亲戚临时反悔，不肯为一个刚离开旧作坊的学徒作保，说自己在厂里还要做人。他站在门口，手里攥着熨平的衬衫袖口，把路上想好的话又咽回去。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "被亲戚放鸽子又拒绝作保"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "affection": -0.03,
+              "obligation": -0.02,
+              "fear": 0,
+              "respect": -0.04,
+              "reason": "亲戚临阵不肯作保"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "relative-refuses-guarantee",
+              "text": "亲戚把烟蒂踩灭在门阶上，说自己也要在厂里做人。学徒还没开口，话已经堵在嗓子里。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "relative-refuses-guarantee",
+              "text": "厂门口的风把熨平的袖口吹得发凉。他把路上想好的话在心里重念一遍，最后一句也没说出口。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "belonging"
+        ],
+        "needs": [
+          "cash",
+          "status",
+          "belonging"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.25,
+        "skills": [
+          "social"
+        ]
+      }
+    }
+  ]
+}

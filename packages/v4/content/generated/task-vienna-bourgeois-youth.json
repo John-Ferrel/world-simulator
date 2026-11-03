@@ -1,0 +1,1200 @@
+{
+  "id": "task-vienna-bourgeois-youth",
+  "title": "资产阶级青年的学校与沙龙",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 15,
+    "max": 35
+  },
+  "tags": ["bourgeois", "education", "culture", "salon", "university", "family"],
+  "baseRate": 0.1,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 35
+    },
+    {
+      "kind": "cash",
+      "min": 40
+    },
+    {
+      "kind": "education",
+      "in": ["apprenticeship", "higher", "secondary"]
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "education",
+    "goals": ["knowledge", "status"],
+    "needs": ["status", "knowledge"],
+    "baseUtility": 1.25,
+    "risk": 0.15,
+    "skills": ["literacy", "social"]
+  },
+  "nodes": [
+    {
+      "id": "task-vienna-bourgeois-youth.university-registration",
+      "title": "大学注册处的长桌",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 20
+        },
+        {
+          "kind": "education",
+          "in": ["apprenticeship", "secondary"]
+        },
+        {
+          "kind": "cash",
+          "min": 50
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 20
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "registration-passed",
+          "weight": 1,
+          "text": "{subject}在星期三上午把拉丁文试卷交上去，{teacher}当场用红笔在角落画了个勾。{official}把注册号写进厚册子，收了四十克朗注册费和两克朗印花税，课表上第一节课在星期一早上八点。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -42,
+              "reason": "注册费与印花税"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "higher",
+              "level": 1,
+              "reason": "通过拉丁文考试并入大学"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.05,
+              "reason": "应付拉丁文笔试"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "拿到注册号的踏实感"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "registration-passed",
+              "text": "书记员把印章按在册页上，纸面留下一个潮湿的圆。{subject}把课表折成四折塞进内袋，走到环城大道上才想起自己一天没吃东西。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "registration-passed",
+              "text": "{teacher}把批过的卷子推回来时说了句“西塞罗读得不够”，但还是签了名。{subject}在走廊里数着剩下的克朗，听见下一间教室有人在背德语诗。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "latin-deferred",
+          "weight": 1,
+          "text": "拉丁文卷子上{teacher}只给了个不及格。{official}说秋季预备班还有位置，学费三十克朗，一周五个晚上。{subject}把注册材料重新收进皮包，到对街的咖啡馆坐到天黑才回家。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -30,
+              "reason": "秋季拉丁文预备班学费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "考试失败与推迟入学"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "latin_prep_enrolled",
+              "add": true,
+              "reason": "报名秋季预备班"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "respect": 0.03,
+              "reason": "老师答应秋季再指导"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "latin-deferred",
+              "text": "走廊尽头的窗开着，能听见电车铃。{subject}把不及格的卷子对折两次，塞进外套内袋，预备班的报名单捏在手里，纸边被汗浸软。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "latin-deferred",
+              "text": "{official}翻到册子最后一页，说今年名额还够，明年就难讲了。{subject}数出三十克朗放在柜台上，硬币滚了一枚到地上，他弯腰捡起来时膝盖有点发软。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "scholarship-only",
+          "weight": 1,
+          "text": "家里来信说注册费拿不出来。{subject}转去申请一笔只够抵学费的奖学金，{official}让他找两位担保人签字。他把中学的成绩单抄了一份附上，剩下的生活费还得自己想办法。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "申请材料与抄写费用"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "家里拒付注册费的挫败"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "奖学金申请被受理"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "撰写申请与抄写成绩单"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "scholarship-only",
+              "text": "担保人一栏空着。{subject}在注册处外的石阶上坐了很久，把母亲的信又读了一遍，信纸上有面粉的味道。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "scholarship-only",
+              "text": "{official}用指节敲敲柜台，说奖学金批下来也只够学费，饭钱和房租另算。{subject}点头，把两位老师的名字写进担保栏，笔尖顿了一下。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": ["knowledge", "status"],
+        "needs": ["knowledge", "status"],
+        "baseUtility": 1.4,
+        "risk": 0.2,
+        "skills": ["literacy", "numeracy"]
+      }
+    },
+    {
+      "id": "task-vienna-bourgeois-youth.salon-invitation",
+      "title": "沙龙楼梯上的名片",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 35
+        },
+        {
+          "kind": "cash",
+          "min": 60
+        },
+        {
+          "kind": "education",
+          "in": ["apprenticeship", "higher", "secondary"]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 35
+        },
+        {
+          "key": "host",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 50
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "publisher-address",
+          "weight": 1,
+          "text": "钢琴旁{host}把{subject}介绍给一位出版商，两人从施蒂夫特聊到新出的诗集。临走时{neighbor}在一张名片背面写下出版社的街名和门牌，让他下星期四上午去。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$host",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.04,
+              "reason": "沙龙上被正式介绍"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.03,
+              "reason": "出版商留下地址"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.05,
+              "reason": "在沙龙中周旋交谈"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "被房间里的人认真对待"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "publisher-address",
+              "text": "名片上印着烫金的花体字，背面用铅笔写的地址有点歪。{subject}把它放进内袋，出门时楼梯间的煤气灯已经点上了。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "publisher-address",
+              "text": "{host}端着茶说这位先生专出年轻作者的书。出版商问他读什么，{subject}答了三个名字，对方挑了挑眉，从外套里摸出名片。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "polite-tea",
+          "weight": 1,
+          "text": "{host}亲手给{subject}倒了茶，问了他父亲做什么生意，然后转身去招呼新到的客人。整晚没有人再来搭话，{subject}在窗边站到八点半，把茶喝完了才走。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "被礼貌地搁在一边"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$host",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "女主人的客气应酬"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "在陌生客厅里忍耐"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "polite-tea",
+              "text": "茶托在膝上放得太久，瓷面凉了。{subject}注意到自己的袖口磨白处正好对着灯，就把手往袖子里收了收。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "polite-tea",
+              "text": "房间里的话声一阵高一阵低，都是他插不进去的姓氏。{subject}把空杯放在门边的小桌上，向{host}欠了欠身。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "retreat-to-cafe",
+          "weight": 1,
+          "text": "{subject}在楼梯口看见自己的旧外套挂在别人的大衣中间，袖口发亮。他没有进客厅，下楼找到同学，两人去咖啡馆坐了半晚，谈的还是那本没读完的书。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "咖啡馆两杯咖啡"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "临门退出的窘迫"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.06,
+              "affection": 0.04,
+              "reason": "改在咖啡馆深谈"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "retreat-to-cafe",
+              "text": "他把外套从衣钩上取下来，装作只是来送口信。街上湿气重，咖啡馆的玻璃蒙着水雾，他在窗上抹出一小块看电车。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "retreat-to-cafe",
+              "text": "同学问他怎么不上去，{subject}说里面太热。两人在靠墙的位子坐下，侍者把咖啡端来时杯碟碰出轻轻一声。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": ["status", "belonging"],
+        "needs": ["belonging", "status"],
+        "baseUtility": 1.2,
+        "risk": 0.3,
+        "skills": ["social", "literacy"]
+      }
+    },
+    {
+      "id": "task-vienna-bourgeois-youth.concert-outing",
+      "title": "星期天的音乐会票",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 35
+        },
+        {
+          "kind": "cash",
+          "min": 30
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 35
+        },
+        {
+          "key": "companion",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 35
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "balcony-bread",
+          "weight": 1,
+          "text": "{subject}买了两张最便宜的楼座票，一共四克朗。{companion}家里起初不准，说星期天要回家吃饭，后来松了口。幕间两人分了一块带来的面包，音乐厅的暖气把外套烘得发烫。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "两张楼座票"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.09,
+              "reason": "听完音乐会的兴奋"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$companion",
+              "kind": "friend",
+              "trust": 0.07,
+              "affection": 0.05,
+              "reason": "共度星期天下午"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "与朋友相处的分寸"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "balcony-bread",
+              "text": "楼座最后一排的椅背很硬，{subject}得微微前倾才看得见乐队。{companion}把面包掰成两半，纸包里还掉出一点盐粒。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "balcony-bread",
+              "text": "散场时人挤着下楼，{subject}把票根揣好，说下回还来。{companion}笑他票根留着有什么用，他说夹进书里就知道听过什么。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "alone-at-concert",
+          "weight": 1,
+          "text": "{companion}临出门被家里叫走，说祖母不舒服。{subject}一个人进了音乐厅，站票靠柱子，听完把票根夹进随身那本书的第七十页，回去的路上下起小雨。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.5,
+              "reason": "一张站票"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "独听音乐的安静"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$companion",
+              "kind": "friend",
+              "trust": 0.03,
+              "reason": "朋友失约但彼此体谅"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "alone-at-concert",
+              "text": "他站在柱子旁边，能看见大提琴手的袖子。旁边的人翻节目单时纸角扫到他的手背，他把手缩回口袋。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "alone-at-concert",
+              "text": "第二乐章里他想起{companion}说过的那个书店橱窗。散场后雨点打在帽檐上，他走得很慢。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "church-concert",
+          "weight": 1,
+          "text": "{subject}算了一下，四克朗够一个星期午饭。他改约{companion}去教堂听免费的管风琴音乐会，捐了两赫勒，坐在后排的长凳上。回去时两人在街角分吃一个烤土豆。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.06,
+              "reason": "教堂捐献与烤土豆"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "买了烤土豆垫饥"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "省下钱又听了音乐"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$companion",
+              "kind": "friend",
+              "trust": 0.05,
+              "affection": 0.03,
+              "reason": "省钱同游"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "church-concert",
+              "text": "管风琴的脚键盘在石板上震出低音，长凳的木头有点凉。{subject}把帽子放在膝上，帽檐的边磨得发白。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "church-concert",
+              "text": "{companion}在门口摊开手，说省下的钱够下星期喝茶。街角卖烤土豆的用旧报纸裹着递过来，烫得两人轮换着拿。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "culture",
+        "goals": ["belonging", "status"],
+        "needs": ["belonging", "status"],
+        "baseUtility": 1.1,
+        "risk": 0.1,
+        "skills": ["social"]
+      }
+    },
+    {
+      "id": "task-vienna-bourgeois-youth.study-funding",
+      "title": "父亲账本上的学费",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 35
+        },
+        {
+          "kind": "education",
+          "in": ["apprenticeship", "higher", "secondary"]
+        },
+        {
+          "kind": "cash",
+          "min": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 25
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 65
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 30
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "trade-for-ledger",
+          "weight": 1,
+          "text": "{parent}合上账本，说学费付一个学期，条件是{subject}每星期天下午回家替店里记一次账。母亲这才把汤重新端上来，{sibling}在旁边笑他成了店里的半个伙计。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -60,
+              "reason": "父亲支付一学期学费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.08,
+              "obligation": 0.05,
+              "reason": "达成记账换学费的约定"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "替店里记账"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "学费有了着落"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "trade-for-ledger",
+              "text": "父亲把钢笔帽拧上，说账簿在柜台第二个抽屉。{subject}点头，汤面的热气扑到下巴上，他这才觉得饿。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "trade-for-ledger",
+              "text": "{sibling}把面包篮推过来，小声说记账别记错，不然父亲要念三个月。窗外送煤车的铁轮声过去了，屋里安静下来。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "loan-with-term",
+          "weight": 1,
+          "text": "家里只肯借，不肯给。{parent}拿出一张写明年限的借条，要{subject}毕业后第一年收入里还清，月息照银行算。他签了名，把借条和学费一起收进皮夹。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -50,
+              "reason": "借到的学费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.03,
+              "obligation": 0.09,
+              "reason": "签下借条的债务关系"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "肩上压着债"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "family_loan_signed",
+              "add": true,
+              "reason": "签了家庭借条"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "loan-with-term",
+              "text": "借条上父亲的笔迹很直，{subject}自己的签名却有点抖。他把复写的一份折好，母亲没有看他，只把汤碗往他面前挪了挪。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "loan-with-term",
+              "text": "{parent}说银行也是这个利息，家里不算亏待他。{subject}把克朗一张张点过，钱里有股烟丝和樟脑混在一起的味道。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "shop-over-school",
+          "weight": 1,
+          "text": "{parent}把账本合上，指着店里的空位说那个位置比讲堂稳当。{subject}一直说到汤凉透，父亲没有再开口，母亲收拾碗碟时故意弄出响声。当晚他把听课证放进抽屉最底层。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "无法说服父亲"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.05,
+              "obligation": 0.04,
+              "reason": "父子之间没说通"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "study_deferred_by_family",
+              "add": true,
+              "reason": "学业被家庭暂时搁置"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "shop-over-school",
+              "text": "碗碟在厨房里碰得响。{subject}坐在原位没动，桌上账本还摊着，左边一栏的欠款数字被灯光照得发亮。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "shop-over-school",
+              "text": "他回房把听课证压在一叠旧报纸下，纸边露出一点。楼下父亲在关店门，铁栓落下时响了一声。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": ["knowledge", "family"],
+        "needs": ["knowledge", "cash"],
+        "baseUtility": 1.3,
+        "risk": 0.25,
+        "skills": ["numeracy", "social"]
+      }
+    },
+    {
+      "id": "task-vienna-bourgeois-youth.travel-prague",
+      "title": "去布拉格的车票",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 30
+        },
+        {
+          "kind": "cash",
+          "min": 50
+        },
+        {
+          "kind": "education",
+          "in": ["apprenticeship", "higher", "secondary"]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 30
+        },
+        {
+          "key": "relative",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "night-train-notes",
+          "weight": 1,
+          "text": "{subject}买了夜车三等票，在{relative}介绍的住处挤了一星期。讲座听完，他带回一叠笔记、两个可以写信的地址，和一身没睡好的倦意。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -28,
+              "reason": "往返车票与住宿"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.06,
+              "reason": "听讲座并整理笔记"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "带回新见识"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "借宿与引荐"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "night-train-notes",
+              "text": "三等车厢的灯很暗，他把笔记摊在膝上写，字迹一路歪斜。到站时天刚亮，站台上有股煤和湿石灰的味道。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "night-train-notes",
+              "text": "{relative}给他留了张纸条，说钥匙在门房那里。{subject}把行李放下就去听下午那场，回来时桌上多了一碗凉掉的汤。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "missed-connection",
+          "weight": 1,
+          "text": "车到布尔诺误了点，换乘没赶上，{subject}在车站旅店住了一夜，又多花了六克朗。讲座只赶上最后一场，笔记也记得零碎，回来时钱袋轻了一半。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -38,
+              "reason": "误车后的旅店与改签"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "行程错乱的懊恼"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "匆忙记下的笔记"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "missed-connection",
+              "text": "旅店的床板很硬，隔壁有人整夜咳嗽。{subject}把时刻表看了三遍，天亮时还是坐错了方向，又折回来。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "missed-connection",
+              "text": "最后一场讲座的教室只剩半屋子人。{subject}坐在最后一排，笔尖干得写不出字，只好向邻座借墨水。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "stay-longer",
+          "weight": 1,
+          "text": "讲座结束后{subject}又留了两周旁听，给家里写信说行李随后寄到。母亲回信问他住哪里、吃什么，他含糊过去；{relative}替他找了一个便宜的房间，靠煤炉取暖。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -20,
+              "reason": "延长住宿与伙食"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "在外搭伙的几顿"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "按自己意愿多留一阵"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "obligation": 0.03,
+              "reason": "托他找住处"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "higher",
+              "level": 1,
+              "reason": "旁听讲座积累学分"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "stay-longer",
+              "text": "房间里有一只小铁炉，{subject}得自己劈引火的木片。窗外是别人的后院，晾衣绳上结着霜。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "stay-longer",
+              "text": "{relative}带他去看房，房东太太先问付不付得起押金。{subject}把钱数出来，剩下的盘算着够吃几天。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "migration",
+        "goals": ["knowledge", "status"],
+        "needs": ["autonomy", "knowledge"],
+        "baseUtility": 1.2,
+        "risk": 0.3,
+        "skills": ["social", "numeracy"]
+      }
+    },
+    {
+      "id": "task-vienna-bourgeois-youth.family-business-or-study",
+      "title": "账房还是讲堂",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 35
+        },
+        {
+          "kind": "cash",
+          "min": 80
+        },
+        {
+          "kind": "education",
+          "in": ["apprenticeship", "higher", "secondary"]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 25
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 65
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "chose-university",
+          "weight": 1,
+          "text": "{subject}把钥匙推回去，说要去听课。{parent}当场停掉每月二十克朗的零用钱，母亲没敢再劝。他第二周就找了两家补习学生，每周四晚给人补拉丁文。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -15,
+              "reason": "失去零用后自付开销"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.04,
+              "obligation": 0.03,
+              "reason": "拒绝接手账房"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "self_supporting_student",
+              "add": true,
+              "reason": "靠家教补贴学费"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "靠补课挣钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "chose-university",
+              "text": "钥匙在桌上转了半圈才停。{subject}回房收拾书包，听见楼下父亲把抽屉重重关上，什么也没说。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "chose-university",
+              "text": "第一堂补习课在学生家的书房里，壁炉烧得太旺。{subject}讲完拉丁文变格，对方母亲塞给他一张两克朗的票子。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "ledger-and-evening-class",
+          "weight": 1,
+          "text": "{subject}接过账房钥匙，同时报了夜间的经济课程，一周三晚。白天对账，晚上听课，到周末眼睛发涩。{parent}没反对，只是把钥匙串上的铜牌擦了一遍交给他。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "管账的月钱"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.07,
+              "reason": "白天对账晚间听课"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "两头奔忙的疲乏"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.05,
+              "obligation": 0.06,
+              "reason": "接下账房职责"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "ledger-and-evening-class",
+              "text": "夜间课堂的灯是汽灯的，白得刺眼。{subject}把账本上的数字和讲义上的曲线混在一起，散课时在门口站了一会儿才醒过来。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "ledger-and-evening-class",
+              "text": "钥匙串在腰间叮当响，他在柜台后面记完一笔赊账，抬头时天已经黑了，还得赶去听七点的课。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        },
+        {
+          "id": "one-year-trial",
+          "weight": 1,
+          "text": "{subject}和{parent}谈成一年试用：先管账，若明年考试通过再回学校。{teacher}听说后只说了句“时间不等人”，但答应借他几本教材。他把教材摞在账房柜台上。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.06,
+              "obligation": 0.07,
+              "reason": "谈成一年试用"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "老师借书给他"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.05,
+              "reason": "一年管账的预备"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "暂时两全的安心"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "one-year-trial",
+              "text": "教材摞在柜台上，最上面一本的边角卷起。{subject}把账本挪到另一边，两摞纸中间留出一道窄缝。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "alt",
+              "key": "one-year-trial",
+              "text": "{teacher}把书递过来时，手指在封皮上停了一下。{subject}抱着书走过环城大道，风把外套下摆吹得贴在腿上。",
+              "tone": ["matter-of-fact"]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": ["status", "knowledge", "family"],
+        "needs": ["autonomy", "status"],
+        "baseUtility": 1.5,
+        "risk": 0.35,
+        "skills": ["numeracy", "social"]
+      }
+    }
+  ]
+}

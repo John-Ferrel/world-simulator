@@ -1,0 +1,1253 @@
+{
+  "id": "task-vienna-medical-work",
+  "title": "诊所、病房与第二位医生",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 22,
+    "max": 70
+  },
+  "tags": [
+    "health",
+    "medicine",
+    "hospital",
+    "care",
+    "knowledge",
+    "profession"
+  ],
+  "baseRate": 0.1,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 22,
+      "max": 59
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "health",
+    "goals": [
+      "care",
+      "survival"
+    ],
+    "needs": [
+      "health",
+      "care"
+    ],
+    "baseUtility": 1.3,
+    "risk": 0.2,
+    "skills": [
+      "social"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "task-vienna-medical-work.second-opinion",
+      "title": "第二位医生的诊室",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 59
+        },
+        {
+          "kind": "health",
+          "max": 0.8
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 59
+        },
+        {
+          "key": "doctor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "second-opinion-revised",
+          "weight": 1,
+          "text": "{doctor}让{subject}解开衣服，用听诊器在心口停了好一会儿，说胃的毛病在边上，真正压着的是别处，于是把原先的药粉划掉，换了一种褐色药水和一包湿敷布。{subject}付了两克朗四十赫勒，回去当夜疼得轻了些，能直着腰睡到天亮。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2.4,
+              "reason": "第二份诊费和替换的药"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "诊断修正后症状缓解"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "second_opinion_sought",
+              "add": true,
+              "reason": "带着病历另寻医生"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "second-opinion-revised",
+              "text": "诊室里只有一扇窄窗，{doctor}把旧病历翻了两遍，用指节敲了敲{subject}右肋下方，问疼不疼。墙上挂钟慢了一刻，候诊的七个人在门外跺脚取暖。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "second-opinion-revised",
+              "text": "{subject}数出两克朗四十赫勒放在托盘上，{doctor}开药时把笔尖在瓶签上点了一下：这次不再是胃药粉，褐色药水每次十五滴，湿敷布睡前换一次。出门时楼梯间有煤油和湿羊毛的味道。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "second-opinion-confirmed",
+          "weight": 1,
+          "text": "{doctor}听完、按完，说第一位医生没有看错，只是剂量太轻。他没有另开贵药，只把同一种药粉分成更小的包，嘱咐{subject}饭后用温水送下，诊费收了八十赫勒。{subject}觉得钱花得不值，却又照单子办了，夜里蜷起来时把枕头垫高了一点。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.8,
+              "reason": "第二份诊费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "花钱却只得到相同说法"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "按更细的分量服药"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "second-opinion-confirmed",
+              "text": "{doctor}把两张病历并排放在桌上，指着日期说间隔太短，看不出什么。{subject}坐在硬木椅上，听着隔壁候诊的人咳嗽，心里算着这八十赫勒够买几斤面粉。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "second-opinion-confirmed",
+              "text": "药粉被分成二十小包，用蜡纸裹着。{doctor}说照旧吃，别加量。{subject}出门时把纸包塞进外套内袋，街上的雪化了一半，鞋底湿透。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "second-opinion-refused",
+          "weight": 1,
+          "text": "{subject}把硬币在掌心摊开，只够第一份诊费的一半。{doctor}看了一眼托盘，把病历推回来，写了一张转诊单，说下星期带钱再来。{subject}捏着那张纸走出门，在楼梯口站了一会儿，夜里还是靠原来的药粉硬撑。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "付不出全额诊费，只留下零钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "未得到进一步诊治"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被挡在诊室外的难堪"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "second-opinion-refused",
+              "text": "墙上的钟慢了一刻，{subject}却觉得它走得飞快。{doctor}把转诊单推过桌面，纸角压着墨水瓶，说下星期再来，语气不算坏，也没有商量。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "second-opinion-refused",
+              "text": "候诊的七个人里已经走了两个。{subject}把转诊单折成四折放进内袋，下楼时扶着冰凉的石栏杆，胃里那处又拧了一下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "health",
+        "goals": [
+          "survival",
+          "care"
+        ],
+        "needs": [
+          "health",
+          "care"
+        ],
+        "baseUtility": 1.5,
+        "risk": 0.25,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-medical-work.house-call",
+      "title": "雪夜里的出诊",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 59
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "hasRole",
+          "role": "physician"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 80
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 55
+        },
+        {
+          "key": "hospital",
+          "kind": "organization",
+          "required": false,
+          "organizationKind": "other"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "house-call-saved",
+          "weight": 1,
+          "text": "{subject}踩着埋了半截轨道的雪走到利奥波德城那间合租房，用冷水和湿布把{neighbor}的烧一点点压下去，守到窗纸发白。孩子不再抽搐时，{parent}从床底下拖出一筐煤抵诊费，{subject}收下了，回家路上手指冻得握不住皮包带。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$neighbor",
+              "amount": 0.08,
+              "reason": "高热被及时压下去"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "收下一筐煤抵诊费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "雪夜出诊被人记住"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "house-call-saved",
+              "text": "楼梯间的灯坏了两盏，{subject}摸着墙上去，皮包磕在栏杆上。屋里只有炉子一点红，{neighbor}的额头烫得像小铁炉，{parent}把最后一块干布递过来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "house-call-saved",
+              "text": "天亮前雪停了。{subject}把湿布翻了个面，听见孩子呼吸慢慢匀下来，才想起自己一夜没喝水。那筐煤就搁在门边，筐底还沾着雪水。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "house-call-too-late",
+          "weight": 1,
+          "text": "{subject}赶到时，{neighbor}已经不再抽搐，身子软下去，额头还烫。{parent}抱着孩子不肯松手，{subject}在桌角就着油灯写下死亡证明，字迹被手抖得歪了。诊费没有提，他下楼时那家人连一盏亮着的灯都没有。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "没能救回孩子的沉重"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "留下证明、陪家属坐了一会儿"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "night_death_certificate",
+              "add": true,
+              "reason": "在雪夜签署死亡证明"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "house-call-too-late",
+              "text": "门是虚掩的。{parent}坐在床沿，孩子的头歪在臂弯里。{subject}把皮包放在地上，先摸了摸脉搏，又摸了摸手背，然后才去摸灯。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "house-call-too-late",
+              "text": "油灯芯烧得只剩一点。{subject}把证明纸铺在桌角，笔尖蘸墨时听见{parent}低声数着孩子的岁数，数到一半停住。窗外雪还在下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "house-call-declined",
+          "weight": 1,
+          "text": "电话里说清地址，{subject}看了看窗外的雪，又想到那家上个月还欠着药费，便让电话那头去找值班医生。第二天在诊室听说孩子连夜被送进医院，他翻出那张写着地址的纸条，折好又展开，终究没有去补那一趟。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "推掉出诊后的后悔"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "夜里推辞出诊的消息传开"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "declined_house_call",
+              "add": true,
+              "reason": "拒绝了一次雪夜出诊"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "house-call-declined",
+              "text": "听筒里孩子的哭声断断续续，{subject}说值班医生更近，挂断后把听筒放回叉簧，手指在冰冷的木壳上停了一拍。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "house-call-declined",
+              "text": "第二天诊室炉子刚生起来，就有人提起利奥波德城那家。{subject}低头整理处方笺，纸条上的地址还夹在病历夹里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "health",
+        "goals": [
+          "care",
+          "work"
+        ],
+        "needs": [
+          "care",
+          "cash"
+        ],
+        "baseUtility": 1.4,
+        "risk": 0.35,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-medical-work.senior-training",
+      "title": "资深医生身后的实习位",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 32
+        },
+        {
+          "kind": "education",
+          "in": [
+            "higher"
+          ]
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 32
+        },
+        {
+          "key": "seniorDoctor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        },
+        {
+          "key": "hospital",
+          "kind": "organization",
+          "required": false,
+          "organizationKind": "other"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "senior-training-accepted",
+          "weight": 1,
+          "text": "{seniorDoctor}在走廊尽头停下，让学生们先走，回头对{subject}说下周起跟着查房，从记体温和脉搏开始。{subject}当天下午就领到一叠空白表格和一支削好的铅笔，晚上在合租屋里把病床号抄了三遍。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "开始系统记录体温与脉搏"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$seniorDoctor",
+              "kind": "colleague",
+              "trust": 0.06,
+              "respect": 0.1,
+              "reason": "被允许跟随查房"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "争取到实习机会的振奋"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "senior-training-accepted",
+              "text": "查房的队伍在病房门口散开，{seniorDoctor}的白大褂下摆扫过门槛。{subject}站在最后，把想问的话在心里排了两遍才开口。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "senior-training-accepted",
+              "text": "那叠空白体温表边缘有毛刺，{subject}用指甲刮平。走廊里消毒水和煤烟混在一起，他低头抄病床号，写得比平时慢。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "senior-training-deferred",
+          "weight": 1,
+          "text": "{seniorDoctor}没有答应，从柜子里抽出半尺厚的旧病历交到{subject}手里，说先把这些写清楚，字迹、日期、剂量一样不能含糊。{subject}抱着病历回到角落的桌子，抄到手指发酸，没资格进病房，却先学会了把话写成能读的句子。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.05,
+              "reason": "抄写大量病历"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$seniorDoctor",
+              "kind": "colleague",
+              "trust": 0.03,
+              "respect": 0.06,
+              "reason": "被布置了考验性的活"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被推迟而非拒绝的失落"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "senior-training-deferred",
+              "text": "{seniorDoctor}把病历往桌上一放，纸页扬起的灰在斜光里飘。{subject}伸手接住，分量比看上去重，第一页上还有前任抄错又被划掉的剂量。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "senior-training-deferred",
+              "text": "角落的桌子挨着暖气片，{subject}写到第三个钟头，袖口蹭上了墨。他抬头时查房的队伍早走远了，只听见走廊另一头车轮碾过地砖。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "senior-training-redirected",
+          "weight": 1,
+          "text": "{seniorDoctor}听完，说这里带不了太多年轻人，便写下一封推荐信，让{subject}去另一家诊所找那位愿意带学生的主任。{subject}拿着信在门口站了一会儿，问清地址，回家的路上把信读了四遍，心里既感激又像被轻轻推开了。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$seniorDoctor",
+              "kind": "colleague",
+              "trust": 0.05,
+              "respect": 0.04,
+              "reason": "获得推荐信"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_mentor_elsewhere",
+              "add": true,
+              "reason": "被推荐到别处求学"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被转走而非留下的复杂心情"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "senior-training-redirected",
+              "text": "推荐信写在一张对折的信纸上，{seniorDoctor}落款时特意写清了日期。{subject}双手接过，信封边角还带着体温。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "senior-training-redirected",
+              "text": "走廊里有人推着器械车经过，{subject}侧身让路。他把信塞进外套内袋，数了数口袋里的铜币，还够坐一趟电车去那家诊所。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.15,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-medical-work.research-treatment",
+      "title": "病历夹里的对照",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 59
+        },
+        {
+          "kind": "education",
+          "in": [
+            "higher"
+          ]
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 59
+        },
+        {
+          "key": "seniorDoctor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        },
+        {
+          "key": "freud",
+          "kind": "historical",
+          "required": false,
+          "minAge": 54,
+          "maxAge": 62,
+          "historicalId": "Q9215"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "research-promising",
+          "weight": 1,
+          "text": "{subject}把新疗法用在了病房里三个病号身上，又留下三个照旧治。几天后，试新药的病人能自己坐起来喝汤，他把差别抄成一页简报，交给{seniorDoctor}过目。窗外的雪把病房照得发白，他写完后在落款处停了很久。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "虽非亲用药，但工作顺利心神安定"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "亲手做小样本观察记录"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "简报在同事间传阅"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "small_trial_completed",
+              "add": true,
+              "reason": "完成了一次小规模对照"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "research-promising",
+              "text": "期刊摊在桌上，两种疗法的数字并排，{subject}用铅笔在页边画了两道线。他把六个病号分成两边，先在纸上列出床号。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "research-promising",
+              "text": "病房的暖气烧得半温，{subject}端着记录板走到床边，问病人昨夜睡得好不好。有个老头说换了药以后没那么反胃，还能咽下半块面包。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "research-inconclusive",
+          "weight": 1,
+          "text": "两边病人吃的东西、睡的床、屋里的冷热都不一样，{subject}比了几天也看不出差别，只在病历上写了“证据不足”，没有推广。{seniorDoctor}看完点了点头，说能写这四个字的人不多；他合上期刊，心里有些空，又多了一点踏实。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "学会判断样本混杂"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$seniorDoctor",
+              "kind": "colleague",
+              "trust": 0.05,
+              "respect": 0.05,
+              "reason": "得到一句认可"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "结论落空的失望"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "research-inconclusive",
+              "text": "{subject}把两摞病历并排翻开，一摞在窗边，一摞靠门。冷热、伙食、探视的人都不同，他的笔停在半空。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "research-inconclusive",
+              "text": "期刊被合上时发出很轻的一声。{seniorDoctor}说样本太少，混杂太多，让他别急着信纸上的数字。{subject}把“证据不足”四个字写得很慢。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "research-rejected",
+          "weight": 1,
+          "text": "{seniorDoctor}看了期刊上的表格，翻到页末说样本小得不能作数，把杂志合上还给了他，让他先把眼前几十个病号照顾好。{subject}还想争两句，走廊里有人喊交班，他便把想法抄进自己的笔记本，夹在病历夹后面，再也没有拿出来。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "提议被否的挫败"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$seniorDoctor",
+              "kind": "colleague",
+              "trust": -0.03,
+              "respect": 0.03,
+              "reason": "意见相左但维持尊重"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "trial_idea_shelved",
+              "add": true,
+              "reason": "想法被收起"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "research-rejected",
+              "text": "{seniorDoctor}把杂志合上，两根手指按着封面推回来。{subject}接住，纸页间还夹着他折的一角，折痕正压在那张对照表上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "research-rejected",
+              "text": "交班的铃声从走廊传来，谈话就断了。{subject}把笔记本塞进白大褂内袋，转身去接那摞刚送来的病历。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "knowledge",
+        "goals": [
+          "knowledge",
+          "care"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.2,
+        "skills": [
+          "literacy",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-medical-work.health-campaign",
+      "title": "诊所门前的宣传桌",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 28,
+          "max": 59
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "hasRole",
+          "role": "physician"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 59
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "hospital",
+          "kind": "organization",
+          "required": false,
+          "organizationKind": "other"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "campaign-full-month",
+          "weight": 1,
+          "text": "许可批下来，{subject}带着{neighbor}在集市口摆了整整一个月的桌子，量体重、发肥皂、教母亲们怎样煮水。来量体重的人排到肉铺门口，老板最初嫌挡路，后来见自家孩子也来称了一回，便不再说话。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "公共卫生宣传办成了"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "一个月里站着忙活，自己累着了"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "obligation": 0.03,
+              "reason": "一起守了一个月的宣传桌"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "campaign-full-month",
+              "text": "桌子是从诊所抬出来的旧书桌，桌腿垫了三层纸片才稳。{subject}把肥皂切成小块码在铁盘里，旁边放着一杆带铜盘的秤。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "campaign-full-month",
+              "text": "肉铺老板把挂着的香肠往里挪了挪，给排队的人腾出半尺地。{neighbor}一边登记名字一边哄着哭闹的婴儿，肥皂块在盘子里越码越少。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "campaign-restricted",
+          "weight": 1,
+          "text": "{official}在许可上只写了一天，还说活动不能带党派色彩，要派人来听讲话。那天桌子只摆到午后，来的多半是熟人，{subject}讲了预防腹泻的三件事，讲完自己把秤收进箱子，心里明白这不算失败，也不算成事。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "活动照办但规模受限"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被当成宣传工具的别扭"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "campaign_limited_by_official",
+              "add": true,
+              "reason": "许可受限"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "campaign-restricted",
+              "text": "{official}穿着深色外套，在桌边站着听了半刻钟，把帽檐压低。{subject}讲到腹泻预防时，那人的铅笔在本子上动了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "campaign-restricted",
+              "text": "午后集市散了，桌子周围的雪泥被人踩得发黑。{subject}把剩下的肥皂数了数，装回诊所的木箱，秤砣磕在箱帮上响了一声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "campaign-small-but-saved",
+          "weight": 1,
+          "text": "来的人不多，桌子前常常空着。快收摊时，{neighbor}抱来一个脸色发灰的婴儿，{subject}摸了摸囟门和小手，说这是脱水，立刻让母亲喂温盐水，托人送到诊所。过几天母亲提着一篮鸡蛋来，站在门口不肯进屋。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$neighbor",
+              "amount": 0.05,
+              "reason": "及时识别了脱水"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "病家送来一篮鸡蛋"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.07,
+              "affection": 0.03,
+              "reason": "被救的家属心怀感激"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "campaign-small-but-saved",
+              "text": "婴儿裹在旧披巾里，嘴唇干得起皮。{subject}把秤盘推到一边，用指腹按了按孩子头顶的囟门，立刻让{neighbor}去借温水。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "campaign-small-but-saved",
+              "text": "收摊的箱子还没扣上，{neighbor}就抱着孩子过来了。{subject}让人腾出桌角，把盐一撮一撮溶进水里，看着母亲用小勺喂下去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "health",
+        "goals": [
+          "care",
+          "cause"
+        ],
+        "needs": [
+          "health",
+          "care",
+          "status"
+        ],
+        "baseUtility": 1.4,
+        "risk": 0.3,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-medical-work.poor-patient",
+      "title": "付不起药费的病人",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 59
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "cash",
+          "min": 15
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 10,
+          "maxAge": 75
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "poor-patient-advanced",
+          "weight": 1,
+          "text": "{subject}从自己口袋里数出一克朗二十赫勒放在柜台上，把药瓶递到{neighbor}手里，又在处方背面写下还款的日子。{neighbor}低头把硬币数了两遍没数清，{subject}摆摆手说先回去喂药，字迹在纸上压出一道深痕。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "替病人垫付药费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "obligation": 0.05,
+              "reason": "替人垫了药钱"
+            },
+            {
+              "type": "health",
+              "personId": "$neighbor",
+              "amount": 0.04,
+              "reason": "及时拿到药"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "poor-patient-advanced",
+              "text": "药房的柜台是深色木头的，药瓶摆在铜盘旁边。{neighbor}把硬币一枚枚排在台面上，数到第二遍时手停住，只差二十赫勒。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "poor-patient-advanced",
+              "text": "{subject}用铅笔在处方背面写下日期，笔尖把纸压得咯吱响。药剂师看了他一眼，把药瓶用旧纸包好，推过柜台。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "poor-patient-parish",
+          "weight": 1,
+          "text": "{subject}没掏自己的钱，先去了教区互助会，管事的人翻着册子答应补上差额，条件是要{neighbor}在册子上按下手印。药费凑齐了，{neighbor}把拇指在印泥上按了一下，红印落在名字旁边，像一枚小小的负担。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$neighbor",
+              "amount": 0.04,
+              "reason": "经由互助会拿到药"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "替病人奔走找门路"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parish_aid_arranged",
+              "add": true,
+              "reason": "为病家联系了教区互助"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "poor-patient-parish",
+              "text": "互助会的册子摊在桌上，纸页被翻得发毛。管事的人用指头点着条例，说可以补，但要留个记号。{neighbor}看着印泥盒子，迟疑了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "poor-patient-parish",
+              "text": "{subject}陪着{neighbor}从互助会出来，药瓶已经装在纸袋里。拇指上的红印还没擦干净，路上有熟人问起，{neighbor}把手往袖子里缩了缩。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "poor-patient-refused",
+          "weight": 1,
+          "text": "{subject}想起这家上次的诊费也没结，把处方推回去，只留下那张饮食单，说先照这个吃，药缓缓。{neighbor}把硬币收回口袋，站在药房门口没走，最后把饮食单折成小方块捏在手心，回去的路上下起了雨。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "把人推回去后的不安"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "被拒绝后的疏远"
+            },
+            {
+              "type": "health",
+              "personId": "$neighbor",
+              "amount": -0.03,
+              "reason": "没有拿到药"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "poor-patient-refused",
+              "text": "处方压在柜台上，没有盖章。{subject}的手指停在纸边，说了一句先照着吃，声音比平时低。{neighbor}把硬币一枚枚放回口袋，铜碰铜响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "poor-patient-refused",
+              "text": "药房门口的风把雨吹进来，{neighbor}把饮食单折了又折，塞进贴身的口袋。{subject}站在门内，看着那身影拐进巷子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "health",
+        "goals": [
+          "care"
+        ],
+        "needs": [
+          "care",
+          "health"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.2,
+        "skills": [
+          "social"
+        ]
+      }
+    }
+  ]
+}

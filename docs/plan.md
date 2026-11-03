@@ -1,5 +1,7 @@
 # 完整游戏关键路径
 
+> 2026-11-03 Phase 8 关键路径：见 [v4/phase-8-plan.md](v4/phase-8-plan.md)。
+>
 > 2026-11-03 Phase 7 关键路径：见 [v4/phase-7-plan.md](v4/phase-7-plan.md)。
 >
 > 2026-11-02 v4 可玩版本关键路径：见 [v4/playable-plan.md](v4/playable-plan.md)。当前交付目标已从“继续扩展 Phase 5 指标”收敛为：一键启动、注册、创建孩子、家庭/死亡/关系/工作可持续观察、1945–1999 生活内容、明确的 2000 年 horizon、真实归档与新世界 ID。旧 v1–v3 计划保留为历史记录，不代表 v4 当前状态。

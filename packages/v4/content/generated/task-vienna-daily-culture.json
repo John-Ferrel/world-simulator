@@ -1,0 +1,1251 @@
+{
+  "id": "task-vienna-daily-culture",
+  "title": "老年人在咖啡馆、教堂与市场",
+  "stage": "elderhood",
+  "ageWindow": {
+    "min": 12,
+    "max": 80
+  },
+  "tags": [
+    "elderhood",
+    "daily",
+    "culture",
+    "cafe",
+    "church",
+    "market"
+  ],
+  "baseRate": 0.1,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 60,
+      "max": 80
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "daily",
+    "goals": [
+      "rest",
+      "belonging"
+    ],
+    "needs": [
+      "belonging",
+      "status"
+    ],
+    "baseUtility": 1,
+    "risk": 0.05,
+    "skills": [
+      "social"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "task-vienna-daily-culture.cafe-newspaper",
+      "title": "咖啡馆里的第二份报纸",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 80
+        },
+        {
+          "kind": "cash",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 85
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "cafe-newspaper.share-and-argue",
+          "weight": 1,
+          "text": "{subject}把《新自由报》推到{neighbor}面前，两人就议会里一项煤气税争起来。咖啡从烫嘴放到凉透，侍者来收杯时，他们各自把报纸的一角折好，约好明天接着看。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "两杯咖啡和一份报纸的钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.04,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "为报纸上的新闻争论后仍约好明日再谈"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "在咖啡馆里有人愿意和他争论"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cafe-newspaper.share-and-argue",
+              "text": "他把报纸折成两半，指着议会版上煤气税那一段念出声。邻桌的{neighbor}凑过来，手指点着数字说算错了，两个人把杯子推到一边，差点打翻糖罐。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cafe-newspaper.share-and-argue",
+              "text": "侍者把第二杯咖啡放下时，{subject}已经把报纸让给了{neighbor}。他们从煤气价格争到市政厅的椅子，声音压得很低，却在桌子底下互相踢了一脚。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cafe-newspaper.correct-reading",
+          "weight": 1,
+          "text": "{subject}听见{worker}把报上一条煤气价格读错了一个零，顺口纠正。桌边忽然安静下来，{worker}红着脸把报纸推给他，邻桌有人点头，也有人嫌他多嘴。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在咖啡馆里纠正了读错的数字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "当众纠正了对方读错的数字"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "known_as_cafe_corrector",
+              "add": true,
+              "reason": "在咖啡馆里因纠正读报被人记住"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cafe-newspaper.correct-reading",
+              "text": "{worker}念到“每千立方尺”时把零吞掉了，{subject}用手指敲了敲桌面，说出正确的数目。旁边喝咖啡的人抬起眼，{worker}把报纸往他面前一推，说那你来念。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cafe-newspaper.correct-reading",
+              "text": "那年轻人读得正起劲，{subject}插了一句“少了一个零”，声音不大，却让整张桌子都听见了。侍者擦杯子时笑了一下，{worker}低下头去搅自己的咖啡。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cafe-newspaper.buy-paper-for-neighbor",
+          "weight": 1,
+          "text": "{subject}替腿脚不便的{neighbor}去街角报亭买报，回来时自己的咖啡已被收走，桌上只剩一圈水渍。{neighbor}要把三赫勒塞给他，他摆摆手，坐下来重新要了一杯。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "替邻居买报又重叫了一杯咖啡"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "affection": 0.05,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "替腿脚不便的邻居跑腿买报"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "回来发现咖啡已被收走"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cafe-newspaper.buy-paper-for-neighbor",
+              "text": "他穿过街角的风，从报亭窗口递进三赫勒，把折好的报纸夹在腋下。回到桌边时咖啡杯已经不见了，{neighbor}正伸着脖子等，嘴里埋怨他去了太久。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cafe-newspaper.buy-paper-for-neighbor",
+              "text": "报亭的帘子被风吹得啪啪响，{subject}等摊主找零时跺了跺脚。等他回到咖啡馆，侍者已经把杯子收进托盘，{neighbor}把报纸接过去，翻到讣告版先看了起来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "rest",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1,
+        "risk": 0.05,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-daily-culture.cinema-concert",
+      "title": "周日下午的楼座",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 80
+        },
+        {
+          "kind": "cash",
+          "min": 5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 85
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "cinema-concert.top-balcony",
+          "weight": 1,
+          "text": "{subject}买了楼座最后一排的票，扶着栏杆一级级往上走。散场时他跟着人群哼了一段铜管旋律，夜风把帽檐吹歪，他一路走到电车轨道边才想起该往哪边拐。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "楼座票和路上买的热栗子"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "在楼座听完整场并跟着人群哼旋律"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "affection": 0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "散场时和邻居在门口碰头"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cinema-concert.top-balcony",
+              "text": "楼座的木头椅子硌得他后背发酸，可铜管一响他就忘了。散场灯亮时，他还坐着看空舞台，直到{neighbor}从下面喊他，才慢慢扶栏杆站起来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cinema-concert.top-balcony",
+              "text": "他把票根折进背心口袋，在最后一排找了个靠墙的位子。音乐响起来时，他用手指在膝盖上打拍子，散场后嘴里还留着那段调子，连买栗子时都在哼。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cinema-concert.cover-ears",
+          "weight": 1,
+          "text": "铜管乐刚一响，{subject}就捂住耳朵，太阳穴一跳一跳地疼。没等中场他便扶着栏杆往外走，在门口台阶上坐了好一会儿，票钱算是白花了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "没听完的楼座票"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "铜管乐太响引起头痛"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "中途离场觉得扫兴又浪费钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cinema-concert.cover-ears",
+              "text": "小号拔高的那一下，{subject}觉得耳膜被人用指头弹了。他低头从座位间挤出去，楼梯间的冷空气才让太阳穴慢慢松开，楼下检票的人看了他一眼，没说话。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cinema-concert.cover-ears",
+              "text": "他把帽子压紧，双手捂住耳朵，可声音还是从指缝里钻进来。中场休息前他就摸到出口，在台阶上坐下，摸出怀表看时间，盘算着回家该走哪条近路。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cinema-concert.neighbor-pays",
+          "weight": 1,
+          "text": "售票口前{subject}数了两遍硬币，还差几赫勒。{neighbor}替他补上，他嘴上道谢，回家路上一路计算着怎么还这份人情，连楼座里演了什么都没记住。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "affection": 0.06,
+              "obligation": 0.12,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "邻居替他补足了票钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "欠下人情心里不踏实"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "cinema-concert.neighbor-pays",
+              "text": "他把硬币一枚枚排在售票窗台上，数到第三遍还是差三赫勒。{neighbor}从后面伸手把铜板推过去，说算我请你看。{subject}把找零捏在手心，整场戏都没松开。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "cinema-concert.neighbor-pays",
+              "text": "售票员已经不耐烦地敲窗框了，{subject}的硬币却怎么也不够。{neighbor}叹了口气替他付了，他嘴里说下个月一定还，回家路上却一直低头踢着人行道上的碎石子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "culture",
+        "goals": [
+          "rest",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1,
+        "risk": 0.05,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-daily-culture.church-festival",
+      "title": "教堂前的教区节",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 80
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home",
+            "church"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 50,
+          "maxAge": 85
+        },
+        {
+          "key": "church",
+          "kind": "organization",
+          "required": false,
+          "organizationKind": "church"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "church-festival.set-chairs",
+          "weight": 1,
+          "text": "{subject}帮{neighbor}把棚子下的长椅一张张摆齐，又留下来喝了一碗豆汤。临走时他答应下次带一盘点心，{church}门口的风把蜡烛吹得东倒西歪，他伸手扶正了两支。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "在教区节喝了一碗豆汤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.05,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "一起摆长椅并答应下次带点心"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "在教区节上帮忙摆椅子"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "church-festival.set-chairs",
+              "text": "长椅腿在石板地上刮出刺耳的声音，{subject}弯着腰一张张对齐。摆完最后一排，{neighbor}端来一碗汤，他坐在台阶上喝，看孩子们绕着蜡烛棚追跑。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "church-festival.set-chairs",
+              "text": "他把袖子挽到肘上，和{neighbor}一人一头抬长椅，木头上还留着去年蜡烛的油渍。汤是热的，他喝得很慢，答应下回从家里带一盘点心过来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "church-festival.all-coins",
+          "weight": 1,
+          "text": "{subject}把口袋里的零钱全投进{church}门口的捐款箱，数了数只剩几赫勒，回家时没舍得坐电车，沿着环城路慢慢走回去，脚底磨得发热。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "教区节上捐出的零钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "没钱坐电车步行回家脚底发热"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "在教区节上慷慨捐款"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "church-festival.all-coins",
+              "text": "捐款箱的木盖被摸得发亮，{subject}把铜板一枚枚塞进去，听见它们落到底部。回家路上他在电车轨道边站了一会儿，摸摸空口袋，还是把脚迈向了人行道。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "church-festival.all-coins",
+              "text": "他本来想留两赫勒坐车，手伸进口袋时却把最后几枚也投了进去。环城路的石板有些硌脚，他走一段歇一段，到家时天还没黑透。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "church-festival.turn-away",
+          "weight": 1,
+          "text": "{subject}走到{church}门口，看见和自己吵过架的{neighbor}正站在汤锅后面。他停了两步，转身往市场方向走，教区节的钟声在背后响了一阵，他始终没有回头。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "在教堂门口避开吵过架的邻居"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.06,
+              "affection": -0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "在教区节门口转身避开对方"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "church-festival.turn-away",
+              "text": "棚子下的汤锅冒着白气，{neighbor}正用长勺搅着。{subject}在台阶下站住，手插在口袋里，最后把帽檐往下压了压，沿着墙根往市场的方向走了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "church-festival.turn-away",
+              "text": "他本来想过去喝碗汤，可看见{neighbor}在汤锅后面，脚就停住了。钟楼上的鸽子扑棱棱飞起来，他顺着市场的方向走，路上踢开了一颗小石子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "culture",
+        "goals": [
+          "belonging",
+          "rest"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1,
+        "risk": 0.05,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-daily-culture.market-bargain",
+      "title": "收摊前的半篮李子",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 80
+        },
+        {
+          "kind": "cash",
+          "max": 30
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 80
+        },
+        {
+          "key": "marketWoman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 50,
+          "maxAge": 85
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "market-bargain.buy-bruised",
+          "weight": 1,
+          "text": "{subject}挑出还能吃的半篮李子，付了四赫勒，{marketWoman}又塞给他一只苹果，说是搭头。回家路上篮子沉甸甸地坠着手臂，他把碰伤的先挑出来放在最上面。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.04,
+              "reason": "买半篮碰伤的李子"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "半篮李子和一只搭头苹果"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "买到便宜水果还得了搭头"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "market-bargain.buy-bruised",
+              "text": "石板地上还淌着鱼摊的水，{subject}蹲下来翻拣李子，把烂的拨到一边。{marketWoman}收了钱，顺手从筐底摸出一只苹果塞进他篮子，说拿回去吧。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "market-bargain.buy-bruised",
+              "text": "李子堆在收摊前的木板上，有些皮已经破了，渗着甜味。{subject}挑满半篮，数了四赫勒放在秤盘边，{marketWoman}点点头，又往篮里添了个苹果。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "market-bargain.pay-full",
+          "weight": 1,
+          "text": "{subject}觉得四赫勒已经够低，按原价把六赫勒放在板上，{marketWoman}反倒不好意思，多抓了一把塞进篮子。旁边收鱼摊的人看了他一眼，没说什么。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.06,
+              "reason": "按原价付了李子钱"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "李子和市场女人多抓的一把"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$marketWoman",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.04,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "按原价付钱让卖水果的女人不好意思"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "market-bargain.pay-full",
+              "text": "他把六赫勒排在木板上，{marketWoman}愣了一下，说不用这么多。{subject}摆摆手，她把多出的钱换了几个好李子塞回篮子，鱼摊的水正好冲到他脚边。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "market-bargain.pay-full",
+              "text": "收摊的木箱已经搬出来，{subject}数出六赫勒放在秤边。{marketWoman}嘴里说收摊价不用这么多，手却往他篮里又添了一把，他提着走了两步才觉出分量。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "market-bargain.loose-bottom",
+          "weight": 1,
+          "text": "{subject}回家才看见篮底有几只已经烂透，渗出的汁水把下面的纸袋泡软了。第二天他拎回市场，{marketWoman}皱着眉换了几只，嘴里嘟囔着收摊货本来就不退。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "烂掉几只后换回的李子"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.02,
+              "reason": "来回市场多走的车钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$marketWoman",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "affection": -0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "拎回烂李子要求更换"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "market-bargain.loose-bottom",
+              "text": "他把篮子放在桌上，手指碰到篮底时黏糊糊的。翻过来一看，底下三四只已经烂成泥，纸袋一戳就破，他把好的拣出来，烂的用旧报纸包好。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "market-bargain.loose-bottom",
+              "text": "第二天早晨他把烂李子装在纸袋里拎回市场，{marketWoman}正往架上摆新货，接过去看了一眼，皱着眉从筐里挑了几只补给他，说下次挑仔细些。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "survival",
+          "rest"
+        ],
+        "needs": [
+          "food",
+          "cash"
+        ],
+        "baseUtility": 1.1,
+        "risk": 0.05,
+        "skills": [
+          "numeracy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-daily-culture.neighborhood-rumor",
+      "title": "楼梯间传开的话",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 80
+        },
+        {
+          "kind": "householdSize",
+          "min": 1
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "otherNeighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "neighborhood-rumor.ask-directly",
+          "weight": 1,
+          "text": "{subject}上楼敲开{neighbor}的门，把楼梯间听来的话当面说清。{neighbor}又气又急，翻出账本给他看；第二天下午谣言就停了，可楼道里有人觉得他多管闲事。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.12,
+              "affection": 0.04,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "当面问清谣言并替邻居澄清"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被楼道里一些人认为多管闲事"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "把听来的话当面说清后心里踏实"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "neighborhood-rumor.ask-directly",
+              "text": "他扶着楼梯扶手上了三楼，敲门时听见里面椅子挪动的声音。{neighbor}开门后脸还绷着，听他把话说完，忽然转身去柜子里翻账本，纸页哗哗地响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "neighborhood-rumor.ask-directly",
+              "text": "{subject}在门口站定，把看门人传的话一字一句复述给{neighbor}听。对方先是愣住，后来把账本摊在桌上给他看，两人低头核对了半天，门外有人走过也没抬头。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "neighborhood-rumor.spread-further",
+          "weight": 1,
+          "text": "{subject}在面包店排队时又把听来的话讲了一遍，还添了一句自己的猜测。话传回楼里，三楼的女人从此不再和他打招呼，见面只把脸转向墙。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.18,
+              "affection": -0.1,
+              "obligation": 0,
+              "fear": 0,
+              "respect": -0.06,
+              "reason": "把听来的话又传给了面包店的人"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "被看作传闲话的人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "意识到自己传了不该传的话"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "neighborhood-rumor.spread-further",
+              "text": "面包店柜台前排队的人伸着脖子听，{subject}压低声音把楼道里的话讲了一遍，末尾还加了一句“我早觉得不对劲”。面粉的气味里，有人点头，有人只是把硬币往前推。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "neighborhood-rumor.spread-further",
+              "text": "他本来只想说两句，可面包店的人问得仔细，他就把听来的细节都倒了出来。后来在楼梯上碰见三楼的女人，对方把脸转向墙，他才觉得话说多了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "neighborhood-rumor.warn-lock",
+          "weight": 1,
+          "text": "{subject}没有跟着传话，只在楼梯上提醒{neighbor}把门锁换掉，免得债主找错门。{neighbor}半信半疑，还是让看门人换了锁芯，事后没道谢，也没再提这件事。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "替邻居垫了换锁芯的零钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.02,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0,
+              "reason": "提醒邻居换锁并垫了零钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_quiet_about_rumor",
+              "add": true,
+              "reason": "没有跟着传楼梯间的谣言"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "neighborhood-rumor.warn-lock",
+              "text": "他在楼梯拐角叫住{neighbor}，说债主真要找错门，锁旧了不顶用。对方盯着他看了一会儿，最后点点头，他掏出几枚零钱递给看门人，让它去配个新锁芯。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "neighborhood-rumor.warn-lock",
+              "text": "楼梯间的灯忽明忽暗，{subject}没有提那些闲话，只说门锁该换了。{neighbor}抿着嘴听完，第二天看门人果然来拧锁，{subject}在门口站了一会儿才下楼。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "belonging",
+          "status"
+        ],
+        "needs": [
+          "belonging",
+          "safety"
+        ],
+        "baseUtility": 0.9,
+        "risk": 0.2,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "task-vienna-daily-culture.public-lecture",
+      "title": "市立图书馆的公开讲座",
+      "weight": 1,
+      "rate": 0.0167,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 80
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "secondary",
+            "higher",
+            "apprenticeship"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 80
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 50,
+          "maxAge": 85
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "public-lecture.draw-pipe",
+          "weight": 1,
+          "text": "提问时间{subject}站起来讲了自己年轻时挑土的工地，{teacher}听得认真，请他上台把旧管线画在黑板上。粉笔灰落在他袖口，散场后有人围着问那一段渠的事。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "在黑板上画出旧管线走向"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "在讲座上被请上台讲旧工地"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.08,
+              "reason": "讲师请他上台讲当年工地的事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "public-lecture.draw-pipe",
+              "text": "他站起来时膝盖响了一声，说话却越来越稳。{teacher}把粉笔递给他，他在黑板上画了一条歪歪扭扭的线，标出当年挑土的那一段，底下有人探头看。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "public-lecture.draw-pipe",
+              "text": "讲到旧渠拐弯的地方，{subject}用手比划着，{teacher}干脆请他上去画。粉笔在黑板上吱吱响，他画完退后一步看，台下有人小声说原来从那儿走的。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "public-lecture.fall-asleep",
+          "weight": 1,
+          "text": "暖气烘着，{teacher}的声音又低又平，{subject}还没听到一半就睡着了。散场时椅子响成一片他才醒，揉着眼睛跟人往外走，只记住黑板上一个模糊的箭头。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在讲座上睡着觉得不好意思"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "在硬椅子上睡着脖子发僵"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "被邻座看见在讲座上打瞌睡"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "public-lecture.fall-asleep",
+              "text": "他本来坐得笔直，可暖气从脚底往上烘，眼前的水管图渐渐模糊。再睁眼时椅子正在响，人们披上外套往门口走，他赶紧跟着站起来，帽子差点忘在座位上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "public-lecture.fall-asleep",
+              "text": "{teacher}讲到沉降池的时候，{subject}的头一点一点低下去。散场的动静把他惊醒，他抹了把脸，看见黑板上还留着半个箭头，邻座的人笑着替他让开路。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "public-lecture.meet-old-colleague",
+          "weight": 1,
+          "text": "门口登记时{subject}认出多年不见的{neighbor}，两人没说几句就退到街上。讲座的题目还贴在门里，他们却在拐角咖啡馆坐下，谈到天黑，谁也没再提那场讲。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "和老熟人喝了两杯咖啡"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "affection": 0.08,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "在图书馆门口重逢后一起喝咖啡"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "遇见多年不见的老熟人"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "public-lecture.meet-old-colleague",
+              "text": "他在借书处排队时听见有人喊他的旧绰号，回头看了半天才认出{neighbor}。两人握了手，嘴上说进去听讲，脚却往街角咖啡馆的方向挪，最后在窗边坐下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "public-lecture.meet-old-colleague",
+              "text": "登记簿上的名字让他停了一下，抬头正对上{neighbor}的脸。两人都笑出声，说先找个地方坐坐，讲座的海报还贴在门里，他们却已经推开了咖啡馆的门。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "knowledge",
+        "goals": [
+          "knowledge",
+          "belonging"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1,
+        "risk": 0.05,
+        "skills": [
+          "literacy",
+          "social"
+        ]
+      }
+    }
+  ]
+}

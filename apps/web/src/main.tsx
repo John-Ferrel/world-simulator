@@ -176,6 +176,14 @@ type PersonDetail = {
   worldEvents: LogEvent[];
   historicalProcesses?: PersonHistoricalProcess[];
   historicalContacts?: HistoricalContact[];
+  lifePassages?: {
+    id: string;
+    from: Date4;
+    to: Date4;
+    title: string;
+    eventIds: string[];
+    text: string;
+  }[];
 };
 type AuthState = {
   user: { id: string; username: string } | null;
@@ -1046,6 +1054,28 @@ function PersonPane({
         )}
         {person.died && <Fact label="死因" value={person.deathCause ?? '没有记录'} />}
       </div>
+      {detail && (detail.lifePassages ?? []).length > 0 && (
+        <section className="side-section life-passages">
+          <h3>人生片段</h3>
+          <div className="life-passage-list">
+            {(detail.lifePassages ?? []).slice(-4).map((passage) => (
+              <article key={passage.id} className="life-passage">
+                <div>
+                  <strong>{passage.title}</strong>
+                  <span>
+                    {passage.from.year}
+                    {passage.from.month !== passage.to.month ||
+                    passage.from.year !== passage.to.year
+                      ? `–${passage.to.year}`
+                      : ''}
+                  </span>
+                </div>
+                <p>{passage.text.slice(0, 220)}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
       {person.lifeContract && (
         <div className="wish-card">
           <div className="wish-label">出生愿望</div>

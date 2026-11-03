@@ -5,6 +5,7 @@ import {
   PHASE3_FAMILY_BRIEFS,
   PHASE4_FAMILY_BRIEFS,
   PHASE7_FAMILY_BRIEFS,
+  PHASE8_TASK_BRIEFS,
   auditPacks,
   briefById,
   describeBrief,
@@ -23,6 +24,7 @@ const allBriefs = [
   ...PHASE3_FAMILY_BRIEFS,
   ...PHASE4_FAMILY_BRIEFS,
   ...PHASE7_FAMILY_BRIEFS,
+  ...PHASE8_TASK_BRIEFS,
 ];
 const auditFile = resolve('docs/v4/content-audit.json');
 

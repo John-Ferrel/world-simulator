@@ -1,11 +1,5 @@
-import type {
-  EventEffect,
-  Place,
-  RoleRequirement,
-  SceneCondition,
-  SceneStage,
-} from '../domain.js';
-import type { GeneratedPack } from '../generated.js';
+import type { EventEffect, Place, RoleRequirement, SceneCondition, SceneStage } from '../domain.js';
+import type { GeneratedPack, GeneratedTaskMeta } from '../generated.js';
 
 /**
  * A node brief is the structural contract the model fills with prose and
@@ -25,6 +19,8 @@ export type ContentNodeBrief = {
   allowedEffects?: EventEffect['type'][];
   /** Tokens the prose must not use even if they appear in nearby templates. */
   forbiddenTokens?: string[];
+  /** Fixed task metadata for active-task packs. */
+  task?: GeneratedTaskMeta;
   outcomeHints: string[];
 };
 
@@ -56,11 +52,7 @@ const parent = (minAge = 30, maxAge = 60): RoleRequirement => ({
   maxAge,
 });
 
-const neighbor = (
-  minAge = 18,
-  maxAge = 75,
-  sex?: RoleRequirement['sex'],
-): RoleRequirement => ({
+const neighbor = (minAge = 18, maxAge = 75, sex?: RoleRequirement['sex']): RoleRequirement => ({
   key: 'neighbor',
   kind: 'neighbor',
   required: true,
@@ -77,11 +69,7 @@ const teacher = (minAge = 25, maxAge = 65): RoleRequirement => ({
   maxAge,
 });
 
-const partner = (
-  minAge = 18,
-  maxAge = 45,
-  sameHousehold = false,
-): RoleRequirement => ({
+const partner = (minAge = 18, maxAge = 45, sameHousehold = false): RoleRequirement => ({
   key: 'partner',
   kind: 'partner',
   required: true,
@@ -305,10 +293,7 @@ export const PHASE2_FAMILY_BRIEFS = [
     tags: ['housing', 'home', 'rent', 'family', 'money'],
     baseRate: 0.28,
     conditions: [{ kind: 'placeKind', in: ['home'] }],
-    allowedResidenceIds: [
-      'place-wien-leopoldstadt-tenement',
-      'place-klosterneuburg-aunt-house',
-    ],
+    allowedResidenceIds: ['place-wien-leopoldstadt-tenement', 'place-klosterneuburg-aunt-house'],
     nodeBriefs: [
       {
         id: 'vienna-housing-move.rent-notice',
@@ -555,11 +540,7 @@ export const PHASE2_FAMILY_BRIEFS = [
         conditions: [{ kind: 'cash', max: 30 }],
         roles: [subject(18, 70), neighbor(25, 75)],
         allowedEffects: ['cash', 'mood', 'reputation', 'relation', 'flag'],
-        outcomeHints: [
-          '当掉怀表，拿钱先付房租',
-          '只当表链，留住表壳',
-          '把表放回口袋，去别处借钱',
-        ],
+        outcomeHints: ['当掉怀表，拿钱先付房租', '只当表链，留住表壳', '把表放回口袋，去别处借钱'],
       },
       {
         id: 'vienna-market-debt.coal-credit',
