@@ -1,0 +1,1367 @@
+{
+  "id": "p10-edu-work-tasks",
+  "title": "奖学金、考试与调岗的申请",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 12,
+    "max": 30
+  },
+  "tags": [
+    "adulthood",
+    "education",
+    "work",
+    "task",
+    "night_school",
+    "apprenticeship",
+    "career"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 12,
+      "max": 30
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "education",
+    "goals": [
+      "knowledge",
+      "status",
+      "work"
+    ],
+    "needs": [
+      "knowledge",
+      "status",
+      "cash"
+    ],
+    "baseUtility": 1.4,
+    "risk": 0.25,
+    "skills": [
+      "literacy",
+      "numeracy"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p10-edu-work-tasks.apply-scholarship",
+      "title": "基金会窗口前的申请表",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 28
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "apprenticeship"
+          ]
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 60
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 28
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "scholarship",
+        "application",
+        "technical_school"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-edu-work-tasks.apply-scholarship.granted",
+          "weight": 1,
+          "text": "他把工资单、房租收据和两封推荐信按顺序摊在窗口的铜台上，手写的申请写满两页。基金会的官员核过数目，用蓝笔在表格上批了减免一半学费，条件是每学期末交一份成绩单，缺一页就停。他走出门时还捏着那张回执。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "誊写申请与买信封的花费"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "secondary",
+              "level": 1,
+              "reason": "获得基金会减免，继续技术学校课程"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "申请获批的松动感"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "scholarship_holder",
+              "add": true,
+              "reason": "受基金会资助，须每学期交成绩单"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.apply-scholarship.granted",
+              "text": "楼梯口的队伍里有穿工装的男人，也有陪女儿来的母亲。轮到他时，官员先翻推荐信，再对工资单上的数字皱眉，最后还是拿起蓝笔。他听到身后有人低声数还剩几个号。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.apply-scholarship.granted",
+              "text": "窗口三点差一刻，他把两页申请从玻璃缝里递进去，指尖沾了墨水。官员把回执推回来，说下学期开学前来领减免单，别忘带成绩单。他把回执夹进上衣内袋，扣好扣子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.apply-scholarship.missing-letter",
+          "weight": 1,
+          "text": "他缺第二封推荐信——{teacher}只肯写一封，说另一封该由雇主出。窗口的{subject}被告知明天下午再来。他第二天请假赶到时，走廊里贴出新告示：本学期名额已满。官员建议他等下一学期，他把材料收回布里，没说话。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "两次跑窗口的车钱与请假扣的工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "名额已满的落空"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "请假跑手续，工头记了一笔"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.apply-scholarship.missing-letter",
+              "text": "推荐信的信封被他翻了三遍，确实只有一封。官员把材料推回来，指着墙上的钟说，明天三点前。第二天他喘着气爬上楼梯，迎面是那张新告示，纸角还没干透。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.apply-scholarship.missing-letter",
+              "text": "他在楼梯口遇到同样被退回材料的裁缝学徒，两人对着告示站了一会儿。他摸了摸口袋里那封没派上用场的推荐信，折痕已经很深。回厂的路上电车挤，他一路站着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.apply-scholarship.rejected",
+          "weight": 1,
+          "text": "官员翻完工钱单，说家庭收入证明由房东签字不足为凭，还要户籍局盖章。申请被退回，理由写在纸条上：收入材料不充分。他当天傍晚去问夜校，簿记班的学费低得多，也收工龄够的人。他把那张退回的纸条留作书签。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "申请被退回的难堪"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "基金会的收入证明必须由户籍局盖章，不接受房东签字的收据",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "personId": "$official",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "night_school_applicant",
+              "add": true,
+              "reason": "转向学费更低的夜校簿记班"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.apply-scholarship.rejected",
+              "text": "纸条上的字很规整，连退回的理由都编了号。他把收据理回布里，想起房东老太太说过印章在区公所二楼，周三上午才办公。窗口后面已经叫下一个号了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.apply-scholarship.rejected",
+              "text": "他站在职业介绍所门口把纸条看了两遍，旁边就是夜校的招生单，学费十二克朗，分月交。暮色里电灯刚亮，他把夜校的地址抄在手背上，往家走。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "cash"
+        ],
+        "baseUtility": 1.45,
+        "risk": 0.2,
+        "skills": [
+          "literacy",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p10-edu-work-tasks.qualification-exam",
+      "title": "商业学校的毕业考场",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 30
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary",
+            "apprenticeship"
+          ]
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "min": 5
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 30
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 50
+        }
+      ],
+      "tags": [
+        "exam",
+        "commercial_school",
+        "certificate"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-edu-work-tasks.qualification-exam.passed",
+          "weight": 1,
+          "text": "四门都过了线。{teacher}把毕业证明递给他时，纸上的油墨还带潮气，说拿这个去商号招工处，至少能进柜台谈。他数出五克朗报名费时手心全是汗，现在那张证明夹在账本里，比钱硬。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "商业学校校外考生的报名费"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "secondary",
+              "level": 1,
+              "reason": "通过商业学校毕业考试取得证明"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.06,
+              "reason": "备考簿记与商业算术"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "取得毕业证明，商号招工处愿意面谈"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.qualification-exam.passed",
+              "text": "旧礼堂里桌子排成四列，只许放钢笔和算盘。他做完复利题抬头，窗外的钟刚过十一点。{teacher}收卷时点了点头，那一下他记了很久。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.qualification-exam.passed",
+              "text": "速记那场他写得手腕发酸，符号连成一串。考完他和其他考生在走廊里对答案，有人叹气有人笑。三天后他来取证明，学校的门房认得他，说商号那边正缺人。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.qualification-exam.partial",
+          "weight": 1,
+          "text": "簿记和算术过了，速记差两分。{official}在成绩单上分栏注明，只发单科证明，明年可以补考速记。他把单科证明折好，知道商号要的是整张。回厂时{worker}问他考得怎样，他说差一点。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "报名费不退"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "簿记与算术达到单科合格"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "速记差两分，只拿到单科证明"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shorthand_retake",
+              "add": true,
+              "reason": "计划明年补考速记"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.qualification-exam.partial",
+              "text": "成绩单上速记一栏用红笔写着两分之差。他把证明对着光看，纸很薄。{official}说补考要重新交费，明年春天开考，别忘了日子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.qualification-exam.partial",
+              "text": "他在学校门口的公告板前站住，合格名单上没有他的名字，下面另有一栏单科及格的。他用指甲掐着那一行，回头往电车站走，盘算明年春天之前怎么练速记。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.qualification-exam.failed",
+          "weight": 1,
+          "text": "考前一天他在厂里加班到十点，第二天头脑发沉，复利题算错一道，连错三步。成绩下来四门只剩一门及格，报名费不退。{teacher}把卷子还给他，说那道题错在第一步，他盯着自己的字没吭声。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "报名费不退，考试未过"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "加班后应试，整日头沉乏力"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "考试未过，白花报名费"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "从错题里认清复利算法的第一步"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.qualification-exam.failed",
+              "text": "旧礼堂里的凳子比厂里的还硬。他写到第二张卷子时太阳穴跳，笔尖在复利题上停住，最后把第一步的乘数写反了。收卷时他闻到墨水和旧木头的味道。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.qualification-exam.failed",
+              "text": "成绩贴在公告板上，他从下往上看，自己的名字在不及格那栏。旁边一个考生骂了一声，把帽子摔在台阶上。他把卷子塞进布里，往电车站走，脚底下很轻。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "status"
+        ],
+        "needs": [
+          "knowledge",
+          "status"
+        ],
+        "baseUtility": 1.5,
+        "risk": 0.25,
+        "skills": [
+          "numeracy",
+          "literacy"
+        ]
+      }
+    },
+    {
+      "id": "p10-edu-work-tasks.ask-promotion",
+      "title": "厂长办公室外的半小时",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 30
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory",
+            "shop"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 30
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "bookkeeper",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 55
+        }
+      ],
+      "tags": [
+        "promotion",
+        "bookkeeping",
+        "factory"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-edu-work-tasks.ask-promotion.trial",
+          "weight": 1,
+          "text": "{employer}翻过那本包在布里的出入库本子，看到箱数和发货单对得上，说先让他兼管发货账，每月加三克朗，试用三个月。他出门时{worker}拍了拍他的肩膀。工钱不多，但那是他第一次把手写的数字换成了桌上的位置。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "发货记账兼包装工",
+              "wage": 3,
+              "workplaceId": "$workplace",
+              "reason": "厂主让他兼管发货账并加薪试用"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "本子被厂主认可，工友间口碑上升"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "实际管发货账"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.ask-promotion.trial",
+              "text": "他在办公室门外站了半小时，本子被手汗洇出印子。{employer}翻到最后一页，那里记着他自己核过的三批箱数，一处也没改。桌上的墨水瓶开着，厂主蘸笔时说了句，先试三个月。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.ask-promotion.trial",
+              "text": "包装间的机器声隔着门传进来。他把本子摊开，一页页翻给厂主看，指尖点着他用铅笔标的箱数。厂主靠在椅背上听完，说发货账归你，工钱加三克朗。他出门时差点忘了把布包带走。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.ask-promotion.deferred",
+          "weight": 1,
+          "text": "{employer}听完，说记账的位置要给商会介绍的人，他继续管包装，明年再考虑。本子还给了他。回包装间时{worker}正在点数，他把本子塞回布里，发现手心的汗把第一页边角浸软了。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "位置给商会介绍的人，只得到一句明年再说"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.02,
+              "reason": "当面陈情，厂主记得他"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "工友听说他敢去找厂主"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.ask-promotion.deferred",
+              "text": "厂主说话时没抬眼，笔在订货单上划。他把本子推回去，问明年是什么时候，厂主说等商会的信。门外的钟走了一刻，他站着听完，才转身。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.ask-promotion.deferred",
+              "text": "他把布包夹在腋下往回走，包装间的纸箱堆到胸口高。{worker}问怎么样，他摇摇头说留着位置没给。纸箱的干草味混着机器油，他重新拿起记号笔。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.ask-promotion.conflict",
+          "weight": 1,
+          "text": "他和{bookkeeper}在门口争了几句，对方说本子上的字号不合规矩，他回了一句你根本没核过夜班的箱数。{employer}把本子留下，位置给了别人，第二天他被调去夜班。本子他再没见着。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "争执后位置旁落并被调去夜班"
+            },
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$bookkeeper",
+              "kind": "colleague",
+              "reason": "当面争执，记账处的门路断了"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "改上夜班，作息颠倒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.ask-promotion.conflict",
+              "text": "他把本子放在厂主桌上，{bookkeeper}伸手来翻，说字号不规整。声音传出门外，几个包装工停下手里的活。厂主最后把本子合上压在墨水瓶下，说夜班缺人。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.ask-promotion.conflict",
+              "text": "夜里十点的厂房只亮着几盏汽灯，他搬箱子时还在想那句话。本子留在厂主桌上，账他没再碰。{worker}下白班路过，说算了，别为三克朗把饭碗砸了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "status",
+          "cash"
+        ],
+        "baseUtility": 1.55,
+        "risk": 0.35,
+        "skills": [
+          "numeracy",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p10-edu-work-tasks.seek-apprenticeship",
+      "title": "作坊门口的工具袋",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 25
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 25
+        },
+        {
+          "key": "master",
+          "kind": "worker",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 40
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 40,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "apprenticeship",
+        "craft",
+        "career_change"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-edu-work-tasks.seek-apprenticeship.accepted",
+          "weight": 1,
+          "text": "{master}让他先扫一遍刨花，再看他磨的刨刃。刃口平直，师傅点头收下他，约定三年学徒期，头一年只管饭。头三个月他白天学刨料，晚上替作坊看门。{parent}听说只管饭，皱了皱眉，没再说什么。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 1,
+              "reason": "进入细木作坊学徒期"
+            },
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$master",
+              "occupation": "细木学徒",
+              "wage": 0,
+              "workplaceId": "$workplace",
+              "reason": "头一年只管饭，无工钱"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.06,
+              "reason": "学磨刨刃与刨料"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": 0.06,
+              "reason": "师傅收下他做学徒"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.seek-apprenticeship.accepted",
+              "text": "作坊门口堆着新进的木料，松脂味很重。他把工具袋放下，先抄起扫帚把刨花扫到墙角，再蹲下去磨刨刃。{master}站在旁边看，等他磨完才说，明天早来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.seek-apprenticeship.accepted",
+              "text": "头一天的手掌被刨子把磨出水泡，他用布条裹上接着刨。傍晚{worker}递来一碗汤，说头一年都这样。他把工具挂上墙钩，位置是从下往上数第三个。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.seek-apprenticeship.test-piece",
+          "weight": 1,
+          "text": "{master}嫌他二十岁手已经定了型，让他先做一套榫头再说。他借了凿子，在废料上做了三个，前两个歪，第三个勉强合缝。师傅没答应也没拒绝，只说明天再带一个来，他回去的路上都在比划角度。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "反复试做榫头"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被嫌年纪大，手艺未成"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "师傅愿再给他一次试做机会"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.seek-apprenticeship.test-piece",
+              "text": "{master}把废料推到他面前，说做完我看。他握着凿子时手腕发僵，第一个榫肩削多了，第二个缝里能透光。师傅用指甲划过合缝处，没说话，把料子留下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.seek-apprenticeship.test-piece",
+              "text": "作坊里的学徒都在看。他把第三个榫头装上去，木槌敲了两下才到位。{master}说带一个来，明天。他把废料收进工具袋，出了门才发现袖子沾满木屑。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.seek-apprenticeship.deposit",
+          "weight": 1,
+          "text": "工具押金要八克朗，他拿不出。{master}让他用自己的旧工具试一个月，干得好再收。他那把刨子的刃口有缺口，头几块料刨得毛糙。一个月里他每晚磨刃，磨到指节发亮，师傅只来看过两次。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "买磨刀石与补工具柄"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "熬夜磨刃，手上裂口"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "apprenticeship_trial",
+              "add": true,
+              "reason": "用旧工具试用一个月，待师傅决定"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.seek-apprenticeship.deposit",
+              "text": "他把旧刨子放在工作台上，刃口的缺口在灯下看得清。{master}用拇指试了试，说先用一个月。那天起他收工后留下来磨刃，磨石上的水混着铁屑，指尖冻得发木。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.seek-apprenticeship.deposit",
+              "text": "工具押金的数目他在回去的路上反复算，八克朗，家里拿不出。第二天他背着旧工具袋又去，师傅扫了一眼说试一个月。他把刨子挂上墙钩，钩子有点松。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "status"
+        ],
+        "needs": [
+          "autonomy",
+          "status"
+        ],
+        "baseUtility": 1.35,
+        "risk": 0.3,
+        "skills": [
+          "craft",
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p10-edu-work-tasks.request-transfer",
+      "title": "调岗申请上的那一行",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 30
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 30
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 55
+        }
+      ],
+      "tags": [
+        "transfer",
+        "factory",
+        "commute"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-edu-work-tasks.request-transfer.approved",
+          "weight": 1,
+          "text": "{employer}在调岗申请上签了字，工钱不变。新车间在十七区边上，他每天少走四十分钟，班次固定。报到那天新工头把他当外人，图纸只给他看半张，他先记下机器摆位，没多问。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "新车间的熟手",
+              "wage": 0,
+              "workplaceId": "$workplace",
+              "reason": "调岗获批，工钱不变"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "通勤缩短，休息时间增加"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": -0.04,
+              "reason": "新工头把他当外人"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.request-transfer.approved",
+              "text": "签字只用了一行，{employer}把笔搁回架上。新车间比原来那间亮，窗子开向南，机器是新的。他把工具放进最靠门的柜子，图纸挂在墙上，他站在那儿看了很久。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.request-transfer.approved",
+              "text": "从家到新车间要过一座桥，冬天风大，但比原来倒两趟电车强。头一天新工头点他的名时多停了一拍。他把图纸摊在台面上，一个尺寸一个尺寸对。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.request-transfer.double-duty",
+          "weight": 1,
+          "text": "{foreman}不肯放人，说他一走这条线就没人顶。{employer}折中：让他兼做新车间的图纸活，两头跑，月底补三克朗。他每天下午坐电车过去两个小时，回来时天已经黑了，原来的活还得接着干。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "兼做新车间的图纸活，月底补贴"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "两头跑，站立与乘车时间过长"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.03,
+              "reason": "长期看图纸与对尺寸"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.request-transfer.double-duty",
+              "text": "他的口袋里装两张考勤卡，一张原来的线，一张新车间。下午的电车总挤，他把图纸卷成筒夹在腋下，怕压皱。月底多出的三克朗他没声张。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.request-transfer.double-duty",
+              "text": "{foreman}在班前会上说线不能停，{employer}就让两头兼。他跑了一个月，靴底磨薄了一层。晚上回到家，图纸上的尺寸还在眼前浮。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.request-transfer.union",
+          "weight": 1,
+          "text": "他去找工会代表，代表翻了名册，说新车间确实缺会看图纸的。调岗批下来了，原来的{foreman}从此不给他写证明，介绍信上也绕开他的名字。他拿到调令那天，没去原来的车间道别。",
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "reason": "借工会之力调岗，原工头断了他的证明"
+            },
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "新车间的熟手",
+              "wage": 0,
+              "workplaceId": "$workplace",
+              "reason": "经工会交涉调岗获批"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "工友知道他会找工会说话"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.request-transfer.union",
+              "text": "工会代表的小办公室在楼上，桌上摊着各车间的名册。代表听完，用铅笔在新车间那一栏画了个圈，说下周给你回话。回话确实来了，附一张调令。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.request-transfer.union",
+              "text": "调令贴出来时，原来线上的{worker}看了一眼，低声说以后介绍信可难写了。他把自己的柜子清空，钥匙交还，铸铁的钥匙落在桌上响了一声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "family"
+        ],
+        "needs": [
+          "autonomy",
+          "health"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.3,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p10-edu-work-tasks.save-for-night-school",
+      "title": "火柴盒里的学费",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 30
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 45
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 30
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 55
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "night_school",
+        "saving",
+        "family_money"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-edu-work-tasks.save-for-night-school.saved",
+          "weight": 1,
+          "text": "报名那天，他把火柴盒里的钱倒在夜校柜台上，十二克朗，赫勒一枚不少。{teacher}数完开了收据，他买的是旧书，封皮上有别人写的名字。回家的路上他把收据抹平，夹进课本第一页。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -12,
+              "reason": "夜校簿记班学费"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "买旧课本与文具"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "secondary",
+              "level": 1,
+              "reason": "入读夜校簿记班"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "攒够学费，正式报名"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.save-for-night-school.saved",
+              "text": "火柴盒在口袋里响了一路，他用手掌捂着。柜台后的老师把钱按面值排开，硬币和纸钞都数了两遍。收据填好，他闻到旧书里那种霉和胶的味。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.save-for-night-school.saved",
+              "text": "报名处的黑板写着开课日期。他把旧书翻到扉页，原来的字迹被擦过又写上他的名字。教室里的长桌有墨渍，他挑了靠灯的位子坐下，没人赶他。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.save-for-night-school.taken",
+          "weight": 1,
+          "text": "母亲在他上工后翻出火柴盒，把钱拿去交了煤费。晚上他没吵，只把空盒子放在桌上。第二天他去夜校，{teacher}听完说可以先听课，学费分三个月补，缺课不等人。他当晚就坐在了最后一排。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "学费须分月补交，首期凑出"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.05,
+              "reason": "母亲擅自取走他攒的钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "night_school_installment",
+              "add": true,
+              "reason": "与夜校谈成先听课、分三个月补学费"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.save-for-night-school.taken",
+              "text": "空的火柴盒还放在桌上，摇起来不响。母亲说屋里冷。他把盒子收进抽屉，第二天傍晚去了夜校。{teacher}在办公室听完，说你先来听，钱的事每三个月一清。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.save-for-night-school.taken",
+              "text": "煤筐里是新到的煤，还带着潮。他没问那盒火柴的事，只把课本借来抄目录。教室最后一排的灯暗，他把凳子往前挪了半尺，好让字看清。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-edu-work-tasks.save-for-night-school.overtime",
+          "weight": 1,
+          "text": "他接了一个月的夜班，工钱比别人多一截。学费攒够了，但开课那晚他还在厂房，等赶到夜校已经缺了两堂课。{teacher}在黑板上写着借贷对照表，他站在门口，把帽子和工装上的粉尘一起拍掉才进去。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -12,
+              "reason": "夜校学费攒够后交纳"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "连续夜班，睡眠不足"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "secondary",
+              "level": 1,
+              "reason": "入学夜校但已缺两堂"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "夜校簿记班开课两周内欠下的课，老师不会单独补",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "personId": "$teacher",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-edu-work-tasks.save-for-night-school.overtime",
+              "text": "厂房的汽灯亮到深夜，他的手上全是油。学费交齐那天他把收据夹在帽檐里，上课第二次去时黑板上已经排到借贷对照。他在门口站了一会儿，才找位子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-edu-work-tasks.save-for-night-school.overtime",
+              "text": "一个月的夜班把人熬得发木，白天躺下也睡不着。他在课堂上抄笔记时笔尖打滑，回家补抄到煤油灯快烧干。{worker}说干吗这么拼，他把课本合上没答。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "education",
+        "goals": [
+          "knowledge",
+          "survival"
+        ],
+        "needs": [
+          "cash",
+          "knowledge"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.15,
+        "skills": [
+          "numeracy"
+        ]
+      }
+    }
+  ]
+}

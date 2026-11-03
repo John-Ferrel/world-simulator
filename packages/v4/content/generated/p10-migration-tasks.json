@@ -1,0 +1,1426 @@
+{
+  "id": "p10-migration-tasks",
+  "title": "搬家、船票与回乡的路费",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 60
+  },
+  "tags": [
+    "adulthood",
+    "migration",
+    "housing",
+    "family",
+    "travel",
+    "task"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 60
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "migration",
+    "goals": [
+      "survival",
+      "family"
+    ],
+    "needs": [
+      "cash",
+      "safety"
+    ],
+    "baseUtility": 1.4,
+    "risk": 0.4,
+    "skills": [
+      "social",
+      "numeracy"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p10-migration-tasks.move-district",
+      "title": "手推车上的三趟",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 50
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "landlord",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 55
+        }
+      ],
+      "tags": [
+        "moving",
+        "district",
+        "rent"
+      ],
+      "outcomes": [
+        {
+          "id": "move-three-loads-settled",
+          "weight": 1,
+          "text": "他把床架和炉子分成三趟推过桥，第三趟天已擦黑。旧房东当面清煤账，扣下两克朗十二赫勒，说炉灰也算钱。新房子在工地拐角，孩子转了学，新房东却要一次收一季度租，他数了两遍口袋，只够一半。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -9,
+              "reason": "结清旧屋煤账、给新房东交部分季度租金与手推车租用费"
+            },
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-wien-leopoldstadt-tenement",
+              "reason": "为省房租并靠近新工地，搬进利奥波德城区的合租房"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "新房东催缴剩余季度租，心里发紧"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "新房子的房东只按季度收租，一次要交十克朗以上",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "personId": "$landlord",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "move-three-loads-settled",
+              "text": "手推车的轮子在石板路上嘎吱响，绳子勒进他的肩窝。旧房东拿粉笔在门框上记下煤账，抹布一擦就没了。新屋朝院子，墙上还有上一位住户留下的挂钩。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "move-three-loads-settled",
+              "text": "第二趟推到桥心，邻居扶了一把歪掉的柜子。孩子抱着书包跟在车后，问学校远不远。他把钥匙塞进衣兜，听见新房东在楼梯口说：季度租，少一个赫勒也不行。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "move-share-smaller-room",
+          "weight": 1,
+          "text": "他拿不出一季度的租金，退回到城北一条巷子，改租一间和运煤工合住的屋子，两张床之间拉一根绳子挂衣服。押金四克朗照付，剩下的钱够买一星期的面包和煤球，可孩子转学的手续还压在旧房东那里。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "合住屋押金四克朗与搬运用度"
+            },
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-wien-leopoldstadt-tenement",
+              "reason": "租不起整间，只租得起合住的床位与半间屋"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "用剩下的钱买面包和豆子"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.02,
+              "obligation": 0.1,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "与运煤工合住一屋，互相照看炉子和门锁"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "move-share-smaller-room",
+              "text": "屋子里有股煤灰味，运煤工把靴子倒扣在床脚。绳子上的衬衫滴着水。他把工具袋塞到床下，心里盘算下个星期六能不能先欠着房租。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "move-share-smaller-room",
+              "text": "押金是四克朗，他一张一张数给门房。运煤工说自己夜里十一点才回来，叫他别插门闩。他点点头，把孩子的鞋摆到炉边，鞋底还是湿的。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "move-stay-and-bargain",
+          "weight": 1,
+          "text": "他最终没有搬，把箱子又拖回楼上，跟旧房东坐在厨房桌边谈了半个钟头。按月付、煤账分两次清，房东要他每周扫一次楼道。孩子不用换学校，母亲的药也还在原来的药房抓，只是房租每月多了八十赫勒。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "按月先付一部分房租与旧欠煤账"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$landlord",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "affection": 0,
+              "obligation": 0.12,
+              "fear": 0.02,
+              "respect": 0.05,
+              "reason": "谈成按月付租并承担扫楼道"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "房租每月多出八十赫勒，手头更紧"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "move-stay-and-bargain",
+              "text": "房东把烟斗在桌沿上磕了磕，说行，但楼道得扫干净。他应下来，卷起袖子先扫了一趟楼梯，灰从窗口飘出去，落在院里的晾衣绳上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "move-stay-and-bargain",
+              "text": "手推车还借在那儿，他得还回去。母亲问搬不搬，他说不搬了，学校近。孩子在门后听见，抱着书包跑出去，脚步在楼道里响了一串。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "migration",
+        "goals": [
+          "family",
+          "survival"
+        ],
+        "needs": [
+          "cash",
+          "safety"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.3,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p10-migration-tasks.emigrate",
+      "title": "领事馆门口的队伍",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 45
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "min": 30
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "emigration",
+        "passport",
+        "ship"
+      ],
+      "outcomes": [
+        {
+          "id": "emigrate-sell-and-sail",
+          "weight": 1,
+          "text": "他把木工工具和床架折价卖给旧货商，又找工友凑了几个克朗，才在领事馆交出出生证明、无犯罪记录和体检单，买下去的里雅斯特上船的统舱票。行李只剩一只箱子，检票员在票角打了孔，他把箱子抱在膝上坐了一夜。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "补齐船票、护照手续费与体检单费用，已扣卖家具所得"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "票根攥在手里，终于能动身"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "exhaustion",
+              "add": true,
+              "reason": "在统舱里抱着箱子坐了一整夜没有睡"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "去美国的船票加手续费一共一百多克朗，统舱最便宜",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "personId": "$official",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "emigrate-sell-and-sail",
+              "text": "旧货商把床架往秤上一放，报了个数。工具他留了一套最顺手的，用旧布裹了三层。领事馆的窗户开得很高，队伍里有人咳嗽，有人把文件摊在膝盖上又看一遍。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "emigrate-sell-and-sail",
+              "text": "的里雅斯特的码头有鱼腥味。检票员用钳子在票角夹了个圆孔，他捏着那只箱子，箱底还粘着维也纳的煤灰。邻座的老妇人分给他半块面包，他没说话，点了点头。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "emigrate-missing-paper",
+          "weight": 1,
+          "text": "窗口后的官员把他的出生证明推回来，说教区印章不清楚，要重开一份。他跑了两天教区办公室，船期已经过了，退票扣了二十克朗手续费。他把剩下的钱换成去汉堡的火车票，同乡说那边港口有更便宜的船。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -14,
+              "reason": "退票手续费、去汉堡的火车票与两天排队住店"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "错过船期，证明没办成"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "affection": -0.02,
+              "obligation": 0,
+              "fear": 0.03,
+              "respect": 0.02,
+              "reason": "被退回文件，觉得官员不肯多说一句"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "emigrate-missing-paper",
+              "text": "官员把纸翻了个面，指给他看那枚模糊的紫印章，说下一份。他还没来得及问，身后的人已经挤了上来。教区办公室的门房说神父下午才回，他就在走廊的长凳上等到天黑。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "emigrate-missing-paper",
+              "text": "退票窗口的女人用指甲刮了刮票根，扣下钱，从柜台底下推出几枚银币。他把钱摊在掌心数了一遍，正好够一张去汉堡的车票和两顿热汤。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "emigrate-hamburg-wait",
+          "weight": 1,
+          "text": "他到汉堡港时船位排到三个星期以后。他住进码头边的大通铺，白天帮人扛行李换几个铜板，钱一天天见少。第三个星期他听说还要再等，便把剩下的钱买了回维也纳的车票，箱子比来时轻了一半。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -11,
+              "reason": "汉堡住店、吃饭与回维也纳的车票"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "通铺里拥挤潮湿，夜夜咳嗽"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "走不成又折回，觉得白费了盘缠"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "汉堡港的船位要排好几个星期，大通铺一夜要几十赫勒",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "personId": "$neighbor",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "emigrate-hamburg-wait",
+              "text": "通铺里睡二十来个人，有人咳嗽，有人半夜数钱。他把箱子枕在头下，听着码头的汽笛一遍遍响。扛完一船行李，手心的铜板带着盐味。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "emigrate-hamburg-wait",
+              "text": "售票处的男人说三个星期，语气像在说天气。他回到通铺把票钱摊在膝上反复数，最后留下回程那份。上火车那天，海风把外套吹得鼓起来，他没回头。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "migration",
+        "goals": [
+          "survival",
+          "status"
+        ],
+        "needs": [
+          "cash",
+          "autonomy"
+        ],
+        "baseUtility": 1.5,
+        "risk": 0.55,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p10-migration-tasks.return-home",
+      "title": "回乡的火车票",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 40
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "brother",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "return",
+        "train",
+        "family"
+      ],
+      "outcomes": [
+        {
+          "id": "return-ticket-bought",
+          "weight": 1,
+          "text": "他在南站买了一张三等车票，十二克朗四十赫勒，把木工工具留给了同屋的工友。车过布吕恩时换了一次车，哥哥站在站台上，手里拎着一壶水。第二天一早他就跟着下地，手上磨出了新泡。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -13,
+              "reason": "回乡三等车票与路上买面包的钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "哥哥在站台上等到了，心里落地"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$brother",
+              "kind": "kin",
+              "trust": 0.1,
+              "affection": 0.08,
+              "obligation": 0.08,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "回乡投靠哥哥，一同下地干活"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "worked_in_vienna_factory",
+              "add": true,
+              "reason": "在城里工厂干过四年，手艺带回了乡下"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "return-ticket-bought",
+              "text": "售票窗口递出车票，他把它夹在身份证里。同屋的工友摸着那套凿子说用得着，他摆摆手。火车开动时，维也纳的烟囱一截截退到窗框外面去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "return-ticket-bought",
+              "text": "哥哥穿一件洗得发白的短衫，站在站台尽头，看见他就把水壶举起来。地里的土还是凉的，他弯腰拔了半垄草，指甲缝里嵌进黑泥，倒比城里睡得踏实。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "return-stop-in-brno",
+          "weight": 1,
+          "text": "车票钱只够坐到布吕恩。他在车站帮人搬箱子、给旅馆跑腿，换了几顿饭和半张到家乡的票，晚上睡在候车室的长椅上。到家时靴底磨穿了一个洞，他拄着一根捡来的木棍走进院子。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -7,
+              "reason": "到布吕恩的车票与半张后续车票"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "候车室过夜，靴底磨穿受了凉"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.04,
+              "reason": "在布吕恩车站跟车夫和旅馆伙计讨价还价、换活计"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "chilblains",
+              "add": true,
+              "reason": "穿磨穿的靴子在湿冷候车室过夜，脚上生了冻疮"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "return-stop-in-brno",
+              "text": "布吕恩车站的灯泡昏黄，长椅上睡着三个候车的人。他把外套垫在头下，听见调车场的铁钩撞击声，一夜没合眼。天亮时他去问旅馆伙计要不要人搬箱子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "return-stop-in-brno",
+              "text": "搬一箱给两赫勒，他来回走了十几趟，手心磨红。旅馆伙计看他实在，让他吃了碗热汤。他捧着碗，热气糊了眼睛，脚趾在靴子里面已经没了知觉。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "return-ticket-refunded",
+          "weight": 1,
+          "text": "动身前一天，城里的作坊捎话让他去试工。他把车票退掉，扣了些手续费，拎着工具袋去了作坊，在车床边站了一整天。哥哥的信还压在枕头下，他回了一封，说再等等看。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "退票扣除的手续费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "试工有了机会，心里稍定"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$brother",
+              "kind": "kin",
+              "trust": -0.02,
+              "affection": 0.03,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0,
+              "reason": "推掉了回乡的安排，写信解释"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "城里那家作坊开工，试工一天给两克朗五十赫勒，转正看手艺",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "personId": "$worker",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "return-ticket-refunded",
+              "text": "退票窗口的人不耐烦地敲了敲柜台，扣下手续费。他把工具袋往肩上一甩，作坊里有机油和铁屑的味道，车床转起来嗡嗡响，他听着觉得熟悉。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "return-ticket-refunded",
+              "text": "他坐在床沿写信，笔尖在纸上顿了几回。哥哥的字歪歪扭扭，说地里的活不急。他把信折好，贴上邮票，回来的路上顺手买了半块肥皂。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "migration",
+        "goals": [
+          "family",
+          "survival"
+        ],
+        "needs": [
+          "belonging",
+          "cash"
+        ],
+        "baseUtility": 1.25,
+        "risk": 0.25,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p10-migration-tasks.find-lodging",
+      "title": "看门人手里的钥匙",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 35
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "caretaker",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "landlady",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 55
+        }
+      ],
+      "tags": [
+        "lodging",
+        "arrival",
+        "deposit"
+      ],
+      "outcomes": [
+        {
+          "id": "lodging-courtyard-room",
+          "weight": 1,
+          "text": "他挑了朝院子的那间单间，付了一个月押金和半个月房租，房东点清钱才给钥匙。看门人把备用钥匙挂进门房的木板上，嘱咐他晚上十点以后别在楼梯上跺脚。屋里有张床、一只铁炉和半截蜡烛。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -9,
+              "reason": "单间一个月押金与半个月房租"
+            },
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-wien-leopoldstadt-tenement",
+              "reason": "租下朝院子的单间房，钥匙由门房代管"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$caretaker",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.02,
+              "obligation": 0.05,
+              "fear": 0.02,
+              "respect": 0.04,
+              "reason": "看门人代管钥匙并要求他遵守楼规"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "有了自己的门和钥匙，心里踏实一点"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lodging-courtyard-room",
+              "text": "窗户对着院子，对面人家在晾被子，抖落的灰飘进来。房东数钱时用指尖一张张捻开，确认没有假币。看门人把钥匙在掌心掂了掂，说丢一把要赔。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "lodging-courtyard-room",
+              "text": "他把箱子放在床脚，铁炉里还剩几块碎煤。点着半截蜡烛，墙上的影子晃了两晃。楼梯间传来别人家的孩子哭，他靠着床坐下，觉得这声音也不算坏。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lodging-shared-bed",
+          "weight": 1,
+          "text": "他先租了合住的床位，一间屋三张床，和两个工人分摊炉煤。租金最便宜，押金只要两克朗，可夜里有人打呼、有人半夜回来踢到痰盂。他把工具袋压在枕头下，睡了第一夜。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "合住床位的押金与首周租金"
+            },
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-wien-leopoldstadt-tenement",
+              "reason": "钱不够租整间，先租合住的床位"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.01,
+              "obligation": 0.06,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "同屋共摊煤钱，约定轮着生火"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "利奥波德城的合住床位一周约一克朗，押金两克朗",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "personId": "$caretaker",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lodging-shared-bed",
+              "text": "三张床挤在一间屋里，中间只够放一只脸盆。有人把湿袜挂在炉边，屋里有酸味。他铺好自己那条毯子，听着呼吸声高低不齐，迷迷糊糊睡过去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "lodging-shared-bed",
+              "text": "半夜门响，一个工人摸黑进来，踢翻了痰盂，低声骂了一句。他翻了个身，把工具袋往怀里搂紧，想着下个月也许能换张靠墙的床。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lodging-no-guarantor",
+          "weight": 1,
+          "text": "看门人看了他的身份证，说三处房都要担保人签字，他一个也拿不出。房东把地址纸条还给他，他只好拖着箱子去车站候车室的长椅上过夜，半夜被巡夜人叫醒查了两次身份证。第二天他再去门房，看门人只摇头。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "找不到担保人，夜里在候车室被叫醒"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在硬木长椅上冻了一夜，腰背发僵"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$caretaker",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "affection": -0.03,
+              "obligation": 0,
+              "fear": 0.03,
+              "respect": 0,
+              "reason": "看门人坚持要担保，不肯通融"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "lodging-no-guarantor",
+              "text": "看门人把身份证在灯下举起来看，说不是不信你，是规矩。他站在门口，箱子夹在两腿之间，最后提着箱子走了，轮子在门槛上磕了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "lodging-no-guarantor",
+              "text": "候车室的钟走得很慢，巡夜人的手电扫过一排长椅。他把外套盖在脸上，听见有人在角落里打牌。天快亮时一个卖咖啡的推车进来，热气扑到脸上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "migration",
+        "goals": [
+          "survival",
+          "belonging"
+        ],
+        "needs": [
+          "safety",
+          "cash"
+        ],
+        "baseUtility": 1.4,
+        "risk": 0.3,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p10-migration-tasks.pawn-belongings",
+      "title": "当铺柜台上的工具",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 30
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "pawnbroker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 55
+        }
+      ],
+      "tags": [
+        "pawn",
+        "sale",
+        "travel_money"
+      ],
+      "outcomes": [
+        {
+          "id": "pawn-watch-and-coat",
+          "weight": 1,
+          "text": "他把怀表和两件冬衣递上铁栅栏后的柜台，当铺的人翻过表壳、抖了抖衣领，报出九克朗，写在一张蓝纸当票上。他留下那套木工工具，把当票折成小方块塞进身份证后面，数钱时手指有点抖。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 9,
+              "reason": "当掉怀表与两件冬衣换来的现钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "把父亲留下的怀表押出去，心里空了一块"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "当铺赎当期限六个月，过期死当，蓝纸当票要收好",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "personId": "$pawnbroker",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pawn-watch-and-coat",
+              "text": "柜台高过他的胸口，铁栅栏后面那人用放大镜看表盘，指甲盖敲了敲玻璃。冬衣被甩在秤盘上，扬起一股樟脑味。他签字时，笔尖在纸上顿了一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pawn-watch-and-coat",
+              "text": "当票上的字又小又挤，他对着灯看清了日子。出门时风灌进领口，他把当票塞到身份证后面，摸了摸那个位置，像怕它掉出来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pawn-whole-lot-sold",
+          "weight": 1,
+          "text": "收旧货的挑夫上门，看了一眼床上的东西，说整堆买给十二克朗，不肯单件算。他那套用惯的凿子和刨子被塞进麻袋，床架也拆了。签字按手印时，他把手在裤子上擦了两下才按下去。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 12,
+              "reason": "整堆卖掉工具、床架与旧衣的价钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "手艺工具整堆贱卖，心里发堵"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_tools_for_fare",
+              "add": true,
+              "reason": "为凑路费卖掉了吃饭的家伙"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "affection": -0.02,
+              "obligation": 0,
+              "fear": 0,
+              "respect": -0.02,
+              "reason": "觉得收旧货的压价太狠，又不得不卖"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pawn-whole-lot-sold",
+              "text": "挑夫把凿子一把把翻过来看，摇了摇头，说整堆才值这个数。麻袋扎口的时候，他听见铁器碰在一起叮当响。楼下的孩子探头来看，他摆摆手让他们走开。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pawn-whole-lot-sold",
+              "text": "床架拆开靠在墙上，屋里空出一大块。他把手印按在纸上，指腹沾了印泥。挑夫扛起麻袋下楼，楼梯响了好一阵，他在窗口看着那麻袋拐出巷口。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pawn-keep-thimble",
+          "weight": 1,
+          "text": "伴侣把银顶针从他手边拿走，说那是她母亲的东西，不能当。两人在桌前争了几句，最后她翻出藏在罐子底下的三克朗，他拿着那点钱出门，剩下的路费还得另想办法。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "拿出家中私藏的三克朗补路费，仍不够"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": -0.04,
+              "affection": 0.03,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "为当顶针争吵，又一起凑钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "当不成东西，路费还差一截"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pawn-keep-thimble",
+              "text": "她把顶针攥在手心，指节发白，说别的东西都行，这个不行。桌上摊着两件冬衣和一只怀表，他把怀表又往自己这边挪回来，没再说话。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pawn-keep-thimble",
+              "text": "罐子底下压着几个银币，她数出来推给他。他把钱收进内袋，听见她在灶边把锅盖放得很重。顶针还搁在针线篮边上，反着一点光。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "daily",
+        "goals": [
+          "survival",
+          "family"
+        ],
+        "needs": [
+          "cash",
+          "autonomy"
+        ],
+        "baseUtility": 1.15,
+        "risk": 0.2,
+        "skills": [
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p10-migration-tasks.ask-travel-money",
+      "title": "舅父家的星期天",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 25
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "uncle",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        },
+        {
+          "key": "aunt",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "loan",
+        "relative",
+        "travel_money"
+      ],
+      "outcomes": [
+        {
+          "id": "uncle-part-loan-note",
+          "weight": 1,
+          "text": "舅父从裤袋里数出十五克朗推过来，说剩下的让他去车站帮车夫装货抵工钱。舅父在灯下写了一张欠条，写明三个月内还清，他签了名，把钱对折放进内袋，欠条留给舅父收在账簿里。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 15,
+              "reason": "舅父借给的路费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$uncle",
+              "kind": "kin",
+              "trust": 0.08,
+              "affection": 0.05,
+              "obligation": 0.15,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "借了十五克朗并写下三个月内还清的欠条"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "owes_uncle_15_kronen",
+              "add": true,
+              "reason": "欠舅父十五克朗，写了欠条"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "uncle-part-loan-note",
+              "text": "舅父把账簿摊在桌上，蘸了墨水写欠条，写完把笔递过来。他签下名字，笔画有点歪。舅母在厨房里洗碗，碗碰碗的声音一阵紧过一阵。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "uncle-part-loan-note",
+              "text": "点心还摆在那里没动。舅父说车夫明早装货，让他早点去。他把钱按在掌心数了一遍，十五克朗，纸币带着舅父烟袋的味道。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "uncle-refuse-introduce-carrier",
+          "weight": 1,
+          "text": "舅父听完摇了摇头，说钱不借，倒可以给他写张条子，介绍一个跑布吕恩的车夫，让他搭便车走。舅母把点心收进橱里，说路上总得带点吃的。他收了条子，坐车夫的车走了两天。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$uncle",
+              "kind": "kin",
+              "trust": 0.02,
+              "affection": -0.02,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "没借到钱，只拿到介绍车夫的字条"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被拒在客厅里听得明白，脸上挂不住"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "路上给车夫买烟叶的道谢钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "uncle-refuse-introduce-carrier",
+              "text": "舅父把字条写在一张旧名片背面，递过来时没抬眼。他接过去，折好，站起身。舅母送到门口，塞给他一小包面包和盐，说路上吃。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "uncle-refuse-introduce-carrier",
+              "text": "车夫的货车装着空木箱，他坐在木箱中间，腿伸不直。走了两天，过布吕恩时在车马店睡了一夜，第二天午后看见家乡教堂的尖顶。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "aunt-private-money",
+          "weight": 1,
+          "text": "舅父在里屋翻账簿半天没出来，舅母趁空从围裙里掏出一卷私房钱，数出十克朗塞给他，说到了家乡先给她写封信。他把钱收下，出门时在门口站了一会儿，才把帽子戴正。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 10,
+              "reason": "舅母私下给的路费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$aunt",
+              "kind": "kin",
+              "trust": 0.1,
+              "affection": 0.08,
+              "obligation": 0.12,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "舅母瞒着舅父给钱，约定到了写信"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "有人肯背着人帮他，心口热了一下"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "aunt-private-money",
+              "text": "围裙口袋里有针线、线头和一叠折了角的票子。她数得很慢，边数边听见里屋抽屉关上的声音。他接过钱，看见她手心有洗碗留下的皱。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "aunt-private-money",
+              "text": "他把钱收进内袋，她把围裙重新系好，回去接着洗那只锅。走到巷口他回头看了一眼，舅母正站在窗口，用手背把窗玻璃上的水汽抹开。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "family",
+        "goals": [
+          "survival",
+          "belonging"
+        ],
+        "needs": [
+          "cash",
+          "belonging"
+        ],
+        "baseUtility": 1.2,
+        "risk": 0.2,
+        "skills": [
+          "social"
+        ]
+      }
+    }
+  ]
+}

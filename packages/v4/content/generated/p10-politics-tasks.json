@@ -1,0 +1,1335 @@
+{
+  "id": "p10-politics-tasks",
+  "title": "工会、传单与互助厨房",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 65
+  },
+  "tags": [
+    "adulthood",
+    "politics",
+    "social",
+    "union",
+    "party",
+    "relief",
+    "task"
+  ],
+  "baseRate": 0.5,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 65
+    }
+  ],
+  "kind": "task",
+  "task": {
+    "domain": "politics",
+    "goals": [
+      "cause",
+      "belonging"
+    ],
+    "needs": [
+      "belonging",
+      "status"
+    ],
+    "baseUtility": 1.3,
+    "risk": 0.4,
+    "skills": [
+      "social",
+      "literacy"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "p10-politics-tasks.join-union",
+      "title": "活动室门口的两张桌子",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 65
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory",
+            "union"
+          ]
+        },
+        {
+          "kind": "notHasRole",
+          "role": "union_member"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "unionMember",
+          "kind": "union_member",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "union",
+          "kind": "organization",
+          "required": true,
+          "organizationKind": "union"
+        },
+        {
+          "key": "party",
+          "kind": "organization",
+          "required": false,
+          "organizationKind": "party"
+        }
+      ],
+      "tags": [
+        "union",
+        "party",
+        "membership"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-join-union-register",
+          "weight": 1,
+          "text": "他俯身在蓝皮会员册上写下姓名和车间，又数出六十赫勒交第一个月会费，收据带着油墨味。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "第一个月工会会费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "在工会活动室正式登记入会"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$unionMember",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "介绍人担保他入会"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-join-union-register",
+              "text": "他把笔尖在墨水瓶口刮了两下，{unionMember}在介绍人一栏敲了敲手指；墙角有人压低声音念罢工基金账目上的欠款。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-join-union-register",
+              "text": "收据撕下来时还黏着手；{unionMember}把蓝皮册子合上，说下星期三带三个月会费来核一遍，别把纸弄丢。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-join-union-wait",
+          "weight": 0.8,
+          "text": "介绍人那晚没来，他坐在后排发潮的木凳上听完会费说明，把表格折好揣回口袋。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "空等了一场，入会没办成"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "工会入会需要介绍人签字，并连续三个月交会费",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "personId": "$unionMember",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-join-union-wait",
+              "text": "门缝里透进煤气路灯的黄光，{unionMember}在桌前翻名单，说担保人今晚夜班，表格只能先压着。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-join-union-wait",
+              "text": "他把没填完的入会表夹进面包袋，走出{union}时听见隔壁{party}的门里有人在念请愿书，字句断断续续。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-join-union-party",
+          "weight": 0.7,
+          "text": "他没在工会桌前停下，拐进隔壁党部问入党手续，花两赫勒买了本小册子，被叮嘱周末来听讲。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.02,
+              "reason": "买一本党部小册子"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "contacted_party",
+              "add": true,
+              "reason": "向党部询问入党手续"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "隔壁党部周末有讲演，入党要两名党员介绍",
+              "confidence": 0.7,
+              "sourceKind": "witnessed",
+              "personId": "$unionMember",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-join-union-party",
+              "text": "小册子封面上的人像印得发糊，他付了二赫勒，把它塞进外套内袋，没再回头看工会那张空着的椅子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-join-union-party",
+              "text": "党部屋里的人让他坐在靠墙的凳子上，念了半页章程；他出来时街上卖栗子的炉子正冒着白烟。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "politics",
+        "goals": [
+          "cause",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "safety"
+        ],
+        "baseUtility": 1.3,
+        "risk": 0.3,
+        "skills": [
+          "social",
+          "literacy"
+        ]
+      }
+    },
+    {
+      "id": "p10-politics-tasks.organize-meeting",
+      "title": "借来的后屋和三十把椅子",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 65
+        },
+        {
+          "kind": "hasRole",
+          "role": "union_member"
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory",
+            "union",
+            "other"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "unionMember",
+          "kind": "union_member",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "innkeeper",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "meeting",
+        "organization",
+        "union"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-organize-meeting-success",
+          "weight": 1,
+          "text": "后屋挤满了人，{innkeeper}最后只收了两克朗场地费；会议通过了缩短工时和承认工会的动议。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "付酒馆后屋场地费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "主持了车间会议并通过动议"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$unionMember",
+              "kind": "colleague",
+              "trust": 0.06,
+              "reason": "一起把会议记录整理寄出"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-organize-meeting-success",
+              "text": "椅子不够，有人靠着啤酒桶站；记录本摊在桌上，他把三十多人的签名念了一遍，才让{unionMember}把信寄给工会。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-organize-meeting-success",
+              "text": "会后{innkeeper}用抹布擦着桌面，嘴里念叨酒钱还没结；窗外院子里冻着的石板路反着灯光。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-organize-meeting-walkout",
+          "weight": 0.8,
+          "text": "{innkeeper}临到傍晚反悔，说房东不准借地方，他们只好在院子里站着开会，来的人少了一半。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "会议被场地问题打散"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "只到一半人的会议没能通过加薪动议"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$innkeeper",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "酒馆老板临时收回后屋"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-organize-meeting-walkout",
+              "text": "院子里站着十几个人，风把帽子吹得斜了；{unionMember}把动议纸折了又折，最后只念了半页。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-organize-meeting-walkout",
+              "text": "{innkeeper}堵在后屋门前说不行，大家只好散到路灯下；有人骂了一句，跺着脚回去了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-organize-meeting-police",
+          "weight": 0.7,
+          "text": "街对面站着两个戴头盔的警察，说话的都压低嗓子；记录里只写会费和互助金，动议没有落笔。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "会议在警察监视下缩了水"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "watched_by_police",
+              "add": true,
+              "reason": "开会时被警察记下活动"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "会议当晚街对面有警察记录进出人数",
+              "confidence": 0.75,
+              "sourceKind": "witnessed",
+              "personId": "$official",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-organize-meeting-police",
+              "text": "他把记录本翻到只有会费那一页，{unionMember}点头没说话；外面的脚步声在门前停了一会儿又走开。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-organize-meeting-police",
+              "text": "有人从窗缝看出去，说街角那两个人换了位置；{innkeeper}把酒杯收得很快，说打烊了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "politics",
+        "goals": [
+          "cause",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.4,
+        "risk": 0.35,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p10-politics-tasks.publish-leaflet",
+      "title": "早班前的三百份传单",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 65
+        },
+        {
+          "kind": "hasRole",
+          "role": "union_member"
+        },
+        {
+          "kind": "capability",
+          "capability": "literacy"
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory",
+            "union"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "unionMember",
+          "kind": "union_member",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "leaflet",
+        "printing",
+        "risk"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-leaflet-distributed",
+          "weight": 1,
+          "text": "天没亮，传单塞进更衣柜、面包袋和工具箱夹层；午休时楼梯间有人靠着墙逐行读，嘴角动着。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "传单在早班前散发出去"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "分摊纸张和油墨的钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.05,
+              "reason": "工友发现更衣柜里的传单并传阅"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-leaflet-distributed",
+              "text": "他在更衣室闻着湿油墨味，{worker}探过头来问是不是缩短工时那页，又把纸折成小方块揣进上衣。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-leaflet-distributed",
+              "text": "厂门口的面包车里混着传单，有人边咬面包边看；废页在院子角落烧成一小堆灰，扫进排水沟。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-leaflet-handwritten",
+          "weight": 0.8,
+          "text": "排字工不肯开机，说家里的活不能丢；他和{unionMember}只好手抄五张，贴到市场旁的柱子和面包店窗边。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "没能印出正式传单"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.04,
+              "reason": "说服店主允许张贴手抄传单"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.3,
+              "reason": "买浆糊和纸"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-leaflet-handwritten",
+              "text": "纸边被风卷起来，他用冻僵的手按了按浆糊；面包店老板探出头说别贴门上，贴窗边可以。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-leaflet-handwritten",
+              "text": "{unionMember}把写完的一张举到煤气灯下看，字被烟熏得发黄；市场那边已经有赶早市的人停下来看。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-leaflet-confiscated",
+          "weight": 0.7,
+          "text": "厂门口搜包，传单被门房翻出来没收；他收到一张传唤单，名字写进了门房的记录本。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "传单被查，名字记在门房本上"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "under_summons",
+              "add": true,
+              "reason": "因分发传单收到传唤单"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "当众被搜包"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-leaflet-confiscated",
+              "text": "门房把一叠纸拍在木桌上，边角还带着油墨味；他签字时笔尖在传唤单上顿了顿，{worker}在后面没敢出声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-leaflet-confiscated",
+              "text": "厂门外的风把没收的传单吹得哗啦响，{official}把名字念了一遍，让他下午去办公室一趟。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "politics",
+        "goals": [
+          "cause",
+          "status"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.35,
+        "risk": 0.6,
+        "skills": [
+          "literacy",
+          "craft"
+        ]
+      }
+    },
+    {
+      "id": "p10-politics-tasks.recruit-coworkers",
+      "title": "食堂长桌上的空座位",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 65
+        },
+        {
+          "kind": "hasRole",
+          "role": "union_member"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "unionMember",
+          "kind": "union_member",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "recruitment",
+        "union",
+        "factory"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-recruit-two",
+          "weight": 1,
+          "text": "第二天{worker}来交了第一个月会费，还带着同一车间的两个人，说工钱被扣得有理可讲。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "为工会招募到新会员"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "friend",
+              "trust": 0.07,
+              "reason": "工友入会后亲近起来"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "工友送来家里做的面包"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-recruit-two",
+              "text": "食堂桌上摆着三个汤碗，{worker}推过一块面包来，说已经把包装间的名字记下了，下星期三去活动室。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-recruit-two",
+              "text": "{unionMember}在册子末尾添上两个新名字，笔尖顿了顿；午休的汽笛一响，汤碗还冒着热气就没人管了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-recruit-report",
+          "weight": 0.8,
+          "text": "工友把谈话原原本本告诉了工头，下午他被叫去问话，蓝皮会员册被翻了一遍，问是谁介绍入的会。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被工头查问招募会员的事"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "午休谈话被告到工头那里"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "rival",
+              "trust": -0.08,
+              "reason": "工头把招募谈话记在心上"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-recruit-report",
+              "text": "工头把会员册翻到有他签名的那页，手指在名字上敲了两下；{worker}站在门外，眼睛盯着自己的鞋尖。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-recruit-report",
+              "text": "办公室里的钟走得慢，他被问了三遍是谁介绍的；出来时食堂的汤已经凉了，长桌空了一半。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-recruit-cold",
+          "weight": 0.7,
+          "text": "工友答应来听一次会，却始终没在名册上签字；后来在食堂见了面，开始端着汤绕到别桌去。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "招募没有结果，工友开始躲着他"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "未能在车间拉到新会员"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "工友避谈入会的事"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-recruit-cold",
+              "text": "他端着汤坐在原来的位置，对面座位空着；{worker}在窗边另一桌低头吃面包，偶尔抬眼看看这边。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-recruit-cold",
+              "text": "下星期三的活动室他只等到一个人；桌上的宣传单边角被翻得卷起来，他把多余的塞回包里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "social",
+        "goals": [
+          "cause",
+          "belonging"
+        ],
+        "needs": [
+          "belonging",
+          "status"
+        ],
+        "baseUtility": 1.25,
+        "risk": 0.45,
+        "skills": [
+          "social"
+        ]
+      }
+    },
+    {
+      "id": "p10-politics-tasks.negotiate-employer",
+      "title": "怀表放在桌上的谈判",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 65
+        },
+        {
+          "kind": "hasRole",
+          "role": "union_member"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory",
+            "government"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "negotiation",
+        "wages",
+        "union"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-negotiate-half",
+          "weight": 1,
+          "text": "{employer}把怀表扣上，答应补回被扣工钱的一半，下月再谈工时；他和{worker}在字据上签了名。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.5,
+              "reason": "被扣工钱补回一部分"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "替工友谈回部分工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "与厂长达成书面字据"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-negotiate-half",
+              "text": "厂长把字据推过来，窗台那盆枯常春藤的干叶掉在纸上；{worker}小心把纸吹净才折起来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-negotiate-half",
+              "text": "怀表在桌面滴答响，一刻钟到了；{employer}按住表盖没有再打开，送他们到门口，说下月前别停机。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-negotiate-thrown-out",
+          "weight": 0.8,
+          "text": "厂长叫来门房把他请出办公室，工价一个字没谈；第二天车间门口贴出停工通知，两张纸被风吹得贴不住墙。",
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "谈判后被列入停工的车间裁员名单"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "谈判破裂被逐出厂长办公室"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "被门房带离厂长办公室"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-negotiate-thrown-out",
+              "text": "门房的手搭在他胳膊上，走廊里只有钟摆声；{worker}落后两步，手里还攥着那张工价纸。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-negotiate-thrown-out",
+              "text": "第二天门口贴的停工通知上没写期限，工友们挤着看；车间里的灯一盏一盏灭下去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-negotiate-committee",
+          "weight": 0.7,
+          "text": "市政厅的官员把双方请去谈了两个钟头，最后只成立一个没有期限的委员会，双方各派一人。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "谈判只换来无期限的委员会"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "市政厅让厂方和工人各派一人进一个没有期限的委员会",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "personId": "$official",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在市府参与谈判并留下记录"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-negotiate-committee",
+              "text": "官员把两张椅子摆到桌边，自己坐在中间翻文件；{employer}看了看怀表，说委员会的人也还是工人。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-negotiate-committee",
+              "text": "出门时天已经黑了，{worker}问他这算不算答应，他把那份没有期限的纸叠好，说先去把名单交上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "work",
+        "goals": [
+          "work",
+          "cause"
+        ],
+        "needs": [
+          "cash",
+          "safety"
+        ],
+        "baseUtility": 1.55,
+        "risk": 0.6,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    },
+    {
+      "id": "p10-politics-tasks.organize-relief",
+      "title": "教堂侧厅的第一锅汤",
+      "weight": 1,
+      "rate": 0.0833,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 65
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home",
+            "union",
+            "church"
+          ]
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "church",
+          "kind": "organization",
+          "required": true,
+          "organizationKind": "church"
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "relief",
+        "mutual_aid",
+        "kitchen"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-relief-church",
+          "weight": 1,
+          "text": "教堂侧厅借了下来，{neighbor}帮着搬来长凳；他每天煮一锅汤，账本贴在门口，谁领了多少都写在上面。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2.5,
+              "reason": "买面粉和盐开第一锅汤"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "互助厨房分下的汤和面包"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "在教堂侧厅主持互助厨房"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-relief-church",
+              "text": "旧锅底烧出一圈黑，{neighbor}用围裙擦着门框上的名册；瘦削的手从门边伸进来，他舀得满一些。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-relief-church",
+              "text": "教堂侧厅里飘着洋葱味，他把账本翻到无字的一页，记下斋戒日和领汤的人，铅笔头短得捏不住。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-relief-backyard",
+          "weight": 0.8,
+          "text": "市政办事处不批名单，说厨房会招人聚集；他们改在工会后院支起炉子，先照顾最穷的几户。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.8,
+              "reason": "在工会后院支炉子买柴和面"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.07,
+              "reason": "一起在工会后院办互助厨房"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "厨房虽简陋总算开了火"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-relief-backyard",
+              "text": "后院的风把炉火吹得歪向一边，{neighbor}用砖头压住锅盖；名单上的人一个一个进来，身上还带着厂里的棉絮味。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-relief-backyard",
+              "text": "{official}在门口说未经批准的名单不能贴，他把纸翻过来扣在桌上，先给坐在最里面的老太婆盛汤。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-relief-debt",
+          "weight": 0.7,
+          "text": "面粉只够三天，他和{neighbor}分头去市场赊账；赊欠记在他自己名下，摊主约好月底结清。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "市场赊账买面粉，欠款记在自己名下"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "赊来的面粉煮成汤"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "relief_debt_owed",
+              "add": true,
+              "reason": "为互助厨房在市场上挂了欠账"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-relief-debt",
+              "text": "摊主把数记在墙角的小本上，问他拿什么抵；他把工牌翻出来看了看，说月底前一定还。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-relief-debt",
+              "text": "{neighbor}抱着半袋面走在前头，纸袋底下渗出细粉；回去的路上两人都没说话，只听见面包房关窗的声音。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ],
+      "task": {
+        "domain": "politics",
+        "goals": [
+          "care",
+          "belonging"
+        ],
+        "needs": [
+          "food",
+          "belonging"
+        ],
+        "baseUtility": 1.4,
+        "risk": 0.25,
+        "skills": [
+          "social",
+          "numeracy"
+        ]
+      }
+    }
+  ]
+}

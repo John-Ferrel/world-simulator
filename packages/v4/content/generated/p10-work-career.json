@@ -1,0 +1,1226 @@
+{
+  "id": "p10-work-career",
+  "title": "第一份工、工头与养老金",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 65
+  },
+  "tags": [
+    "adulthood",
+    "work",
+    "career",
+    "wages",
+    "injury",
+    "pension",
+    "employment"
+  ],
+  "baseRate": 0.15,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 65
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p10-work-career.first-position",
+      "title": "招工簿上的第一个名字",
+      "weight": 1,
+      "rate": 0.0255,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 22
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 22
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "first_job",
+        "hiring",
+        "labour_exchange"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-work-career.first-position.hired",
+          "weight": 1,
+          "text": "{subject}把地址纸条递给门房，门房在招工簿上写下他的名字。试工两天，他跟着{worker}给车床油箱上油，手指沾满黑油。{employer}在周末把他留下，说下周起按周发薪，先领八克朗，中午在厂里吃一顿。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "机器厂上油工",
+              "wage": 8,
+              "workplaceId": "$workplace",
+              "reason": "试工后被正式留下按周发薪"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "第一周工钱"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "跟着老工人学上油和看机器"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.first-position.hired",
+              "text": "门房用蘸水笔在格子里写下他的名字，墨迹被手背蹭花。{worker}领他去看油壶，壶嘴用铁丝缠着，说别让油滴到皮带上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.first-position.hired",
+              "text": "星期六结账，会计从铁盒里数出八克朗推过来，硬币还带着抽屉里的铁锈味。{employer}在门口说，下周别迟到，七点汽笛一响就关门。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.first-position.daily",
+          "weight": 1,
+          "text": "旧东家扣着学徒证明不放手，厂里只肯按日雇{subject}。{worker}帮他跟门房说了几句，他每天天亮进厂，干到汽笛响第二遍，日结一克朗二十赫勒。{employer}说干满一个月再看名册上有没有位置。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "机器厂日工",
+              "wage": 7.2,
+              "workplaceId": "$workplace",
+              "reason": "无学徒证明只能按日计薪"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "awaiting_workbook",
+              "add": true,
+              "reason": "旧东家扣押学徒证明"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "按日雇没有保障"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.first-position.daily",
+              "text": "他每天在门房的小窗前排一次队，报名字，领一枚铜牌，下班再把牌子交回去。{worker}说这牌子就是你的名册，丢了当天白干。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.first-position.daily",
+              "text": "傍晚会计把硬币数在铁皮盖上，一克朗二十赫勒，缺一个赫勒也要当面点清。他把钱塞进袜筒，走过两条街才敢松手。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.first-position.turned-away",
+          "weight": 1,
+          "text": "名额给了排在前面的人。{subject}在厂门口等到下班，汽笛响过，铁门拉上，他把另一家厂子的招工日期记在纸条背面。{official}从职业介绍所出来，说下星期三还有一处招人，让他早点去排队。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "招工名额落空"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "下星期三早上七点，另一家机器厂在职业介绍所登记招上油工",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "personId": "$official",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "白等一天没有工钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.first-position.turned-away",
+              "text": "他站在人行道边数砖缝，门房的窗子关上又打开，最后只朝他摆摆手。下班的人从身边挤过去，有人把烟头摁灭在门柱上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.first-position.turned-away",
+              "text": "介绍所的柜台前还有几个人在等，{official}把一张印好的通知推过来，用铅笔在“星期三”下面画了一道。他把纸条折成四折，塞进上衣内袋。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-work-career.promotion-to-foreman",
+      "title": "更衣室门上的新名牌",
+      "weight": 1,
+      "rate": 0.0255,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 50
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 50
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "formerForeman",
+          "kind": "worker",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "promotion",
+        "foreman",
+        "authority"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-work-career.promotion-to-foreman.accept",
+          "weight": 1,
+          "text": "{employer}把工头的活单交到{subject}手里，工钱每周多四克朗。他早上在更衣室钉上自己的名牌，午饭时原来一起干活的{worker}端着碗去了另一张桌子，说话的声音比平时低。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "车间工头",
+              "wage": 12,
+              "workplaceId": "$workplace",
+              "reason": "升做工头工钱增加"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.1,
+              "affection": -0.1,
+              "obligation": 0,
+              "fear": 0.05,
+              "respect": 0.1,
+              "reason": "工友觉得他站到了厂主一边"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "工钱涨了但被老工友疏远"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.promotion-to-foreman.accept",
+              "text": "他把名牌钉在更衣室门框上，钉子敲了三下才正。{formerForeman}经过时看了一眼，把仓库钥匙串往腰后一甩，没说话。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.promotion-to-foreman.accept",
+              "text": "午饭的汤盆端上来，{worker}把面包掰成两块，一块放进自己嘴里，没像往常那样递给他半块。他低头翻活单，铅笔在纸上划出很重的线。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.promotion-to-foreman.probation",
+          "weight": 1,
+          "text": "{subject}跟{employer}说只代管一个月，工钱先不加，等工人那边没话说再定。{employer}把名字记进簿子，说这一个月活单出错就算他的。{worker}听说不加钱，收工时装作随口问了一句，语气松了些。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "工人觉得他不急着拿工头的钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.08,
+              "affection": 0.04,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.05,
+              "reason": "代管不加钱让工友少些怨气"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "acting_foreman",
+              "add": true,
+              "reason": "代管工头一个月"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.promotion-to-foreman.probation",
+              "text": "他把活单夹在腋下，先去洗料间转了一圈，问{worker}机器还卡不卡料。{worker}用抹布擦手，说你先管满这个月再说。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.promotion-to-foreman.probation",
+              "text": "会计在簿子上他的姓名后面添了一行小字，注明“代管”。他站在柜台前看着那行字，把帽檐往上推了推，说月底再算。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.promotion-to-foreman.refuse",
+          "weight": 1,
+          "text": "{subject}摇头，说自己宁可在车床边站着。{employer}把位置给了另一个车间的人，{formerForeman}从仓库回来继续管他们，考勤簿重新摆回原处。开工前他照旧给机器上油，只是不再有人来问他活单的事。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "推掉升职后心里不踏实"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$formerForeman",
+              "kind": "colleague",
+              "trust": 0.05,
+              "affection": 0.03,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "老工头回来管事对他客气了些"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "继续在车床边干活"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.promotion-to-foreman.refuse",
+              "text": "他说完就回车间，把油壶嘴对准轴承，一滴一滴往下点。{formerForeman}把考勤簿拍在桌上，翻开第一页，像什么都没发生过。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.promotion-to-foreman.refuse",
+              "text": "{employer}在办公室门口摊了摊手，说随你。第二天另一个车间的人来接班，站在过道里点名，念到他的名字时顿了一下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-work-career.demotion-dismissal",
+      "title": "月底结算后的空工位",
+      "weight": 1,
+      "rate": 0.0255,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "demotion",
+        "dismissal",
+        "short_time"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-work-career.demotion-dismissal.transfer",
+          "weight": 1,
+          "text": "{subject}拿了调令去仓库，工钱少了三成，但班次还在。{worker}帮他把工具箱从车床边搬走，路过门口时他回头看了一眼自己站过的位置，铁板上还留着一圈油印。月底会计照常把工资袋递过来。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "仓库杂工",
+              "wage": 6.5,
+              "workplaceId": "$workplace",
+              "reason": "调去仓库工钱减少"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "工钱减少后家里开销吃紧"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "离开车床边不甘心"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.demotion-dismissal.transfer",
+              "text": "仓库里比车间冷，他把外套扣到最上面一颗，开始清点木箱上的编号。{worker}在门口喊了一声，说有空过来喝口水。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.demotion-dismissal.transfer",
+              "text": "调令上盖着方章，他折好放进内袋。仓库的活是把麻袋码齐，肩膀上落满灰，晚上回家拍了好一阵。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.demotion-dismissal.settle",
+          "weight": 1,
+          "text": "{subject}收下结清的工钱，把工具柜清空，抹布和油壶留在柜底。第二天他站在多瑙河边的货栈前等零工，手插在口袋里，看着装卸工扛麻袋上跳板，一袋两赫勒。",
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "厂里裁员结清工钱"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 14,
+              "reason": "结清的工钱和补偿"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "失去固定工作"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.demotion-dismissal.settle",
+              "text": "会计把工钱数在桌上，推过来时硬币摊成一片。他把油壶从柜子里拿出来又放回去，最后只带走自己的饭盒。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.demotion-dismissal.settle",
+              "text": "码头上风大，他跟着一群人站在木棚下，工头模样的人出来点了七八个，没点到他。他把手插得更深，等下一班船。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.demotion-dismissal.suspension",
+          "weight": 1,
+          "text": "{subject}和{foreman}在办公室门口争了几句，声音大到走廊都听得见。厂里最后把解雇改成停班一个月，期满再看有没有位置。他走出厂门时，门房把铜牌收回去，说下个月带证明再来。",
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "停班一个月暂时没有工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": -0.12,
+              "affection": -0.08,
+              "obligation": 0,
+              "fear": 0.05,
+              "respect": 0,
+              "reason": "为解雇的事吵了一架"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "suspended_pending_review",
+              "add": true,
+              "reason": "停班一个月等待重新安排"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.demotion-dismissal.suspension",
+              "text": "他把铜牌从窗口推回去，牌边磕在木框上响了一声。{foreman}站在走廊尽头，手里还捏着那张没签字的单子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.demotion-dismissal.suspension",
+              "text": "门房在簿子上他的姓名旁画了个圈，说这一个月别来。他走到街角才想起饭盒还在更衣柜里，又折回去取。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-work-career.wage-shortfall",
+      "title": "工资袋里少了三克朗",
+      "weight": 1,
+      "rate": 0.024,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "bookkeeper",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "wages",
+        "deduction",
+        "dispute"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-work-career.wage-shortfall.itemize",
+          "weight": 1,
+          "text": "{subject}把工资袋拿回柜台，请{bookkeeper}把扣款逐项写清楚。会计翻了翻簿子，只在纸条上写“材料损耗”，签了名。他把纸条折好夹进工资册，硬币在口袋里一路响到楼梯口。",
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "厂里扣工资只写“材料损耗”，没有逐项明细",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "personId": "$bookkeeper",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "被扣掉的三克朗"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "扣款说不清去处"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.wage-shortfall.itemize",
+              "text": "会计的毛笔在纸条上停了一下，墨点洇开。{subject}站在柜台前没走，后面排队的人开始咳嗽。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.wage-shortfall.itemize",
+              "text": "楼梯口的{worker}把工资袋倒过来抖，只掉出一枚铜币。他凑过去看那张纸条，念出“材料损耗”四个字，旁人笑了一声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.wage-shortfall.collective",
+          "weight": 1,
+          "text": "{subject}和{worker}等几个人一起去找{employer}，把工资袋摆在办公桌上。厂主听了几句，说下不为例，让会计补回一半。走出办公室时{worker}说，别到处讲，讲了下次就没这么好说话。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1.5,
+              "reason": "厂主补回一半扣款"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "affection": 0.05,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "一起去要回部分扣款"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "complained_with_workers",
+              "add": true,
+              "reason": "和工友集体交涉扣款"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.wage-shortfall.collective",
+              "text": "办公室里有雪茄烟味，{employer}把工资袋往桌边推了推，说补一半，这事到此为止。{worker}先出来，在走廊里把手指放在嘴边。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.wage-shortfall.collective",
+              "text": "会计重新数了硬币，在簿子上划掉一行。他们下楼时脚步比上去时轻，{worker}在门口把补回的钱分给大家，一人一克朗半。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.wage-shortfall.refuse",
+          "weight": 1,
+          "text": "{subject}把工资袋推回柜台，说不讲清楚就不收。第二天他被调去洗料间，工钱按日算，水汽熏得眼睛发红。{worker}路过门口看了一眼，没敢多站。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "洗料间日工",
+              "wage": 5.5,
+              "workplaceId": "$workplace",
+              "reason": "拒收工资袋后被调去洗料间按日计薪"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "洗料间水汽和碱水刺激"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "skin_irritation",
+              "add": true,
+              "reason": "长时间接触碱水"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.wage-shortfall.refuse",
+              "text": "他把工资袋留在柜台上就走了，硬币在袋里响了一下。第二天早上，洗料间的木盆已经摆好，碱水冒着白气。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.wage-shortfall.refuse",
+              "text": "手泡在碱水里不到半个时辰就发皱，指缝间起了红点。他抬头看窗子，玻璃上全是水汽，外面的人影走过去也看不清脸。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-work-career.workplace-injury",
+      "title": "传送带旁的担架",
+      "weight": 1,
+      "rate": 0.024,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        },
+        {
+          "kind": "health",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "doctor",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        }
+      ],
+      "tags": [
+        "injury",
+        "accident",
+        "insurance"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-work-career.workplace-injury.hospital",
+          "weight": 1,
+          "text": "{foreman}关掉总闸，{worker}跑去叫门房。{subject}被送到医院，{doctor}给他接上骨头，上了夹板。厂里报了事故，保险会付了药费，但他的右手再也使不上力，拧螺丝时手指发抖。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.18,
+              "reason": "右手被传送带卷入受伤"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "right_hand_weakness",
+              "add": true,
+              "reason": "骨头接上后右手无力"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "保险会支付药费后剩余补贴"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.workplace-injury.hospital",
+              "text": "担架抬过车间过道时，{worker}把护罩的螺丝捡起来放进兜里。医院走廊里全是石炭酸味，{doctor}用夹板比了比他的小臂。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.workplace-injury.hospital",
+              "text": "事故簿摊在办公桌上，{foreman}一条条念出机器编号和见证人姓名。他坐在长椅上，右手吊在胸前，看会计把表格填完。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.workplace-injury.self-treated",
+          "weight": 1,
+          "text": "{subject}用布条缠住手，说不用去医院，接着上工。月底伤处化脓，{foreman}才让门房叫了{doctor}。厂里只按病假扣钱，工资袋比平时薄了一截。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "伤口化脓拖延治疗"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "infected_wound",
+              "add": true,
+              "reason": "手部伤口感染"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "病假扣钱和药费"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.workplace-injury.self-treated",
+              "text": "布条是从旧衬衫上撕下来的，缠了三圈，血从布缝里渗出来。他用左手扳搬手，动作慢了一半，传送带照样转。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.workplace-injury.self-treated",
+              "text": "月底{doctor}拿镊子揭开布条，伤口边缘发白。{foreman}站在门口说，早该报事故，现在只能算病假。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.workplace-injury.refuse-form",
+          "weight": 1,
+          "text": "{subject}拒绝在写着“自己不小心”的事故单上按手印。{foreman}把单子收了回去，说那先去看仓库。厂里把他调去看仓库门，工钱照旧，只是胸口那口气一直没顺下去。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$subjectOrg",
+              "occupation": "仓库看门",
+              "wage": 9,
+              "workplaceId": "$workplace",
+              "reason": "拒绝签事故单后被调去看仓库"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "工友觉得他有胆量不签事故单"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": -0.08,
+              "affection": -0.05,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "拒签事故单让工头不快"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.workplace-injury.refuse-form",
+              "text": "他把事故单推回去，墨水瓶在桌上晃了一下。{foreman}看了他一会儿，把单子夹进簿子里，说那你去仓库坐着。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.workplace-injury.refuse-form",
+              "text": "仓库门口有一张矮凳和一盏灯，他的活是登记进出的木箱。{worker}中午端着饭盒过来，说里面都在传他没按手印。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-work-career.retirement-pension",
+      "title": "最后一张考勤卡",
+      "weight": 1,
+      "rate": 0.0255,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 55,
+          "max": 59
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 59
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "retirement",
+        "pension",
+        "age"
+      ],
+      "outcomes": [
+        {
+          "id": "p10-work-career.retirement-pension.early",
+          "weight": 1,
+          "text": "{subject}把工龄册、保险单和工资证明交到办事处，{official}逐页核对后盖了章。他办完提前退休，养老金比最后一份工钱少一半，但每天不用再听汽笛。{worker}帮他把工具柜里的东西装进纸袋。",
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "提前退休离开工厂"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 10,
+              "reason": "第一个月养老金"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "离开粉尘车间后呼吸稍好"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.retirement-pension.early",
+              "text": "办事处窗口很小，{official}把印章在印泥上按了两下。他把盖好章的纸叠好，走出门时街对面的钟正好敲十一下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.retirement-pension.early",
+              "text": "纸袋里装着饭盒、抹布和一只旧油壶。{worker}送到厂门口，说以后不用赶七点的汽笛了。他回头看了一眼烟囱，烟正往东边飘。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.retirement-pension.delayed",
+          "weight": 1,
+          "text": "工龄册上缺了停班那两年的记录，{official}把材料退回来，让他去找旧东家开证明。{subject}跑了两趟旧厂，退休推迟半年，这半年他仍按日去上工，工钱照旧按周结。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "车间辅助工",
+              "wage": 8,
+              "workplaceId": "$workplace",
+              "reason": "退休推迟继续按日上工"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "pension_delayed",
+              "add": true,
+              "reason": "工龄记录缺失需补证明"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "退休手续被拖延"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.retirement-pension.delayed",
+              "text": "旧厂的门房换了人，翻了半天簿子才找到他的名字。证明开在一张黄纸上，字迹淡得几乎看不清。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.retirement-pension.delayed",
+              "text": "他把材料重新装进信封，用胶水封口，在办事处门口站了一会儿。{official}在里面喊下一个，他只好先回去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "p10-work-career.retirement-pension.rehire",
+          "weight": 1,
+          "text": "厂里愿意返聘{subject}做半天门房，工钱按日算，养老金照领。{employer}说门房要认得人，老工人最合适。他每天下午坐在小窗后面登记木箱，早上还能在家修修椅子。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "半天门房",
+              "wage": 4,
+              "workplaceId": "$workplace",
+              "reason": "退休后返聘做半天门房"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "第一个月养老金和门房工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "半天活计让日子有照应"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "p10-work-career.retirement-pension.rehire",
+              "text": "小窗上贴着一张手写的牌子，写着“来访登记”。他把老花镜架在鼻尖上，一笔一画写下来人的名字。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "p10-work-career.retirement-pension.rehire",
+              "text": "下午汽笛响时他不用再进车间，只把铁门拉开一半，让运料的推车进去。{worker}经过窗口，把一包烟放在台上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

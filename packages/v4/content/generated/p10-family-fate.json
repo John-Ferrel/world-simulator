@@ -1,0 +1,1313 @@
+{
+  "id": "p10-family-fate",
+  "title": "提亲、生育与遗产的房间",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 75
+  },
+  "tags": [
+    "adulthood",
+    "family",
+    "marriage",
+    "birth",
+    "death",
+    "inheritance",
+    "household",
+    "housing"
+  ],
+  "baseRate": 0.14,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 75
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p10-family-fate.proposal-answer",
+      "title": "面包店后间的答复",
+      "weight": 1,
+      "rate": 0.0238,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 35
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner",
+          "minTrust": 0.3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 35
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 35
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "proposal",
+        "engagement",
+        "courtship"
+      ],
+      "outcomes": [
+        {
+          "id": "proposal-yes-wait",
+          "weight": 3,
+          "text": "对方的母亲把信推回来，说答应，但要再等半年，等嫁妆箱里攒够四条床单和二十克朗。{partner}当着面把婚期用铅笔写在信背，墨迹淡得几乎看不见。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.1,
+              "affection": 0.08,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.03,
+              "reason": "婚约被双方家里当面认下，只把日期往后挪"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "答复虽慢，终归是应了"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "婚期被写在提亲信背面，用铅笔改到半年之后",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "personId": "$partner",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "proposal-yes-wait",
+              "text": "后间的桌子窄，四个人围着，咖啡面上的油皮结了一层。母亲说完“再等半年”，父亲在门口把烟按在鞋底，{partner}低头用指甲把信封折出第二道痕，谁也没再碰杯子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "proposal-yes-wait",
+              "text": "炉子上烤着明天早班的面包，热气从门缝钻进来。{subject}把戒指推过去一半，又被{parent}按回桌面，说押金的事先不急。纸上的婚期写得浅，像随时可以擦掉。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "proposal-room-first",
+          "weight": 2,
+          "text": "对方的父亲开口要一间独立的孩子房，加租一个月要四克朗押金。{subject}把工钱袋里剩下的三克朗二十赫勒数了两遍，凑不出来，信折回原样，戒指先进了口袋。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "婚事卡在一间房和一笔押金上"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.5,
+              "reason": "为提亲买的半公斤咖啡和一块蜂蜡"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.02,
+              "affection": 0.02,
+              "obligation": 0.06,
+              "fear": 0,
+              "respect": 0,
+              "reason": "长辈没有松口，也没把路堵死"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "proposal-room-first",
+              "text": "父亲说得很慢：多一间房，夏天才有窗户开。{partner}想接话，被母亲用咳嗽止住。{subject}把铜币排在桌沿上，排到第三枚时手指停住，屋里只剩街上包车经过的铃声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "proposal-room-first",
+              "text": "水壶在隔壁厨房叫着，没人起身。{parent}问起一年半载后怎么住，{subject}说可以用布帘隔，话一出口自己先低了头。戒指没戴上手，信封倒被捏出了汗印。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "proposal-refuse",
+          "weight": 1,
+          "text": "{partner}说不愿意离开现在做工的铺子，师傅答应明年给涨工钱。{subject}把戒指收回内袋，信留在桌面，油渍慢慢洇过婚期的字。",
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "reason": "婚事谈不拢，对方不肯离开做工的铺子"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "两个冬天走下来，答案落在桌面那封信上"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "街坊很快就知道这门亲事没成"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "proposal-refuse",
+              "text": "{partner}说的是铺子，不是两个人的事，声音很平，像在报面包的价钱。{subject}站起来时膝盖碰了桌腿，咖啡晃出一点。出门前谁也没看那封信，它留在漆面上，边角卷起来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "proposal-refuse",
+              "text": "门一开，街上烤面包的甜味灌进来。{partner}把戒指盒盖好推回来，指尖在盖沿停了一下。母亲把杯子端去洗，父亲咳了一声，说天不早了，路上黑。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-family-fate.marriage-household",
+      "title": "两户人家的箱笼",
+      "weight": 1,
+      "rate": 0.0238,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 40
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner",
+          "minTrust": 0.4
+        },
+        {
+          "kind": "householdSize",
+          "max": 6
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 40
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 40
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "marriage",
+        "household_merge",
+        "rent"
+      ],
+      "outcomes": [
+        {
+          "id": "marriage-rent-courtyard",
+          "weight": 3,
+          "text": "两人在利奥波德城租下朝院子的单间，一个月十克朗，占掉半个月工钱。箱笼、工具柜和两床被子并进一辆手推车，晚上{neighbor}帮忙抬上楼，墙角还留着上一个房客钉的钉子。",
+          "effects": [
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-wien-leopoldstadt-tenement",
+              "reason": "新婚夫妇租下朝院子的单间，把两家的箱笼并到一处"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -10,
+              "reason": "单间一个月的房租和一半押金"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.08,
+              "affection": 0.1,
+              "obligation": 0.04,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "一起抬箱笼、一起点房租，日子落在同一间屋里"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.04,
+              "obligation": 0.03,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "邻居搭手抬箱笼，说院子里的水要轮流提"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "marriage-rent-courtyard",
+              "text": "婚礼在教区教堂办完，酒席摆在院子长桌上，两条长凳借的。房东站在楼梯口数人，说加一个人加租。{subject}把十个克朗数出来，{neighbor}数回去，说窗子朝院，冬天少风。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "marriage-rent-courtyard",
+              "text": "箱笼抬上楼时在拐角磕掉一块漆。{partner}把两床被子摊在三尺半宽的床上，被角对不齐，{subject}说就这么睡。楼下有人喊水来了，两人拎着桶下楼分那一桶井水。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "marriage-bride-home",
+          "weight": 2,
+          "text": "两人先住进{parent}家，屋里加一张床，转身要侧着。押金省下了，{neighbor}却说五个人的屋再添一个迟早要吵。灶上的锅换大一号，米要多下两把。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "没付新房租，省下的押金和头月钱"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "多一张嘴，家里米和煤的份额紧了"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": 0.02,
+              "obligation": 0.1,
+              "fear": 0,
+              "respect": 0,
+              "reason": "新婚头一个月挤在娘家，欠下一份人情"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "屋里挤，夜里翻身都要小心"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "marriage-bride-home",
+              "text": "加的那张床贴着窗，床脚压住地毯角。{subject}端着两碗汤从人缝里侧身过去，汤面没洒。{parent}说省下的押金存着，别动，明年再寻房。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "marriage-bride-home",
+              "text": "酒席散得早，碗筷在盆里泡着。{neighbor}探头进来说，五个人一间屋，添了新郎官就更热闹了，话音里带笑。{partner}把自己的衣服叠在床板下面，只在最上面放一只剃须杯。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "marriage-separate-rooms",
+          "weight": 1,
+          "text": "婚礼办完，两人仍各住原处，等攒够押金再合住。{subject}每星期日把工钱袋里的二十赫勒投进铁盒，{partner}在另一边记数，两个人的账本暂时各写各的。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "办了酒席却各回各家，街上难免有话"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saving_for_rent_deposit",
+              "add": true,
+              "reason": "两人分住两处，攒钱凑合住的押金"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": -0.02,
+              "reason": "邻居在楼梯口问起什么时候搬一处，问得直接"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1.2,
+              "reason": "酒席的尾账和第二天的碗碟钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "marriage-separate-rooms",
+              "text": "散席后{partner}送{subject}到家门口，两人的手套都是借来的。铁盒放在灶台上方，掀开盖能听见硬币撞底。{neighbor}说这算什么新婚，{subject}只答攒够了就搬。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "marriage-separate-rooms",
+              "text": "第二天清早，{subject}照旧去上工，只是围裙里多了一枚婚戒。{partner}在自家门口劈引火柴，隔两条街，谁也没往谁家走。账本摊开，两个人各记一栏。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-family-fate.childbirth",
+      "title": "黎明前的一盆热水",
+      "weight": 1,
+      "rate": 0.0238,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 40
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner",
+          "minTrust": 0.3,
+          "sameHousehold": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 40,
+          "sex": "female"
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 45,
+          "sameHousehold": true,
+          "sex": "male"
+        },
+        {
+          "key": "midwife",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "sex": "female"
+        }
+      ],
+      "tags": [
+        "birth",
+        "midwife",
+        "home"
+      ],
+      "outcomes": [
+        {
+          "id": "birth-smooth",
+          "weight": 3,
+          "text": "天快亮时孩子落地，哭声很尖。{midwife}把剪刀在火上过了两遍，剪断脐带，收了两克朗。{subject}虚弱但清醒，接过包在旧布里的孩子，{partner}在楼梯间停下脚步，嘴唇发白。",
+          "effects": [
+            {
+              "type": "birth",
+              "parentIds": [
+                "$subject",
+                "$partner"
+              ],
+              "reason": "黎明前在家分娩，接生婆收了两克朗",
+              "childSex": "female"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "接生婆的工钱，另加一块肥皂"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "生产耗尽力气，要在床上躺几天"
+            },
+            {
+              "type": "mood",
+              "personId": "$partner",
+              "amount": 0.1,
+              "reason": "孩子落地，哭声把一夜的慌压了下去"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "birth-smooth",
+              "text": "盆里的水换了三遍，旧布铺在床沿。{midwife}让{partner}把火拨旺，自己卷起袖子，手腕上沾着水。天亮时{subject}数了一数孩子的手指，一根一根，数完才躺回去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "birth-smooth",
+              "text": "房东在楼下敲过两回门，第三回没再敲。孩子落地时街上第一趟电车还没开，{partner}靠在门框上，听见屋里有人笑了一声，才想起自己一直屏着气。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "birth-forceps-doctor",
+          "weight": 2,
+          "text": "胎位不正，{midwife}让{partner}连夜去请医生。医生带着产钳来，在圣斯蒂芬教堂钟敲四点前把孩子夹了出来，收费十五克朗。孩子保住了，{subject}在床上躺了整一个月，腰直不起来。",
+          "effects": [
+            {
+              "type": "birth",
+              "parentIds": [
+                "$subject",
+                "$partner"
+              ],
+              "reason": "胎位不正，请医生用产钳接生",
+              "childSex": "female"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -15,
+              "reason": "医生的出诊和产钳费用"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "产钳接生之后卧床一个月，起身头晕"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "weakness_after_birth",
+              "add": true,
+              "reason": "产后虚弱，要人扶着走"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "birth-forceps-doctor",
+              "text": "医生进门先洗手，把皮包放在桌上，产钳碰出金属声。{midwife}按住{subject}的肩，{partner}被留在门外。屋里安静了片刻，接着是孩子的哭声，很低，像一口气憋了很久才吐出来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "birth-forceps-doctor",
+              "text": "十五克朗是借来的，{partner}数了三遍才递过去。{subject}躺着看天花板上的水渍，觉得腰里有什么被拽了一下。{midwife}把湿布拧干，说头一个月别下床提水。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "birth-premature-hospital",
+          "weight": 1,
+          "text": "孩子早产，皮肤发青，{midwife}说不能等。{partner}借来一辆手推车铺上棉被，连夜推去医院，路上过两条街，车轮在石板缝里磕得咣当响。母子都保住，账上先欠了药费。",
+          "effects": [
+            {
+              "type": "birth",
+              "parentIds": [
+                "$subject",
+                "$partner"
+              ],
+              "reason": "早产，连夜用推车送医院",
+              "childSex": "female"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "医院的药费和那辆手推车的租钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.1,
+              "affection": 0.1,
+              "obligation": 0.05,
+              "fear": 0,
+              "respect": 0.06,
+              "reason": "连夜推车送医，两个人一起把这夜熬过去"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "早产后在医院住了几日"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "birth-premature-hospital",
+              "text": "棉被裹着孩子放在推车上，{partner}光着手推，过石桥时肩膀往前探。{subject}躺在车里，眼睛盯着路灯一盏一盏过去。医院的门房睡眼惺忪，先要押金，才去叫值班的。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "birth-premature-hospital",
+              "text": "{midwife}送到门口才回去，围裙上还有水痕。走廊里煤油灯不亮，{partner}把帽子捏扁了攥在手里。天亮时护士出来说母子都平安，他靠着墙，半天没说出话。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-family-fate.child-death",
+      "title": "儿科病房外的长椅",
+      "weight": 1,
+      "rate": 0.0224,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 55
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner",
+          "minTrust": 0.2,
+          "sameHousehold": true
+        },
+        {
+          "kind": "householdSize",
+          "min": 3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55,
+          "sameHousehold": true
+        },
+        {
+          "key": "child",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 12,
+          "sameHousehold": true
+        },
+        {
+          "key": "doctor",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        }
+      ],
+      "tags": [
+        "child_death",
+        "illness",
+        "funeral"
+      ],
+      "outcomes": [
+        {
+          "id": "child-died-corridor",
+          "weight": 2,
+          "text": "床位一直没腾出来，{child}在走廊的长椅上停止呼吸。{doctor}写了死亡证明，教区的人来量小棺材。钱记在互助会的账上，{subject}把孩子的鞋收进箱底。",
+          "effects": [
+            {
+              "type": "death",
+              "personId": "$child",
+              "cause": "scarlet_fever",
+              "reason": "等不到隔离床位，在儿科走廊病亡"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.2,
+              "reason": "孩子在医院走廊没等到床位"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "小棺材和教会执事的手续费，互助会垫了一半"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.06,
+              "affection": -0.02,
+              "obligation": 0.08,
+              "fear": 0,
+              "respect": 0.04,
+              "reason": "一起守在走廊尽头，谁也没离开长椅"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "child-died-corridor",
+              "text": "长椅硬得发凉，{partner}把外套垫在{child}身下。护士每隔一阵来看一眼，第三次来时只是摇头。走廊尽头有扇窗，天没亮前一直是灰的，蜡味和消毒水味混在一起。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "child-died-corridor",
+              "text": "互助会的干事记下名字，问小棺材要松木还是一般的板子。{subject}说不出话，{partner}代答，声音像从别处传来。回程的电车上，两人的手隔着一只空篮子，篮子本该装奶瓶。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "child-buried-hastily",
+          "weight": 1,
+          "text": "还没等死亡证明就下了葬，教区墓地收了四克朗，办事处事后罚了两克朗。{partner}淋了那场雨回来就躺下，烧了十天，{subject}一边熬药一边应付来问话的人。",
+          "effects": [
+            {
+              "type": "death",
+              "personId": "$child",
+              "cause": "measles",
+              "reason": "缺医少药，来不及等死亡证明就在教区墓地落葬"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "墓地和办事处的罚款"
+            },
+            {
+              "type": "health",
+              "personId": "$partner",
+              "amount": -0.1,
+              "reason": "淋雨与悲伤之后高热十天"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.14,
+              "reason": "葬礼草草办了，还要应付办事处的问话"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "child-buried-hastily",
+              "text": "墓地那边的人只问要哪一档的位置，墙边还是树下。{subject}把湿透的帽子摘下，雨水顺着袖口流进掌心。回来的路上{partner}一句话没说，进门就躺倒，被角盖到下巴。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "child-buried-hastily",
+              "text": "办事处的人来核日期，指着册子说两处对不上，罚了钱才走。灶上药罐咕嘟作响，{subject}用勺子压着药渣，听见里屋一阵猛咳。窗台上的蜡烛没吹灭，烧到只剩一截。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "child-deaf-survived",
+          "weight": 2,
+          "text": "{doctor}确诊是麻疹不是猩红热，{child}熬过来了，但耳朵从此听不见小声说话。家里把攒的九个克朗花光，还欠了药铺三克朗；{subject}说话时得蹲下来，让孩子看嘴形。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$child",
+              "amount": -0.08,
+              "reason": "麻疹高烧之后听力受损"
+            },
+            {
+              "type": "condition",
+              "personId": "$child",
+              "condition": "hearing_loss",
+              "add": true,
+              "reason": "此后听不见小声说话，要人凑近嘴形"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -12,
+              "reason": "药铺、出诊和营养的钱花光了家里的积蓄"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "孩子活了下来，虽然耳朵坏了"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "child-deaf-survived",
+              "text": "{doctor}把听筒挂在脖子上，说不是猩红热，是麻疹，隔离的牌子撤下来。{child}醒后第一句话没人听见，{subject}拍手在床边试，孩子只转头看窗。药铺的账记在半张纸上，压在盐罐下面。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "child-deaf-survived",
+              "text": "退烧那天{partner}买了两个鸡蛋，煮得过了心。{subject}蹲在床边跟孩子说话，说得慢，嘴型做大。孩子伸手来摸她的嘴唇，摸到便笑了，屋里这才有人喘口长气。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-family-fate.separation",
+      "title": "两床被子分开的夜晚",
+      "weight": 1,
+      "rate": 0.0224,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 22,
+          "max": 55
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner",
+          "minTrust": 0.2,
+          "sameHousehold": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 55
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 55,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "priest",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "church"
+        }
+      ],
+      "tags": [
+        "separation",
+        "quarrel",
+        "household"
+      ],
+      "outcomes": [
+        {
+          "id": "separation-move-out",
+          "weight": 2,
+          "text": "{partner}把衣服收进箱子，当天下午搬回娘家，没有办离婚。共同攒的十一个克朗对半分，怀表归{subject}，{neighbor}在楼梯口看着箱子下楼，一句话也没说。",
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "reason": "争吵后分居，共同的钱按半分成两份"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5.5,
+              "reason": "分给伴侣带走的那一半存款"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "屋里少了一半东西，夜里太清静"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": -0.02,
+              "reason": "邻居亲眼看着箱子下楼，往后见面只点头"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "separation-move-out",
+              "text": "箱子是结婚时抬上来的那只，磕掉漆的角朝外。{partner}合盖时压了两次才扣住，{subject}站在窗边没转身。分手的话早说完了，剩下的只有箱子在楼梯上磕碰的闷响。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "separation-move-out",
+              "text": "钱摊在桌上，铜币和纸币分开数，数到一半谁也不再数。{neighbor}借口借火，站在门口看了一眼就退回去。午后阳光照到床板，两床被子只剩一床。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "separation-priest-wait",
+          "weight": 2,
+          "text": "{priest}劝再等三个月，说教区的离婚要钱要证人，还得两边家里出面。{partner}的箱子没提走，在门后放了三天，最后被{subject}搬回床底下，两人照旧吃饭。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "separation_pending",
+              "add": true,
+              "reason": "神父劝缓三个月，分居的事悬着"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "箱子搬回了床底，话没有说开"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": -0.04,
+              "affection": -0.03,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "暂时没散，但两人都记着那晚上的话"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.4,
+              "reason": "去教区问手续的车钱和给执事的一点心意"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "separation-priest-wait",
+              "text": "{priest}在圣器室听他们各说一遍，烟斗磕在桌沿，说再等三个月，等气消了再谈纸上的事。回来路上两人一前一后，电车来了也没人先上，末了一同走回巷子。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "separation-priest-wait",
+              "text": "箱子在门后立了三天，{subject}进出都要侧身。第四天清早，她把它推回床底，顺手扫了扫箱顶的灰。{partner}在灶边坐着，碗里的汤喝了一半，没抬头。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "separation-same-room",
+          "weight": 1,
+          "text": "两人继续住一间房，把床分开，账也分开。{neighbor}来串门时看见两张床各靠一墙，灶上的锅也分开烧，谁也没提以后怎么打算。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": -0.08,
+              "affection": -0.06,
+              "obligation": 0.02,
+              "fear": 0,
+              "respect": 0.02,
+              "reason": "同住一屋但分床分账，日子各过各的"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "一张屋里两张床，抬头不见低头见"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "affection": 0,
+              "obligation": 0,
+              "fear": 0,
+              "respect": 0,
+              "reason": "邻居来看过一回，知道了屋里的安排"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "separation-same-room",
+              "text": "床挪开时在地板上留下两道白印。{subject}把煤本分成两页，各写各的。晚上各点一盏灯，谁也不先吹。{neighbor}探头进来借盐，扫一眼便说盐在你们这边还是那边。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "separation-same-room",
+              "text": "两口锅并排放在灶上，一大一小。{partner}煮自己的面，{subject}烧自己的水，蒸汽在两人中间升上去又散。窗子的插销只有一副，晚上谁先回来谁插。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-family-fate.widow-inheritance",
+      "title": "遗产清单上的两行字",
+      "weight": 1,
+      "rate": 0.0238,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 40,
+          "max": 75
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner",
+          "minTrust": 0.3,
+          "sameHousehold": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 75
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 80,
+          "sameHousehold": true
+        },
+        {
+          "key": "brother",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "widowhood",
+        "inheritance",
+        "estate"
+      ],
+      "outcomes": [
+        {
+          "id": "widow-pays-debt-keeps-watch",
+          "weight": 3,
+          "text": "{partner}在一个霜冻的清晨没了气。{brother}翻完清单，{subject}把怀表和存款留下，先替死者还清煤店欠的七克朗，{brother}拿走工具和那件呢外套，说这些是他兄弟的东西。",
+          "effects": [
+            {
+              "type": "death",
+              "personId": "$partner",
+              "cause": "consumption",
+              "reason": "冬天病重，医生不再开药，清晨去世"
+            },
+            {
+              "type": "estate",
+              "personId": "$partner",
+              "heirHouseholdId": "$household",
+              "amount": 14,
+              "reason": "存款、怀表和工具折价之后的遗产"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -7,
+              "reason": "替死者结清煤店的欠账"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "守到清晨，屋里只剩自己和一个兄弟"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "widow-pays-debt-keeps-watch",
+              "text": "湿布换了最后一回，{partner}的手在被面上松开。{brother}从外地赶来，进屋先看柜子，再翻抽屉，把清单写在半张信纸上。煤店老板来敲门，{subject}数出七克朗，一枚一枚放在门框上。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "widow-pays-debt-keeps-watch",
+              "text": "怀表的表链断了一节，{subject}把它绕在手指上揣进围裙。{brother}把工具一件件摆开，扳手、錾子、一截铁皮，末了卷进外套里夹走。窗外有人扫雪，铁锹刮着石板路。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "widow-older-will",
+          "weight": 2,
+          "text": "{brother}从行李里掏出另一张更早的遗嘱，日期比家里这张早两年，写明工具留给兄弟。{official}让两家先找律师，遗产冻结了半年，{subject}靠替人浆洗撑过那几个月。",
+          "effects": [
+            {
+              "type": "death",
+              "personId": "$partner",
+              "cause": "consumption",
+              "reason": "冬天病重去世，身后留下两张遗嘱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "inheritance_frozen",
+              "add": true,
+              "reason": "两份遗嘱对不上，遗产被办事处冻结半年"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2.5,
+              "reason": "请人看遗嘱和往返办事处的车钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "丧事没办完，先要跟律师打交道"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "widow-older-will",
+              "text": "两张纸摊在桌上，一张字迹抖，一张折痕深。{brother}用食指按住日期，说以早的为准。{official}两页都看了，说先别动存折，等律师来。煤炉烧得旺，屋里却比走廊冷。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "widow-older-will",
+              "text": "{subject}把结婚证和遗嘱并排放在盐罐旁，说这一张就写在婚前。{brother}不接话，只把行李往床脚挪了挪。办事处的人来得晚，围巾上还有雪，进门就问她有没有别的亲戚。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "widow-renounce-move",
+          "weight": 1,
+          "text": "{subject}放弃继承，免得债务跟着过来。房子退给房东，箱子里只装得下棉衣、结婚证和那只断链怀表，其余家具折给楼下的旧货商，换了两克朗。她搬去克洛斯特新堡姑妈的老屋。",
+          "effects": [
+            {
+              "type": "death",
+              "personId": "$partner",
+              "cause": "consumption",
+              "reason": "冬天病重不治，在租屋里去世"
+            },
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-klosterneuburg-aunt-house",
+              "reason": "退掉租屋，搬去克洛斯特新堡姑妈的老屋住下"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "旧家具折给旧货商换得的钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "widow-renounce-move",
+              "text": "退房那天，房东拿钥匙试了两遍锁。旧货商把桌椅扛下楼，绳勒进他肩膀。{subject}抱着箱子在巷口等马车，箱子里头一层是棉衣，下面压着结婚证和一个断链的怀表。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "widow-renounce-move",
+              "text": "办事员把放弃继承的纸条推过来，让她按手印。墨是冷的，指头按下去粘了一小块。出城的路两旁是葡萄园，马车夫问去姑妈家还是别处，她答老屋，窗户朝北的那间。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

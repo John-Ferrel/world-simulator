@@ -274,7 +274,9 @@ export function makeV4Api() {
       peopleLimit: query.limit,
       peopleNextCursor: page.nextCursor ?? null,
       peopleHasMore: Boolean(page.nextCursor),
-      recentEvents: publicEvents.map((event) => projectEvent(event, lookups)),
+      recentEvents: publicEvents.map((event) =>
+        projectEvent(event, lookups, meta.macro?.developments),
+      ),
       chronicle: [...VIENNA_1912_CHRONICLE, ...VIENNA_POSTWAR_CHRONICLE]
         .filter((entry) => entry.date.year <= meta.date.year)
         .sort((a, b) => a.date.year - b.date.year || a.date.month - b.date.month),
@@ -352,6 +354,7 @@ export function makeV4Api() {
     const [u, macro] = await Promise.all([user(req), v4MacroState(meta.id)]);
 
     const isOwner = Boolean(u && detail.person.ownerId && detail.person.ownerId === u.id);
+    const processMap = macro?.developments;
     const peopleById = Object.fromEntries(detail.people.map((person) => [person.id, person]));
     const relationsById = Object.fromEntries(
       detail.relations.map((relation) => [relation.id, relation]),
@@ -404,10 +407,10 @@ export function makeV4Api() {
         })),
       events: detail.events
         .filter((event) => isOwner || !detail.person.ownerId || event.visibility === 'public')
-        .map((event) => projectEvent(event, detail.lookups)),
+        .map((event) => projectEvent(event, detail.lookups, processMap)),
       worldEvents: detail.worldEvents
         .filter((event) => event.visibility === 'public')
-        .map((event) => projectEvent(event, detail.lookups)),
+        .map((event) => projectEvent(event, detail.lookups, processMap)),
       lifePassages: buildLifePassages(
         detail.events.filter(
           (event) => isOwner || !detail.person.ownerId || event.visibility === 'public',
@@ -420,6 +423,7 @@ export function makeV4Api() {
           const participation = development.historical!.participants[detail.person.id]!;
           return {
             id: development.id,
+            name: processDisplayName(development),
             description: development.description,
             kind: development.historical!.kind,
             phase: development.historical!.phase,
@@ -458,7 +462,7 @@ export function makeV4Api() {
     const detail = await v4EventDetail(meta.id, (req.params as any).id);
     if (!detail) return reply.code(404).send({ error: '事件不存在' });
     const event = detail.event;
-    const u = await user(req);
+    const [u, macro] = await Promise.all([user(req), v4MacroState(meta.id)]);
     const subject = detail.subject;
     const isOwner = Boolean(u && subject?.ownerId && subject.ownerId === u.id);
     if (event.visibility === 'private' && !isOwner)
@@ -476,7 +480,7 @@ export function makeV4Api() {
       const ownsParticipant = participants.some((person) => person.ownerId === u?.id);
       if (!ownsParticipant) return reply.code(403).send({ error: '这件事只在当事人之间流传' });
     }
-    return event;
+    return projectEvent(event, detail.lookups, macro?.developments);
   });
 
   app.get('/api/v4/search', async (req, reply) => {
@@ -636,7 +640,217 @@ function ageAtDeathOrNow(person: Pick<Person, 'born' | 'died'>, date: WorldState
   return ageAtDate(person.born, person.died ?? date);
 }
 
-function projectEvent(event: EventFact, lookups: V4EventLookups) {
+type ProjectedEventKind = 'birth' | 'death' | 'history' | 'major' | 'ordinary';
+
+type ProjectedEventSegment = {
+  type: 'text' | 'person';
+  text: string;
+  personId?: string;
+  name?: string;
+  role?: string;
+  historical?: boolean;
+};
+
+type ProjectedProcessRef = {
+  id: string;
+  name: string;
+  phase?: string;
+  description?: string;
+};
+
+/**
+ * The bounded subset of a macro development that the log projector reads.
+ * It is deliberately structural: v4 macro state may be absent for an archived
+ * or freshly migrated world, and projection must still work.
+ */
+type ProjectableProcess = {
+  description?: string;
+  title?: string;
+  name?: string;
+  phase?: string;
+  status?: string;
+  organization?: { name?: string };
+  historical?: { phase?: string; outcome?: string; kind?: string };
+};
+
+const HISTORICAL_EVENT_ACTIONS = new Set([
+  'historical_participation',
+  'historical_influence',
+  'historical_process',
+  'historical_phase',
+]);
+
+const HISTORICAL_EFFECT_TYPES = new Set([
+  'historical_participation',
+  'historical_influence',
+  'historical_process',
+]);
+
+const PROCESS_KIND_LABELS: Record<string, string> = {
+  war_mobilization: '战争动员',
+  public_health_crisis: '公共卫生危机',
+  social_movement: '社会运动',
+  political_repression: '政治压制',
+  economic_crisis: '经济危机',
+  cultural_movement: '文化运动',
+  other: '历史进程',
+};
+
+function shortProcessLabel(description: string | undefined, max = 44): string | undefined {
+  const text = description?.trim();
+  if (!text) return undefined;
+  const clause = text.split(/[。；;\n]/)[0]?.trim() || text;
+  return clause.length > max ? `${clause.slice(0, max)}…` : clause;
+}
+
+function processDisplayName(process: ProjectableProcess | undefined): string {
+  const explicit = process?.title?.trim() || process?.name?.trim();
+  if (explicit) return explicit;
+  const organization = process?.organization?.name?.trim();
+  if (organization) return organization;
+  const description = shortProcessLabel(process?.description);
+  if (description) return description;
+  const kind = process?.historical?.kind;
+  if (kind) return PROCESS_KIND_LABELS[kind] ?? '历史进程';
+  return '历史进程';
+}
+
+/**
+ * Stable-ID semantic segments. Only the already-recorded participants of this
+ * exact event are candidates; nothing is guessed from arbitrary prose. If two
+ * participants share a display name the name is left as plain text rather than
+ * linking to an ambiguous person.
+ */
+function buildEventSegments(event: EventFact, lookups: V4EventLookups): ProjectedEventSegment[] {
+  const text = typeof event.immediateText === 'string' ? event.immediateText : '';
+  if (!text) return [{ type: 'text', text }];
+
+  const nameCounts = new Map<string, number>();
+  for (const participant of event.participants) {
+    const name = lookups.personNames[participant.personId];
+    if (!name) continue;
+    nameCounts.set(name, (nameCounts.get(name) ?? 0) + 1);
+  }
+
+  const candidates = new Map<string, { personId: string; role: string; historical: boolean }>();
+  for (const participant of event.participants) {
+    const name = lookups.personNames[participant.personId];
+    if (!name || nameCounts.get(name) !== 1) continue;
+    candidates.set(name, {
+      personId: participant.personId,
+      role: participant.role,
+      historical: Boolean(lookups.personHistorical[participant.personId]),
+    });
+  }
+  if (candidates.size === 0) return [{ type: 'text', text }];
+
+  // Longest names first so "Anna Huber" wins over a participant called "Anna".
+  const names = [...candidates.keys()].sort((a, b) => b.length - a.length);
+  const taken = new Uint8Array(text.length);
+  const hits: {
+    start: number;
+    end: number;
+    personId: string;
+    name: string;
+    role: string;
+    historical: boolean;
+  }[] = [];
+  for (const name of names) {
+    const person = candidates.get(name)!;
+    let index = text.indexOf(name);
+    while (index >= 0) {
+      let free = true;
+      for (let offset = 0; offset < name.length; offset += 1) {
+        if (taken[index + offset]) {
+          free = false;
+          break;
+        }
+      }
+      if (free) {
+        for (let offset = 0; offset < name.length; offset += 1) taken[index + offset] = 1;
+        hits.push({
+          start: index,
+          end: index + name.length,
+          personId: person.personId,
+          name,
+          role: person.role,
+          historical: person.historical,
+        });
+      }
+      index = text.indexOf(name, index + 1);
+    }
+  }
+  if (hits.length === 0) return [{ type: 'text', text }];
+
+  hits.sort((a, b) => a.start - b.start);
+  const segments: ProjectedEventSegment[] = [];
+  let cursor = 0;
+  for (const hit of hits) {
+    if (hit.start > cursor) segments.push({ type: 'text', text: text.slice(cursor, hit.start) });
+    segments.push({
+      type: 'person',
+      text: text.slice(hit.start, hit.end),
+      personId: hit.personId,
+      name: hit.name,
+      role: hit.role,
+      historical: hit.historical,
+    });
+    cursor = hit.end;
+  }
+  if (cursor < text.length) segments.push({ type: 'text', text: text.slice(cursor) });
+  return segments;
+}
+
+function projectProcessRefs(
+  event: EventFact,
+  processes?: Record<string, ProjectableProcess>,
+): ProjectedProcessRef[] | undefined {
+  const refs = new Map<string, ProjectedProcessRef>();
+  for (const effect of event.effects) {
+    if (!HISTORICAL_EFFECT_TYPES.has(effect.type)) continue;
+    let processId: string | undefined;
+    let effectTitle: string | undefined;
+    let effectDescription: string | undefined;
+    if (effect.type === 'historical_participation' || effect.type === 'historical_influence') {
+      processId = effect.processId;
+    } else if (effect.type === 'historical_process') {
+      processId = effect.process?.id ?? (effect as { processId?: string }).processId;
+      effectTitle = effect.process?.title;
+      effectDescription = effect.process?.description;
+    }
+    if (!processId) continue;
+
+    const process = processes?.[processId];
+    const previous = refs.get(processId);
+    const phase = process?.historical?.phase ?? process?.phase ?? previous?.phase;
+    const description = process?.description ?? effectDescription ?? previous?.description;
+    refs.set(processId, {
+      id: processId,
+      name: effectTitle?.trim() || previous?.name || processDisplayName(process),
+      ...(phase ? { phase } : {}),
+      ...(description ? { description } : {}),
+    });
+  }
+  return refs.size > 0 ? [...refs.values()] : undefined;
+}
+
+function projectedEventKind(event: EventFact): ProjectedEventKind {
+  if (event.action === 'birth') return 'birth';
+  if (event.action === 'death' || event.action === 'statistical_death') return 'death';
+  if (
+    HISTORICAL_EVENT_ACTIONS.has(event.action) ||
+    event.effects.some((effect) => HISTORICAL_EFFECT_TYPES.has(effect.type))
+  )
+    return 'history';
+  if (event.significance >= 0.7) return 'major';
+  return 'ordinary';
+}
+
+function projectEvent(
+  event: EventFact,
+  lookups: V4EventLookups,
+  processes?: Record<string, ProjectableProcess>,
+) {
   const sceneId = event.sceneId ? lookups.sceneIdByInstance[event.sceneId] : undefined;
   const sceneTitle = sceneId ? sceneTitles.get(sceneId) : undefined;
   const title =
@@ -647,15 +861,20 @@ function projectEvent(event: EventFact, lookups: V4EventLookups) {
     (event.provenance.kind === 'scene' || event.provenance.kind === 'system'
       ? '生活记录'
       : undefined);
+  const processRefs = projectProcessRefs(event, processes);
   return {
     ...event,
     title,
+    kind: projectedEventKind(event),
+    major: event.significance >= 0.7,
     placeName: event.placeId ? lookups.placeNames[event.placeId] : undefined,
     people: event.participants.map((participant) => ({
       id: participant.personId,
       name: lookups.personNames[participant.personId] ?? '无名',
       role: participant.role,
     })),
+    segments: buildEventSegments(event, lookups),
+    ...(processRefs ? { processRefs } : {}),
   };
 }
 

@@ -1,0 +1,1264 @@
+{
+  "id": "p10-edu-thresholds",
+  "title": "考试、退学与出师的门槛",
+  "stage": "adolescence",
+  "ageWindow": {
+    "min": 12,
+    "max": 20
+  },
+  "tags": [
+    "adolescence",
+    "education",
+    "school",
+    "exam",
+    "apprenticeship",
+    "work",
+    "transition"
+  ],
+  "baseRate": 0.16,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 12,
+      "max": 20
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p10-edu-thresholds.buergerschule-exam",
+      "title": "商业学校的入学考试",
+      "weight": 1,
+      "rate": 0.0272,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 14
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 14
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 55
+        }
+      ],
+      "tags": [
+        "exam",
+        "buergerschule",
+        "admission"
+      ],
+      "outcomes": [
+        {
+          "id": "exam-pass",
+          "weight": 2,
+          "text": "算术十二题全部写完，听写只把“Kassa”拼错一个字母。口试时{teacher}问父亲的职业，{subject}把住址和父亲在纺织厂做帮工说得清清楚楚。楼下{parent}手里那张学费单被汗浸软。九月一号，录取通知连同七克朗的缴费单一起塞进信箱。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 1,
+              "reason": "被商业学校录取"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -7,
+              "reason": "缴纳商业学校入学费用"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.12,
+              "reason": "收到录取通知"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "exam-pass",
+              "text": "走廊里一百多个孩子挤成一排，编号纸被捏出折痕。口试房间里只有一张桌子，{teacher}的声音不高，{subject}把每个字都说足。出来时母亲还没敢问，只是把课程介绍又折了一道。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "exam-pass",
+              "text": "铅笔写到只剩一小截，算术的最后一题是折扣计算。{subject}验算两遍才交卷。九月那天，{parent}拿着录取通知站在楼梯口念给邻居听，缴费单上七克朗的数目被念得格外慢。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "exam-waitlist",
+          "weight": 2,
+          "text": "听写念到第三句时，{subject}一走神漏掉整行，后面的词就再也接不上。算术对了九题，名次落到第二十九，正好在二十八名之外。{teacher}在教室门口说九月再来问有没有空位。{parent}把学费单折成小方块，说先别扔。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.15,
+              "reason": "考试名次落到候补"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "商业学校只录二十八人，九月或许有空位补入",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "personId": "$teacher",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "未直接录取"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "exam-waitlist",
+              "text": "外面下着小雨，母亲在楼下等了一个多钟头，鞋边潮了。{subject}把编号纸塞进口袋，没有讲漏掉的那一行，只说老师让九月再来。回家路上两人都没怎么说话。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "exam-waitlist",
+              "text": "走廊尽头的布告贴出名次，二十九号被红笔圈在候补里。{parent}踮脚看了两遍才认出来，问监考的{teacher}是不是还有机会。老师说，九月开学头一天来问，有人不来就有位子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "exam-fever",
+          "weight": 1,
+          "text": "考试前夜{subject}发起烧来，额头烫手，{parent}把湿布敷在他脑门上，劝他别去。天刚亮他还是出了门，走到市民学校二楼时腿发软，算术只做了一半就趴在桌上。出门时他把铅笔折成两截，扔进阴沟。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "带病赴考加重发热"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "fever",
+              "add": true,
+              "reason": "考试前夜起的烧没有退"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.18,
+              "reason": "算术只做了一半"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "exam-fever",
+              "text": "教室里墨水和湿羊毛外套的气味混在一起。{subject}握笔的手一直抖，横线画不直，格子里的数字叠在一起。监考的{teacher}看了他一眼，没说什么，只把窗子推开一条缝。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "exam-fever",
+              "text": "回家路上{parent}把手贴在他后颈上试温度，另一只手提着他没吃完的面包。路过街角药房时她停了停，看了看橱窗里的退烧粉价钱，又拉着他继续往前走。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-edu-thresholds.realschule-scholarship",
+      "title": "一张减免学费的申请表",
+      "weight": 1,
+      "rate": 0.0272,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 16
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary"
+          ]
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 16
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "scholarship",
+        "realschule",
+        "fees"
+      ],
+      "outcomes": [
+        {
+          "id": "grant-approved",
+          "weight": 2,
+          "text": "校长在推荐栏里写了“勤勉、算术突出”。{parent}从厂里要来盖红章的工资单，房东的租金收据也凑齐了。星期三中午{subject}把表格递进窗口，{official}翻了一遍，说学费减半，书本费还得自家出。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "secondary",
+              "level": 1,
+              "reason": "获得减免后升入实科中学"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "自付书本费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "获得基金会减免"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "校长写了推荐信"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "grant-approved",
+              "text": "工资单上油印的数字被{parent}折得起了毛。收据用别针别在表格角上，{subject}数了三遍才放进信封。窗口里的{official}用指节敲了敲桌面，把减半后的数目念给他听。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "grant-approved",
+              "text": "校长办公室里有旧书和烟斗的气味。{teacher}写完推荐语，把笔搁下看了看他，说名次排在前面的几个人里，只有他家里拿不出书本费。星期五中午前表格就交上去了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "grant-missed",
+          "weight": 2,
+          "text": "表格上缺一张租金收据。{subject}先跑房东家，铁门锁着；再跑一趟，房东太太说收据本在她丈夫身上。等他拿着纸条赶回学校，星期五中午的窗口已经关上，玻璃后面只剩一张椅子。{official}让他明年再申请。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.16,
+              "reason": "错过申请截止"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -0.6,
+              "reason": "两天来回的电车钱"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "基金会减免申请缺一份房东租金收据，窗口只在星期三和星期五开",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "personId": "$official",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "grant-missed",
+              "text": "第二次去房东家时，楼道里正在烧煤，气味呛人。房东太太翻了半天围裙口袋，只找出半张空白纸条。{subject}一路小跑到学校，台阶上的影子已经拉得很长，窗口的木板正在往下放。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "grant-missed",
+              "text": "{parent}在厂门口等下班的人，替儿子讨回那张工资单时手冻得发红。表格填好了，只差一张收据。{teacher}在走廊里碰见他，听他说完，只拍了拍他的肩膀，说功课别落下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "grant-second",
+          "weight": 1,
+          "text": "基金会只给年级第一名减免全部费用，第二名减一半。{subject}的名次差两位，表格被归进“未获”那一摞。回家后他把那份通知从中间剪开，夹进算术课本的封皮里，压平了折痕。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "申请未获准"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saved_scholarship_notice",
+              "add": true,
+              "reason": "把基金会通知剪下夹进课本"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "竞争减免未成功"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "grant-second",
+              "text": "公告栏前站着六七个学生，名字和名次用蓝墨水写成两栏。{subject}从上往下数，数到自己的名字就停了。{teacher}在旁边说，成绩再往前挪两位就有希望，窗帘绳在他手里轻轻晃着。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "grant-second",
+              "text": "剪下来的通知只有巴掌大，他妈妈问剪这做什么，他说留着。晚上点灯做习题时，那页纸从课本里滑出来，折痕朝着灯光，纸边已经起了毛。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-edu-thresholds.leave-school-for-work",
+      "title": "学年中途空出来的座位",
+      "weight": 1,
+      "rate": 0.0272,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 16
+        },
+        {
+          "kind": "education",
+          "in": [
+            "primary"
+          ]
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 25
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 16
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 55
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "dropout",
+        "factory",
+        "family_money"
+      ],
+      "outcomes": [
+        {
+          "id": "leave-for-factory",
+          "weight": 2,
+          "text": "星期一早上{subject}去厂里报到，{employer}让他先搬纱锭。他从学校领回自己的课本，{teacher}在门口把没发下来的毕业证明的事说了一遍。工钱按周结，头一周扣掉工具押金，带回家的钱只够买两天的面包。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "none",
+              "level": 0,
+              "reason": "学年中途退学进厂"
+            },
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "纺织厂童工",
+              "wage": 5,
+              "workplaceId": "$workplace",
+              "reason": "替代减薪的父亲养家"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "离开学校进厂"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "leave-for-factory",
+              "text": "桌上一头是招工条，一头是课表，{parent}的手在两样东西之间来回摸。{teacher}说再读一年就有毕业证明，声音放得很低。星期一学校还没上课，{subject}已经站在厂门口看人刷卡上班。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "leave-for-factory",
+              "text": "课本用旧报纸包成一捆，{subject}抱回家时胳膊勒出印子。车间里棉絮浮在光柱中间，机器的响声盖过一切。{employer}隔着棉絮喊了一声，让他在下班前把那堆纱锭搬完。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "half-time-study",
+          "weight": 2,
+          "text": "和{parent}谈到后半夜，说定再读半年：白天上课，放学后去面包铺送面包。{teacher}替他去问，学校同意先留着座位。第一周他送完最后一篮面包回到家，作业本上的字已经开始打晃。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "面包铺送货车工",
+              "wage": 3,
+              "workplaceId": "$workplace",
+              "reason": "半工半读补贴家用"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "半工半读的第一笔工钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "白天上课夜里送面包"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "half_time_school",
+              "add": true,
+              "reason": "学校同意保留学籍"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "half-time-study",
+              "text": "面包篮的皮带磨着肩膀，冬天里一路都是炉子的余温。送完最后一趟，他把空篮子倒扣在铺子门口，抬头看了一下钟。回到家里，{parent}把留好的汤从炉子上端下来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "half-time-study",
+              "text": "{teacher}在办公室里翻出一张旧表，说半工半读要家长按手印。{parent}把拇指按在印泥上时犹豫了一下，还是按了。第二天{subject}背着书包和面包篮一起出门，两样东西在楼梯上撞得直响。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "keep-enrollment",
+          "weight": 1,
+          "text": "{teacher}写了一封半工半读的申请，学校同意保留学籍到学年末，厂里只肯按日结钱，没有固定工位。{subject}每逢星期一、三、五去上工，回来时天已经黑透，就在厨房桌上补课。父亲的工钱仍少一成，但家里没有断粮。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "码头日结搬运工",
+              "wage": 4,
+              "workplaceId": "$workplace",
+              "reason": "按日结钱的临时工"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "enrollment_retained",
+              "add": true,
+              "reason": "学校保留学籍到学年末"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "老师替他写了半工半读申请"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "还有书可读"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "keep-enrollment",
+              "text": "厨房桌上的油灯芯剪得很短，作业本摊在面包板和盐罐之间。{parent}把父亲的旧外套改小给他做工服，针脚粗，袖口卷了好几道。厂里按日点工钱，每天在铁盒里放几个铜币。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "keep-enrollment",
+              "text": "申请纸上有{teacher}写的“该生勤勉，家境困难”几个字，下面盖着学校的小圆章。厂里的{employer}看完只说了一句：想来就来，按天算。{subject}把回执叠好，夹在课表和招工条中间。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-edu-thresholds.night-school-fee",
+      "title": "夜校报名处的最后一张椅子",
+      "weight": 1,
+      "rate": 0.0256,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 18
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 50
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 50
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "night_school",
+        "bookkeeping",
+        "fees"
+      ],
+      "outcomes": [
+        {
+          "id": "enrolled-absent",
+          "weight": 2,
+          "text": "{subject}交了一学期六克朗的学费，把课表用图钉钉在床头的墙上。第一周作坊加班到八点，他赶到第七区那间小学时教室已经熄灯，簿记课本第一课没听上。回来的路上电车已经收班，他走了四十分钟。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "夜校一学期学费"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 1,
+              "reason": "报名商业夜校"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "加班后步行回家"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "第一周缺课"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "enrolled-absent",
+              "text": "报名处的走廊里摆着几把椅子，他是倒数第二个交钱的。{teacher}把课表折好递过来，说缺课超过三次要重报。图钉扎进墙面时，床板在下面轻轻响了一声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "enrolled-absent",
+              "text": "作坊的钟走得快，八点五分他才放下工具。街上卖热栗子的摊子还没收，他捏着课本从旁边走过去。学校铁门已经锁上，门房隔着栅栏摆摆手，说下星期三早点来。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fee-arrangement",
+          "weight": 2,
+          "text": "学费还差两克朗。{subject}在报名处门口等到{teacher}出来，把口袋里的零钱摊在窗台上数。老师说先交一半，剩下的替学校擦黑板、锁教室来抵。第二天晚上他揣着半张收据回家，边走边把收据折好。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "先交一半夜校学费"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 1,
+              "reason": "以工抵费就读夜校"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "老师允准以打扫抵欠费"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "fee-arrangement",
+              "text": "零钱里有六枚十赫勒的铜板，一枚五赫勒的已经磨得看不清字。{teacher}数完没有催他，只说走廊和黑板每天要擦。他点头时听见隔壁教室里有人在背书，声音隔着一层门板。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "fee-arrangement",
+              "text": "擦黑板的抹布挂在窗钩上，粉笔灰落在袖口上发白。锁门的钥匙串比想象中沉，他攥在手里走了一段夜路。{parent}在门口等，问他收据呢，他把半张纸展开给她看。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "skip-night-school",
+          "weight": 1,
+          "text": "{subject}蹲在报名处外的台阶上算了一阵：一学期学费六克朗，等于一百多个计件活，晚上少干两个钟头就少挣一份钱。他把报名表折成四折带回家，压在碗柜的抽屉底下。第二天照样去上工。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "放弃夜校报名"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "晚间多接计件活挣的钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "declined_night_school",
+              "add": true,
+              "reason": "把夜校报名表压进抽屉"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "skip-night-school",
+              "text": "报名处门口有人进进出出，夹着新课本往外走。{subject}把手插在口袋里，看着一个熟识的{worker}进去又出来，手里多了张课表。他没喊人，转身沿着街沿往回走。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "skip-night-school",
+              "text": "抽屉底下已经有几张旧纸，报名表压上去时翘起一角。晚饭是土豆和面包，{parent}问他报名的事，他说再看看吧。桌角的油灯快没油了，火苗跳了几下。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-edu-thresholds.apprentice-review",
+      "title": "师傅的工作台前",
+      "weight": 1,
+      "rate": 0.0256,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 19
+        },
+        {
+          "kind": "education",
+          "in": [
+            "apprenticeship"
+          ]
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 19
+        },
+        {
+          "key": "master",
+          "kind": "worker",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 40
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "tags": [
+        "apprenticeship",
+        "journeyman",
+        "review"
+      ],
+      "outcomes": [
+        {
+          "id": "pass-review",
+          "weight": 2,
+          "text": "窗框四角榫接严丝合缝，{master}拿角尺量了两遍，在评语纸上写“可出师”。旁边的{worker}停下手里的刨子看了几眼。从下月起按伙计算工钱，考核费两克朗已付清，材料费从工钱里扣。",
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.08,
+              "reason": "榫接活通过考核"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "师傅评语写可出师"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "出师考核费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "师傅认可出师"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "apprenticeship",
+              "level": 2,
+              "reason": "passed the journeyman review"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "journeyman",
+              "add": true,
+              "reason": "qualified as a journeyman"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "qualified_journeyman",
+              "add": true,
+              "reason": "passed the trade review"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "pass-review",
+              "text": "工作台挪到屋子中央，周围腾出一圈空地。{subject}落榫时屏住气，木槌敲下去的声音又闷又准。{master}俯身看四角，用指甲刮了一下接缝，没找到能塞进纸片的地方。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "pass-review",
+              "text": "评语纸上的字是钢笔写的，笔锋往下压。{master}把纸推过来时手背上的墨渍还没干。下工前{worker}过来看了看窗框，说了一句“干得不错”，声音压在刨床的响声里。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "splinter-redo",
+          "weight": 2,
+          "text": "一记榫头敲下去，木料沿着纹理裂开一道口子。{master}盯着裂口看了很久，让他再做一件，出师推迟三个月。师兄弟{worker}递来新料，没多说话。作坊里的钟滴答作响，碎木屑踩在脚下像细沙。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.18,
+              "reason": "敲裂木料出师推迟"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "重做一件活多练了手艺"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": -0.06,
+              "reason": "师傅对他多了一层失望"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "journeyman_exam_postponed",
+              "add": true,
+              "reason": "qualification postponed by the master"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "splinter-redo",
+              "text": "裂口从榫眼一直拉到边缘，像一条干了的河。{master}用手指抹过断面，抬起眼来说，重做，三个月后再看。旁边的{worker}把破料捡起来，扔进柴箱。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "master-holds-back",
+          "weight": 1,
+          "text": "他做的活合格，角度和接缝都挑不出毛病。{master}看完却说作坊缺人手，出师证明要等明年，眼下按学徒的工钱照旧。{subject}把工具一件件擦干净放回架上，没说留下也没说不留。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.2,
+              "reason": "活合格却被压着不放"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "手艺得到认可"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "师傅把出师证明扣到明年，想把他的手艺留在作坊里",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "personId": "$master",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "journeyman_exam_postponed",
+              "add": true,
+              "reason": "qualification postponed by the master"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "master-holds-back",
+              "text": "工作台上的窗框还立着，{master}隔了半天才开口。巷子里有人来问今天能不能交活，{worker}出去回了话，门开时带进一股凉风。{subject}手里的抹布已经擦到只剩一层薄木屑。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "master-holds-back",
+              "text": "评语纸摊在柜台上，最后一行没有落笔。{master}说等他再想想，把纸收进抽屉里锁了。晚上{subject}没直接回家，在桥边站了一会儿，口袋里的角尺硌着大腿。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-edu-thresholds.technische-hochschule-entrance",
+      "title": "技术学院门口的报名桌",
+      "weight": 1,
+      "rate": 0.0272,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 17,
+          "max": 20
+        },
+        {
+          "kind": "education",
+          "in": [
+            "secondary",
+            "apprenticeship"
+          ]
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "min": 8
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 20
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "technical_school",
+        "entrance",
+        "higher_education"
+      ],
+      "outcomes": [
+        {
+          "id": "reject-prep",
+          "weight": 2,
+          "text": "数学和制图都过了线，德语作文差一分。{teacher}把成绩单推过来，说先读一年预科再考。{official}在报名表背面写了预科学费和三门课的时数。{worker}在门口等着，听他说完，把手里替他提的书接了过去。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "德语作文差分落榜"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "技术学院差一分可先读一年预科再考",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "personId": "$official",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "落榜后同行一段路"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "reject-prep",
+              "text": "布告上的录取名额用黑框围起来，下面是各科分数线。{subject}在德语一行来来回回看，那一分写在括号里。{teacher}把预科班的说明纸裁了一半递给他，边角还带着裁纸的毛。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "reject-prep",
+              "text": "报名桌后面的{official}把考试费收据和成绩单一起递出来，纸上有复写的紫色字迹。预科班在同一个院子里上课，走廊尽头能看见制图室的窗子。{worker}说，先去把书看了再想。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "drawing-fail",
+          "weight": 2,
+          "text": "考试费交了，制图题把比例写错，图的右下角挤出了框。{official}收卷时扫了一眼没有说话。未被录取，{subject}把那张图纸带回家，用图钉贴在床头墙上，正好盖住旧课表留下的四个针眼。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "技术学院考试报名费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.15,
+              "reason": "制图比例画错落榜"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "从错图里记住了比例"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_failed_drawing",
+              "add": true,
+              "reason": "把落榜的图纸贴在墙上"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "drawing-fail",
+              "text": "制图室里全是铅笔划纸的声音，尺子压住纸边，他的手心把纸角压出了汗渍。收卷时他把错的地方又看了一遍，才把纸递出去。回家路上他把图纸卷成筒，握在手里不松。",
+              "tone": [
+                "dry"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "audit-semester",
+          "weight": 1,
+          "text": "作坊师傅的推荐条起了作用，教授同意让他旁听一学期。学费照交，考试资格要看期末成绩，座位在阶梯教室最后一排，得自己带凳子。{teacher}把课表抄给他，又多写了一行：旁听生没有学籍。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "技术学院旁听学费"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "higher",
+              "level": 1,
+              "reason": "以旁听身份入读技术学院"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "auditing_higher_course",
+              "add": true,
+              "reason": "旁听一学期，无正式学籍"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "audit-semester",
+              "text": "教授的办公室在二楼拐角，推荐条在桌上摊开。{teacher}念了一遍条子上的评语，教授用铅笔在课表边上写了“旁听”两个字。走廊里贴着正式生的名单，{subject}从头看到尾，没有自己的名字。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "audit-semester",
+              "text": "阶梯教室最后一排没有固定座位，他第二天就带了一张折叠凳。讲台上的人讲投影和应力，粉笔灰在光里慢慢落。下课他追着黑板上的图抄，本子最后一页不够，就写到了封底上。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -7,6 +7,7 @@ export { PHASE9_WORK_BRIEFS } from './phase9-work.js';
 export { PHASE9_SOCIAL_BRIEFS } from './phase9-social.js';
 export { PHASE9_HISTORY_BRIEFS } from './phase9-history.js';
 export { PHASE9_GAP_BRIEFS } from './phase9-gaps.js';
+export { PHASE10_BRIEFS } from './phase10-briefs.js';
 export { PHASE9_SOLITUDE_BRIEFS } from './phase9-gaps-solitude.js';
 export type { GeneratedPack } from '../generated.js';
 export {

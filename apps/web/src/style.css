@@ -1441,3 +1441,508 @@ legend {
   margin: 4px 0 0;
   white-space: normal;
 }
+
+/* ---------- phase 10: stable-ID semantic log and dossiers ---------- */
+
+.log-entry.major {
+  margin-left: -14px;
+  padding-left: 14px;
+  border-left: 3px solid #a8792f;
+  background: linear-gradient(90deg, rgba(168, 121, 47, 0.1), transparent 68%);
+}
+.log-entry.history:not(.major) {
+  margin-left: -12px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(79, 98, 72, 0.38);
+}
+.log-entry.major .log-title {
+  color: #6d4712;
+  font-weight: 500;
+}
+.log-badge {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  border: 1px solid;
+  padding: 0 5px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  line-height: 1.7;
+}
+.major-badge {
+  color: #764d12;
+  border-color: rgba(118, 77, 18, 0.42);
+  background: rgba(168, 121, 47, 0.13);
+}
+.history-badge {
+  color: #4d6147;
+  border-color: rgba(77, 97, 71, 0.38);
+  background: rgba(159, 176, 138, 0.1);
+}
+.log-title-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  text-decoration: underline dotted transparent;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+.log-title-button:hover {
+  color: #7a4f14;
+  text-decoration-color: currentColor;
+}
+.log-text {
+  overflow-wrap: anywhere;
+}
+.semantic-person {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  line-height: inherit;
+  color: #335c4c;
+  text-decoration: underline dotted;
+  text-decoration-color: rgba(51, 92, 76, 0.42);
+  text-underline-offset: 3px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.semantic-person:hover {
+  color: #1e3d32;
+  background: rgba(51, 92, 76, 0.08);
+}
+.semantic-person.historical {
+  color: #7c5a1e;
+  text-decoration-color: rgba(124, 90, 30, 0.48);
+  font-weight: 600;
+}
+.semantic-person.owner {
+  color: #7b3d2c;
+  font-weight: 600;
+}
+.semantic-person.selected {
+  background: rgba(200, 164, 92, 0.2);
+  box-shadow: inset 0 -2px rgba(200, 164, 92, 0.45);
+}
+.log-person-chip {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #45624f;
+  font: inherit;
+  text-decoration: underline dotted;
+  text-decoration-color: rgba(69, 98, 79, 0.35);
+  text-underline-offset: 2px;
+}
+.log-person-chip:hover {
+  color: #243b2d;
+}
+.log-person-chip.historical {
+  color: #7c5a1e;
+}
+.log-person-chip.owner {
+  color: #7b3d2c;
+}
+.log-person-chip.selected {
+  font-weight: 600;
+}
+.log-cast {
+  min-width: 0;
+  display: inline;
+}
+.log-processes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+.log-process-label {
+  color: var(--paper-muted);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+.process-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+  background: rgba(124, 90, 30, 0.06);
+  border: 1px solid rgba(124, 90, 30, 0.3);
+  border-radius: 14px;
+  padding: 2px 9px;
+  color: #6e5120;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: left;
+}
+.process-chip:hover {
+  background: rgba(124, 90, 30, 0.13);
+  border-color: rgba(124, 90, 30, 0.5);
+}
+.process-chip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.process-chip small {
+  flex: 0 0 auto;
+  color: var(--paper-muted);
+  font-size: 9px;
+}
+.historical-card-button {
+  width: 100%;
+  border: 0;
+  border-left: 1px solid rgba(159, 176, 138, 0.45);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.historical-card-button:hover {
+  background: rgba(159, 176, 138, 0.06);
+}
+.card-action-hint {
+  color: var(--faint);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+.historical-contact-list .historical-contact-chip {
+  border: 1px solid rgba(159, 176, 138, 0.22);
+  border-radius: 2px;
+  padding: 7px 8px;
+  margin-bottom: 5px;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.historical-contact-list .historical-contact-chip:hover {
+  border-color: rgba(159, 176, 138, 0.5);
+  background: rgba(159, 176, 138, 0.05);
+}
+
+/* Hover/focus dossiers: small, fixed and non-blocking. */
+.dossier-popover {
+  position: fixed;
+  z-index: 90;
+  background: #141b16;
+  color: var(--ink);
+  border: 1px solid #3a463b;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.48);
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.65;
+  pointer-events: none;
+}
+.dossier-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.dossier-head strong {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.dossier-tag {
+  border: 1px solid;
+  padding: 0 5px;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+.dossier-tag.historical {
+  color: var(--accent-2);
+  border-color: rgba(159, 176, 138, 0.36);
+}
+.dossier-tag.owner {
+  color: var(--accent);
+  border-color: rgba(200, 164, 92, 0.36);
+}
+.dossier-meta {
+  color: var(--faint);
+  font-size: 10.5px;
+  margin: 4px 0 7px;
+}
+.dossier-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 0;
+  border-top: 1px solid rgba(42, 53, 44, 0.55);
+}
+.dossier-line span {
+  flex: 0 0 auto;
+  color: var(--faint);
+}
+.dossier-line strong {
+  font-weight: 400;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.dossier-copy {
+  margin-top: 7px;
+  color: #b3ad9d;
+  font-size: 11px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.dossier-loading {
+  margin-top: 5px;
+  color: var(--faint);
+  font-size: 11px;
+}
+.dossier-hint {
+  margin-top: 8px;
+  border-top: 1px solid rgba(42, 53, 44, 0.55);
+  padding-top: 6px;
+  color: var(--faint);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+.dossier-popover .phase-pill {
+  padding: 0 5px;
+  font-size: 9px;
+}
+
+/* Event and process dossiers. */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(4, 7, 5, 0.74);
+  backdrop-filter: blur(3px);
+}
+.process-overlay {
+  z-index: 110;
+}
+.modal-card {
+  position: relative;
+  width: min(640px, 100%);
+  max-height: min(84vh, 820px);
+  overflow: auto;
+  background: #121914;
+  color: var(--ink);
+  border: 1px solid #3a463b;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+  padding: 26px 28px 24px;
+  scrollbar-width: thin;
+  scrollbar-color: #2c372e transparent;
+}
+.modal-card::-webkit-scrollbar {
+  width: 7px;
+}
+.modal-card::-webkit-scrollbar-thumb {
+  background: #2c372e;
+}
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: 22px;
+  line-height: 1;
+}
+.modal-close:hover {
+  color: var(--accent);
+}
+.modal-kicker {
+  color: var(--faint);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.modal-card h2 {
+  margin: 6px 0 8px;
+  padding-right: 28px;
+  font-family: Georgia, 'Noto Sans SC', 'Songti SC', 'Noto Serif CJK SC', serif;
+  font-size: 24px;
+  font-weight: 500;
+}
+.modal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.modal-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.modal-card .major-badge {
+  color: #e0b96b;
+  border-color: rgba(200, 164, 92, 0.45);
+  background: rgba(200, 164, 92, 0.1);
+}
+.modal-card .history-badge {
+  color: #b7c7a4;
+  border-color: rgba(159, 176, 138, 0.4);
+  background: rgba(159, 176, 138, 0.08);
+}
+.modal-text {
+  margin-top: 12px;
+  color: #d6cfbd;
+  font-family: Georgia, 'Noto Sans SC', 'Songti SC', 'Noto Serif CJK SC', serif;
+  font-size: 14.5px;
+  line-height: 1.95;
+  overflow-wrap: anywhere;
+}
+.modal-card .semantic-person {
+  color: #cbb57d;
+  text-decoration-color: rgba(203, 181, 125, 0.35);
+}
+.modal-card .semantic-person.historical {
+  color: #b9cf9e;
+}
+.modal-card .semantic-person.owner {
+  color: #e0a07c;
+}
+.modal-card .semantic-person:hover {
+  color: #f0d69a;
+  background: rgba(200, 164, 92, 0.1);
+}
+.modal-section {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.modal-section h3 {
+  margin-bottom: 8px;
+  color: var(--faint);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+}
+.modal-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #b3ad9d;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.modal-list li + li {
+  margin-top: 5px;
+}
+.process-history li span {
+  display: inline-block;
+  margin-right: 8px;
+  color: var(--faint);
+  font-size: 10px;
+}
+.process-history li strong {
+  color: var(--accent-2);
+  font-size: 10px;
+  font-weight: 400;
+}
+.process-history li p {
+  margin-top: 2px;
+}
+.modal-fineprint {
+  margin-top: 6px;
+  color: var(--faint);
+  font-size: 9.5px;
+  overflow-wrap: anywhere;
+}
+.modal-error {
+  color: #d89484;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.participant-chips,
+.process-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.participant-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 6px 9px;
+  font-size: 12px;
+  text-align: left;
+}
+.participant-chip:hover {
+  border-color: rgba(200, 164, 92, 0.5);
+  color: var(--accent);
+}
+.participant-chip small {
+  color: var(--faint);
+  font-size: 9.5px;
+}
+.modal-card .process-chip {
+  color: #d7bd82;
+  border-color: rgba(200, 164, 92, 0.35);
+  background: rgba(200, 164, 92, 0.07);
+}
+.modal-card .process-chip:hover {
+  color: #f0d69a;
+  border-color: rgba(200, 164, 92, 0.58);
+  background: rgba(200, 164, 92, 0.13);
+}
+.modal-card .process-chip small {
+  color: var(--muted);
+}
+
+.semantic-person:focus-visible,
+.log-person-chip:focus-visible,
+.log-title-button:focus-visible,
+.process-chip:focus-visible,
+.historical-card-button:focus-visible,
+.historical-contact-chip:focus-visible,
+.participant-chip:focus-visible,
+.modal-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.log-pane .semantic-person:focus-visible,
+.log-pane .log-person-chip:focus-visible,
+.log-pane .log-title-button:focus-visible,
+.log-pane .process-chip:focus-visible {
+  outline-color: #8a5b3a;
+}
+
+@media (max-width: 620px) {
+  .log-entry.major {
+    margin-left: -8px;
+    padding-left: 10px;
+  }
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 10px;
+  }
+  .modal-card {
+    width: 100%;
+    max-height: 88vh;
+    padding: 22px 18px 20px;
+  }
+  .dossier-popover {
+    font-size: 11.5px;
+  }
+}

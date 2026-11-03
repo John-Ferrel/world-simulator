@@ -353,6 +353,41 @@ function normalizeGeneratedOutcome(
         delete source.personId;
       }
     }
+    if (effect.type === 'birth') {
+      const birth = effect as Record<string, unknown>;
+      const explicit = Array.isArray(birth.parentIds)
+        ? birth.parentIds.filter((value): value is string => typeof value === 'string')
+        : [];
+      const parents =
+        explicit.length > 0
+          ? explicit
+          : [birth.motherId, birth.fatherId].filter(
+              (value): value is string => typeof value === 'string',
+            );
+      birth.parentIds = parents;
+      birth.childSex =
+        birth.childSex === 'male' || birth.childSex === 'female'
+          ? birth.childSex
+          : birth.sex === 'male' || birth.sex === 'female'
+            ? birth.sex
+            : 'female';
+      delete birth.motherId;
+      delete birth.fatherId;
+      delete birth.sex;
+      delete birth.personId;
+    }
+    if (effect.type === 'employment') {
+      const employment = effect as { organizationId?: unknown };
+      const organizationId = employment.organizationId;
+      if (typeof organizationId === 'string' && organizationId.startsWith('$')) {
+        const key = organizationId.slice(1);
+        if (!roleKeys.has(key) && (key === 'employer' || key === 'employerOrg')) {
+          // Models often name the current employer without a cast employer
+          // role. The subject's existing organization is the only safe binding.
+          employment.organizationId = '$subjectOrg';
+        }
+      }
+    }
     if (effect.type === 'education') {
       const status = (effect as { status?: string }).status;
       if (status === 'vocational') (effect as { status: string }).status = 'apprenticeship';

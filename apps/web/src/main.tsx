@@ -27,6 +27,7 @@ type HistoricalIdentity = {
 };
 type PersonHistoricalProcess = {
   id: string;
+  name?: string;
   description: string;
   kind: string;
   phase: string;
@@ -96,6 +97,21 @@ type PersonSummary = {
   };
   appearance: Appearance;
 };
+type LogKind = 'birth' | 'death' | 'history' | 'major' | 'ordinary';
+type LogSegment = {
+  type: 'text' | 'person';
+  text: string;
+  personId?: string;
+  name?: string;
+  role?: string;
+  historical?: boolean;
+};
+type ProcessRef = {
+  id: string;
+  name: string;
+  phase?: string;
+  description?: string;
+};
 type LogEvent = {
   id: string;
   date: Date4;
@@ -105,6 +121,21 @@ type LogEvent = {
   placeName?: string;
   people: { id: string; name: string; role: string }[];
   significance: number;
+  kind: LogKind;
+  major: boolean;
+  segments: LogSegment[];
+  processRefs?: ProcessRef[];
+};
+type PersonHover = {
+  personId: string;
+  name?: string;
+  role?: string;
+  historical?: boolean;
+  rect: DOMRect;
+};
+type ProcessHover = {
+  process: ProcessRef;
+  rect: DOMRect;
 };
 type Chronicle = {
   id: string;
@@ -268,6 +299,105 @@ function displayAge(person: { born: Date4; died?: Date4; age?: number }, worldDa
 
 function lifeSpanText(person: Pick<PersonSummary, 'born' | 'died'>): string {
   return `${shortDate(person.born)} — ${person.died ? shortDate(person.died) : '至今'}`;
+}
+
+const eventKindText: Record<LogKind, string> = {
+  birth: '出生',
+  death: '死亡',
+  history: '历史参与',
+  major: '重大事件',
+  ordinary: '生活记录',
+};
+
+const developmentStatusText: Record<string, string> = {
+  emerging: '初现',
+  active: '进行中',
+  declining: '衰退',
+  ended: '已结束',
+  blocked: '停滞',
+};
+
+const participantRoleText: Record<string, string> = {
+  subject: '当事人',
+  participant: '参与者',
+  witness: '见证者',
+  neighbor: '邻居',
+  friend: '朋友',
+  partner: '伴侣',
+  spouse: '配偶',
+  parent: '父母',
+  child: '子女',
+  guardian: '监护人',
+  employer: '雇主',
+  employee: '雇员',
+  colleague: '同事',
+  rival: '对手',
+  official: '官员',
+  doctor: '医生',
+  teacher: '教师',
+  leader: '领导者',
+  organizer: '组织者',
+  supporter: '支持者',
+  opponent: '反对者',
+  executor: '执行者',
+  perpetrator: '施暴者',
+  victim: '受害者',
+  rescuer: '救助者',
+  affected: '受影响者',
+};
+
+function readableParticipantRole(role: string | undefined): string | undefined {
+  if (!role) return undefined;
+  return participantRoleText[role] ?? '在场';
+}
+
+/** Keep a hover card inside the viewport without turning it into a modal. */
+function popoverPosition(
+  rect: DOMRect,
+  width: number,
+  estimatedHeight: number,
+): React.CSSProperties {
+  const margin = 10;
+  const viewportWidth = typeof window === 'undefined' ? 1280 : window.innerWidth;
+  const viewportHeight = typeof window === 'undefined' ? 800 : window.innerHeight;
+  const clampedWidth = Math.max(220, Math.min(width, viewportWidth - margin * 2));
+  let left = rect.left + rect.width / 2 - clampedWidth / 2;
+  left = Math.max(margin, Math.min(left, viewportWidth - clampedWidth - margin));
+  let top = rect.bottom + 8;
+  if (top + estimatedHeight > viewportHeight - margin)
+    top = Math.max(margin, rect.top - estimatedHeight - 8);
+  return { left, top, width: clampedWidth };
+}
+
+/**
+ * The API sends a stable process name when it has one. These local fallbacks
+ * only run for older responses or for a macro development opened directly from
+ * the world pane; they derive a short label from recorded data, not from prose
+ * inference.
+ */
+function shortProcessName(description: string | undefined, fallback = '历史进程'): string {
+  const text = description?.trim();
+  if (!text) return fallback;
+  const clause = text.split(/[。；;\n]/)[0]?.trim() || text;
+  return clause.length > 36 ? `${clause.slice(0, 36)}…` : clause;
+}
+
+function processRefFromDevelopment(development: WorldHistoricalDevelopment): ProcessRef {
+  return {
+    id: development.id,
+    name: shortProcessName(development.description),
+    phase: development.historical?.phase,
+    description: development.description,
+  };
+}
+
+function processRefFromParticipation(process: PersonHistoricalProcess): ProcessRef {
+  return {
+    id: process.id,
+    name: process.name?.trim() || shortProcessName(process.description),
+    phase: process.phase,
+    description: process.description,
+  };
 }
 
 /**
@@ -920,6 +1050,10 @@ function Observer({
 }) {
   const person = detail?.person ?? world.people.find((item) => item.id === selectedId) ?? null;
   const [activePlace, setActivePlace] = useState<string | null>(null);
+  const [processModal, setProcessModal] = useState<{ id: string; fallback?: ProcessRef } | null>(
+    null,
+  );
+  const openProcess = (id: string, fallback?: ProcessRef) => setProcessModal({ id, fallback });
   const alive = world.people.filter((item) => !item.died);
   return (
     <div className="observer">
@@ -959,10 +1093,17 @@ function Observer({
           detail={detail}
           onSelect={onSelect}
           onShowPlace={(id) => setActivePlace(id)}
+          onOpenProcess={openProcess}
           onLoadMorePeople={onLoadMorePeople}
           loadingMorePeople={loadingMorePeople}
         />
-        <LogPane world={world} person={person} detail={detail} />
+        <LogPane
+          world={world}
+          person={person}
+          detail={detail}
+          onSelectPerson={onSelect}
+          onOpenProcess={openProcess}
+        />
         <WorldPane
           world={world}
           activePlace={activePlace}
@@ -971,6 +1112,16 @@ function Observer({
           onSelect={onSelect}
         />
       </main>
+      {processModal && (
+        <ProcessDossierModal
+          processId={processModal.id}
+          fallback={processModal.fallback}
+          world={world}
+          detail={detail}
+          onClose={() => setProcessModal(null)}
+          onSelectPerson={onSelect}
+        />
+      )}
       <div className="footnote">
         {world.terminalReason ??
           '日志只来自已提交事件；地图用于定位，不是精确测绘。世界时间约每 30 秒推进一年。'}
@@ -991,6 +1142,7 @@ function PersonPane({
   detail,
   onSelect,
   onShowPlace,
+  onOpenProcess,
   onLoadMorePeople,
   loadingMorePeople,
 }: {
@@ -999,9 +1151,11 @@ function PersonPane({
   detail: PersonDetail | null;
   onSelect: (id: string) => void;
   onShowPlace: (id: string) => void;
+  onOpenProcess: (id: string, fallback?: ProcessRef) => void;
   onLoadMorePeople: () => void;
   loadingMorePeople: boolean;
 }) {
+  const [processHover, setProcessHover] = useState<ProcessHover | null>(null);
   if (!person)
     return (
       <aside className="pane person-pane">
@@ -1100,8 +1254,33 @@ function PersonPane({
           <div className="historical-list">
             {historicalProcesses.map((process) => {
               const outcome = process.outcome?.trim();
+              const fallback = processRefFromParticipation(process);
               return (
-                <article key={process.id} className="historical-card">
+                <button
+                  key={process.id}
+                  type="button"
+                  className="historical-card historical-card-button"
+                  data-process-id={process.id}
+                  aria-label={`打开历史进程：${fallback.name}`}
+                  onMouseEnter={(event) =>
+                    setProcessHover({
+                      process: fallback,
+                      rect: event.currentTarget.getBoundingClientRect(),
+                    })
+                  }
+                  onMouseLeave={() => setProcessHover(null)}
+                  onFocus={(event) =>
+                    setProcessHover({
+                      process: fallback,
+                      rect: event.currentTarget.getBoundingClientRect(),
+                    })
+                  }
+                  onBlur={() => setProcessHover(null)}
+                  onClick={() => {
+                    setProcessHover(null);
+                    onOpenProcess(process.id, fallback);
+                  }}
+                >
                   <div className="historical-card-head">
                     <span className="phase-pill">{historicalPhaseLabel(process.phase)}</span>
                     <span className="influence-note">
@@ -1117,7 +1296,8 @@ function PersonPane({
                     </div>
                   )}
                   {outcome && <p className="historical-outcome">结果：{outcome}</p>}
-                </article>
+                  <span className="card-action-hint">查看进程档案</span>
+                </button>
               );
             })}
           </div>
@@ -1176,7 +1356,14 @@ function PersonPane({
           <h3>历史人物关系</h3>
           <div className="historical-contact-list">
             {historicalContacts.map((contact) => (
-              <button key={contact.id} onClick={() => onSelect(contact.id)}>
+              <button
+                key={contact.id}
+                type="button"
+                className="historical-contact-chip"
+                data-person-id={contact.id}
+                aria-label={`查看历史人物 ${contact.name}`}
+                onClick={() => onSelect(contact.id)}
+              >
                 <span>{contact.name}</span>
                 <small>
                   {contact.publicRole} · {relationText[contact.kind] ?? contact.kind} · 信任{' '}
@@ -1218,6 +1405,7 @@ function PersonPane({
           </button>
         )}
       </div>
+      {processHover && <ProcessHoverCard hover={processHover} />}
     </aside>
   );
 }
@@ -1235,10 +1423,14 @@ function LogPane({
   world,
   person,
   detail,
+  onSelectPerson,
+  onOpenProcess,
 }: {
   world: World;
   person: PersonSummary | null;
   detail: PersonDetail | null;
+  onSelectPerson: (id: string) => void;
+  onOpenProcess: (id: string, fallback?: ProcessRef) => void;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
   const events = useMemo(() => {
@@ -1260,16 +1452,97 @@ function LogPane({
     [events],
   );
   const [yearFilter, setYearFilter] = useState<number | null>(null);
+  const [personHover, setPersonHover] = useState<PersonHover | null>(null);
+  const [processHover, setProcessHover] = useState<ProcessHover | null>(null);
+  const [personDetails, setPersonDetails] = useState<Record<string, PersonDetail>>({});
+  const personRequests = useRef(new Set<string>());
+  const personDetailRevision = useRef<Record<string, number>>({});
+  const [eventModal, setEventModal] = useState<{
+    id: string;
+    loading: boolean;
+    event?: LogEvent;
+    error?: string;
+  } | null>(null);
+  const eventRequest = useRef(0);
   const shown = yearFilter ? events.filter((event) => event.date.year === yearFilter) : events;
+  const ownerIds = useMemo(() => {
+    const ids = new Set(world.people.filter((item) => item.owner).map((item) => item.id));
+    if (detail?.person.owner) ids.add(detail.person.id);
+    return ids;
+  }, [world.people, detail?.person.id, detail?.person.owner]);
+
   useEffect(() => {
     setYearFilter(null);
+    setPersonHover(null);
+    setProcessHover(null);
+    setEventModal(null);
+    eventRequest.current += 1;
   }, [person?.id]);
   useEffect(() => {
     const node = scroller.current;
     if (node) node.scrollTop = 0;
   }, [person?.id, events.length]);
 
+  const ensurePersonDetail = (personId: string) => {
+    if (personId === detail?.person.id) return;
+    const loadedRevision = personDetailRevision.current[personId];
+    if (personDetails[personId] && loadedRevision !== undefined && loadedRevision >= world.revision)
+      return;
+    if (personRequests.current.has(personId)) return;
+    personRequests.current.add(personId);
+    const requestedRevision = world.revision;
+    api<PersonDetail>(`/v4/persons/${personId}`)
+      .then((next) => {
+        personDetailRevision.current[personId] = requestedRevision;
+        setPersonDetails((current) => ({ ...current, [personId]: next }));
+      })
+      .catch(() => undefined)
+      .finally(() => personRequests.current.delete(personId));
+  };
+
+  const showPerson = (next: PersonHover) => {
+    setProcessHover(null);
+    setPersonHover(next);
+    ensurePersonDetail(next.personId);
+  };
+
+  const showProcess = (process: ProcessRef, rect: DOMRect) => {
+    setPersonHover(null);
+    setProcessHover({ process, rect });
+  };
+
+  const selectPerson = (personId: string) => {
+    setPersonHover(null);
+    setProcessHover(null);
+    setEventModal(null);
+    eventRequest.current += 1;
+    onSelectPerson(personId);
+  };
+
+  const openEvent = async (eventId: string) => {
+    const token = eventRequest.current + 1;
+    eventRequest.current = token;
+    setEventModal({ id: eventId, loading: true });
+    try {
+      const next = await api<LogEvent>(`/v4/events/${eventId}`);
+      if (eventRequest.current === token)
+        setEventModal({ id: eventId, loading: false, event: next });
+    } catch (error) {
+      if (eventRequest.current === token)
+        setEventModal({
+          id: eventId,
+          loading: false,
+          error: (error as Error).message || '无法读取事件档案',
+        });
+    }
+  };
+
   if (!person) return <section className="pane log-pane" />;
+  const hoveredDetail = personHover
+    ? personHover.personId === detail?.person.id
+      ? detail
+      : personDetails[personHover.personId]
+    : undefined;
   return (
     <section className="pane log-pane">
       <div className="log-head">
@@ -1333,7 +1606,18 @@ function LogPane({
                     <span>{event.date.year}</span>
                   </div>
                 )}
-                <LogEntry event={event} />
+                <LogEntry
+                  event={event}
+                  selectedId={person.id}
+                  ownerIds={ownerIds}
+                  onSelectPerson={selectPerson}
+                  onPersonHover={showPerson}
+                  onPersonLeave={() => setPersonHover(null)}
+                  onProcessHover={showProcess}
+                  onProcessLeave={() => setProcessHover(null)}
+                  onOpenProcess={onOpenProcess}
+                  onOpenEvent={openEvent}
+                />
               </React.Fragment>
             );
           })}
@@ -1353,6 +1637,27 @@ function LogPane({
         </span>
         <span>{world.date.year} 年 · 历史仍在推进</span>
       </div>
+      {personHover && (
+        <PersonDossierCard hover={personHover} detail={hoveredDetail} selectedDetail={detail} />
+      )}
+      {processHover && <ProcessHoverCard hover={processHover} />}
+      {eventModal && (
+        <EventDossierModal
+          state={eventModal}
+          selectedId={person.id}
+          ownerIds={ownerIds}
+          onClose={() => {
+            eventRequest.current += 1;
+            setEventModal(null);
+          }}
+          onSelectPerson={selectPerson}
+          onOpenProcess={(id, fallback) => {
+            eventRequest.current += 1;
+            setEventModal(null);
+            onOpenProcess(id, fallback);
+          }}
+        />
+      )}
     </section>
   );
 }
@@ -1388,28 +1693,585 @@ function readableLogText(event: LogEvent): string {
   return text;
 }
 
-function LogEntry({ event }: { event: LogEvent }) {
+function SemanticText({
+  event,
+  selectedId,
+  ownerIds,
+  onSelectPerson,
+  onPersonHover,
+  onPersonLeave,
+}: {
+  event: LogEvent;
+  selectedId?: string | null;
+  ownerIds?: Set<string>;
+  onSelectPerson: (id: string) => void;
+  onPersonHover?: (hover: PersonHover) => void;
+  onPersonLeave?: () => void;
+}) {
+  const segments: LogSegment[] = event.segments?.length
+    ? event.segments
+    : [{ type: 'text', text: readableLogText(event) }];
+  return (
+    <>
+      {segments.map((segment, index) => {
+        if (segment.type !== 'person' || !segment.personId) {
+          return <React.Fragment key={`text-${index}`}>{segment.text}</React.Fragment>;
+        }
+        const personId = segment.personId;
+        const classes = ['semantic-person'];
+        if (segment.historical) classes.push('historical');
+        if (ownerIds?.has(personId)) classes.push('owner');
+        if (selectedId === personId) classes.push('selected');
+        const show = (element: HTMLElement) =>
+          onPersonHover?.({
+            personId,
+            name: segment.name,
+            role: segment.role,
+            historical: segment.historical,
+            rect: element.getBoundingClientRect(),
+          });
+        return (
+          <button
+            key={`person-${index}-${personId}`}
+            type="button"
+            className={classes.join(' ')}
+            data-person-id={personId}
+            aria-label={`查看 ${segment.name ?? segment.text}`}
+            onMouseEnter={(mouseEvent) => show(mouseEvent.currentTarget)}
+            onMouseLeave={onPersonLeave}
+            onFocus={(focusEvent) => show(focusEvent.currentTarget)}
+            onBlur={onPersonLeave}
+            onClick={() => onSelectPerson(personId)}
+          >
+            {segment.text}
+          </button>
+        );
+      })}
+    </>
+  );
+}
+
+function LogEntry({
+  event,
+  selectedId,
+  ownerIds,
+  onSelectPerson,
+  onPersonHover,
+  onPersonLeave,
+  onProcessHover,
+  onProcessLeave,
+  onOpenProcess,
+  onOpenEvent,
+}: {
+  event: LogEvent;
+  selectedId: string;
+  ownerIds: Set<string>;
+  onSelectPerson: (id: string) => void;
+  onPersonHover: (hover: PersonHover) => void;
+  onPersonLeave: () => void;
+  onProcessHover: (process: ProcessRef, rect: DOMRect) => void;
+  onProcessLeave: () => void;
+  onOpenProcess: (id: string, fallback?: ProcessRef) => void;
+  onOpenEvent: (id: string) => void;
+}) {
   const title = readableLogTitle(event);
   const isDeath = event.action === 'death' || event.action === 'statistical_death';
+  const people = event.people ?? [];
+  const processRefs = event.processRefs ?? [];
+  const historicalIds = new Set(
+    (event.segments ?? [])
+      .filter((segment) => segment.type === 'person' && segment.historical && segment.personId)
+      .map((segment) => segment.personId!),
+  );
+  const classes = ['log-entry'];
+  if (isDeath) classes.push('death');
+  if (event.major) classes.push('major');
+  if (event.kind === 'history') classes.push('history');
   return (
-    <article className={`log-entry ${isDeath ? 'death' : ''}`}>
+    <article className={classes.join(' ')}>
       <div className="log-meta">
         <time>{shortDate(event.date)}</time>
-        <span className="log-title">{title}</span>
+        <button
+          type="button"
+          className="log-title log-title-button"
+          data-event-id={event.id}
+          aria-label={`打开事件档案：${title}`}
+          onClick={() => onOpenEvent(event.id)}
+        >
+          {title}
+        </button>
+        {event.major && <span className="log-badge major-badge">重大</span>}
+        {event.kind === 'history' && <span className="log-badge history-badge">历史</span>}
       </div>
-      <p>{readableLogText(event)}</p>
-      {(event.placeName || event.people.length > 0) && (
+      <p className="log-text">
+        <SemanticText
+          event={event}
+          selectedId={selectedId}
+          ownerIds={ownerIds}
+          onSelectPerson={onSelectPerson}
+          onPersonHover={onPersonHover}
+          onPersonLeave={onPersonLeave}
+        />
+      </p>
+      {(event.placeName || people.length > 0) && (
         <div className="log-where">
           {event.placeName && <span>{event.placeName}</span>}
-          {event.people.length > 0 && (
-            <span>
+          {people.length > 0 && (
+            <span className="log-cast">
               在场：
-              {event.people.map((participant) => participant.name).join('、')}
+              {people.map((participant, index) => {
+                const classes = ['log-person-chip'];
+                if (historicalIds.has(participant.id)) classes.push('historical');
+                if (ownerIds.has(participant.id)) classes.push('owner');
+                if (selectedId === participant.id) classes.push('selected');
+                return (
+                  <React.Fragment key={`${participant.id}-${index}`}>
+                    {index > 0 && '、'}
+                    <button
+                      type="button"
+                      className={classes.join(' ')}
+                      data-person-id={participant.id}
+                      aria-label={`查看 ${participant.name}`}
+                      onMouseEnter={(mouseEvent) =>
+                        onPersonHover({
+                          personId: participant.id,
+                          name: participant.name,
+                          role: participant.role,
+                          historical: historicalIds.has(participant.id),
+                          rect: mouseEvent.currentTarget.getBoundingClientRect(),
+                        })
+                      }
+                      onMouseLeave={onPersonLeave}
+                      onFocus={(focusEvent) =>
+                        onPersonHover({
+                          personId: participant.id,
+                          name: participant.name,
+                          role: participant.role,
+                          historical: historicalIds.has(participant.id),
+                          rect: focusEvent.currentTarget.getBoundingClientRect(),
+                        })
+                      }
+                      onBlur={onPersonLeave}
+                      onClick={() => onSelectPerson(participant.id)}
+                    >
+                      {participant.name}
+                    </button>
+                  </React.Fragment>
+                );
+              })}
             </span>
           )}
         </div>
       )}
+      {processRefs.length > 0 && (
+        <div className="log-processes" aria-label="这件事涉及的历史进程">
+          <span className="log-process-label">历史进程</span>
+          {processRefs.map((ref) => (
+            <button
+              key={ref.id}
+              type="button"
+              className="process-chip"
+              data-process-id={ref.id}
+              aria-label={`打开历史进程：${ref.name}`}
+              title={ref.description}
+              onMouseEnter={(mouseEvent) =>
+                onProcessHover(ref, mouseEvent.currentTarget.getBoundingClientRect())
+              }
+              onMouseLeave={onProcessLeave}
+              onFocus={(focusEvent) =>
+                onProcessHover(ref, focusEvent.currentTarget.getBoundingClientRect())
+              }
+              onBlur={onProcessLeave}
+              onClick={() => {
+                onProcessLeave();
+                onOpenProcess(ref.id, ref);
+              }}
+            >
+              <span>{ref.name}</span>
+              {ref.phase && <small>{historicalPhaseLabel(ref.phase)}</small>}
+            </button>
+          ))}
+        </div>
+      )}
     </article>
+  );
+}
+
+function PersonDossierCard({
+  hover,
+  detail,
+  selectedDetail,
+}: {
+  hover: PersonHover;
+  detail?: PersonDetail;
+  selectedDetail: PersonDetail | null;
+}) {
+  const person = detail?.person;
+  const name = person?.name ?? hover.name ?? '无名';
+  const relation = selectedDetail?.relationships.find((item) => item.personId === hover.personId);
+  const isSelected = selectedDetail?.person.id === hover.personId;
+  const participation = detail?.historicalProcesses?.[0];
+  const goal = person?.agency?.summary?.trim() || person?.agency?.goal?.trim();
+  return (
+    <div
+      className="dossier-popover person-dossier"
+      style={popoverPosition(hover.rect, 292, 280)}
+      role="tooltip"
+      aria-label={`人物小档案：${name}`}
+    >
+      <div className="dossier-head">
+        <strong>{name}</strong>
+        {person?.historical && <span className="dossier-tag historical">历史人物</span>}
+        {person?.owner && <span className="dossier-tag owner">你的人物</span>}
+      </div>
+      {person ? (
+        <>
+          <div className="dossier-meta">
+            {lifeSpanText(person)} · {person.died ? `享年 ${person.age} 岁` : `${person.age} 岁`} ·{' '}
+            {sexText(person.sex)}
+          </div>
+          <div className="dossier-line">
+            <span>身份</span>
+            <strong>{person.occupation}</strong>
+          </div>
+          <div className="dossier-line">
+            <span>住处</span>
+            <strong>{person.locationName ?? detail?.place?.name ?? '维也纳'}</strong>
+          </div>
+          {isSelected ? (
+            <div className="dossier-line">
+              <span>关系</span>
+              <strong>当前观察的人物</strong>
+            </div>
+          ) : (
+            relation && (
+              <div className="dossier-line">
+                <span>与 {selectedDetail?.person.name ?? '当前人物'}</span>
+                <strong>
+                  {relationText[relation.kind] ?? relation.kind} · 信任{' '}
+                  {relationScoreText(relation.trust)}
+                </strong>
+              </div>
+            )
+          )}
+          {person.historical?.publicRole && (
+            <div className="dossier-line">
+              <span>历史身份</span>
+              <strong>{person.historical.publicRole}</strong>
+            </div>
+          )}
+          {goal && (
+            <div className="dossier-line">
+              <span>当前目标</span>
+              <strong>{goal}</strong>
+            </div>
+          )}
+          {participation && (
+            <div className="dossier-line">
+              <span>重要参与</span>
+              <strong>
+                {shortProcessName(participation.description)} ·{' '}
+                {historicalPhaseLabel(participation.phase)}
+              </strong>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="dossier-loading">
+          {hover.role
+            ? `在这场事件中：${readableParticipantRole(hover.role) ?? '在场'}`
+            : '正在读取人物档案……'}
+        </div>
+      )}
+      <div className="dossier-hint">点击人物切换观察 · 档案来自已提交状态</div>
+    </div>
+  );
+}
+
+function ProcessHoverCard({ hover }: { hover: ProcessHover }) {
+  const description = hover.process.description?.trim();
+  return (
+    <div
+      className="dossier-popover process-dossier"
+      style={popoverPosition(hover.rect, 300, 220)}
+      role="tooltip"
+      aria-label={`历史进程：${hover.process.name}`}
+    >
+      <div className="dossier-head">
+        <strong>{hover.process.name}</strong>
+        {hover.process.phase && (
+          <span className="phase-pill">{historicalPhaseLabel(hover.process.phase)}</span>
+        )}
+      </div>
+      {description && (
+        <p className="dossier-copy">
+          {description.length > 220 ? `${description.slice(0, 220)}…` : description}
+        </p>
+      )}
+      <div className="dossier-hint">点击查看进程档案</div>
+    </div>
+  );
+}
+
+function EventDossierModal({
+  state,
+  selectedId,
+  ownerIds,
+  onClose,
+  onSelectPerson,
+  onOpenProcess,
+}: {
+  state: { id: string; loading: boolean; event?: LogEvent; error?: string };
+  selectedId: string;
+  ownerIds: Set<string>;
+  onClose: () => void;
+  onSelectPerson: (id: string) => void;
+  onOpenProcess: (id: string, fallback?: ProcessRef) => void;
+}) {
+  useEffect(() => {
+    const onKeyDown = (keyboardEvent: KeyboardEvent) => {
+      if (keyboardEvent.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [onClose]);
+
+  const event = state.event;
+  const title = event ? readableLogTitle(event) : '事件档案';
+  const significance =
+    event && Number.isFinite(event.significance)
+      ? Math.round(Math.max(0, Math.min(1, event.significance)) * 100)
+      : 0;
+  const people = event?.people ?? [];
+  const processRefs = event?.processRefs ?? [];
+  return (
+    <div
+      className="modal-overlay"
+      onMouseDown={(mouseEvent) => {
+        if (mouseEvent.target === mouseEvent.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="modal-card event-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`事件档案：${title}`}
+        data-event-id={state.id}
+      >
+        <button
+          type="button"
+          className="modal-close"
+          aria-label="关闭事件档案"
+          onClick={onClose}
+          autoFocus
+        >
+          ×
+        </button>
+        {state.loading && <p className="muted">正在读取这件已提交的事实……</p>}
+        {state.error && <p className="modal-error">{state.error}</p>}
+        {event && (
+          <>
+            <div className="modal-kicker">事件档案 · {eventKindText[event.kind] ?? '事件'}</div>
+            <h2>{title}</h2>
+            <div className="modal-meta">
+              <span>{dateText(event.date)}</span>
+              {event.placeName && <span>{event.placeName}</span>}
+              <span>显著度 {significance}%</span>
+            </div>
+            <div className="modal-badges">
+              {event.major && <span className="log-badge major-badge">重大事件</span>}
+              {event.kind === 'history' && (
+                <span className="log-badge history-badge">历史参与</span>
+              )}
+            </div>
+            <p className="modal-text">
+              <SemanticText
+                event={event}
+                selectedId={selectedId}
+                ownerIds={ownerIds}
+                onSelectPerson={onSelectPerson}
+              />
+            </p>
+            {people.length > 0 && (
+              <section className="modal-section">
+                <h3>在场人物</h3>
+                <div className="participant-chips">
+                  {people.map((participant, index) => (
+                    <button
+                      key={`${participant.id}-${index}`}
+                      type="button"
+                      className="participant-chip"
+                      data-person-id={participant.id}
+                      aria-label={`查看 ${participant.name}`}
+                      onClick={() => onSelectPerson(participant.id)}
+                    >
+                      <span>{participant.name}</span>
+                      <small>{readableParticipantRole(participant.role)}</small>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
+            {processRefs.length > 0 && (
+              <section className="modal-section">
+                <h3>相关历史进程</h3>
+                <div className="process-links">
+                  {processRefs.map((ref) => (
+                    <button
+                      key={ref.id}
+                      type="button"
+                      className="process-chip"
+                      data-process-id={ref.id}
+                      aria-label={`打开历史进程：${ref.name}`}
+                      onClick={() => onOpenProcess(ref.id, ref)}
+                    >
+                      <span>{ref.name}</span>
+                      {ref.phase && <small>{historicalPhaseLabel(ref.phase)}</small>}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ProcessDossierModal({
+  processId,
+  fallback,
+  world,
+  detail,
+  onClose,
+  onSelectPerson,
+}: {
+  processId: string;
+  fallback?: ProcessRef;
+  world: World;
+  detail: PersonDetail | null;
+  onClose: () => void;
+  onSelectPerson: (id: string) => void;
+}) {
+  useEffect(() => {
+    const onKeyDown = (keyboardEvent: KeyboardEvent) => {
+      if (keyboardEvent.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [onClose]);
+
+  const development = (world.macro?.developments ?? []).find((item) => item.id === processId);
+  const participation = detail?.historicalProcesses?.find((item) => item.id === processId);
+  const derivedRef = development
+    ? processRefFromDevelopment(development)
+    : participation
+      ? processRefFromParticipation(participation)
+      : undefined;
+  const name = fallback?.name ?? derivedRef?.name ?? '历史进程';
+  const description =
+    development?.description ?? fallback?.description ?? participation?.description;
+  const phase = development?.historical?.phase ?? fallback?.phase ?? participation?.phase;
+  const outcome = development?.historical?.outcome ?? participation?.outcome;
+  const objectives = development?.historical?.objectives ?? [];
+  const recentHistory = development?.historical?.recentHistory ?? [];
+  const participantCount = development?.historical?.participantCount;
+  const organizationRoles = development?.historical?.organizations ?? [];
+  return (
+    <div
+      className="modal-overlay process-overlay"
+      onMouseDown={(mouseEvent) => {
+        if (mouseEvent.target === mouseEvent.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="modal-card process-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`历史进程：${name}`}
+        data-process-id={processId}
+      >
+        <button
+          type="button"
+          className="modal-close"
+          aria-label="关闭进程档案"
+          onClick={onClose}
+          autoFocus
+        >
+          ×
+        </button>
+        <div className="modal-kicker">
+          历史进程 · {development ? (developmentStatusText[development.status] ?? '记录') : '记录'}
+        </div>
+        <h2>{name}</h2>
+        <div className="modal-meta">
+          {phase && <span className="phase-pill">{historicalPhaseLabel(phase)}</span>}
+          {participantCount !== undefined && <span>{participantCount} 人参与</span>}
+          {organizationRoles.length > 0 && <span>{organizationRoles.length} 个组织卷入</span>}
+        </div>
+        {description && <p className="modal-text">{description}</p>}
+        {objectives.length > 0 && (
+          <section className="modal-section">
+            <h3>目标</h3>
+            <ul className="modal-list">
+              {objectives.map((objective, index) => (
+                <li key={`${processId}-objective-${index}`}>{objective}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+        {participation && detail && (
+          <section className="modal-section">
+            <h3>当前人物的参与</h3>
+            <div className="participant-chips">
+              <button
+                type="button"
+                className="participant-chip"
+                data-person-id={detail.person.id}
+                onClick={() => {
+                  onSelectPerson(detail.person.id);
+                  onClose();
+                }}
+              >
+                <span>{detail.person.name}</span>
+                <small>
+                  {participation.roles.map(historicalRoleLabel).join('、')} · 影响{' '}
+                  {influencePercent(participation.influence)}%
+                </small>
+              </button>
+            </div>
+            <div className="modal-fineprint">
+              加入于 {dateText(participation.joinedAt)}
+              {participation.lastEventId ? ` · 最近事件 ${participation.lastEventId}` : ''}
+            </div>
+          </section>
+        )}
+        {outcome && (
+          <section className="modal-section">
+            <h3>结果</h3>
+            <p className="modal-text">{outcome}</p>
+          </section>
+        )}
+        {recentHistory.length > 0 && (
+          <section className="modal-section">
+            <h3>近期记录</h3>
+            <ul className="modal-list process-history">
+              {recentHistory.map((entry, index) => (
+                <li key={`${processId}-history-${index}`}>
+                  <span>{dateText(entry.date)}</span>
+                  <strong>{historicalPhaseLabel(entry.phase)}</strong>
+                  <p>{entry.note}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+        {!description && !participation && (
+          <p className="muted">这个世界没有留下该进程的公开记录。</p>
+        )}
+      </div>
+    </div>
   );
 }
 

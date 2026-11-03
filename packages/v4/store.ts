@@ -294,6 +294,12 @@ export type V4PersonCursor = {
 export type V4EventLookups = {
   placeNames: Record<string, string>;
   personNames: Record<string, string>;
+  /**
+   * Stable historical identity metadata for event participants. This is
+   * observation data only: it labels a person in the log and never changes
+   * world physics.
+   */
+  personHistorical: Record<string, { publicRole?: string; historicalId?: string }>;
   /** Scene instance id -> authored scene id. */
   sceneIdByInstance: Record<string, string>;
 };
@@ -576,7 +582,8 @@ export async function v4EventLookups(
   const [persons, places, scenes] = await Promise.all([
     personIds.size
       ? pool.query(
-          `SELECT id, payload->>'name' AS name FROM v4_persons
+          `SELECT id, payload->>'name' AS name, payload->'historicalIdentity' AS historical
+           FROM v4_persons
            WHERE world_id=$1 AND id = ANY($2::text[])`,
           [worldId, [...personIds]],
         )
@@ -602,6 +609,23 @@ export async function v4EventLookups(
     ),
     personNames: Object.fromEntries(
       persons.rows.filter((row: any) => row.name).map((row: any) => [row.id, row.name]),
+    ),
+    personHistorical: Object.fromEntries(
+      persons.rows
+        .filter(
+          (row: any) =>
+            row.historical &&
+            (typeof row.historical.id === 'string' ||
+              typeof row.historical.publicRole === 'string'),
+        )
+        .map((row: any) => [
+          row.id,
+          {
+            publicRole:
+              typeof row.historical.publicRole === 'string' ? row.historical.publicRole : undefined,
+            historicalId: typeof row.historical.id === 'string' ? row.historical.id : undefined,
+          },
+        ]),
     ),
     sceneIdByInstance: Object.fromEntries(
       scenes.rows.filter((row: any) => row.scene_id).map((row: any) => [row.id, row.scene_id]),

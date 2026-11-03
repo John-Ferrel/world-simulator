@@ -39,6 +39,12 @@ test('register, give birth, read a concrete log and inspect the map', async ({ p
   await expect(page.locator('.person-heading h2')).toHaveText('Sigmund Freud');
   await expect(page.locator('.historical-badge')).toContainText('历史人物');
   await expect(page.locator('.historical-participation')).toBeVisible();
+  const processCard = page.locator('.historical-card').first();
+  if (await processCard.isVisible().catch(() => false)) {
+    await processCard.click();
+    await expect(page.locator('.process-modal')).toBeVisible();
+    await page.getByRole('button', { name: '关闭进程档案' }).click();
+  }
 
   await page.locator('.person-switch select').selectOption('person-anton-huber');
   await expect(page.locator('.person-heading h2')).toHaveText('Anton Huber');
@@ -51,6 +57,20 @@ test('register, give birth, read a concrete log and inspect the map', async ({ p
   await expect(page.locator('.log-pane')).toContainText(/Anna|Bauer|印刷|学校|房租/);
   await expect(page.locator('.log-title', { hasText: 'None' })).toHaveCount(0);
   await expect(page.locator('.log-title', { hasText: /^[a-z][a-z0-9_]*$/ })).toHaveCount(0);
+
+  const semanticPerson = page.locator('.log-entry .semantic-person').first();
+  await expect(semanticPerson).toBeVisible();
+  await semanticPerson.hover();
+  await expect(page.locator('.person-dossier')).toBeVisible();
+  await page.locator('.person-heading h2').hover();
+  await expect(page.locator('.person-dossier')).toHaveCount(0);
+
+  const majorTitle = page.locator('.log-entry.major .log-title-button').first();
+  if (await majorTitle.isVisible().catch(() => false)) {
+    await majorTitle.click();
+    await expect(page.locator('.event-modal')).toBeVisible();
+    await page.getByRole('button', { name: '关闭事件档案' }).click();
+  }
 
   const pins = page.locator('.map-pin');
   await expect(pins.first()).toBeVisible();

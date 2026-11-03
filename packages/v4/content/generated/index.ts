@@ -74,8 +74,15 @@ export function generatedPackErrors(): string[] {
 export { GENERATED_TASKS } from './tasks.js';
 
 export { PHASE9_TASKS, PHASE9_EVENT_SCENES } from './phase9.js';
+export {
+  PHASE10_AUTHORED_EVENT_SCENES,
+  PHASE10_AUTHORED_TASKS,
+  PHASE10_EVENT_SCENES,
+  PHASE10_TASKS,
+} from '../major-life.js';
+import { PHASE10_EVENT_SCENES as P10_EVENTS, PHASE10_TASKS as P10_TASKS } from '../major-life.js';
 import { GENERATED_TASKS as P8_TASKS } from './tasks.js';
 import { PHASE9_TASKS as P9_TASKS, PHASE9_EVENT_SCENES as P9_EVENTS } from './phase9.js';
 
-export const ALL_TASKS = [...P8_TASKS, ...P9_TASKS];
-export const ALL_EVENT_SCENES = [...GENERATED_SCENES, ...P9_EVENTS];
+export const ALL_TASKS = [...P8_TASKS, ...P9_TASKS, ...P10_TASKS];
+export const ALL_EVENT_SCENES = [...GENERATED_SCENES, ...P9_EVENTS, ...P10_EVENTS];

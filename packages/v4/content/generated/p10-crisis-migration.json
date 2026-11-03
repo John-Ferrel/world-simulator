@@ -1,0 +1,1349 @@
+{
+  "id": "p10-crisis-migration",
+  "title": "驱逐、搜查与战后的站台",
+  "stage": "adulthood",
+  "ageWindow": {
+    "min": 18,
+    "max": 70
+  },
+  "tags": [
+    "adulthood",
+    "crisis",
+    "migration",
+    "war",
+    "police",
+    "eviction",
+    "refugee",
+    "housing"
+  ],
+  "baseRate": 0.13,
+  "conditions": [
+    {
+      "kind": "age",
+      "min": 18,
+      "max": 70
+    }
+  ],
+  "kind": "event",
+  "nodes": [
+    {
+      "id": "p10-crisis-migration.eviction",
+      "title": "看门人换掉的锁",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 70
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 15
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "landlord",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "eviction",
+        "rent_arrears",
+        "shelter"
+      ],
+      "outcomes": [
+        {
+          "id": "eviction-shelter-queue",
+          "weight": 1,
+          "text": "傍晚，{subject}把床架和一只木箱寄放在{neighbor}家的过道里，用粉笔在箱盖上写了名字，带着家人去几个街区外的市政收容所。走廊里排到楼梯口，登记的{official}说床位要等到明早，只发了两张毯子，孩子睡在长椅上。",
+          "effects": [
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-wien-leopoldstadt-tenement",
+              "reason": "欠租被换锁，暂住收容所后登记进出租屋"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "收容所登记与寄存箱子的杂费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.12,
+              "obligation": 0.1,
+              "reason": "邻居腾出过道存放家具"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "一家人挤在收容所长椅上过夜"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "eviction-shelter-queue",
+              "text": "看门人把锁芯拧下来的时候，院子里的孩子正围着床架转。{neighbor}帮着把立柜抬进屋，说先放着，别让雨淋。收容所的走廊有消毒水味，{official}在名册上一行行写，写完让他们在长椅上等天亮。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "eviction-shelter-queue",
+              "text": "床架斜靠在垃圾桶上，床垫用绳子捆着，{subject}蹲下把散在石板上的勺子一只只捡回布袋。{neighbor}的过道只放得下箱子，床架只好留在院里。收容所门口发毯子的人说只剩两张，孩子裹着毯子先睡了。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eviction-deal-landlord",
+          "weight": 1,
+          "text": "{subject}在楼道里拦住{landlord}，说一周内先补上二十克朗，剩下的月底清。房东要加一成房租，才让看门人把旧锁装回去。当天晚上锁装上了，门框上多一道新钉痕，米缸里只剩半袋粗面。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -20,
+              "reason": "补齐部分欠租才换回门锁"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "总算把一家人重新关进自己屋里"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rent_arrears_partial",
+              "add": true,
+              "reason": "与房东约定月底前结清余款"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$landlord",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "fear": 0.15,
+              "reason": "房东借机涨租一成"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "eviction-deal-landlord",
+              "text": "房东站在楼梯转角数钱，数完把钥匙串往手心里磕了磕，说涨价这一成是行情。看门人拎着工具箱上来，锁芯换了回去，门一关，院子里的床架才搬回屋里。{subject}把剩下的克朗一张张压在碟子底下。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "eviction-deal-landlord",
+              "text": "谈的时候{neighbor}靠在门框上听着。房东说月底前结清，不然下回连箱子都不许搁院子里。锁重新装上，{subject}在门后站了好一会儿，摸了摸新钉子的头，才去灶上烧水。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eviction-flee-sister",
+          "weight": 1,
+          "text": "半夜，{subject}用一辆借来的手推车装上被褥和锅，沿多瑙运河走到城外的克洛斯特新堡，敲开姐姐家的院门。第二天没赶上上工，厂里把他的位置给了别人；孩子在新的学校被同学叫作外乡人，放学回来一路没说话。",
+          "effects": [
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-klosterneuburg-aunt-house",
+              "reason": "被驱逐后连夜投奔城外亲戚家"
+            },
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "夜间搬迁误工，厂里另找了人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "孩子在陌生学校被排挤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "不告而别，院子里的邻居有些不满"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "eviction-flee-sister",
+              "text": "推车的轮子在石子路上咯吱响，锅盖撞着车帮。天蒙蒙亮时到了院门口，姐姐披着外衣出来，先看孩子，再看车上的东西。下午{subject}赶到厂门口，门房说名册上已经没他的名字了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "eviction-flee-sister",
+              "text": "走之前{neighbor}塞给他们一块面包，说路上给孩子吃。到了城外，屋里挤，孩子睡在灶边的长凳上。第二天放学，孩子把书包撂下就坐到门槛上，说班上有人朝他喊外乡人。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-crisis-migration.industrial-disability",
+      "title": "冲床之后的工作台",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 60
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "factory"
+          ]
+        },
+        {
+          "kind": "health",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "doctor",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70,
+          "occupation": "Arzt"
+        }
+      ],
+      "tags": [
+        "industrial_accident",
+        "disability",
+        "compensation"
+      ],
+      "outcomes": [
+        {
+          "id": "disabled-gatekeeper",
+          "weight": 1,
+          "text": "{subject}答应去做门房，日薪从四克朗降到两克朗，但每天还能进厂，坐在门房里登记进出的人。断指处缠着纱布，写名字时左手按纸。三个月后保险会的伤残金批下来，一次性补了六十克朗。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.15,
+              "reason": "冲床压断两指，伤口愈合慢"
+            },
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "门房",
+              "wage": 12,
+              "workplaceId": "$workplace",
+              "reason": "伤后调做门房，日薪减半"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 60,
+              "reason": "保险会补发的伤残金"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.05,
+              "obligation": 0.1,
+              "reason": "厂里给了门房的活"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "disabled-gatekeeper",
+              "text": "门房的窗子正对大门，{subject}把名册摊在膝上，用还能弯的手指翻页。工友进出时点一下头，{worker}替他把热水壶拎进来。评定书是三个月后送到的，纸很新，签名处盖着红章。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "disabled-gatekeeper",
+              "text": "断指的地方换药时还发麻，{subject}学着用左手按纸、右手写。门房里冷，他把脚搁在炉边烤。工钱袋比从前轻，但每天照样有人喊他一声师傅。补发的那笔钱先付了房租和药钱。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "disabled-street-stall",
+          "weight": 1,
+          "text": "{subject}不等评定就辞了工，在街角帮人看果摊，一天拿一克朗加两顿饭。手伸不直，收钱时零钱常常滑掉。{doctor}看过，说神经长不回来，只开了药膏；家里把铜锅卖了，换回面粉和煤球。",
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "伤后自行辞工"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "变卖铜锅与零散看摊收入"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "用卖锅的钱换来的面粉和煤球"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "伤手未愈，又在街边受冻"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seeking_work",
+              "add": true,
+              "reason": "靠零工糊口，仍在找固定活"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "disabled-street-stall",
+              "text": "果摊的老板让他坐在木箱上看摊，有人买苹果他就用左手去抓。找零时硬币滚到沟里，他弯不下腰，{worker}路过替他捡。{doctor}把他的手翻过来看了看，只说药膏按时抹。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "disabled-street-stall",
+              "text": "辞工那天他把工作服叠好交了。街上风大，{subject}把手揣在衣袋里，只用另一只手理果筐。回家路上绕到旧货店，把铜锅放下，换回几张票子和一小袋面。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "disabled-accident-claim",
+          "weight": 1,
+          "text": "{subject}请{worker}和另外两个工友写证词，把少了螺栓的护罩画在纸上，递到厂办。厂里不愿上法庭，同意调他去仓库点数，工钱照旧。评定还要等，但这几个月他仍有收入，只是抬箱子时只用一只手。",
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employer",
+              "occupation": "仓库点数工",
+              "wage": 24,
+              "workplaceId": "$workplace",
+              "reason": "工友作证后调仓库，工钱照旧"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.05,
+              "reason": "联合工友写证词与厂办交涉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.2,
+              "obligation": 0.15,
+              "reason": "工友出面作证"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "伤指未愈仍要搬点货箱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "disabled-accident-claim",
+              "text": "证词是{worker}在更衣室里念、{subject}用左手签的，纸上还画了护罩缺螺栓的位置。厂办的人看了半天，说仓库正缺人。调令第二天贴出来，工钱一栏没动，他站在告示前把名字看了两遍。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "disabled-accident-claim",
+              "text": "仓库在院子最里头，堆着木箱和油纸。{subject}用一只手点货，另一只揣着。工友们说这下算争回一点。评定书还没来，但每星期工钱袋照发，他把钱先拿去还了药铺的账。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-crisis-migration.police-raid",
+      "title": "凌晨四点的敲门声",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 65
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "home"
+          ]
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "political_repression",
+          "phases": [
+            "mobilizing",
+            "confrontation",
+            "repression"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65,
+          "organizationKind": "state"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "unionMember",
+          "kind": "union_member",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "police",
+        "raid",
+        "repression",
+        "leaflet"
+      ],
+      "outcomes": [
+        {
+          "id": "raid-claim-box",
+          "weight": 1,
+          "text": "{subject}咬定床下的箱子是搬走的房客留下的，说钥匙都没有。{official}把传单和一本旧账一起收进皮包，记下他的名字和门牌号就走了。第二天厂门口有人等他，被叫去问了一个钟头话，出来时后背全是汗。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "名字被记进警察的名单"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "被叫去问话，整天心里发紧"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "警察按名单在凌晨搜查住户，专找油印的纸和工会后屋的去处",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "personId": "$official",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "fear": 0.2,
+              "reason": "被登记姓名与住址"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "raid-claim-box",
+              "text": "靴子声停在门口，{official}把证件一亮就进来了，掀床帘、拍枕头，最后从床底拖出那只木箱。{subject}坐在床沿上说那箱是别人留下的。传单被一张张数过，装进皮包，门带上时楼道里还有人咳了一声。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "raid-claim-box",
+              "text": "同屋的人还睡着，被子拉到下巴。{neighbor}在隔壁门缝里看着。{official}蹲下把箱子拖出来，纸页上有油墨味。{subject}把话说得很慢，说完手心贴在裤子上擦。第二天厂门口的差役一招手，他就知道是这事。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "raid-detained-two-days",
+          "weight": 1,
+          "text": "{subject}被带去警察所关了两天，回来时位置已经给了别人。{neighbor}替他把工具藏在煤棚底下，用麻袋盖着；{unionMember}托人带话，说后屋暂时不要去了。家里少了两天的工钱，煤也只够烧三天。",
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "被拘留两天，厂里另找了人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.2,
+              "obligation": 0.15,
+              "reason": "邻居替他藏起工具"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$unionMember",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "工会的人托话提醒他避开后屋"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "两天工钱没了，又添了煤钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "raid-detained-two-days",
+              "text": "警察所的长凳硬，夜里有人靠墙打鼾。放出来那天{subject}走回家的路觉得特别长。{neighbor}从煤棚底下把刨子和钳子拖出来，麻袋上还沾着煤灰，说一直没敢动。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "raid-detained-two-days",
+              "text": "回来时门还锁着，钥匙在门框上方的缝里。屋里冷，{subject}先去数了数煤球，再把工作服挂起来。{neighbor}过来低声说，厂里昨天已经让别人顶上他的位子。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "raid-pass-box-out-window",
+          "weight": 1,
+          "text": "{subject}趁{official}在隔壁问话，把箱子从后窗递到院子里，{neighbor}接过去塞进柴垛。警察只翻到几本旧账和一叠收据。事情过去后，同楼的人开始在楼梯上绕着他走，连借盐都不来敲门了。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "邻里开始疏远"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "被怀疑与传单有关"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "fear": 0.1,
+              "reason": "邻居替他藏了箱子，心里却有些怕"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "后窗通院子的柴垛能临时藏东西，警察搜楼时顾不到",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "personId": "$neighbor",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "raid-pass-box-out-window",
+              "text": "后窗的插销生锈，{subject}用掌根推了两下才开。箱子递出去时{neighbor}在柴垛后头压低身子接住，稻草盖上去。前屋传来翻抽屉的声音，他回到床边坐着，手还在抖。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "raid-pass-box-out-window",
+              "text": "搜查的人把旧账本抖了抖，问屋里几个人住。{official}走后，楼道里碰到的人只点一下头就过去。第二天{subject}去借盐，敲了两下，里面没应声。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-crisis-migration.street-violence",
+      "title": "酒馆门口的拳头",
+      "weight": 1,
+      "rate": 0.0221,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 65
+        },
+        {
+          "kind": "placeKind",
+          "in": [
+            "street",
+            "other"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "tags": [
+        "street_violence",
+        "police",
+        "witness"
+      ],
+      "outcomes": [
+        {
+          "id": "violence-intervene-cut",
+          "weight": 1,
+          "text": "{subject}伸手去拉，碎啤酒杯的边划开了脸颊，血顺着下巴滴到衣领。{official}吹着哨子过来，把他扶到路灯下，记了姓名和住址作证人。诊所缝了四针，收了两个克朗，面包在推搡中压扁了。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "拉架时被碎玻璃划伤脸颊"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "诊所缝合的费用"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "巡警记下他作证，街坊说他敢上前"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "作为证人被登记"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "violence-intervene-cut",
+              "text": "酒馆门口的石板上全是玻璃碴，{subject}夹在两个人中间，脸上一凉，手一摸全是红的。{official}的哨子在街角响，他举着手站到灯下，说话时嘴角牵得疼。缝针时医生让他别动，针脚一下一下的。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "violence-intervene-cut",
+              "text": "压扁的面包掉在沟边，沾了泥。{neighbor}扶着他去诊所，路上用围巾按住伤口。{official}在门口把名字、门牌、干什么营生都记在本上，写完念了一遍让他听。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "violence-walk-away",
+          "weight": 1,
+          "text": "{subject}把面包换到另一只手，低头绕开人群回了家。第二天听说有人被打断两根肋骨，抬去了医院。街坊议论时分成两拨，一拨说该管，一拨说少掺和；他在楼梯口听着，没说话。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "听人议论自己当时没上前"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "酒馆门口那晚有人被打断两根肋骨，抬进了医院",
+              "confidence": 0.7,
+              "sourceKind": "witnessed",
+              "personId": "$neighbor",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "邻里在议论谁该出手"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "violence-walk-away",
+              "text": "后面的声音还在响，{subject}没回头，面包纸被手心捏得发软。回到家先把面包搁在案板上，才听见自己的呼吸。第二天早上买水时，{neighbor}站在水龙头边上说，那人肋骨折了。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "violence-walk-away",
+              "text": "巡警的哨子还在响，他贴着墙根拐进小巷。夜里楼上有人在说这事，声音穿过薄地板，一句一句落下来。他把面包掰成三份，留下孩子的两份。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "violence-throw-punch",
+          "weight": 1,
+          "text": "{subject}把面包塞给旁边的{neighbor}，冲上去帮了其中一边，一拳打在对方肩上。{official}把几个人一起带到街角警亭，罚了他五克朗，开了一张收据。星期一厂里贴了张字条，他的名字后面多了一笔记过。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "街头斗殴被罚的款项"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "在警亭被开了罚单"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "拳头打在硬处，指节肿了"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "factory_warning",
+              "add": true,
+              "reason": "厂里记了一次过"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "violence-throw-punch",
+              "text": "面包塞过去的时候纸还热着。{subject}的拳头落在对方肩上，指节立刻发麻。{official}赶来先把他们分开，一个接一个押到警亭，罚单是手写的，五克朗，收据盖了章。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "violence-throw-punch",
+              "text": "街角警亭里的灯黄，{official}把名字写在本上，说下回就不是罚款了。星期一早上，布告板上多了一行小字，他挤在人群里看完，转身去开机子，指节还肿着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-crisis-migration.mobilization",
+      "title": "报到通知与车站",
+      "weight": 1,
+      "rate": 0.0208,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 45
+        },
+        {
+          "kind": "historicalProcess",
+          "processKind": "war_mobilization",
+          "phases": [
+            "emerging",
+            "mobilizing",
+            "confrontation"
+          ]
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 45,
+          "sex": "male"
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70,
+          "organizationKind": "army"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 45,
+          "maxAge": 75
+        }
+      ],
+      "tags": [
+        "war",
+        "mobilization",
+        "conscription"
+      ],
+      "outcomes": [
+        {
+          "id": "mobilization-report-station",
+          "weight": 1,
+          "text": "{subject}按通知上的日期去了车站，背包里塞着两双袜子和一块肥皂。{official}在站台边点名盖章，队伍一直排到货棚。临走前他把工钱袋和门钥匙交给{neighbor}，说每月给{parent}送一筐煤，钱从袋里扣。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "托邻居买煤和日用，先付的钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.2,
+              "obligation": 0.25,
+              "reason": "托付钥匙和工钱袋，照看母亲"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "affection": 0.1,
+              "obligation": 0.15,
+              "reason": "临行前安排好母亲的药和煤"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "站台上点名时心里发空"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "mobilization-report-station",
+              "text": "站台上到处是背包和捆好的毯子，{official}拿着名册一列列喊。{subject}把钥匙串从腰上解下来，连同工钱袋一起塞给{neighbor}，说每月的煤钱从里面出。{parent}站在月台外头，没挤进来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "mobilization-report-station",
+              "text": "背包是旧的，带子断过一次，用鞋带接上。点名盖章的声音一下一下。{subject}回过头，看见{neighbor}把钥匙揣进内袋，朝他点了一下头。汽笛响时他把肥皂往包里又按了按。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mobilization-deferral-queue",
+          "weight": 1,
+          "text": "{subject}先去市政办事处问缓征，从早上排到天黑，只拿到一张写着待查的纸，还盖不上章。回到厂里，他的位置已经有人顶了，账房把工钱结到最后一天，也多给了三天。母亲的药还差两克朗。",
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "排队办缓征，厂里位置被顶替"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "结清工钱并补三天"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "排一天队只拿到待查的纸"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "deferral_pending",
+              "add": true,
+              "reason": "缓征申请待查，尚未盖章"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "obligation": 0.1,
+              "reason": "母亲的药钱还差一些"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "mobilization-deferral-queue",
+              "text": "办事处走廊里都是同一种汗味，队伍每半个钟头挪一步。窗口里的人把纸推出来，说回去等查。{subject}回到厂里，柜子上的名牌已经换掉，账房数了工钱，另点了三天的票子给他。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "mobilization-deferral-queue",
+              "text": "那张纸他叠了两折揣在里袋，走到药铺门口又摸了摸。店里说药还是那个价，两克朗。回到住处，{parent}问排到了没有，他把纸摊在桌上，说还得等。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mobilization-evade-night-train",
+          "weight": 1,
+          "text": "{subject}没去站台。天没黑就收拾好东西，搭夜车到城外的亲戚家，让家里对外说自己早已收到通知。第二天巡警上门问了一次，{neighbor}照他留下的话说了。他躲着，白天不敢出门，胡子长了一圈。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "躲着不敢露面，整夜睡不着"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "邻里私下议论他要被查"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "夜车票和在外吃住的钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mobilization_evade",
+              "add": true,
+              "reason": "未报到，托家里对外称已收到通知"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "mobilization-evade-night-train",
+              "text": "夜车上人少，窗玻璃映着自己的脸。到了城外，亲戚腾出一间小屋，说先住着。第二天{neighbor}果然被巡警问起，照他交代的话答了，说完在门口站了很久。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "mobilization-evade-night-train",
+              "text": "胡子一天天冒出来，他不敢去街上剃。屋里只有一扇窗朝后院，白天听着外头有没有靴子声。家里托人捎来一句：门口有人来问过，已经应付过去。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p10-crisis-migration.refugee-return",
+      "title": "火车站站台上的箱子",
+      "weight": 1,
+      "rate": 0.0208,
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 70
+        },
+        {
+          "kind": "legacy",
+          "legacyKind": "war_aftermath"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "tags": [
+        "war_aftermath",
+        "refugee",
+        "return",
+        "emigration"
+      ],
+      "outcomes": [
+        {
+          "id": "refugee-emigrate-ticket",
+          "weight": 1,
+          "text": "{subject}在站台把家具一件件卖给收旧货的，床和柜子一共换了七十克朗，再添钱买了一张到汉堡的统舱票。他在候车室里等船讯，箱子当凳子，孩子睡在箱盖上；面包一天半块，普通过一夜要花一克朗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 70,
+              "reason": "卖掉床和柜子的钱"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -60,
+              "reason": "去汉堡的统舱船票"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "在候车室等待，前途未定"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "emigration_pending",
+              "add": true,
+              "reason": "买了船票，等船讯"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "refugee-emigrate-ticket",
+              "text": "收旧货的人把柜子翻过来看底板，压价压到七十克朗。票房的窗子只开半扇，{subject}数了两遍钱才递进去。候车室里箱子当凳子，孩子趴在上面睡，他把外套盖上去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "refugee-emigrate-ticket",
+              "text": "站台上的人挤着看时刻表，绳子捆的行李堆成垛。{neighbor}托他捎一句话给汉堡的亲戚。{subject}把面包掰成小块分，自己只吃了一角，说路上省着。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "refugee-rebuild-block",
+          "weight": 1,
+          "text": "{subject}回到旧街区，门牌换了号，原来的厂只剩半堵墙。{neighbor}在废墟上认出他，两人和另外两家合租一间房，用报纸糊窗。第二天他去问码头和砖场要不要人手，先领到一份清瓦砾的日工。",
+          "effects": [
+            {
+              "type": "residence",
+              "householdId": "$household",
+              "residenceId": "place-wien-leopoldstadt-tenement",
+              "reason": "回旧街区与邻居几家合租一间房"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "在废墟上遇见旧邻居，有个落脚处"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.18,
+              "obligation": 0.15,
+              "reason": "一起合租，互相照应"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "清瓦砾日工头一天的工钱"
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "refugee-rebuild-block",
+              "text": "旧门牌钉在墙上已经歪了，{subject}对着号数认了半天。{neighbor}从瓦砾堆后面直起腰，手里还拿着半块砖。合租的那间房窗子没玻璃，用报纸糊上，风一吹就鼓起来。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "refugee-rebuild-block",
+              "text": "砖场管事的看了看他的手，说明天来清瓦砾，一天四克朗。{worker}分给他一辆手推车和一把铁锹。傍晚回屋，几家人围着一个小灶烧水，锅是拼着用的。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "refugee-turn-back",
+          "weight": 1,
+          "text": "{subject}买了去东边的车票，想回加利西亚的老家看看。到半路的小站，站台上的人说那边还在打，铁轨断了一截。他在候车室坐到天黑，又把票退了，折回维也纳；退票扣了手续费，钱袋薄了一圈。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -9,
+              "reason": "往返车票与被扣的手续费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "半路折返，心里堵着"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "候车室坐了一夜，受了寒"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "东边的小站说那边还在打，往加利西亚的铁轨断了一截",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "personId": "$worker",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "narration": [
+            {
+              "id": "default",
+              "key": "refugee-turn-back",
+              "text": "小站只有一盏灯，风从站台两头灌进来。{worker}背着包说前面铁轨断了，谁也过不去。{subject}把车票捏在手里看了又看，最后走到票房窗口，把票推进去。",
+              "tone": [
+                "dry"
+              ]
+            },
+            {
+              "id": "alt",
+              "key": "refugee-turn-back",
+              "text": "候车室的长椅裂了口，他坐着把那半块面包吃了。夜里冷，外套裹紧也没用。退票时窗里的人扣了手续费，找回的票子数了两遍。回维也纳的车上他一直看着窗外。",
+              "tone": [
+                "matter-of-fact"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
