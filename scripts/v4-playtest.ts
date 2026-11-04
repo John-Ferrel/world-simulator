@@ -27,6 +27,7 @@ import { VIENNA_POSTWAR_SCENES } from '../packages/v4/content/vienna-postwar.js'
 import { VIENNA_HISTORY_SCENES } from '../packages/v4/content/vienna-history.js';
 import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
 import { DEFAULT_COMPOSITION } from '../packages/v4/composition/default.js';
+import { parseComposedAction } from '../packages/v4/composition/replay.js';
 import {
   GENERATED_SCENES,
   GENERATED_TASKS,
@@ -180,7 +181,31 @@ function textAudit(events: EventFact[]) {
   const none = events.filter((event) => TEXT_NONE.test(eventText(event)));
   const undef = events.filter((event) => TEXT_UNDEFINED.test(eventText(event)));
   const emptyParticipants = events.filter((event) => event.participants.length === 0);
+  const actionCounts = new Map<string, number>();
+  const textCounts = new Map<string, number>();
+  let shortTexts = 0;
+  for (const event of events) {
+    actionCounts.set(event.action, (actionCounts.get(event.action) ?? 0) + 1);
+    const text = eventText(event).trim();
+    if (text.length > 0 && text.length < 40) shortTexts += 1;
+    if (text.length > 0) textCounts.set(text, (textCounts.get(text) ?? 0) + 1);
+  }
+  const topRepeatedActions = [...actionCounts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 20)
+    .map(([action, count]) => ({ action, count }));
+  const topRepeatedTexts = [...textCounts.entries()]
+    .filter(([, count]) => count > 1)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 20)
+    .map(([text, count]) => ({ text: text.slice(0, 160), count }));
   return {
+    distinctActions: actionCounts.size,
+    distinctTexts: textCounts.size,
+    textReuseRatio: Number((1 - textCounts.size / Math.max(1, events.length)).toFixed(4)),
+    shortTextEvents: shortTexts,
+    topRepeatedActions,
+    topRepeatedTexts,
     unresolvedTemplateTokenEvents: braces.length,
     unresolvedTemplateTokenSamples: braces.slice(0, 10).map((event) => ({
       year: event.date.year,
@@ -350,6 +375,9 @@ function buildExcerpt(
       title: event.title ?? null,
       text: event.immediateText,
       participants: event.participants.map((participant) => participant.personId),
+      composed: parseComposedAction(event.action) ?? null,
+      trace: event.trace ?? null,
+      effects: event.effects.map((effect) => effect.type),
       afterRecordedDeath: afterDeath(event),
       beforeRecordedBirth: beforeBirth(event),
     })),
@@ -558,6 +586,38 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
     );
 
   const text = textAudit(allEvents);
+  const composedEvents = allEvents.filter((event) => parseComposedAction(event.action));
+  const composedKernels = new Set(
+    composedEvents.map((event) => parseComposedAction(event.action)!.kernelId),
+  );
+  const composedContexts = new Set(
+    composedEvents.map((event) => parseComposedAction(event.action)!.contextId),
+  );
+  const composedMilieus = new Set(
+    composedEvents.map((event) => parseComposedAction(event.action)!.milieuId),
+  );
+  const tracedEvents = allEvents.filter((event) => Boolean(event.trace));
+  const compositionAudit = {
+    composedEvents: composedEvents.length,
+    distinctKernels: composedKernels.size,
+    distinctContexts: composedContexts.size,
+    distinctMilieus: composedMilieus.size,
+    tracedEvents: tracedEvents.length,
+    traceCoverageOfComposed: Number(
+      (
+        composedEvents.filter((event) => event.trace).length / Math.max(1, composedEvents.length)
+      ).toFixed(3),
+    ),
+    topKernels: [...composedKernels]
+      .map((kernelId) => ({
+        kernelId,
+        count: composedEvents.filter(
+          (event) => parseComposedAction(event.action)?.kernelId === kernelId,
+        ).length,
+      }))
+      .sort((a, b) => b.count - a.count || a.kernelId.localeCompare(b.kernelId))
+      .slice(0, 30),
+  };
   const deadMissingCause = persons.filter(
     (person) => person.died && (!person.deathCause || person.deathCause.trim().length === 0),
   );
@@ -772,6 +832,7 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
     focalLives,
     excerpts,
     textAudit: text,
+    compositionAudit,
     anomalies: {
       anyLivingHouseholdOver12:
         overfullLivingHouseholdObservations > 0 || overfullLivingHouseholds.length > 0,

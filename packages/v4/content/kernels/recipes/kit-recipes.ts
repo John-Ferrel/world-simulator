@@ -30,6 +30,11 @@ export const KIT_RECIPES: PlotKernel[] = recipes([
         w: 0.4,
         text: '{subject}把护罩重新扣上，拒绝在交接班前再跑一桶。{foreman}没有吼，只把秒表放在机台上，让整个车间听见指针走完一分钟。{mate}低头继续装纸，谁也没有看{subjectPronoun}。',
         significance: 0.64,
+        trace: {
+          motive: '不想在疲劳时继续开机',
+          conflict: '工头用秒表逼整条车间加班',
+          response: '扣上护罩，拒绝再跑一桶',
+        },
         fx: {
           reputation: -0.05,
           relation: ['foreman', 'rival', -0.18, 0],

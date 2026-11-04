@@ -540,6 +540,8 @@ export type EventFact = {
   significance: number;
   visibility: 'private' | 'participants' | 'public';
   sceneId?: Id;
+  /** Structured causal trace built when the event was committed. */
+  trace?: IncidentTrace;
   choices?: { actorId: Id; choiceId: string; reason: string }[];
   provenance: {
     kind: 'scene' | 'ambient' | 'project' | 'interaction' | 'system' | 'birth';
@@ -648,6 +650,24 @@ export type SceneFollowupTarget = {
   source?: 'followup' | 'fact' | 'action';
 };
 
+export type IncidentTrace = {
+  mechanism: {
+    sceneId: string;
+    outcomeId: string;
+    kernelId?: string;
+    contextId?: string;
+    milieuId?: string;
+    variantId?: string;
+  };
+  place?: { id: Id; name: string; kind: Place['kind'] };
+  subject: { id: Id; name: string; age: number; occupation?: string; roles: string[] };
+  participants: { personId: Id; role: string; name: string; organizationId?: Id }[];
+  motive?: string;
+  conflict?: string;
+  response?: string;
+  effects: { type: EventEffect['type']; description: string }[];
+};
+
 export type SceneOutcome = {
   id: string;
   weight: number;
@@ -661,6 +681,8 @@ export type SceneOutcome = {
   /** Optional key used by the narration library; defaults to outcome id. */
   narrationKey?: string;
   significance?: number;
+  /** Structured incident facts for narration and audit; never a second effect system. */
+  trace?: { motive?: string; conflict?: string; response?: string };
 };
 
 export type SceneChoice = {

@@ -23,6 +23,7 @@ import {
   type EventParticipant,
   type HistoricalProcessMetrics,
   type Household,
+  type IncidentTrace,
   type Id,
   type Interaction,
   type Knowledge,
@@ -45,6 +46,7 @@ import {
   type WorldDate,
   type WorldState,
 } from './domain.js';
+import { parseComposedAction } from './composition/replay.js';
 import {
   advanceDevelopmentLifecycle,
   eventPoolMultiplier,
@@ -282,6 +284,7 @@ type EventDraft = {
   choices?: EventFact['choices'];
   provenance: EventFact['provenance'];
   triggerDepth?: number;
+  trace?: IncidentTrace;
 };
 
 type CastResult = {
@@ -659,6 +662,16 @@ export function auditCandidatePools(
     warnings: [],
   };
   const composed = composition?.compile(world, date);
+  if (composed) {
+    for (const error of composed.errors.slice(0, 20)) {
+      warn(
+        diagnostics,
+        'composition_effect_unresolved',
+        `${error.kernelId}/${error.outcomeId} ${error.effectType}: ${error.reason}`,
+        { sceneId: error.kernelId },
+      );
+    }
+  }
   const definitions = usableDefinitions(
     composed ? [...scenes, ...composed.scenes] : scenes,
     diagnostics,
@@ -4166,6 +4179,128 @@ function materializedContactEffects(
   return effects;
 }
 
+function describeIncidentEffect(effect: EventEffect): string {
+  switch (effect.type) {
+    case 'cash':
+      return `现金 ${effect.amount} 克朗：${effect.reason}`;
+    case 'food':
+      return `食物 ${effect.amount}：${effect.reason}`;
+    case 'health':
+      return `健康 ${effect.amount}：${effect.reason}`;
+    case 'condition':
+      return `${effect.add ? '出现' : '解除'}状况 ${effect.condition}：${effect.reason}`;
+    case 'mood':
+      return `情绪 ${effect.amount}：${effect.reason}`;
+    case 'reputation':
+      return `名誉 ${effect.amount}：${effect.reason}`;
+    case 'skill':
+      return `技能 ${effect.skill} ${effect.amount}：${effect.reason}`;
+    case 'flag':
+      return `${effect.add ? '记录' : '清除'} ${effect.flag}：${effect.reason}`;
+    case 'education':
+      return `教育变为 ${effect.status}${effect.level !== undefined ? `（${effect.level}）` : ''}：${effect.reason}`;
+    case 'employment':
+      return `受雇为 ${effect.occupation}，工资 ${effect.wage}：${effect.reason}`;
+    case 'unemployment':
+      return `失业：${effect.reason}`;
+    case 'relation':
+      return `与 ${effect.b} 建立 ${effect.kind} 关系：${effect.reason}`;
+    case 'relation_end':
+      return `与 ${effect.b} 的 ${effect.kind} 关系结束：${effect.reason}`;
+    case 'role':
+      return `${effect.add ? '获得' : '失去'}角色 ${effect.role}：${effect.reason}`;
+    case 'organization_membership':
+      return `${effect.add ? '加入' : '退出'}组织 ${effect.organizationId}：${effect.reason}`;
+    case 'move':
+      return `迁往 ${effect.locationId}：${effect.reason}`;
+    case 'household':
+      return `转入家庭 ${effect.householdId}：${effect.reason}`;
+    case 'residence':
+      return `迁居 ${effect.residenceId}：${effect.reason}`;
+    case 'birth':
+      return `孩子出生（${effect.childSex}）：${effect.reason}`;
+    case 'death':
+      return `死亡：${effect.cause}；${effect.reason}`;
+    case 'estate':
+      return `遗产 ${effect.amount} 交给 ${effect.heirHouseholdId}：${effect.reason}`;
+    case 'organization_funds':
+      return `组织资金 ${effect.amount}：${effect.reason}`;
+    case 'knowledge':
+      return `获知“${effect.proposition}”（置信度 ${effect.confidence}）`;
+    case 'historical_participation':
+      return `参与历史进程 ${effect.processId} 作为 ${effect.role}：${effect.reason}`;
+    case 'historical_influence':
+      return `历史影响 ${effect.dimension} ${effect.amount}：${effect.reason}`;
+    case 'historical_process':
+      return `开启历史进程 ${effect.process.title}`;
+    case 'project':
+      return `项目 ${effect.project.title ?? effect.project.id}`;
+    case 'interaction':
+      return `互动 ${effect.interaction.id}`;
+    default:
+      return (effect as { type: string }).type;
+  }
+}
+
+function buildIncidentTrace(
+  context: EngineContext,
+  definition: SceneDefinition,
+  outcome: SceneOutcome,
+  subject: Person,
+  roles: Record<Id, Id>,
+  placeId: Id | undefined,
+  date: WorldDate,
+  effects: EventEffect[],
+): IncidentTrace {
+  const composed = parseComposedAction(`${definition.id}/${outcome.id}`);
+  const place = placeId ? context.world.places[placeId] : undefined;
+  const participants: IncidentTrace['participants'] = [];
+  for (const [role, personId] of Object.entries(roles)) {
+    const person = context.world.persons[personId];
+    if (person) {
+      participants.push({
+        personId,
+        role,
+        name: person.name,
+        ...(person.employment ? { organizationId: person.employment.organizationId } : {}),
+      });
+    } else if (context.world.organizations[personId]) {
+      participants.push({ personId, role, name: context.world.organizations[personId]!.name });
+    }
+  }
+  const agency = subject.agency?.summary ?? subject.lifeContract?.privateGoal;
+  return {
+    mechanism: {
+      sceneId: definition.id,
+      outcomeId: outcome.id,
+      ...(composed
+        ? {
+            kernelId: composed.kernelId,
+            contextId: composed.contextId,
+            milieuId: composed.milieuId,
+            ...(composed.variantId ? { variantId: composed.variantId } : {}),
+          }
+        : {}),
+    },
+    ...(place ? { place: { id: place.id, name: place.name, kind: place.kind } } : {}),
+    subject: {
+      id: subject.id,
+      name: subject.name,
+      age: ageAt(subject, date),
+      ...(subject.employment ? { occupation: subject.employment.occupation } : {}),
+      roles: [...subject.roles],
+    },
+    participants,
+    ...((outcome.trace?.motive ?? agency) ? { motive: outcome.trace?.motive ?? agency } : {}),
+    ...(outcome.trace?.conflict ? { conflict: outcome.trace.conflict } : {}),
+    ...(outcome.trace?.response ? { response: outcome.trace.response } : {}),
+    effects: effects.map((effect) => ({
+      type: effect.type,
+      description: describeIncidentEffect(effect),
+    })),
+  };
+}
+
 function resolveScene(
   context: EngineContext,
   definition: SceneDefinition,
@@ -4182,12 +4317,13 @@ function resolveScene(
     selection.choice && context.world.persons[roles[selection.choice.actorRole]]
       ? roles[selection.choice.actorRole]!
       : subject.id;
+  const draftPlaceId =
+    definition.placeId && context.world.places[definition.placeId]
+      ? definition.placeId
+      : subject.locationId;
   const draft: EventDraft = {
     date: { ...date },
-    placeId:
-      definition.placeId && context.world.places[definition.placeId]
-        ? definition.placeId
-        : subject.locationId,
+    placeId: draftPlaceId,
     subjectId: subject.id,
     participants: buildParticipants(context.world, subject, roles),
     action: `${definition.id}/${outcome.id}`,
@@ -4210,6 +4346,11 @@ function resolveScene(
       : undefined,
     provenance: { kind: 'scene', sourceId: definition.id },
     triggerDepth: depth,
+    trace: buildIncidentTrace(context, definition, outcome, subject, roles, draftPlaceId, date, [
+      ...outcome.effects,
+      ...birthContractCostEffects(subject, definition, date),
+      ...materializedContactEffects(context, subject, roles, outcome),
+    ]),
   };
   const event = commitEvent(
     context,
@@ -4360,6 +4501,7 @@ function commitEvent(
     sceneId: draft.sceneId,
     choices: draft.choices,
     provenance: draft.provenance,
+    ...(draft.trace ? { trace: draft.trace } : {}),
   };
   // A death effect may have been recorded after ordinary events already
   // committed earlier in the same annual draft. Anchor both the death date and

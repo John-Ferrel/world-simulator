@@ -77,6 +77,8 @@ export type OutcomeSpec = {
   w?: number;
   text: string;
   significance?: number;
+  /** Structured motive/conflict/response used by Incident Trace. */
+  trace?: { motive?: string; conflict?: string; response?: string };
   when?: KernelVariantWhen;
   /** One shorthand bundle, or several applied in order. */
   fx: Fx | Fx[];
@@ -317,6 +319,7 @@ function compileOutcome(spec: OutcomeSpec, fallbackReason: string): KernelOutcom
     text: spec.text,
     effects,
     ...(spec.significance !== undefined ? { significance: spec.significance } : {}),
+    ...(spec.trace ? { trace: spec.trace } : {}),
     ...(spec.when ? { when: spec.when } : {}),
   };
 }

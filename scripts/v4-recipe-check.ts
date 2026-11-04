@@ -44,6 +44,16 @@ const BUILTIN_TEXT_TOKENS = new Set([
   'flavor',
   'subjectPronoun',
 ]);
+const RELATION_KINDS = new Set([
+  'kin',
+  'guardian',
+  'partner',
+  'friend',
+  'colleague',
+  'employer',
+  'rival',
+  'acquaintance',
+]);
 const PLACEHOLDERS = new Set([
   '@school',
   '@workplace',
@@ -114,6 +124,12 @@ function validateOutcome(
     }
   }
   for (const effect of outcome.effects ?? []) {
+    if (
+      (effect.type === 'relation' || effect.type === 'relation_end') &&
+      !RELATION_KINDS.has(effect.kind)
+    ) {
+      errors.push(`${kernelId}/${outcome.id}: invalid relation kind ${effect.kind}`);
+    }
     for (const [key, value] of Object.entries(effect)) {
       if (typeof value !== 'string') continue;
       if (value.startsWith('$')) {

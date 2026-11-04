@@ -60,6 +60,123 @@ function testKernel(overrides: Partial<PlotKernel> = {}): PlotKernel {
 }
 
 describe('Phase 11 context × kernel composition', () => {
+  it('fails a major outcome with an unresolved effect instead of silently dropping the effect', () => {
+    const kernel = testKernel({
+      contexts: ['factory'],
+      milieus: ['factory'],
+      outcomes: [
+        {
+          id: 'moves-to-university',
+          weight: 1,
+          text: '{subject}拿到一封来自大学的信。',
+          effects: [
+            {
+              type: 'move',
+              personId: '$subject',
+              locationId: '@university',
+              reason: 'university offer',
+            },
+          ],
+          significance: 0.8,
+        },
+        {
+          id: 'stays-put',
+          weight: 1,
+          text: '{subject}把信折好，继续在车间上工。',
+          effects: [
+            {
+              type: 'flag',
+              personId: '$subject',
+              flag: 'stayed-after-letter',
+              add: true,
+              reason: 'stayed',
+            },
+          ],
+          significance: 0.4,
+        },
+      ],
+    });
+    const source = createCompositionSource([kernel]);
+    const result = source.compile(structuredClone(VIENNA_1912_SEED), {
+      year: 1912,
+      month: 1,
+    });
+    const scene = result.scenes.find((entry) => entry.id.includes('ctx-vienna-factory-1912'));
+    expect(scene).toBeDefined();
+    expect(scene?.outcomes?.map((outcome) => outcome.id)).toEqual(['stays-put']);
+    expect(result.errors.some((error) => error.outcomeId === 'moves-to-university')).toBe(true);
+  });
+
+  it('records an incident trace with the actual mechanism, roles and effects', () => {
+    const world = structuredClone(VIENNA_1912_SEED);
+    const personId = Object.keys(world.persons)[0]!;
+    for (const id of Object.keys(world.persons)) if (id !== personId) delete world.persons[id];
+    for (const [id, household] of Object.entries(world.households)) {
+      household.memberIds = household.memberIds.filter((memberId) => memberId === personId);
+      household.guardianIds = household.guardianIds.filter((memberId) => memberId === personId);
+      if (household.memberIds.length === 0) delete world.households[id];
+    }
+    for (const [id, relation] of Object.entries(world.relations)) {
+      if (relation.a !== personId || relation.b !== personId) delete world.relations[id];
+    }
+    for (const organization of Object.values(world.organizations)) {
+      organization.memberIds = organization.memberIds.filter((memberId) => memberId === personId);
+    }
+    world.events = [];
+    world.scenes = [];
+    const person = world.persons[personId]!;
+    person.born = { year: 1880, month: 1 };
+    person.roles = ['worker'];
+    const scene = {
+      id: 'test:incident-trace',
+      version: 1,
+      packId: 'test',
+      title: '测试事件',
+      stage: 'adulthood' as const,
+      ageWindow: { min: 18, max: 70 },
+      roles: [{ key: 'subject', kind: 'subject' as const, required: true }],
+      conditions: [{ kind: 'age' as const, min: 18, max: 70 }],
+      rate: 1,
+      oncePerPerson: true,
+      tags: ['test'],
+      outcomes: [
+        {
+          id: 'trace-outcome',
+          weight: 1,
+          immediateText: '一次用于追踪的事件发生了。',
+          trace: {
+            motive: '需要一份工作',
+            conflict: '门房不肯放行',
+            response: '把名字写在候工簿上',
+          },
+          effects: [
+            {
+              type: 'flag' as const,
+              personId: '$subject',
+              flag: 'trace-seen',
+              add: true,
+              reason: '测试追踪',
+            },
+          ],
+        },
+      ],
+    };
+    const result = advanceV4Year(world, [scene], {
+      eventRuntime: true,
+      economy: { enabled: false },
+      statisticalModel: false,
+      maxOrdinaryEventsPerPerson: 1,
+    });
+    const event = result.events.find((item) => item.action.startsWith('test:incident-trace/'));
+    expect(event?.trace?.mechanism.sceneId).toBe('test:incident-trace');
+    expect(event?.trace?.mechanism.outcomeId).toBe('trace-outcome');
+    expect(event?.trace?.subject.id).toBe(personId);
+    expect(event?.trace?.motive).toBe('需要一份工作');
+    expect(event?.trace?.conflict).toBe('门房不肯放行');
+    expect(event?.trace?.response).toBe('把名字写在候工簿上');
+    expect(event?.trace?.effects[0]?.type).toBe('flag');
+  });
+
   it('replays a committed action back to kernel/context/milieu', () => {
     expect(parseComposedAction('kernel-x::ctx-y::milieu-z::war/outcome-a')).toEqual({
       kernelId: 'kernel-x',
@@ -129,7 +246,6 @@ describe('Phase 11 context × kernel composition', () => {
       month: 1,
     });
     const scene = result.scenes[0]!;
-    console.log('COMPOSED', scene.id, scene.outcomes?.map((outcome) => [outcome.id, outcome.conditions]));
     const member = scene.outcomes?.find((outcome) => outcome.id === 'member-action');
     const outsider = scene.outcomes?.find((outcome) => outcome.id === 'outsider-action');
     expect(member?.conditions).toEqual(

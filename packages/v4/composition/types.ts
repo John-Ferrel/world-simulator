@@ -94,6 +94,8 @@ export type KernelOutcome = {
   text: string;
   effects: EventEffect[];
   significance?: number;
+  /** Structured motive/conflict/response for the incident trace. */
+  trace?: { motive?: string; conflict?: string; response?: string };
   when?: KernelVariantWhen;
 };
 
@@ -147,10 +149,19 @@ export type CompositionTrace = {
   outcomeCount: number;
 };
 
+export type CompositionCompileError = {
+  kernelId: string;
+  outcomeId: string;
+  effectType: string;
+  reason: string;
+};
+
 export type ComposedContent = {
   scenes: import('../domain.js').SceneDefinition[];
   tasks: import('../domain.js').TaskDefinition[];
   trace: CompositionTrace[];
+  /** Effects whose placeholders cannot be resolved. Major effects fail the outcome. */
+  errors: CompositionCompileError[];
   stats: {
     activeContexts: number;
     activeMilieus: number;

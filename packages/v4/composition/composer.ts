@@ -10,6 +10,7 @@ import type {
 import type {
   ComposedContent,
   CompositionSource,
+  CompositionCompileError,
   CompositionTrace,
   ContextPlaceholder,
   ContextProfile,
@@ -168,11 +169,30 @@ function resolveText(text: string, context: ContextProfile, milieu: MilieuProfil
     .replace(/\{flavor\}/g, context.flavor);
 }
 
+const MAJOR_EFFECT_TYPES = new Set<EventEffect['type']>([
+  'education',
+  'employment',
+  'unemployment',
+  'relation_end',
+  'household',
+  'residence',
+  'role',
+  'organization_membership',
+  'birth',
+  'death',
+  'estate',
+  'move',
+  'condition',
+  'flag',
+]);
+
 function compileOutcomes(
+  kernelId: string,
   outcomes: KernelOutcome[],
   context: ContextProfile,
   milieu: MilieuProfile,
   world: WorldState,
+  errors: CompositionCompileError[],
 ): SceneOutcome[] {
   const result: SceneOutcome[] = [];
   for (const outcome of outcomes) {
@@ -180,16 +200,30 @@ function compileOutcomes(
       continue;
     }
     const branchConditions = personConditions(outcome.when);
-    const effects = outcome.effects
-      .map((effect) => resolveEffect(effect, context))
-      .filter((effect): effect is EventEffect => Boolean(effect));
-    if (effects.length === 0) continue;
+    const effects: EventEffect[] = [];
+    let majorFailure = false;
+    for (const effect of outcome.effects) {
+      const resolved = resolveEffect(effect, context);
+      if (resolved) {
+        effects.push(resolved);
+        continue;
+      }
+      errors.push({
+        kernelId,
+        outcomeId: outcome.id,
+        effectType: effect.type,
+        reason: `unresolved placeholder in ${context.id}/${milieu.id}`,
+      });
+      if (MAJOR_EFFECT_TYPES.has(effect.type)) majorFailure = true;
+    }
+    if (majorFailure || effects.length === 0) continue;
     result.push({
       id: outcome.id,
       weight: outcome.weight,
       immediateText: resolveText(outcome.text, context, milieu),
       effects,
       ...(branchConditions.length > 0 ? { conditions: branchConditions } : {}),
+      ...(outcome.trace ? { trace: outcome.trace } : {}),
       ...(outcome.significance !== undefined ? { significance: outcome.significance } : {}),
     });
   }
@@ -201,13 +235,21 @@ function compileKernel(
   context: ContextProfile,
   milieu: MilieuProfile,
   world: WorldState,
+  errors: CompositionCompileError[],
 ): { scene?: SceneDefinition; task?: TaskDefinition; trace?: CompositionTrace } {
   if (!intersects(kernel.contexts, context.tags)) return {};
   if (!intersects(kernel.milieus, milieu.tags)) return {};
   const variant: KernelVariant | undefined = kernel.variants?.find((entry) =>
     compileTimeMatches(entry.when, world, context, milieu),
   );
-  const outcomes = compileOutcomes(variant?.outcomes ?? kernel.outcomes, context, milieu, world);
+  const outcomes = compileOutcomes(
+    kernel.id,
+    variant?.outcomes ?? kernel.outcomes,
+    context,
+    milieu,
+    world,
+    errors,
+  );
   if (outcomes.length === 0) return {};
 
   const roles = [...kernel.roles, ...(variant?.roles ?? [])].map((role) => ({ ...role }));
@@ -334,6 +376,7 @@ export function createCompositionSource(kernels: PlotKernel[]): CompositionSourc
       const scenes: SceneDefinition[] = [];
       const tasks: TaskDefinition[] = [];
       const trace: CompositionTrace[] = [];
+      const errors: CompositionCompileError[] = [];
       let kernelsConsidered = 0;
       let skippedByContext = 0;
       let skippedByMilieu = 0;
@@ -358,7 +401,7 @@ export function createCompositionSource(kernels: PlotKernel[]): CompositionSourc
             }
             const precedenceKey = `${kernel.id}|${milieu.id}`;
             if (chosen.has(precedenceKey)) continue;
-            const result = compileKernel(kernel, context, milieu, world);
+            const result = compileKernel(kernel, context, milieu, world, errors);
             if (result.scene || result.task) chosen.add(precedenceKey);
             if (result.scene) scenes.push(result.scene);
             if (result.task) tasks.push(result.task);
@@ -371,6 +414,7 @@ export function createCompositionSource(kernels: PlotKernel[]): CompositionSourc
         scenes,
         tasks,
         trace,
+        errors,
         stats: {
           activeContexts: contexts.length,
           activeMilieus: activeMilieus.size,
