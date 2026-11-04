@@ -243,6 +243,10 @@ type EngineContext = {
   roleCastCache: Map<string, Id[]>;
   /** Lazily built per-year index of the named population, used to avoid O(n) casts. */
   peopleIndex?: PeopleIndex;
+  /** Last committed event month per person, used by death-date anchoring. */
+  lastEventMonths?: Map<Id, WorldDate>;
+  /** Ids already committed into world.events, used to validate causes without O(n) scans. */
+  eventIds?: Set<Id>;
   tasks: TaskDefinition[];
   tasksByStage: Map<SceneStage, TaskDefinition[]>;
   materializedCount: number;
@@ -3537,12 +3541,45 @@ type IndexedScene = {
   cash?: { min?: number; max?: number };
   health?: { min?: number; max?: number };
   householdSize?: { min?: number; max?: number };
+  age?: { min?: number; max?: number };
+  skills?: { skill: keyof NonNullable<Person['life']>['skills']; min?: number; max?: number }[];
+  capability?: string;
+  relationKinds?: string[];
+  subjectIds?: string[];
+  subjectProvenance?: string[];
+  /** Conditions not covered by the index; evaluated once per candidate pool build. */
+  residualConditions?: SceneCondition[];
 };
 
-function indexScenesByStage(definitions: SceneDefinition[]): Map<SceneStage, IndexedScene[]> {
-  const byStage = new Map<SceneStage, IndexedScene[]>();
+type StageIndex = {
+  all: Map<SceneStage, IndexedScene[]>;
+  milestones: Map<SceneStage, IndexedScene[]>;
+  lifecycle: Map<SceneStage, IndexedScene[]>;
+};
+
+const INDEXED_CONDITION_KINDS = new Set<SceneCondition['kind']>([
+  'age',
+  'stage',
+  'cash',
+  'householdSize',
+  'health',
+  'skill',
+  'education',
+  'employment',
+  'placeKind',
+  'hasRole',
+  'notHasRole',
+  'capability',
+  'hasRelation',
+]);
+
+function indexScenesByStage(definitions: SceneDefinition[]): StageIndex {
+  const all = new Map<SceneStage, IndexedScene[]>();
+  const milestones = new Map<SceneStage, IndexedScene[]>();
+  const lifecycle = new Map<SceneStage, IndexedScene[]>();
   for (const definition of definitions) {
     const entry: IndexedScene = { definition };
+    const residual: SceneCondition[] = [];
     for (const condition of definition.conditions) {
       switch (condition.kind) {
         case 'placeKind':
@@ -3569,20 +3606,92 @@ function indexScenesByStage(definitions: SceneDefinition[]): Map<SceneStage, Ind
         case 'householdSize':
           entry.householdSize = { min: condition.min, max: condition.max };
           break;
+        case 'age':
+          entry.age = { min: condition.min, max: condition.max };
+          break;
+        case 'skill':
+          entry.skills ??= [];
+          entry.skills.push({ skill: condition.skill, min: condition.min, max: condition.max });
+          break;
+        case 'capability':
+          entry.capability = condition.capability;
+          break;
+        case 'hasRelation':
+          entry.relationKinds ??= [];
+          entry.relationKinds.push(condition.relationKind);
+          break;
         default:
+          residual.push(condition);
           break;
       }
     }
-    const list = byStage.get(definition.stage) ?? [];
+    if (
+      definition.conditions.some(
+        (condition) =>
+          condition.kind === 'hasRelation' &&
+          (condition.minTrust !== undefined || condition.sameHousehold === true),
+      )
+    ) {
+      residual.push(
+        ...definition.conditions.filter((condition) => condition.kind === 'hasRelation'),
+      );
+    }
+    if (residual.length > 0) entry.residualConditions = residual;
+    const list = all.get(definition.stage) ?? [];
     list.push(entry);
-    byStage.set(definition.stage, list);
+    all.set(definition.stage, list);
+    if (definition.oncePerPerson) {
+      const bucket = milestones.get(definition.stage) ?? [];
+      bucket.push(entry);
+      milestones.set(definition.stage, bucket);
+    }
+    if (definition.tags.includes('lifecycle')) {
+      const bucket = lifecycle.get(definition.stage) ?? [];
+      bucket.push(entry);
+      lifecycle.set(definition.stage, bucket);
+    }
   }
-  return byStage;
+  return { all, milestones, lifecycle };
 }
 
-function indexedSceneFits(world: WorldState, entry: IndexedScene, subject: Person): boolean {
+function indexedSceneFits(
+  world: WorldState,
+  entry: IndexedScene,
+  subject: Person,
+  date: WorldDate,
+): boolean {
   if (entry.employment !== undefined && Boolean(subject.employment) !== entry.employment) {
     return false;
+  }
+  if (entry.subjectIds !== undefined && !entry.subjectIds.includes(subject.id)) return false;
+  if (
+    entry.subjectProvenance !== undefined &&
+    !entry.subjectProvenance.includes(subject.provenance.kind)
+  )
+    return false;
+  if (entry.age) {
+    const age = ageAt(subject, date);
+    if (entry.age.min !== undefined && age < entry.age.min) return false;
+    if (entry.age.max !== undefined && age > entry.age.max) return false;
+  }
+  if (entry.capability !== undefined) {
+    const capability = subject.life?.flags
+      .find((flag) => flag.startsWith('capability:'))
+      ?.slice(11);
+    if (subject.lifeContract?.capability !== entry.capability && capability !== entry.capability) {
+      return false;
+    }
+  }
+  if (entry.skills) {
+    for (const requirement of entry.skills) {
+      const value = subject.life?.skills?.[requirement.skill] ?? 0;
+      if (requirement.min !== undefined && value < requirement.min) return false;
+      if (requirement.max !== undefined && value > requirement.max) return false;
+    }
+  }
+  if (entry.relationKinds) {
+    const kinds = new Set(relationsFor(world, subject.id).map((relation) => relation.kind));
+    if (!entry.relationKinds.some((kind) => kinds.has(kind as never))) return false;
   }
   if (entry.education && !entry.education.includes(subject.education.status)) return false;
   if (entry.hasRole !== undefined && !subject.roles.includes(entry.hasRole)) return false;
@@ -3624,9 +3733,23 @@ function personSceneSignature(world: WorldState, subject: Person, stage: SceneSt
         return Boolean(person) && !person.died;
       }).length
     : 0;
+  const skills = subject.life?.skills ?? { literacy: 0, numeracy: 0, craft: 0, social: 0 };
+  const flags = subject.life?.flags ?? [];
+  const capability =
+    subject.lifeContract?.capability ??
+    flags.find((flag) => flag.startsWith('capability:'))?.slice(11) ??
+    '';
+  const relations = relationsFor(world, subject.id)
+    .filter((relation) => relation.end === undefined)
+    .map((relation) => relation.kind)
+    .sort()
+    .join(',');
+  const placeKinds = [...personPlaceKinds(world, subject)].sort().join(',');
   return [
     stage,
+    ageAt(subject, world.date),
     subject.locationId,
+    subject.householdId,
     subject.employment ? subject.employment.organizationId : '',
     subject.education.status,
     [...subject.roles].sort().join(','),
@@ -3634,8 +3757,112 @@ function personSceneSignature(world: WorldState, subject: Person, stage: SceneSt
     household?.food ?? 0,
     subject.health.vitality.toFixed(2),
     size,
-    subject.lifeContract?.capability ?? '',
+    subject.sex,
+    skills.literacy.toFixed(2),
+    skills.numeracy.toFixed(2),
+    skills.craft.toFixed(2),
+    skills.social.toFixed(2),
+    capability,
+    relations,
+    placeKinds,
   ].join('|');
+}
+
+type CandidateSet = {
+  all: IndexedScene[];
+  milestones: IndexedScene[];
+  lifecycle: IndexedScene[];
+};
+
+/**
+ * Prepared eligibility skips the static conditions already used to build the
+ * candidate pool. It still checks subject identity, asynchronous capability
+ * compilation, residual world/process conditions, and cooldown history.
+ */
+function sceneEligiblePrepared(
+  context: EngineContext,
+  entry: IndexedScene,
+  subject: Person,
+  date: WorldDate,
+): boolean {
+  const definition = entry.definition;
+  if (subject.died) return false;
+  if (definition.subjectIds !== undefined && !definition.subjectIds.includes(subject.id))
+    return false;
+  if (
+    definition.subjectProvenance !== undefined &&
+    !definition.subjectProvenance.includes(subject.provenance.kind)
+  )
+    return false;
+  if (
+    !subject.lifeContract?.compiledAt &&
+    definition.conditions.some((condition) => condition.kind === 'capability')
+  )
+    return false;
+  if (
+    entry.residualConditions !== undefined &&
+    !conditionsPass(context.world, subject, entry.residualConditions, date)
+  ) {
+    return false;
+  }
+  const historyKey = sceneKey(definition.id, subject.id);
+  const lastResolved = context.sceneHistory.get(historyKey);
+  if (lastResolved !== undefined && Math.floor(lastResolved / 12) === date.year) return false;
+  if (definition.oncePerPerson === true && lastResolved !== undefined) return false;
+  if (typeof definition.cooldownYears === 'number' && definition.cooldownYears > 0) {
+    if (
+      lastResolved !== undefined &&
+      monthIndex(date) - lastResolved < definition.cooldownYears * 12
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function ratePasses(
+  context: EngineContext,
+  definition: SceneDefinition,
+  subject: Person,
+  date: WorldDate,
+  salt: string,
+): boolean {
+  const rate = v4EventRate(context, definition, subject, date);
+  if (rate >= 1) return true;
+  return (
+    seededRng(context.world.seed, salt, definition.id, subject.id, date.year, date.month)() < rate
+  );
+}
+
+/** Large pools are sampled; small worlds keep the exact exhaustive scan. */
+const EXACT_ORDINARY_SCAN_LIMIT = 240;
+const ORDINARY_SAMPLE_DRAWS = 224;
+
+function sampleOrdinaryCandidates(
+  context: EngineContext,
+  entries: IndexedScene[],
+  subject: Person,
+  date: WorldDate,
+  used: Set<string>,
+  ordinal: number,
+): { definition: SceneDefinition; weight: number }[] {
+  if (entries.length === 0) return [];
+  const rng = seededRng(context.world.seed, 'ordinary-sample', subject.id, date.year, ordinal);
+  const seen = new Set<string>();
+  const result: { definition: SceneDefinition; weight: number }[] = [];
+  const draws = Math.min(ORDINARY_SAMPLE_DRAWS, entries.length * 2);
+  for (let i = 0; i < draws; i += 1) {
+    const entry = entries[Math.floor(rng() * entries.length)]!;
+    const definition = entry.definition;
+    if (seen.has(definition.id)) continue;
+    seen.add(definition.id);
+    if (used.has(definition.id)) continue;
+    if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
+    if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
+    if (!ratePasses(context, definition, subject, date, 'rate')) continue;
+    result.push({ definition, weight: Math.max(0, definition.weight ?? 1) });
+  }
+  return result;
 }
 
 function runEventYear(
@@ -3644,18 +3871,23 @@ function runEventYear(
   date: WorldDate,
   resolvedCounts: Map<Id, number>,
 ): void {
-  const byStage = indexScenesByStage(definitions);
-  const candidateCache = new Map<string, IndexedScene[]>();
-  const candidatesFor = (subject: Person): IndexedScene[] => {
+  const index = indexScenesByStage(definitions);
+  const candidateSetCache = new Map<string, CandidateSet>();
+  const candidateSetFor = (subject: Person): CandidateSet => {
     const stage = stageForAge(ageAt(subject, context.target));
-    const key = `${stage}|${personSceneSignature(context.world, subject, stage)}`;
-    const cached = candidateCache.get(key);
+    const key = personSceneSignature(context.world, subject, stage);
+    const cached = candidateSetCache.get(key);
     if (cached) return cached;
-    const entries = (byStage.get(stage) ?? []).filter((entry) =>
-      indexedSceneFits(context.world, entry, subject),
+    const all = (index.all.get(stage) ?? []).filter((entry) =>
+      indexedSceneFits(context.world, entry, subject, context.target),
     );
-    candidateCache.set(key, entries);
-    return entries;
+    const candidateSet: CandidateSet = {
+      all,
+      milestones: all.filter((entry) => entry.definition.oncePerPerson === true),
+      lifecycle: all.filter((entry) => entry.definition.tags.includes('lifecycle')),
+    };
+    candidateSetCache.set(key, candidateSet);
+    return candidateSet;
   };
   const personIds = Object.keys(context.world.persons).sort();
   for (const personId of personIds) {
@@ -3666,20 +3898,15 @@ function runEventYear(
     const ordinaryCap = subject.ownerId
       ? Math.max(context.options.maxOrdinaryEventsPerPerson, 6)
       : context.options.maxOrdinaryEventsPerPerson;
+    let candidateSet = candidateSetFor(subject);
     // Once-per-person milestones (school entry, first apprenticeship, a
     // historical epidemic) must not be crowded out by weighted ordinary
     // events. Resolve at most one milestone first, then fill with ordinary
     // events.
-    const stageDefinitionsForMilestone = candidatesFor(subject);
-    for (const entry of stageDefinitionsForMilestone) {
+    for (const entry of candidateSet.milestones) {
       const definition = entry.definition;
-      if (!definition.oncePerPerson || used.has(definition.id)) continue;
-      if (!indexedSceneFits(context.world, entry, subject)) continue;
-      if (!sceneEligible(context, definition, subject, date)) continue;
-      // Once-per-person milestones normally fire on the first eligible year,
-      // but an authored low-rate milestone (e.g. a rare historical contact)
-      // must still respect its rate. Without this check a 1.5%-per-year
-      // historical encounter fires for every eligible adult in the first year.
+      if (used.has(definition.id)) continue;
+      if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
       const milestoneRate = v4EventRate(context, definition, subject, date);
       if (
         milestoneRate < 1 &&
@@ -3715,31 +3942,20 @@ function runEventYear(
       used.add(definition.id);
       resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
       subject = context.world.persons[personId];
+      candidateSet = candidateSetFor(subject);
       break;
     }
     // Lifecycle scenes (courtship, childbirth, separation) get one dedicated
     // attempt per person-year. A pack with dozens of ordinary neighbourhood
     // scenes must not crowd out the events that create the next generation.
     if (subject && !subject.died && ordinary < ordinaryCap) {
-      const lifecycleDefinitions = candidatesFor(subject).filter(
-        (entry) => entry.definition.tags.includes('lifecycle') && !used.has(entry.definition.id),
-      );
       const lifecycleCandidates: { definition: SceneDefinition; weight: number }[] = [];
-      for (const entry of lifecycleDefinitions) {
+      for (const entry of candidateSet.lifecycle) {
         const definition = entry.definition;
+        if (used.has(definition.id)) continue;
         if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
-        if (!indexedSceneFits(context.world, entry, subject)) continue;
-        if (!sceneEligible(context, definition, subject, date)) continue;
-        const rate = v4EventRate(context, definition, subject, date);
-        const rng = seededRng(
-          context.world.seed,
-          'lifecycle-rate',
-          definition.id,
-          subject.id,
-          date.year,
-          date.month,
-        );
-        if (rng() >= rate) continue;
+        if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
+        if (!ratePasses(context, definition, subject, date, 'lifecycle-rate')) continue;
         lifecycleCandidates.push({
           definition,
           weight: Math.max(0, definition.weight ?? 1),
@@ -3777,31 +3993,37 @@ function runEventYear(
             ordinary += 1;
             resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
             subject = context.world.persons[personId];
+            candidateSet = candidateSetFor(subject);
           }
         }
       }
     }
+    // For ordinary events, large content libraries use a deterministic sample
+    // of the pre-filtered pool. This keeps per-person work bounded as the
+    // recipe library grows; the final pick is still weighted by scene weight.
+    let sampledOrdinary: { definition: SceneDefinition; weight: number }[] | undefined;
     while (ordinary < ordinaryCap) {
       if (!subject || subject.died) break;
-      const candidates: { definition: SceneDefinition; weight: number }[] = [];
-      const stageDefinitions = candidatesFor(subject);
-      for (const entry of stageDefinitions) {
-        const definition = entry.definition;
-        if (used.has(definition.id)) continue;
-        if (!indexedSceneFits(context.world, entry, subject)) continue;
-        if (!sceneEligible(context, definition, subject, date)) continue;
-        if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
-        const rate = v4EventRate(context, definition, subject, date);
-        const rng = seededRng(
-          context.world.seed,
-          'rate',
-          definition.id,
-          subject.id,
-          date.year,
-          date.month,
+      let candidates: { definition: SceneDefinition; weight: number }[] = [];
+      if (candidateSet.all.length > EXACT_ORDINARY_SCAN_LIMIT) {
+        sampledOrdinary ??= sampleOrdinaryCandidates(
+          context,
+          candidateSet.all,
+          subject,
+          date,
+          used,
+          0,
         );
-        if (rng() >= rate) continue;
-        candidates.push({ definition, weight: Math.max(0, definition.weight ?? 1) });
+        candidates = sampledOrdinary.filter((candidate) => !used.has(candidate.definition.id));
+      } else {
+        for (const entry of candidateSet.all) {
+          const definition = entry.definition;
+          if (used.has(definition.id)) continue;
+          if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
+          if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
+          if (!ratePasses(context, definition, subject, date, 'rate')) continue;
+          candidates.push({ definition, weight: Math.max(0, definition.weight ?? 1) });
+        }
       }
       if (candidates.length === 0) break;
       const chosen = weightedPick(
@@ -3851,6 +4073,10 @@ function runEventYear(
       ordinary += 1;
       resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
       subject = context.world.persons[personId];
+      candidateSet = candidateSetFor(subject);
+      // A new person state invalidates the sampled subset; the next iteration
+      // will sample again only if the cap still allows another event.
+      sampledOrdinary = undefined;
     }
   }
 }
@@ -4110,9 +4336,8 @@ function commitEvent(
   }
   if (!force && applied.length === 0) return undefined;
 
-  const causes = [...new Set(draft.causes ?? [])].filter((cause) =>
-    context.world.events.some((event) => event.id === cause),
-  );
+  const knownEventIds = eventIdsFor(context);
+  const causes = [...new Set(draft.causes ?? [])].filter((cause) => knownEventIds.has(cause));
   const participants = draft.participants.filter(
     (participant) =>
       participant &&
@@ -4148,6 +4373,8 @@ function commitEvent(
     if (monthIndex(date) > monthIndex(event.date)) event.date = { ...date };
   }
   context.world.events.push(event);
+  knownEventIds.add(event.id);
+  rememberEventMonth(context, event.subjectId, event.date);
   scheduleFactTriggers(context, event, draft.triggerDepth ?? 0);
   context.world.historyMeta.sequence = identity.sequence;
   context.world.historyMeta.lastEventId = event.id;
@@ -5622,13 +5849,33 @@ function repairGuardiansAfterDeath(world: WorldState, deceased: Person, date: Wo
   }
 }
 
-function latestPersonEventDate(world: WorldState, personId: Id): WorldDate | undefined {
-  let latest: WorldDate | undefined;
-  for (const event of world.events) {
-    if (event.subjectId !== personId) continue;
-    if (!latest || monthIndex(event.date) > monthIndex(latest)) latest = event.date;
+function lastEventMonthFor(context: EngineContext, personId: Id): WorldDate | undefined {
+  if (!context.lastEventMonths) {
+    const months = new Map<Id, WorldDate>();
+    for (const event of context.world.events) {
+      const current = months.get(event.subjectId);
+      if (!current || monthIndex(event.date) > monthIndex(current)) {
+        months.set(event.subjectId, event.date);
+      }
+    }
+    context.lastEventMonths = months;
   }
-  return latest;
+  return context.lastEventMonths.get(personId);
+}
+
+function rememberEventMonth(context: EngineContext, subjectId: Id, date: WorldDate): void {
+  if (!context.lastEventMonths) return;
+  const current = context.lastEventMonths.get(subjectId);
+  if (!current || monthIndex(date) > monthIndex(current)) {
+    context.lastEventMonths.set(subjectId, date);
+  }
+}
+
+function eventIdsFor(context: EngineContext): Set<Id> {
+  if (!context.eventIds) {
+    context.eventIds = new Set(context.world.events.map((event) => event.id));
+  }
+  return context.eventIds;
 }
 
 function applyDeath(
@@ -5647,7 +5894,7 @@ function applyDeath(
   }
   if (typeof effect.cause !== 'string' || effect.cause.length === 0) return undefined;
 
-  const previousEventDate = latestPersonEventDate(context.world, person.id);
+  const previousEventDate = lastEventMonthFor(context, person.id);
   const deathDate =
     previousEventDate && monthIndex(previousEventDate) > monthIndex(binding.date)
       ? { ...previousEventDate }
@@ -5669,9 +5916,8 @@ function applyDeath(
   for (const organization of Object.values(context.world.organizations)) {
     organization.memberIds = organization.memberIds.filter((id) => id !== person.id);
   }
-  for (const relation of Object.values(context.world.relations)) {
+  for (const relation of relationsFor(context.world, person.id)) {
     if (relation.end !== undefined) continue;
-    if (relation.a !== person.id && relation.b !== person.id) continue;
     if (relation.kind === 'partner') relation.end = { ...deathDate };
   }
   repairGuardiansAfterDeath(context.world, person, deathDate);

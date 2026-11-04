@@ -4,6 +4,8 @@ import { WORK_COMMERCE_KERNELS } from './work-commerce.js';
 import { FAMILY_SOCIAL_KERNELS } from './family-social.js';
 import { HEALTH_VIOLENCE_WAR_KERNELS } from './health-violence-war.js';
 import { CIVIC_CULTURE_MIGRATION_KERNELS } from './civic-culture-migration.js';
+import { KIT_RECIPES } from './recipes/kit-recipes.js';
+import { RECIPE_PACKS } from './recipes/registry.js';
 
 /** Plot Kernel registry. Each domain file exports its own independent array. */
 export const KERNEL_LIBRARY: PlotKernel[] = [
@@ -12,4 +14,6 @@ export const KERNEL_LIBRARY: PlotKernel[] = [
   ...FAMILY_SOCIAL_KERNELS,
   ...HEALTH_VIOLENCE_WAR_KERNELS,
   ...CIVIC_CULTURE_MIGRATION_KERNELS,
+  ...KIT_RECIPES,
+  ...RECIPE_PACKS,
 ];
