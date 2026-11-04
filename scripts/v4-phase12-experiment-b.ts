@@ -49,7 +49,10 @@ const profiles: Profile[] = [
         (person) =>
           !person.died &&
           Boolean(person.employment) &&
-          (person.employment?.occupation.includes('print') || person.roles.includes('worker')),
+          (person.employment!.occupation.toLowerCase().includes('druck') ||
+            person.employment!.occupation.toLowerCase().includes('print') ||
+            person.employment!.occupation.toLowerCase().includes('setzer') ||
+            person.roles.includes('worker')),
       )?.id,
   },
   {
@@ -73,11 +76,11 @@ const profiles: Profile[] = [
       )?.id,
   },
   {
-    label: 'elder',
+    label: 'oldest living person',
     select: (world) =>
-      Object.values(world.persons).find(
-        (person) => !person.died && world.date.year - person.born.year >= 65,
-      )?.id,
+      Object.values(world.persons)
+        .filter((person) => !person.died)
+        .sort((a, b) => a.born.year - b.born.year || a.id.localeCompare(b.id))[0]?.id,
   },
 ];
 

@@ -17,6 +17,7 @@ const BUILTIN_TOKENS = new Set([
   'year',
   'household',
   'child',
+  'subjectPronoun',
 ]);
 
 function unresolvedTokens(text: string, roles: Set<string>): string[] {

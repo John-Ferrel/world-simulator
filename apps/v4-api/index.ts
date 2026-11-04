@@ -846,6 +846,73 @@ function projectedEventKind(event: EventFact): ProjectedEventKind {
   return 'ordinary';
 }
 
+function projectedEffectDescription(effect: EventFact['effects'][number]): string {
+  if ('reason' in effect && typeof effect.reason === 'string' && effect.reason.length > 0) {
+    return effect.reason;
+  }
+  switch (effect.type) {
+    case 'cash':
+      return `现金 ${effect.amount}`;
+    case 'health':
+      return `健康 ${effect.amount}`;
+    case 'role':
+      return `${effect.add ? '获得' : '失去'}角色 ${effect.role}`;
+    case 'flag':
+      return `${effect.add ? '记录' : '清除'} ${effect.flag}`;
+    case 'employment':
+      return `受雇为 ${effect.occupation}`;
+    case 'unemployment':
+      return '失业';
+    case 'relation':
+      return `建立 ${effect.kind} 关系`;
+    case 'relation_end':
+      return `结束 ${effect.kind} 关系`;
+    case 'move':
+      return '迁移';
+    case 'household':
+      return '家庭变更';
+    case 'residence':
+      return '迁居';
+    case 'death':
+      return `死亡：${effect.cause}`;
+    default:
+      return effect.type;
+  }
+}
+
+function projectedIncidentTrace(event: EventFact, lookups: V4EventLookups) {
+  const [scenePart, outcomeId = ''] = event.action.split('/');
+  const [kernelId, contextId, milieuId, variantId] = scenePart.split('::');
+  const placeName = event.placeId ? lookups.placeNames[event.placeId] : undefined;
+  return {
+    mechanism: {
+      sceneId: scenePart,
+      outcomeId,
+      ...(contextId ? { kernelId, contextId, milieuId } : {}),
+      ...(variantId ? { variantId } : {}),
+    },
+    ...(event.placeId && placeName
+      ? { place: { id: event.placeId, name: placeName, kind: 'other' } }
+      : {}),
+    subject: {
+      id: event.subjectId,
+      name: lookups.personNames[event.subjectId] ?? event.subjectId,
+      roles: [],
+    },
+    participants: event.participants.map((participant) => ({
+      personId: participant.personId,
+      role: participant.role,
+      name: lookups.personNames[participant.personId] ?? participant.personId,
+      ...(participant.organizationId ? { organizationId: participant.organizationId } : {}),
+    })),
+    ...(event.title ? { conflict: event.title } : {}),
+    effects: event.effects.map((effect) => ({
+      type: effect.type,
+      description: projectedEffectDescription(effect),
+    })),
+  };
+}
+
 function projectEvent(
   event: EventFact,
   lookups: V4EventLookups,
@@ -862,8 +929,10 @@ function projectEvent(
       ? '生活记录'
       : undefined);
   const processRefs = projectProcessRefs(event, processes);
+  const trace = event.trace ?? projectedIncidentTrace(event, lookups);
   return {
     ...event,
+    trace,
     title,
     kind: projectedEventKind(event),
     major: event.significance >= 0.7,

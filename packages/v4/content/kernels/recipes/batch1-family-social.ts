@@ -34,8 +34,8 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     tags: ['social', 'courtship', 'dance', 'marriage', 'chaperone'],
     contexts: URBAN,
     milieus: [...HOME, 'cafe', 'market'],
-    conditions: [{ kind: 'sex', in: ['female'] }],
     roles: {
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 18, maxAge: 34, sex: 'opposite' }],
       chaperone: ['neighbor', { minAge: 35, maxAge: 72 }],
     },
@@ -127,8 +127,8 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     tags: ['social', 'courtship', 'chaperone', 'walk', 'reputation'],
     contexts: SETTLE,
     milieus: [...HOME, 'cafe', 'market'],
-    conditions: [{ kind: 'sex', in: ['female'] }],
     roles: {
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 18, maxAge: 32, sex: 'opposite' }],
       chaperone: ['neighbor', { minAge: 38, maxAge: 75, sex: 'female' }],
     },
@@ -218,7 +218,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     contexts: SETTLE,
     milieus: [...HOME, 'market', 'shop'],
     roles: {
-      bride: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       parent: ['parent', { minAge: 40, maxAge: 70, sex: 'male' }],
       elder: ['neighbor', { minAge: 45, maxAge: 78, sex: 'female' }],
       partner: ['partner', { minAge: 18, maxAge: 35, sex: 'opposite', required: false }],
@@ -264,7 +264,6 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         },
       },
     ],
-    variants: [],
     baseRate: 0.05,
     cooldownYears: 4,
     significance: 0.65,
@@ -280,7 +279,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     contexts: SETTLE,
     milieus: [...HOME, 'official', 'shop'],
     roles: {
-      wife: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 19, maxAge: 38, sex: 'opposite' }],
       official: ['official', { minAge: 28, maxAge: 70 }],
       parent: ['parent', { minAge: 42, maxAge: 75, required: false }],
@@ -479,7 +478,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       { kind: 'notHasRole', role: 'married' },
     ],
     roles: {
-      bride: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 19, maxAge: 36, sex: 'opposite' }],
       landlady: ['neighbor', { minAge: 40, maxAge: 75, sex: 'female' }],
     },
@@ -617,7 +616,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'hospital', 'shop'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: 0.1 }],
     roles: {
-      expectant: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 20, maxAge: 45, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 35, maxAge: 72, sex: 'female' }],
     },
@@ -687,7 +686,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'pregnancy.missing-husband',
             w: 0.45,
-            text: '{subject}没有写信，怕他分心。{subjectPronoun}把日历上的日子一天天划掉，划到第三个月，前线来了电报，说{partner}失踪。{neighbor}把电报念了两遍；{subject}{subjectPronoun}摸着肚子，第一次觉得这个孩子不知道该姓什么。',
+            text: '{subject}没有写信，怕他分心。{subjectPronoun}把日历上的日子一天天划掉，划到第三个月，前线来了电报，说{partner}失踪。{neighbor}把电报念了两遍；{subjectPronoun}摸着肚子，第一次觉得这个孩子不知道该姓什么。',
             significance: 0.88,
             fx: {
               condition: 'pregnancy',
@@ -719,7 +718,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       { kind: 'health', min: 0.3 },
     ],
     roles: {
-      birthing_mother: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 20, maxAge: 48, sex: 'opposite', sameHousehold: true }],
       midwife: ['neighbor', { minAge: 35, maxAge: 75, sex: 'female' }],
       doctor: ['worker', { minAge: 28, maxAge: 70, required: false }],
@@ -847,7 +846,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...CARE, 'home', 'family'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: 0.1 }],
     roles: {
-      birthing_mother: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 20, maxAge: 48, sex: 'opposite', sameHousehold: true }],
       midwife: ['neighbor', { minAge: 35, maxAge: 75, sex: 'female' }],
       doctor: ['worker', { minAge: 28, maxAge: 70 }],
@@ -924,7 +923,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'fever.ward',
             w: 0.6,
-            text: '产房的护士每进一次门就用石炭酸洗手，指甲缝里全是黄的。{subject}烧到第三天，{doctor}把她转到隔离间，说不能让孩子再吸奶。{partner}隔着玻璃看她，用手指在雾上画了一个圈；{subjectPronoun}看见了，也抬起手，{subjectPronoun}画了一个一样的。',
+            text: '产房的护士每进一次门就用石炭酸洗手，指甲缝里全是黄的。{subject}烧到第三天，{doctor}把她转到隔离间，说不能让孩子再吸奶。{partner}隔着玻璃看她，用手指在雾上画了一个圈；{subjectPronoun}看见了，也抬起手，画了一个一样的。',
             significance: 0.82,
             fx: [
               {
@@ -982,7 +981,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     contexts: SETTLE,
     milieus: [...CARE, 'home', 'family'],
     roles: {
-      mother: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 21, maxAge: 46, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 40, maxAge: 75, sex: 'female' }],
       doctor: ['worker', { minAge: 28, maxAge: 70, required: false }],
@@ -1046,7 +1045,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...CARE, 'home', 'family'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: 0.05 }],
     roles: {
-      mother: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 20, maxAge: 45, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 40, maxAge: 78, sex: 'female' }],
       official: ['official', { minAge: 25, maxAge: 68 }],
@@ -1108,7 +1107,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'infant.measles',
             w: 0.55,
-            text: '楼里五个孩子同时出麻疹，走廊上全是煮醋的味道。{subject}的孩子烧到第四天开始抽，{neighbor}说医院不收传染病，只能用湿毛巾擦。天亮时孩子安静了，{subject}摸他的额头，凉的；{subjectPronoun}把配给证上的奶粉票撕下来，压在枕头底下。',
+            text: '楼里五个孩子同时出麻疹，走廊上全是煮醋的味道。{subject}的孩子烧到第四天开始抽，{neighbor}说医院不收传染病，只能用湿毛巾擦。天亮时孩子安静了，{subject}摸孩子的额头，凉的；{subjectPronoun}把配给证上的奶粉票撕下来，压在枕头底下。',
             significance: 0.94,
             fx: {
               condition: 'infant_loss',
@@ -1481,7 +1480,6 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         },
       },
     ],
-    variants: [],
     baseRate: 0.05,
     cooldownYears: 3,
     significance: 0.7,
@@ -1542,7 +1540,6 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         },
       },
     ],
-    variants: [],
     baseRate: 0.035,
     cooldownYears: 8,
     significance: 0.82,
@@ -1720,7 +1717,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'official'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: -1 }],
     roles: {
-      wife: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 22, maxAge: 50, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 25, maxAge: 70 }],
       official: ['official', { minAge: 25, maxAge: 65 }],
@@ -1833,7 +1830,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'official'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: -1 }],
     roles: {
-      wife: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 25, maxAge: 55, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 25, maxAge: 70 }],
     },
@@ -1906,7 +1903,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'official', 'shop'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: -1 }],
     roles: {
-      wife: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 24, maxAge: 50, sex: 'opposite', sameHousehold: true }],
       official: ['official', { minAge: 25, maxAge: 65 }],
       mother_in_law: ['neighbor', { minAge: 48, maxAge: 80, sex: 'female' }],
@@ -2007,7 +2004,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       { kind: 'householdSize', min: 2 },
     ],
     roles: {
-      widow: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       suitor: ['partner', { minAge: 30, maxAge: 55, sex: 'opposite' }],
       sibling: ['sibling', { minAge: 22, maxAge: 60 }],
     },
@@ -2090,7 +2087,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       { kind: 'health', min: 0.2 },
     ],
     roles: {
-      widow: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 30, maxAge: 60, sex: 'opposite', sameHousehold: true }],
       foreman: ['worker', { minAge: 32, maxAge: 68 }],
       neighbor: ['neighbor', { minAge: 30, maxAge: 72, sex: 'female' }],
@@ -2555,7 +2552,6 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         },
       },
     ],
-    variants: [],
     baseRate: 0.04,
     cooldownYears: 5,
     significance: 0.72,
@@ -2572,7 +2568,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'cafe', 'market'],
     conditions: [{ kind: 'age', min: 18, max: 35 }],
     roles: {
-      brother: ['subject', { sex: 'male' }],
+      subject: ['subject', { sex: 'male' }],
       rival: ['worker', { minAge: 18, maxAge: 38, sex: 'male' }],
       sibling: ['sibling', { minAge: 15, maxAge: 30, sex: 'female' }],
       official: ['official', { minAge: 26, maxAge: 65 }],
@@ -2689,7 +2685,6 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         },
       },
     ],
-    variants: [],
     baseRate: 0.035,
     cooldownYears: 5,
     significance: 0.62,
@@ -2705,7 +2700,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'official', 'school'],
     conditions: [{ kind: 'householdSize', max: 7 }],
     roles: {
-      elder_sister: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       mother: ['parent', { minAge: 42, maxAge: 72, sex: 'female' }],
       sibling: ['sibling', { minAge: 8, maxAge: 16 }],
       official: ['official', { minAge: 25, maxAge: 68 }],
@@ -2815,7 +2810,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'hospital', 'army'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', sameHousehold: true }],
     roles: {
-      soldier_wife: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 24, maxAge: 50, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 25, maxAge: 70 }],
     },
@@ -3735,7 +3730,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     contexts: SETTLE,
     milieus: [...CARE, 'home', 'family', 'official'],
     roles: {
-      daughter: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       father: ['neighbor', { minAge: 19, maxAge: 40, sex: 'male' }],
       mother: ['parent', { minAge: 38, maxAge: 62, sex: 'female' }],
       official: ['official', { minAge: 25, maxAge: 68 }],
@@ -3935,7 +3930,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       { kind: 'notHasRole', role: 'married' },
     ],
     roles: {
-      daughter: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       parent: ['parent', { minAge: 40, maxAge: 70 }],
       suitor: ['partner', { minAge: 20, maxAge: 42, sex: 'opposite' }],
       elder: ['neighbor', { minAge: 45, maxAge: 80 }],
@@ -4005,7 +4000,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'market', 'shop'],
     conditions: [{ kind: 'notHasRole', role: 'married' }],
     roles: {
-      bride: ['subject', { sex: 'female' }],
+      subject: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 19, maxAge: 34, sex: 'opposite' }],
       parent: ['parent', { minAge: 42, maxAge: 72 }],
       neighbor: ['neighbor', { minAge: 18, maxAge: 60 }],
@@ -4060,7 +4055,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'elopement.stayed',
         w: 0.3,
-        text: '{subject}没有走。{subjectPronoun}把箱子放回床底，第二天照常去上工；{partner}在厂门口等{subjectPronoun}，问{subjectPronoun}是不是怕了。{subject}说不是怕，是不能把母亲一个人丢下。{partner}沉默了很久，说他可以等；两人在雪地里站到厂门关上。',
+        text: '{subject}没有走。{subjectPronoun}把箱子放回床底，第二天照常去上工；{partner}在厂门口等{subjectPronoun}，问是不是怕了。{subject}说不是怕，是不能把母亲一个人丢下。{partner}沉默了很久，说他可以等；两人在雪地里站到厂门关上。',
         significance: 0.76,
         fx: {
           relation: [

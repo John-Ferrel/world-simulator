@@ -121,6 +121,7 @@ type LogEvent = {
   placeName?: string;
   people: { id: string; name: string; role: string }[];
   significance: number;
+  visibility?: 'private' | 'participants' | 'public';
   kind: LogKind;
   major: boolean;
   segments: LogSegment[];
@@ -135,7 +136,7 @@ type LogEvent = {
       variantId?: string;
     };
     place?: { id: string; name: string; kind: string };
-    subject: { id: string; name: string; age: number; occupation?: string; roles: string[] };
+    subject: { id: string; name: string; age?: number; occupation?: string; roles: string[] };
     participants: { personId: string; role: string; name: string; organizationId?: string }[];
     motive?: string;
     conflict?: string;
@@ -1805,7 +1806,11 @@ function LogEntry({
   if (event.major) classes.push('major');
   if (event.kind === 'history') classes.push('history');
   return (
-    <article className={classes.join(' ')}>
+    <article
+      className={classes.join(' ')}
+      data-trace={event.trace ? 'true' : 'false'}
+      data-visibility={event.visibility ?? 'participants'}
+    >
       <div className="log-meta">
         <time>{shortDate(event.date)}</time>
         <button

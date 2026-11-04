@@ -101,6 +101,61 @@ describe('Phase 11 context × kernel composition', () => {
     expect(composed.some((event) => event.id.includes('klosterneuburg'))).toBe(true);
   });
 
+  it('casts the subject role to the actual event subject, not a cached neighbor', () => {
+    const world = structuredClone(VIENNA_1912_SEED);
+    const scene = {
+      id: 'test:subject-identity',
+      version: 1,
+      packId: 'test',
+      title: '主体身份',
+      stage: 'adulthood' as const,
+      ageWindow: { min: 18, max: 65 },
+      roles: [
+        {
+          key: 'subject',
+          kind: 'subject' as const,
+          required: true,
+          minAge: 18,
+          maxAge: 65,
+          sex: 'female' as const,
+        },
+      ],
+      conditions: [{ kind: 'age' as const, min: 18, max: 65 }],
+      rate: 1,
+      tags: ['test'],
+      outcomes: [
+        {
+          id: 'record',
+          weight: 1,
+          immediateText: '{subject}把自己的名字写在登记簿上。',
+          effects: [
+            {
+              type: 'flag' as const,
+              personId: '$subject',
+              flag: 'registered-name',
+              add: true,
+              reason: 'subject identity test',
+            },
+          ],
+        },
+      ],
+    };
+    const result = advanceV4Year(world, [scene], {
+      eventRuntime: true,
+      economy: { enabled: false },
+      statisticalModel: false,
+      maxOrdinaryEventsPerPerson: 1,
+    });
+    const events = result.events.filter((event) =>
+      event.action.startsWith('test:subject-identity/'),
+    );
+    expect(events.length).toBeGreaterThan(1);
+    for (const event of events) {
+      const subject = world.persons[event.subjectId]!;
+      expect(event.immediateText).toContain(subject.name);
+    }
+  });
+
   it('compiles region gates so the same recipe does not automatically follow a person across regions', () => {
     const kernel = testKernel();
     const source = createCompositionSource([kernel]);
@@ -312,6 +367,8 @@ describe('Phase 11 context × kernel composition', () => {
     expect(event?.trace?.conflict).toBe('门房不肯放行');
     expect(event?.trace?.response).toBe('把名字写在候工簿上');
     expect(event?.trace?.effects[0]?.type).toBe('flag');
+    expect(event?.trace?.effects).toHaveLength(1);
+    expect(event?.trace?.effects[0]?.description).not.toMatch(/[{}]/);
   });
 
   it('replays a committed action back to kernel/context/milieu', () => {
@@ -329,7 +386,7 @@ describe('Phase 11 context × kernel composition', () => {
     const world = structuredClone(VIENNA_1912_SEED);
     const result = source.compile(world, { year: 1912, month: 1 });
     expect(result.scenes.length).toBeGreaterThan(0);
-    const scene = result.scenes.find((entry) => entry.id.includes('ctx-vienna-factory-1912'));
+    const scene = result.scenes.find((entry) => entry.id.includes('ctx-vienna'));
     expect(scene).toBeDefined();
     expect(scene?.id).toContain('kernel-test.workshop-job');
     expect(scene?.id).toContain('milieu-');

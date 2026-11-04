@@ -22,13 +22,13 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     milieus: ['university', 'official', 'bureaucracy', 'public_service'],
     roles: {
       registrar: ['official', { minAge: 30, maxAge: 65 }],
-      mother: ['parent', { minAge: 35, maxAge: 60 }],
+      mother: ['parent', { minAge: 35, maxAge: 60, sex: 'female' }],
     },
     outcomes: [
       {
         id: 'paid-in-full',
         w: 0.4,
-        text: '{subject}把中学毕业证、洗礼证明和十二克朗排在注册处的石台上。{registrar}逐张对光，说还缺父亲的职业证明，队伍后面有人笑了一声。{subject}没有回头，只问能不能先交一半，剩下的在圣灵降临节前补齐。{registrar}把名字写进册子，墨水在“已缴”一栏洇开。',
+        text: '{subject}把中学毕业证、洗礼证明和十二克朗排在注册处的石台上。{registrar}逐张对光，说还缺家长的职业证明，队伍后面有人笑了一声。{subject}没有回头，只问能不能先交一半，剩下的在圣灵降临节前补齐。{registrar}把名字写进册子，墨水在“已缴”一栏洇开。',
         significance: 0.82,
         trace: {
           motive: '想在不惊动家里的情况下注册入学',
@@ -46,7 +46,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'provisional-matriculation',
         w: 0.35,
-        text: '{registrar}把毕业证推回来，说证书上的姓少了一个字母。{subject}解释了三遍，{registrar}只重复“按册子来”。{mother}在门外把围巾攥成一团，最后掏出针线包，把证书边缘的线拆开，露出里面另一张纸。{registrar}看了一眼，盖了临时章。',
+        text: '{registrar}把毕业证推回来，说证书上的姓少了一个字母，补办要四克朗。{subject}解释了三遍，{registrar}只重复“按册子来”。{mother}在门外把围巾攥成一团，最后掏出针线包，把证书边缘的线拆开，露出里面另一张纸。{registrar}看了一眼，盖了临时章。',
         significance: 0.74,
         fx: {
           cash: -4,
@@ -60,7 +60,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'turned-away',
         w: 0.25,
-        text: '{registrar}说名额昨天就满了，让{subject}明年再来。{mother}问能不能站着听，{registrar}指了指走廊尽头那扇写着“闲人免进”的门。回家的电车上，{subject}把报名表折成四折，塞进鞋垫下面，纸角硌了一路。',
+        text: '{registrar}说名额昨天就满了，让{subject}明年再来，两克朗报名费不退。{mother}问能不能站着听，{registrar}指了指走廊尽头那扇写着“闲人免进”的门。回家的电车上，{subject}把报名表折成四折，塞进鞋垫下面，纸角硌了一路。',
         significance: 0.66,
         fx: {
           cash: -2,
@@ -91,7 +91,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'window-sill-notes',
         w: 0.4,
-        text: '阶梯教室的窗台上结了霜，{subject}把笔记本摊在膝头，手指冻得握不住笔。{professor}在讲台上念自己的旧讲义，声音被后排的咳嗽盖住。{student}把一页笔记推过来，上面写着“第三行他念错了”。{subject}抬头，{professor}正看着窗外。',
+        text: '阶梯教室的窗台上结了霜，{subject}把笔记本摊在膝头，手指冻得握不住笔。{professor}在讲台上念自己的旧讲义，声音被后排的咳嗽盖住。{student}把一页笔记推过来，上面写着“第三行念错了”。{subject}抬头，{professor}正看着窗外。',
         significance: 0.66,
         fx: {
           skill: { literacy: 0.04 },
@@ -171,7 +171,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'found-rival-error',
         w: 0.3,
-        text: '{subject}没有辩解，反而翻开{rival}的稿子，指出他引的统计表把“每千人”写成了“每百人”。{professor}把两张纸并排放，教室里有人低声叫好。{rival}收起稿子，说下周重讲；{subject}知道这门课的期末分数已经不再只由{professor}决定。',
+        text: '{subject}没有辩解，反而翻开{rival}的稿子，指出{rival}引的统计表把“每千人”写成了“每百人”。{professor}把两张纸并排放，教室里有人低声叫好。{rival}收起稿子，说下周重讲；{subject}知道这门课的期末分数已经不再只由{professor}决定。',
         significance: 0.72,
         when: { skill: { name: 'literacy', min: 0.6 } },
         fx: {
@@ -202,7 +202,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
           {
             id: 'postwar-rationed-paper',
             w: 0.45,
-            text: '{subject}的研讨课稿写在配给纸的背面，正面是上一年度的面包配给表。{professor}翻过来看了一眼，说“至少你的注释有出处”。{rival}在门口笑，说这稿子该按重量交。',
+            text: '{subject}花两克朗买了配给纸，把研讨课稿写在背面，正面是上一年度的面包配给表。{professor}翻过来看了一眼，说“至少你的注释有出处”。{rival}在门口笑，说这稿子该按重量交。',
             significance: 0.62,
             fx: {
               flag: 'wrote_seminar_on_rationed_paper',
@@ -290,7 +290,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'rebound-in-time',
         w: 0.4,
-        text: '{binder}把三份副本摊在案子上，糨糊还冒着热气。{subject}一页页翻过去，发现目录被订在最后，{binder}说“这样翻不坏”。离注册处关门还有一小时，{supervisor}在门口抽完第二支烟，接过副本，只说“能交就行”。',
+        text: '{binder}把三份副本摊在案子上，糨糊还冒着热气，收了三克朗装订费。{subject}一页页翻过去，发现目录被订在最后，{binder}说“这样翻不坏”。离注册处关门还有一小时，{supervisor}在门口抽完第二支烟，接过副本，只说“能交就行”。',
         significance: 0.72,
         fx: {
           cash: -3,
@@ -332,7 +332,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
           {
             id: 'war-brown-paper-binding',
             w: 0.55,
-            text: '战时领不到硬纸板，{binder}用军用包装纸给{subject}的论文做了封面，灰绿色，上面还印着弹药批号。{supervisor}翻了两页，说“能读就行”，在封面上签了字。注册处的人看了一眼批号，什么也没问。',
+            text: '战时领不到硬纸板，{binder}收了两克朗，用军用包装纸给{subject}的论文做封面，灰绿色，上面还印着弹药批号。{supervisor}翻了两页，说“能读就行”，在封面上签了字。注册处的人看了一眼批号，什么也没问。',
             significance: 0.72,
             fx: {
               role: 'thesis_submitted',
@@ -366,8 +366,8 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     stage: 'adulthood',
     ages: [26, 45],
     tags: ['education', 'university', 'doctorate', 'defense', 'knowledge'],
-    contexts: ['university', 'culture', 'postwar'],
-    milieus: ['university', 'teacher'],
+    contexts: ['university', 'culture', 'postwar', 'reform'],
+    milieus: ['university', 'teacher', 'official'],
     conditions: [{ kind: 'education', in: ['higher'] }],
     roles: {
       supervisor: ['teacher', { minAge: 45, maxAge: 75 }],
@@ -391,7 +391,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'returned-for-revision',
         w: 0.35,
-        text: '{examiner}说第三章的方法“像从别人树上摘的果子”，要求补做一组对照。{subject}争辩说时间不够，{examiner}把日历翻到六月，说“那就六月”。{supervisor}在走廊里低声说，别跟他硬顶。{subject}回实验室时，发现自己的培养箱被断了电。',
+        text: '{examiner}说第三章的方法“像从别人树上摘的果子”，要求补做一组对照。{subject}争辩说时间不够，{examiner}把日历翻到六月，说“那就六月”。{supervisor}在走廊里低声说，别跟{examiner}硬顶。{subject}回实验室时，发现自己的培养箱被断了电。',
         significance: 0.76,
         fx: {
           education: ['higher', 2],
@@ -466,7 +466,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'accepted-assistantship',
         w: 0.4,
-        text: '{professor}在周日午餐后把一叠德文校样推到{subject}面前，说“先替我看一遍，署不署名以后再说”。{subject}翻到第三页，发现自己的脚注已经被并进正文。{assistant}在厨房门口洗碗，水声停了很久。',
+        text: '{professor}在周日午餐后把一叠德文校样推到{subject}面前，说“先替我看一遍，署不署名以后再说”。{subject}翻到第三页，发现自己的脚注已经被并进正文。月底领到第一笔助学金时，{assistant}在厨房门口洗碗，水声停了很久。',
         significance: 0.78,
         fx: {
           role: 'research_assistant',
@@ -513,7 +513,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     ages: [35, 65],
     tags: ['education', 'university', 'institution', 'election', 'rivalry'],
     contexts: ['university', 'reform', 'crisis'],
-    milieus: ['university', 'teacher', 'official'],
+    milieus: ['university', 'teacher', 'official', 'union'],
     roles: {
       rival: ['teacher', { minAge: 40, maxAge: 65 }],
       dean: ['teacher', { minAge: 50, maxAge: 75 }],
@@ -634,7 +634,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'accepted-the-footnote',
         w: 0.3,
-        text: '{professor}在再版序里加了一行“感谢某位学生的早期整理”，没有名字。{publisher}把样书送到{subject}手里，说这已经是教授能给的最大体面。{subject}翻到那一行，发现“整理”两个字被改成了“协助”。',
+        text: '{professor}在再版序里加了一行“感谢某位学生的早期整理”，没有名字。{publisher}把样书和一笔校订费送到{subject}手里，说这已经是教授能给的最大体面。{subject}翻到那一行，发现“整理”两个字被改成了“协助”。',
         significance: 0.7,
         when: { maxCash: 5 },
         fx: {
@@ -667,7 +667,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'signed-the-inflated-list',
         w: 0.4,
-        text: '{clerk}把设备清单念到第三行，{professor}在“离心机”后面又添了一台，说实验室那台已经响了三年。{subject}负责抄写，笔尖停在数字上。{clerk}抬头问“两台都要新的？”{professor}替{subject}回答：“审计员不会下到地下室。”',
+        text: '{clerk}把设备清单念到第三行，{professor}在“离心机”后面又添了一台，说实验室那台已经响了三年。{subject}负责抄写，笔尖停在数字上，月底多领了两克朗抄写津贴。{clerk}抬头问“两台都要新的？”{professor}替{subject}回答：“审计员不会下到地下室。”',
         significance: 0.76,
         fx: {
           role: 'grant_applicant',
@@ -712,7 +712,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     ages: [28, 60],
     tags: ['education', 'research', 'audit', 'debt', 'institution'],
     contexts: ['university', 'crisis', 'postwar', 'reform'],
-    milieus: ['university', 'official', 'bureaucracy'],
+    milieus: ['university', 'official', 'bureaucracy', 'home'],
     roles: {
       auditor: ['official', { minAge: 30, maxAge: 65 }],
       professor: ['teacher', { minAge: 45, maxAge: 75 }],
@@ -910,7 +910,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'reported-to-the-professor',
         w: 0.3,
-        text: '{subject}把错标签的事写在课上提问，{professor}说“标本不会说谎，写标签的人会”。下课后，{student}在走廊里拦住{subject}，说那瓶脾本来是要给他父亲做手术示教的。{subject}把目录抄了一份给他。',
+        text: '{subject}把错标签的事写在课上提问，{professor}说“标本不会说谎，写标签的人会”。下课后，{student}在走廊里拦住{subject}，说那瓶脾本来是要给{student}的父亲做手术示教的。{subject}把目录抄了一份给{student}。',
         significance: 0.74,
         when: { education: ['higher'] },
         fx: {
@@ -1001,7 +1001,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     ages: [28, 60],
     tags: ['education', 'research', 'conference', 'travel', 'exclusion'],
     contexts: ['university', 'culture', 'reform', 'war'],
-    milieus: ['university', 'cafe', 'official'],
+    milieus: ['university', 'cafe', 'official', 'print'],
     roles: {
       organizer: ['teacher', { minAge: 40, maxAge: 70 }],
       colleague: ['worker', { minAge: 28, maxAge: 60 }],
@@ -1010,7 +1010,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'read-the-paper',
         w: 0.4,
-        text: '{organizer}把{subject}的名字补进议程，用铅笔写在“替补”旁边。{subject}在火车上把稿子改了四遍，到会场时发现自己的时段被排在晚饭前。{colleague}替他占了第一排，说“讲完再吃”。{subject}讲到第三页，礼堂后面的人开始穿外套。',
+        text: '{organizer}把{subject}的名字补进议程，用铅笔写在“替补”旁边。{subject}花了六克朗买车票和注册，在火车上把稿子改了四遍，到会场时发现自己的时段被排在晚饭前。{colleague}替{subject}占了第一排，说“讲完再吃”。{subject}讲到第三页，礼堂后面的人开始穿外套。',
         significance: 0.8,
         fx: {
           role: 'conference_speaker',
@@ -1035,7 +1035,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'sold-the-ticket',
         w: 0.3,
-        text: '{subject}没有进会场，在车站把回程票卖给了票贩子，用多出的钱买了两本旧书。{colleague}在站台找到他，问论文怎么办。{subject}说“回去在咖啡馆讲，至少有人听”。火车开动时，他把会议胸牌留在长椅上。',
+        text: '{subject}没有进会场，在车站把回程票卖给了票贩子，用多出的钱买了两本旧书。{colleague}在站台找到{subject}，问论文怎么办。{subject}说“回去在咖啡馆讲，至少有人听”。火车开动时，把会议胸牌留在长椅上。',
         significance: 0.68,
         when: { maxCash: 8 },
         fx: {
@@ -1050,12 +1050,12 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'war-congress-dissolved',
         when: { contextTags: ['war'] },
-        textPrefix: '战争动员令下来后，国际会议被取消，会场改成了伤兵收容站。',
+        textPrefix: '战争动员令下来后，国际会议被取消，议程退到印刷所，论文改成了小册子。',
         outcomes: [
           {
             id: 'war-conference-cancelled',
             w: 0.6,
-            text: '动员令下来后，国际会议取消，{organizer}把议程退回来，上面盖着“延期”的章。{subject}在咖啡馆把论文讲给{colleague}听，邻桌的人也跟着听。讲到第三页，{colleague}说“这比会议厅里清楚”。',
+            text: '动员令下来后，国际会议取消，{organizer}把议程退到印刷所。{subject}在排字房把论文念给{colleague}听，排版工一边听一边捡字。讲到第三页，{colleague}说“这比会议厅里清楚”。',
             significance: 0.72,
             fx: {
               role: 'cafe_lecturer',
@@ -1067,7 +1067,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
           {
             id: 'war-paper-for-soldiers',
             w: 0.4,
-            text: '{subject}把论文改成通俗版，到伤兵医院念给能坐起来的士兵听。{colleague}帮他举着图表，一个断了手的士兵问“这和我们有什么关系”。{subject}停了一下，把最后一段删了。',
+            text: '{subject}把论文改成通俗版，{colleague}排成四页的小册子，送到伤兵医院。一个断了手的士兵问“这和我们有什么关系”。{subject}停了一下，把最后一段删了，让排字工把空白留着。',
             significance: 0.7,
             fx: {
               relation: ['colleague', 'colleague', 0.1, 0],
@@ -1091,7 +1091,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     ages: [25, 66],
     tags: ['research', 'archive', 'permit', 'bureaucracy', 'secrecy'],
     contexts: ['university', 'reform', 'crisis'],
-    milieus: ['official', 'bureaucracy', 'public_service', 'university'],
+    milieus: ['official', 'bureaucracy', 'public_service', 'university', 'print'],
     roles: {
       archivist: ['worker', { minAge: 35, maxAge: 70 }],
       official: ['official', { minAge: 30, maxAge: 65 }],
@@ -1456,6 +1456,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     contexts: ['university', 'reform', 'schooling'],
     milieus: ['university', 'teacher', 'student'],
     roles: {
+      subject: ['subject', { sex: 'female' }],
       professor: ['teacher', { minAge: 45, maxAge: 75 }],
       official: ['official', { minAge: 30, maxAge: 65 }],
     },
@@ -1463,7 +1464,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'audited-the-year',
         w: 0.35,
-        text: '{subject}在第七排靠墙的位置坐了一整年，笔记本上记满了{professor}从不点名的论证。考试那天，{official}把她的卷子和别人的混在一起，只写编号。放榜时，编号后面写着“通过”，没有名字。',
+        text: '{subject}在第七排靠墙的位置坐了一整年，笔记本上记满了{professor}从不点名的论证。考试那天，{official}把{subjectPronoun}的卷子和别人的混在一起，只写编号。放榜时，编号后面写着“通过”，没有名字。',
         significance: 0.8,
         fx: {
           education: ['higher', 1],
@@ -1475,7 +1476,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'expelled-from-the-hall',
         w: 0.3,
-        text: '{professor}讲到一半，看见{subject}坐在第七排，让校役请她出去，说“旁听席在走廊尽头”。{official}在门口拦住她，要求出示许可。{subject}把许可举起来，{official}说“这只许站着听”。她没有争，只在门外把剩下的课听完。',
+        text: '{professor}讲到一半，看见{subject}坐在第七排，让校役请{subjectPronoun}出去，说“旁听席在走廊尽头”。{official}在门口拦住{subject}，要求出示许可。{subject}把许可举起来，{official}说“这只许站着听”。{subjectPronoun}没有争，只在门外把剩下的课听完。',
         significance: 0.74,
         fx: {
           reputation: -0.08,
@@ -1486,7 +1487,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'passed-under-initials',
         w: 0.35,
-        text: '{subject}用缩写报名考试，答卷上的字迹被{professor}认了出来。他把卷子留到最后一个批，给了一个“优”，又在评语里写“可惜”。{official}问可惜什么，{professor}说“可惜不能给她一个学位”。',
+        text: '{subject}用缩写报名考试，答卷上的字迹被{professor}认了出来。{professor}把卷子留到最后一个批，给了一个“优”，又在评语里写“可惜”。{official}问可惜什么，{professor}说“可惜不能给{subjectPronoun}一个学位”。',
         significance: 0.82,
         when: { education: ['secondary'] },
         fx: {
@@ -1506,7 +1507,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
           {
             id: 'reform-matriculated-with-fee',
             w: 0.6,
-            text: '新令允许女生正式注册，但学费比男生多三成。{official}把缴费单推过来，说“这是规定”。{subject}数出硬币，{professor}在走廊里看见，说“进来吧，第七排还空着”。她把名字写在注册簿上，手没有抖。',
+            text: '新令允许女生正式注册，但学费比男生多三成。{official}把缴费单推过来，说“这是规定”。{subject}数出硬币，{professor}在走廊里看见，说“进来吧，第七排还空着”。{subjectPronoun}把名字写在注册簿上，手没有抖。',
             significance: 0.82,
             fx: {
               education: ['higher', 1],
@@ -1519,7 +1520,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
           {
             id: 'reform-separate-stairs',
             w: 0.4,
-            text: '女生可以注册，却不能走正门。{official}把{subject}带到侧楼梯，说“教室还是那间”。她每天提前十分钟绕到后院，在第七排坐下。{professor}第一次点名时念了她的名字，后排有人回头。',
+            text: '女生可以注册，却不能走正门。{official}把{subject}带到侧楼梯，说“教室还是那间”。{subjectPronoun}每天提前十分钟绕到后院，在第七排坐下。{professor}第一次点名时念了{subjectPronoun}的名字，后排有人回头。',
             significance: 0.74,
             fx: {
               education: ['higher', 1],
@@ -1636,7 +1637,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     contexts: ['urban', 'postwar', 'crisis'],
     milieus: ['home', 'poverty', 'university', 'student'],
     roles: {
-      landlady: ['neighbor', { minAge: 40, maxAge: 75 }],
+      landlady: ['neighbor', { minAge: 40, maxAge: 75, sex: 'female' }],
       roommate: ['worker', { minAge: 18, maxAge: 30 }],
     },
     outcomes: [
@@ -1668,7 +1669,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'reported-the-landlady',
         w: 0.3,
-        text: '{subject}把宿舍里住着七个人的事写到市议会投诉信里，{landlady}被叫去问话。她回来时把{subject}的行李扔在楼梯口，说“你害我罚了钱”。{roommate}站在门里，没有出来帮忙，只把热水瓶放在门槛上。',
+        text: '{subject}把宿舍里住着七个人的事写到市议会投诉信里，{landlady}被叫去问话。{landlady}回来时把{subject}的行李扔在楼梯口，说“你害我罚了钱”。{roommate}站在门里，没有出来帮忙，只把热水瓶放在门槛上。',
         significance: 0.7,
         fx: {
           relation: ['landlady', 'rival', -0.25, 0],
@@ -1699,7 +1700,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
           {
             id: 'postwar-evicted-to-attic',
             w: 0.45,
-            text: '住房局说这间屋子要留给一家五口，让{subject}搬到阁楼。{landlady}把房钱退了一半，{roommate}帮他把书搬上去。阁楼没有窗，{subject}用报纸糊住漏风的板缝，第一夜就听见老鼠在书堆里跑。',
+            text: '住房局说这间屋子要留给一家五口，让{subject}搬到阁楼。{landlady}把房钱退了一半，{roommate}帮{subject}把书搬上去。阁楼没有窗，{subject}用报纸糊住漏风的板缝，第一夜就听见老鼠在书堆里跑。',
             significance: 0.74,
             fx: {
               cash: -5,
@@ -1725,7 +1726,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     contexts: ['urban', 'crisis', 'postwar'],
     milieus: ['home', 'poverty', 'official', 'bureaucracy', 'university'],
     roles: {
-      father: ['parent', { minAge: 40, maxAge: 65 }],
+      father: ['parent', { minAge: 40, maxAge: 65, sex: 'male' }],
       notary: ['official', { minAge: 35, maxAge: 70 }],
     },
     outcomes: [
@@ -1816,7 +1817,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     milieus: ['school', 'education', 'official', 'bureaucracy', 'home'],
     roles: {
       inspector: ['official', { minAge: 30, maxAge: 65 }],
-      father: ['parent', { minAge: 40, maxAge: 65 }],
+      father: ['parent', { minAge: 40, maxAge: 65, sex: 'male' }],
     },
     outcomes: [
       {
@@ -1838,7 +1839,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'hidden-income-found',
         w: 0.3,
-        text: '{inspector}在床底下发现一箱没有报税的木工活。{father}说是给邻居修的椅子，{inspector}把箱子里的收据一张张摊开。{subject}的奖学金被停，学校要她补交这学期的学费。{father}在院子里锯木头，锯了一下午。',
+        text: '{inspector}在床底下发现一箱没有报税的木工活。{father}说是给邻居修的椅子，{inspector}把箱子里的收据一张张摊开。{subject}的奖学金被停，学校要{subject}补交这学期的学费。{father}在院子里锯木头，锯了一下午。',
         significance: 0.8,
         fx: {
           cash: -8,
@@ -1850,7 +1851,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'inspector-waved-it',
         w: 0.3,
-        text: '{inspector}把表格合上，说“这家人连像样的桌子都没有”，然后在“收入”栏写了“无”。{father}要留他吃饭，{inspector}说还有十二家要跑。{subject}送到门口，{inspector}低声说“别让学校知道我来过两次”。',
+        text: '{inspector}把表格合上，说“这家人连像样的桌子都没有”，然后在“收入”栏写了“无”。{father}要留{inspector}吃饭，{inspector}说还有十二家要跑。{subject}送到门口，{inspector}低声说“别让学校知道我来过两次”，又说补发的奖学金下周会到。',
         significance: 0.72,
         when: { maxCash: 4 },
         fx: {
@@ -1906,17 +1907,17 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     ages: [22, 36],
     tags: ['education', 'fellowship', 'foreign_study', 'family', 'passport'],
     contexts: ['university', 'peace', 'postwar', 'reform', 'war'],
-    milieus: ['university', 'official', 'public_service'],
+    milieus: ['university', 'official', 'public_service', 'army'],
     roles: {
       professor: ['teacher', { minAge: 45, maxAge: 75 }],
-      mother: ['parent', { minAge: 45, maxAge: 70 }],
+      mother: ['parent', { minAge: 45, maxAge: 70, sex: 'female' }],
       official: ['official', { minAge: 30, maxAge: 65 }],
     },
     outcomes: [
       {
         id: 'boarded-the-train',
         w: 0.4,
-        text: '{professor}把柏林来的邀请信交给{subject}，说“去吧，这里的图书馆不会跑”。{mother}在站台上把一件毛衣塞进行李，又塞了一罐果酱。火车开动时，{subject}看见她跟着走了几步，嘴里说的是“写信”。',
+        text: '{professor}把柏林来的邀请信交给{subject}，说“去吧，这里的图书馆不会跑”。{subject}花十克朗买了车票，{mother}在站台上把一件毛衣塞进行李，又塞了一罐果酱。火车开动时，{subject}看见{mother}跟着走了几步，嘴里说的是“写信”。',
         significance: 0.84,
         fx: {
           cash: -10,
@@ -1942,7 +1943,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'passport-refused',
         w: 0.3,
-        text: '{official}把护照申请推回来，说缺一份“政治可靠”的证明。{professor}愿意签字，{official}说教授本人的档案也不够干净。{subject}把邀请信折好，放回信封。{mother}在门外问办成了没有，{subject}说“快了”，然后把信塞进抽屉最底层。',
+        text: '{official}把护照申请推回来，说缺一份“政治可靠”的证明，四克朗手续费照收。{professor}愿意签字，{official}说教授本人的档案也不够干净。{subject}把邀请信折好，放回信封。{mother}在门外问办成了没有，{subject}说“快了”，然后把信塞进抽屉最底层。',
         significance: 0.76,
         fx: {
           cash: -4,
@@ -1965,13 +1966,14 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
           {
             id: 'war-fellowship-cancelled',
             w: 0.55,
-            text: '柏林的研究所来信说，战争期间不再接收外国研究员。{professor}把信读了两遍，说“先留在这里，给我做助手”。{subject}把车票退了，{mother}在厨房里把果酱罐放回柜子，没有问为什么。',
+            text: '柏林的研究所来信说，战争期间不再接收外国研究员。{professor}把信读了两遍，说“军医档案馆缺一个编目的人，先留下”。{subject}把车票退了，{mother}在厨房里把果酱罐放回柜子，没有问为什么。',
             significance: 0.74,
             fx: {
               role: 'research_assistant',
               flag: 'foreign_fellowship_cancelled_by_war',
               relation: ['professor', 'colleague', 0.15, 0],
               cash: -2,
+              knowledge: ['the army medical archive needs a cataloguer', 0.8, 'professor'],
             },
           },
           {
@@ -2025,7 +2027,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'denounced-the-license',
         w: 0.3,
-        text: '{official}问{subject}知不知道{exile}没有任教许可。{subject}说他只是听听希腊文。{official}把一张登记表推过来，说“写清楚谁来过”。{subject}写了三个名字，其中两个是假的。第二天，{exile}的咖啡馆座位空了，桌上留着一本没有合上的词典。',
+        text: '{official}问{subject}知不知道{exile}没有任教许可。{subject}说自己只是听听希腊文。{official}把一张登记表和四克朗赏钱推过来，说“写清楚谁来过”。{subject}写了三个名字，其中两个是假的。第二天，{exile}的咖啡馆座位空了，桌上留着一本没有合上的词典。',
         significance: 0.86,
         fx: {
           flag: 'denounced_exile_scholar',
@@ -2037,7 +2039,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'hid-the-scholar',
         w: 0.3,
-        text: '{exile}的房东把他赶出来，{subject}把阁楼的钥匙给了他。夜里有人敲门，{subject}让{exile}从后楼梯走，自己下去开门。{official}看了看空着的阁楼，问“这里住过人吗”，{subject}说“堆旧书”。',
+        text: '{exile}的房东把{exile}赶出来，{subject}把阁楼的钥匙交给{exile}。夜里有人敲门，{subject}让{exile}从后楼梯走，自己下去开门。{official}看了看空着的阁楼，问“这里住过人吗”，{subject}说“堆旧书”。',
         significance: 0.84,
         fx: {
           relation: ['exile', 'friend', 0.25, 0.08],
@@ -2058,8 +2060,8 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     stage: 'adulthood',
     ages: [18, 32],
     tags: ['education', 'library', 'scarcity', 'students', 'reading'],
-    contexts: ['university', 'postwar', 'crisis'],
-    milieus: ['university', 'student', 'research'],
+    contexts: ['university', 'postwar', 'crisis', 'schooling'],
+    milieus: ['university', 'student', 'research', 'school'],
     roles: {
       librarian: ['worker', { minAge: 35, maxAge: 70 }],
       student: ['worker', { minAge: 18, maxAge: 32 }],
@@ -2105,32 +2107,32 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     ],
     variants: [
       {
-        id: 'postwar-paper-shortage',
-        when: { contextTags: ['postwar'] },
-        textPrefix: '战后教科书用粗纸重印，字迹透到背面，读一页要看两遍。',
+        id: 'reform-free-textbooks',
+        when: { contextTags: ['reform'] },
+        textPrefix: '改革后的学区拨了一笔书费，图书馆第一次买得起复本。',
         outcomes: [
           {
-            id: 'postwar-second-copy',
+            id: 'reform-second-copy',
             w: 0.55,
-            text: '战后第一批教科书运到，{librarian}在柜台上摆了两年，终于等到两本。{subject}把借阅表重新排过，每人两小时。{student}在第一本的扉页上写“请勿撕页”，第二个人接着在下面写“请勿写字”。',
+            text: '改革后的学区拨了一笔书费，{librarian}把两本新教科书放上书架，每本都盖了“公共阅览”的章。{subject}和{student}把借阅表钉在墙上，每人一小时。第一周结束时，表格上排到了下个月。',
             significance: 0.7,
             fx: {
               role: 'reading_room_regular',
-              flag: 'library_acquired_second_copy',
+              flag: 'school_bought_second_copy',
               skill: { literacy: 0.03 },
               relation: ['librarian', 'colleague', 0.06, 0],
             },
           },
           {
-            id: 'postwar-book-pulped',
+            id: 'reform-book-removed',
             w: 0.45,
-            text: '纸荒最重的时候，校方把库存的旧教科书送去化浆。{subject}在装车前抽出一本，塞进大衣。{librarian}看见了，没有拦，只说“别让登记处知道”。那本书后来在宿舍里传了八个人，封皮先掉。',
-            significance: 0.72,
+            text: '一个保守的督学来查书架，说这本教科书的插图“伤风败俗”，让{subject}把书交上去。{librarian}说书是学区的财产，督学就把借阅表撕下来带走。第二天，书还在，封面被翻过去朝里放。',
+            significance: 0.68,
             fx: {
-              flag: 'rescued_book_from_pulping',
-              skill: { literacy: 0.03 },
-              mood: -0.04,
-              relation: ['librarian', 'friend', 0.1, 0],
+              flag: 'textbook_removed_by_inspector',
+              knowledge: ['the school inspector objected to an illustration in the textbook', 0.85],
+              relation: ['librarian', 'colleague', 0.05, 0],
+              mood: -0.05,
             },
           },
         ],
@@ -2150,7 +2152,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     contexts: ['university', 'reform', 'crisis'],
     milieus: ['university', 'teacher', 'official'],
     roles: {
-      candidate: ['teacher', { minAge: 30, maxAge: 55 }],
+      candidate: ['teacher', { minAge: 30, maxAge: 55, sex: 'female' }],
       dean: ['teacher', { minAge: 50, maxAge: 75 }],
       colleague: ['teacher', { minAge: 35, maxAge: 66 }],
     },
@@ -2181,7 +2183,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'voted-no',
         w: 0.3,
-        text: '{subject}说{candidate}的课“太受学生欢迎，恐怕不够严谨”。{dean}问有没有听过她的课，{subject}说听过一次，学生提的问题比老师讲的多。{colleague}把这话记进会议记录。{candidate}最终没有拿到聘书，她的名字从课程表上消失了。',
+        text: '{subject}说{candidate}的课“太受学生欢迎，恐怕不够严谨”。{dean}问有没有听过{candidate}的课，{subject}说听过一次，学生提的问题比老师讲的多。{colleague}把这话记进会议记录。{candidate}最终没有拿到聘书，{candidate}的名字从课程表上消失了。',
         significance: 0.8,
         fx: {
           relation: ['candidate', 'rival', -0.2, 0],
@@ -2240,7 +2242,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
     milieus: ['print', 'work', 'writing', 'home'],
     roles: {
       editor: ['worker', { minAge: 30, maxAge: 65 }],
-      widow: ['neighbor', { minAge: 30, maxAge: 75 }],
+      widow: ['neighbor', { minAge: 30, maxAge: 75, sex: 'female' }],
     },
     outcomes: [
       {
@@ -2260,7 +2262,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'printed-the-family-version',
         w: 0.3,
-        text: '{widow}说丈夫是“在睡梦中走的”，但邻居告诉{subject}，他是在酒馆后巷冻死的。{subject}把两种说法都写进稿子，{editor}删掉了后一句。报纸出来时，{widow}在报社门口站了很久，手里攥着那份讣告。',
+        text: '{widow}说丈夫是“在睡梦中走的”，但邻居告诉{subject}，死者是在酒馆后巷冻死的。{subject}把两种说法都写进稿子，{editor}删掉了后一句。报纸出来时，{widow}在报社门口站了很久，手里攥着那份讣告。',
         significance: 0.64,
         fx: {
           flag: 'printed_unverified_obituary',
@@ -2309,7 +2311,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'killed-the-story',
         w: 0.35,
-        text: '{advertiser}在电话里说，如果明天报上出现“面包掺假”四个字，下季度的整版广告就撤。{editor}把{subject}的稿子压到版面最下面，换上一张面包房的照片。{subject}在排字房看着自己的句子被拆成单字，重新回到字盘里。',
+        text: '{advertiser}在电话里说，如果明天报上出现“面包掺假”四个字，下季度的整版广告就撤。{editor}把{subject}的稿子压到版面最下面，换上一张面包房的照片，月底给{subject}加了六克朗。{subject}在排字房看着自己的句子被拆成单字，重新回到字盘里。',
         significance: 0.78,
         fx: {
           cash: 6,
@@ -2338,7 +2340,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'leaked-to-the-rival',
         w: 0.3,
-        text: '{subject}把校样复印了一份，塞进《工人报》的信箱。三天后，另一家报纸登了出来，{editor}在编前会上拍桌子，说“内鬼就在这间屋里”。{subject}低头削铅笔，听见自己的心跳。',
+        text: '{subject}把校样复印了一份，塞进《工人报》的信箱，对方在回信里夹了三克朗。三天后，另一家报纸登了出来，{editor}在编前会上拍桌子，说“内鬼就在这间屋里”。{subject}低头削铅笔，听见自己的心跳。',
         significance: 0.8,
         when: { maxCash: 5 },
         fx: {
@@ -2426,7 +2428,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'printed-the-correction',
         w: 0.4,
-        text: '{reader}来信说，报上把她丈夫的职务写成了“税务员”，其实是“税务稽查员”。{subject}把信给{editor}看，{editor}说“差两个字，不必更正”。{subject}还是写了更正，登在第三版下角，{reader}剪下来贴在账簿里。',
+        text: '{reader}来信说，报上把{reader}家人的职务写成了“税务员”，其实是“税务稽查员”。{subject}把信给{editor}看，{editor}说“差两个字，不必更正”。{subject}还是写了更正，登在第三版下角，{reader}剪下来贴在账簿里。',
         significance: 0.66,
         fx: {
           reputation: 0.05,
@@ -2437,7 +2439,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'refused-the-correction',
         w: 0.3,
-        text: '{reader}第三次来信，要求更正一则把她儿子写成“惯偷”的报道。{editor}说消息来自警方，不能改。{subject}把信转给{reader}，附了一句“抱歉”。一周后，{reader}在报社门口把剪报撕碎，{subject}从侧门出去。',
+        text: '{reader}第三次来信，要求更正一则把{reader}的儿子写成“惯偷”的报道。{editor}说消息来自警方，不能改。{subject}把信转给{reader}，附了一句“抱歉”。一周后，{reader}在报社门口把剪报撕碎，{subject}从侧门出去。',
         significance: 0.74,
         fx: {
           relation: ['reader', 'rival', -0.2, 0],
@@ -2449,7 +2451,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'exposed-the-official-error',
         w: 0.3,
-        text: '{subject}查出那条消息来自一名被解雇的警探，他把私人恩怨写进了通报。{official}要求报社不要刊登更正，{subject}把两份文件并排印出来。{official}在电话里说“你会后悔”，{subject}说“已经把名字写对了”。',
+        text: '{subject}查出那条消息来自一名被解雇的警探，私人恩怨被写进了通报。{official}要求报社不要刊登更正，{subject}把两份文件并排印出来。{official}在电话里说“你会后悔”，{subject}说“已经把名字写对了”。',
         significance: 0.8,
         when: { hasRole: 'reporter' },
         fx: {
@@ -2481,7 +2483,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'protected-the-source',
         w: 0.4,
-        text: '{source}在楼梯间说，只要名字见报，他就完了。{subject}把笔记本合上，答应只写“一名职员”。{editor}问消息源是谁，{subject}说“我不能说”。{editor}把稿子压了两天，最后还是登了，删掉了可以追到人的细节。',
+        text: '{source}在楼梯间说，只要名字见报，事情就完了。{subject}把笔记本合上，答应只写“一名职员”。{editor}问消息源是谁，{subject}说“我不能说”。{editor}把稿子压了两天，最后还是登了，删掉了可以追到人的细节。',
         significance: 0.8,
         fx: {
           role: 'investigative_reporter',
@@ -2506,7 +2508,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'source-vanished',
         w: 0.3,
-        text: '{subject}按约定等到九点，{source}没有来。楼梯间的窗户开着，地上有一只摔碎的眼镜片。{subject}去他登记的地址，门房说“昨天搬走了”。稿子没有消息源，{editor}把它放进“待核”抽屉，再也没有提起。',
+        text: '{subject}按约定等到九点，{source}没有来。楼梯间的窗户开着，地上有一只摔碎的眼镜片。{subject}去登记的地址找，门房说“昨天搬走了”。稿子没有消息源，{editor}把它放进“待核”抽屉，再也没有提起。',
         significance: 0.72,
         fx: {
           mood: -0.1,
@@ -2537,7 +2539,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'cut-the-print-order',
         w: 0.4,
-        text: '{distributor}把退回的报纸堆在仓库门口，说“下个月别印这么多”。{subject}数了数，四百份里有三百份连绳都没解。{editor}问怎么办，{subject}说“先砍印数，再砍版面”。第二天，报纸从十二版缩到八版。',
+        text: '{distributor}把退回的报纸堆在仓库门口，说“下个月别印这么多”。{subject}数了数，四百份里有三百份连绳都没解。{editor}问怎么办，{subject}说“先砍印数，再砍版面”，省下的五克朗纸钱记在{subject}名下。第二天，报纸从十二版缩到八版。',
         significance: 0.7,
         fx: {
           cash: 5,
@@ -2613,7 +2615,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'borrowed-from-the-rival',
         w: 0.3,
-        text: '{subject}去找{rival_editor}借纸，对方答应给两令，条件是转载他的一篇社论。{editor}看完条件，说“登”。{subject}把社论排在第二版，自己的报道挪到第五版，读者来信骂了两周。',
+        text: '{subject}去找{rival_editor}借纸，对方答应给两令，条件是转载{rival_editor}的一篇社论。{editor}看完条件，说“登”。{subject}把社论排在第二版，自己的报道挪到第五版，读者来信骂了两周。',
         significance: 0.72,
         fx: {
           relation: [
@@ -2758,7 +2760,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'took-the-ad',
         w: 0.35,
-        text: '{advertiser}把整版广告的合同推到{subject}面前，说“只要不登那些医生的牢骚”。广告上写着一种白粉能治胃病，{subject}知道那东西主要成分是石灰。{editor}在合同上签了字，{subject}把样报叠好，放进抽屉最上层。',
+        text: '{advertiser}把整版广告的合同和十二克朗预付款推到{subject}面前，说“只要不登那些医生的牢骚”。广告上写着一种白粉能治胃病，{subject}知道那东西主要成分是石灰。{editor}在合同上签了字，{subject}把样报叠好，放进抽屉最上层。',
         significance: 0.76,
         when: { maxCash: 6 },
         fx: {
@@ -2868,7 +2870,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'filed-the-censored-dispatch',
         w: 0.4,
-        text: '{censor}用蓝铅笔划掉三行，说“这些会让后方恐慌”。{subject}把删掉的部分抄在信纸背面，托伤兵带回国。见报的稿子只剩地形和天气，{editor}来信说“读者要的是人，不是山”。{subject}在战壕里把原稿又读了一遍。',
+        text: '{censor}用蓝铅笔划掉三行，说“这些会让后方恐慌”。{subject}把删掉的部分抄在信纸背面，托伤兵带回国，稿费四克朗随下一班邮车到账。见报的稿子只剩地形和天气，{editor}来信说“读者要的是人，不是山”。{subject}在战壕里把原稿又读了一遍。',
         significance: 0.82,
         fx: {
           role: 'war_correspondent',
@@ -2904,7 +2906,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'left-the-front',
         w: 0.15,
-        text: '{subject}从战壕回到维也纳，耳朵里还响着炮声。{editor}让他写“英雄凯旋”，{subject}写了三行就撕掉。他把军大衣还给供应处，说“我不去了”。{editor}没有挽留，只问“那谁去”。{subject}说“找个还相信的人”。',
+        text: '{subject}从战壕回到维也纳，耳朵里还响着炮声。{editor}让{subject}写“英雄凯旋”，{subject}写了三行就撕掉。{subject}把军大衣还给供应处，说“我不去了”。{editor}没有挽留，只问“那谁去”。{subject}说“找个还相信的人”。',
         significance: 0.72,
         fx: {
           flag: 'left_the_front',
@@ -2935,7 +2937,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'cropped-the-photograph',
         w: 0.4,
-        text: '{subject}在暗房里把底片冲出来，照片边上站着一个穿便衣的人，手插在口袋里。{editor}说那人不能见报，让{subject}把画面裁到只剩将军和地图。放大时，{subject}看见那只手在裁刀下一点点消失。',
+        text: '{subject}在暗房里把底片冲出来，照片边上站着一个穿便衣的人，手插在口袋里。{editor}说那人不能见报，让{subject}把画面裁到只剩将军和地图，并答应给五克朗稿费。放大时，{subject}看见那只手在裁刀下一点点消失。',
         significance: 0.74,
         fx: {
           flag: 'cropped_photograph',
@@ -2962,7 +2964,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'shattered-the-plate',
         w: 0.3,
-        text: '{subject}在暗房里转身时，肘部碰倒了晾片架，玻璃底片碎成几片。{photographer}蹲下去捡，手指被划破。{editor}问还有没有备份，{subject}说“底片只有一张”。那张照片最终没有见报，{subject}在废纸篓里找到最大的一块，上面只有半张脸。',
+        text: '{subject}在暗房里转身时，肘部碰倒了晾片架，玻璃底片碎成几片。{photographer}蹲下去捡，手指被划破。{editor}问还有没有备份，{subject}说“底片只有一张”，又从工钱里赔了六克朗。那张照片最终没有见报，{subject}在废纸篓里找到最大的一块，上面只有半张脸。',
         significance: 0.7,
         when: { skill: { name: 'craft', min: 0.5 } },
         fx: {
@@ -3074,7 +3076,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'returned-the-letter',
         w: 0.3,
-        text: '{subject}没有登那封信，而是骑车去了{reader}家。两个人坐在厨房里，{reader}承认自己是气不过儿子落选。{subject}建议她把信改成给教育局的询问，{reader}照做了。半年后，邮局多了一个公开招考的名额。',
+        text: '{subject}没有登那封信，而是骑车去了{reader}家。两个人坐在厨房里，{reader}承认自己是气不过儿子落选。{subject}建议{reader}把信改成给教育局的询问，{reader}照做了。半年后，邮局多了一个公开招考的名额。',
         significance: 0.62,
         fx: {
           relation: ['reader', 'friend', 0.12, 0],
@@ -3169,7 +3171,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'honored-the-strike',
         w: 0.35,
-        text: '{subject}让印刷所停了发往车站的报车，改由报童步行送到城里。{railway_worker}在纠察线上看见{subject}，点了点头。三天后，报纸的发行量掉了一半，{editor}问“值得吗”，{subject}说“站台上的人还在”。',
+        text: '{subject}让印刷所停了发往车站的报车，改由报童步行送到城里，五个报童的工钱一共五克朗。{railway_worker}在纠察线上看见{subject}，点了点头。三天后，报纸的发行量掉了一半，{editor}问“值得吗”，{subject}说“站台上的人还在”。',
         significance: 0.74,
         fx: {
           relation: ['railway_worker', 'colleague', 0.2, 0],
@@ -3180,7 +3182,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'smuggled-the-bundles',
         w: 0.3,
-        text: '{subject}把报纸装进面粉袋，混过纠察线，卖给车站附近的咖啡馆。{railway_worker}在巷口拦住车，摸了摸袋子，说“面粉是热的”。{subject}给了他两枚硬币，他扔在地上，转身走了。',
+        text: '{subject}把报纸装进面粉袋，混过纠察线，卖给车站附近的咖啡馆。{railway_worker}在巷口拦住车，摸了摸袋子，说“面粉是热的”。{subject}给了{railway_worker}两枚硬币，{railway_worker}扔在地上，转身走了。',
         significance: 0.78,
         fx: {
           cash: 4,
@@ -3222,7 +3224,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'printed-the-hidden-page',
         w: 0.3,
-        text: '{subject}让{printer}另排一版，把那句话藏在广告栏的边框里，用最小的字号。{censor}只看清样，没有看印版。报纸发行后，有人在咖啡馆里逐字读边框，读到“军粮”两个字时，把杯子放下了。',
+        text: '{subject}让{printer}另排一版，把那句话藏在广告栏的边框里，用最小的字号，另付四克朗加班费。{censor}只看清样，没有看印版。报纸发行后，有人在咖啡馆里逐字读边框，读到“军粮”两个字时，把杯子放下了。',
         significance: 0.86,
         fx: {
           cash: -4,
@@ -3239,7 +3241,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'tipped-the-censor',
         w: 0.3,
-        text: '{censor}问第二套清样在哪里，{subject}说在印刷所。{censor}走后，{subject}给{printer}递了张纸条，让他把清样烧掉。{printer}没有烧，而是把纸条交给了警察。第二天，{subject}的办公桌被撬开，账册不见了。',
+        text: '{censor}问第二套清样在哪里，{subject}说在印刷所。{censor}走后，{subject}给{printer}递了张纸条，让{printer}把清样烧掉。{printer}没有烧，而是把纸条交给了警察。第二天，{subject}的办公桌被撬开，账册不见了。',
         significance: 0.82,
         when: { maxCash: 8 },
         fx: {
@@ -3356,7 +3358,7 @@ export const BATCH2_HIGHER_EDUCATION_MEDIA: PlotKernel[] = recipes([
       {
         id: 'planted-a-false-clipping',
         w: 0.3,
-        text: '{subject}找不到能证明父亲清白的剪报，于是在旧报纸上裁下一段，拼成一条“无罪开释”的消息。{editor}看了说“像真的”，就登了。见报后，一个老警察拿着原报来到报社，两张纸并排放在桌上，{subject}的手按在桌沿上。',
+        text: '{subject}找不到能证明父亲清白的剪报，于是在旧报纸上裁下一段，拼成一条“无罪开释”的消息。{editor}看了说“像真的”，就登了，还给了三克朗稿费。见报后，一个老警察拿着原报来到报社，两张纸并排放在桌上，{subject}的手按在桌沿上。',
         significance: 0.82,
         when: { maxCash: 4 },
         fx: {

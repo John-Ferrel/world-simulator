@@ -533,7 +533,6 @@ export const BATCH2_RELIGION_CHARITY: PlotKernel[] = recipes([
     roles: {
       rabbi: ['neighbor', { minAge: 32, maxAge: 82 }],
       partner: ['partner', { minAge: 22, maxAge: 65 }],
-      official: ['official', { minAge: 25, maxAge: 65 }],
       parent: ['parent', { minAge: 45, maxAge: 90 }],
       neighbor: ['neighbor', { minAge: 18, maxAge: 80 }],
       synagogue: ['organization', { organizationKind: 'other' }],
@@ -1612,7 +1611,6 @@ export const BATCH2_RELIGION_CHARITY: PlotKernel[] = recipes([
     roles: {
       doctor: ['worker', { minAge: 28, maxAge: 78 }],
       official: ['official', { minAge: 25, maxAge: 70 }],
-      priest: ['neighbor', { minAge: 30, maxAge: 82 }],
     },
     outcomes: [
       {
@@ -1711,7 +1709,6 @@ export const BATCH2_RELIGION_CHARITY: PlotKernel[] = recipes([
     roles: {
       parent: ['parent', { minAge: 68, maxAge: 95 }],
       official: ['official', { minAge: 25, maxAge: 70 }],
-      neighbor: ['neighbor', { minAge: 25, maxAge: 80 }],
     },
     outcomes: [
       {
@@ -2450,7 +2447,6 @@ export const BATCH2_RELIGION_CHARITY: PlotKernel[] = recipes([
     milieus: ['shop', 'union', 'home'],
     roles: {
       treasurer: ['worker', { minAge: 35, maxAge: 75 }],
-      employer: ['employer', { required: true, minAge: 35, maxAge: 75 }],
       official: ['official', { minAge: 25, maxAge: 70 }],
     },
     outcomes: [
@@ -2714,7 +2710,6 @@ export const BATCH2_RELIGION_CHARITY: PlotKernel[] = recipes([
     milieus: ['official', 'home', 'shop'],
     roles: {
       official: ['official', { minAge: 25, maxAge: 68 }],
-      neighbor: ['neighbor', { minAge: 18, maxAge: 80 }],
       refugee: ['neighbor', { minAge: 16, maxAge: 70 }],
     },
     outcomes: [
@@ -2816,7 +2811,6 @@ export const BATCH2_RELIGION_CHARITY: PlotKernel[] = recipes([
     roles: {
       neighbor: ['neighbor', { minAge: 18, maxAge: 80 }],
       priest: ['neighbor', { minAge: 30, maxAge: 82 }],
-      employer: ['employer', { required: true, minAge: 35, maxAge: 75 }],
     },
     outcomes: [
       {
@@ -2874,8 +2868,8 @@ export const BATCH2_RELIGION_CHARITY: PlotKernel[] = recipes([
     contexts: ['reform', 'urban', 'crisis', 'postwar'],
     milieus: ['home', 'official', 'hospital'],
     roles: {
+      woman: ['subject', { sex: 'female' }],
       matron: ['worker', { minAge: 35, maxAge: 70 }],
-      official: ['official', { minAge: 25, maxAge: 68 }],
       neighbor: ['neighbor', { minAge: 18, maxAge: 60 }],
       laundry: ['organization', { organizationKind: 'other' }],
     },
@@ -2978,6 +2972,7 @@ export const BATCH2_RELIGION_CHARITY: PlotKernel[] = recipes([
     contexts: ['reform', 'urban', 'crisis'],
     milieus: ['home', 'neighbor', 'official'],
     roles: {
+      woman: ['subject', { sex: 'female' }],
       matron: ['worker', { minAge: 35, maxAge: 70 }],
       partner: ['partner', { minAge: 18, maxAge: 55 }],
       official: ['official', { minAge: 25, maxAge: 68 }],
@@ -3048,6 +3043,7 @@ export const BATCH2_RELIGION_CHARITY: PlotKernel[] = recipes([
     contexts: ['reform', 'urban', 'crisis'],
     milieus: ['home', 'neighbor', 'official'],
     roles: {
+      woman: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 18, maxAge: 55 }],
       neighbor: ['neighbor', { minAge: 18, maxAge: 75 }],
       official: ['official', { minAge: 25, maxAge: 65 }],
@@ -3282,7 +3278,6 @@ export const BATCH2_RELIGION_CHARITY: PlotKernel[] = recipes([
     roles: {
       priest: ['neighbor', { minAge: 30, maxAge: 82 }],
       neighbor: ['neighbor', { minAge: 18, maxAge: 80 }],
-      employer: ['employer', { required: true, minAge: 35, maxAge: 75 }],
     },
     outcomes: [
       {

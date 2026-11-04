@@ -837,7 +837,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'sold-stock-before-seizure',
         w: 0.35,
-        text: '{subject}没有等{bailiff}来封门，连夜把好货挑出来，低价卖给街坊和{supplier}介绍的小贩。天亮时货架空了，账上仍差一截，{neighbor}来买最后一袋面粉，{subject}只收半价，又把秤送给了她。',
+        text: '{subject}没等{bailiff}来封门，连夜把好货挑出来，低价卖给街坊和{supplier}介绍的小贩。天亮时货架空了，{subject}把八克朗数了两遍，账上仍差一大截；{neighbor}来买最后一袋面粉，{subject}只收半价，又把秤推过去，没敢看对方的眼睛。',
         significance: 0.78,
         when: { skill: { name: 'social', min: 0.4 } },
         fx: {
@@ -937,7 +937,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'bought-the-middle-place',
         w: 0.3,
-        text: '{subject}把五克朗折成小方块，压在{marketMaster}的登记簿下面。{marketMaster}没有抬头，只把粉笔往中间挪了半尺。第二天{subject}的摊子到了棚中央，{rival}的苹果墙被挤到排水沟边，有几只果子滚进了泥里。',
+        text: '{subject}把五克朗折成小方块，压在{marketMaster}的登记簿下面。{marketMaster}没有抬头，只把粉笔往中间挪了半尺。第二天{subject}的摊子到了棚中央，{rival}的苹果墙被挤到排水沟边，有几只果子滚进了泥里。旁边卖菜的妇人把秤往远处挪了挪，{rival}弯腰捡苹果时低声骂了一句；{marketMaster}装作没听见，只把粉笔头碾碎在鞋底。',
         significance: 0.8,
         when: { minCash: 6 },
         fx: {
@@ -950,7 +950,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'pushed-the-cart-to-the-corner',
         w: 0.3,
-        text: '{marketMaster}说今年的摊位排满了，让{subject}去巷口试试。{subject}把带来的秤放在独轮车上，{neighbor}路过，问要不要借她家门廊摆一上午。秤盘在风里晃，绳子磨得发白，{subject}把车把调了个方向。',
+        text: '{marketMaster}说今年的摊位排满了，收了{subject}两克朗的巷口管理费，才往墙外指了指。{subject}把秤放上独轮车，{neighbor}路过，问要不要把自家门廊借给{subjectPronoun}摆一上午，条件是替她看两小时孩子。秤盘在风里晃，绳子磨得发白，{subject}看了看天，把车把转向巷口。',
         significance: 0.76,
         when: { maxCash: 3 },
         fx: {
@@ -1692,7 +1692,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'signed-the-slip-and-fall',
         w: 0.35,
-        text: '{foreman}让{subject}在事故簿上写“滑倒”，说这样厂里赔得快。{subject}握着笔，看见{mate}的工具箱还开着，里面的饭盒没动。{widow}后来拿到一笔抚恤金，{subject}在葬礼上没敢看她，只把帽子放在棺材脚边。',
+        text: '{foreman}让{subject}在事故簿上写“滑倒”，说这样厂里赔得快。{subject}握着笔，看见{mate}的工具箱还开着，饭盒里的面包已经硬了。葬礼上，{widow}问厂里什么时候给答复，没人接话；{subject}没敢看{widow}，只把帽子放在棺材脚边。',
         significance: 0.84,
         fx: {
           relation: ['foreman', 'colleague', 0.06, 0],
@@ -1752,7 +1752,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'hid-the-injury',
         w: 0.35,
-        text: '{subject}把手藏进围裙，说只是擦破皮。{foreman}看了一眼，让他继续开机。三天后伤口发黑，{subject}才去诊所，医生说要截掉半节。厂里说超过二十四小时不算工伤，药费从工钱里扣，扣款单上写着“自愿离岗治疗”。',
+        text: '{subject}把手藏进围裙，说只是擦破皮。{foreman}看了一眼，让{subjectPronoun}继续开机。三天后伤口发黑，{subject}才去诊所，医生说要截掉半节。厂里说超过二十四小时不算工伤，四克朗药费从工钱里扣，扣款单上写着“自愿离岗治疗”。',
         significance: 0.88,
         fx: {
           health: -0.28,
@@ -1866,7 +1866,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'hired-as-a-temporary-clerk',
         w: 0.25,
-        text: '{official}看见{subject}写的申请书，字迹整齐，问她会不会打算盘。{subject}当场把一列救济金加了一遍，{official}把窗口旁边的空桌子指给她。工钱不高，但每天能先看见自己的名字在名册上，排在第九十七号前面。',
+        text: '{official}看见{subject}写的申请书，字迹整齐，问{subjectPronoun}会不会打算盘。{subject}当场把一列救济金加了一遍，算盘珠停在正确的数上；{official}把窗口旁的旧桌子指给{subjectPronoun}，说先做三个月临时抄写，月薪二十二克朗。{subject}当天就在名册第九十七号前面，看见了自己的名字。',
         significance: 0.8,
         when: { education: ['secondary', 'apprenticeship'] },
         fx: {
@@ -1965,7 +1965,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'paid-the-hawker-fine',
         w: 0.35,
-        text: '{gendarme}用警棍敲了敲推车的轮子，说没有牌照不能占人行道。{subject}把当天卖剩的萝卜往车里拢，{gendarme}还是开了三克朗的罚单。{customer}在旁边等着找钱，{subject}把铜板数了两遍，最后少收她一毛。',
+        text: '{gendarme}用警棍敲了敲推车轮子，说没有牌照不能占人行道。{subject}把卖剩的萝卜往车里拢，{gendarme}还是撕下三克朗的罚单，蓝纸在风里抖。{customer}攥着零钱等在旁边，{subject}把铜板数了两遍，最后少找了十赫勒，谁也没有说破。',
         significance: 0.76,
         fx: {
           cash: -3,
@@ -2397,7 +2397,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'burned-the-batch',
         w: 0.35,
-        text: '{subject}添煤时多添了一铲，炉温上来得太快。第一排面包底黑了，{master}把整盘倒进泔水桶，说不能拿这个糊弄早上的人。{subject}赔了五克朗，手背在炉门上烫出一道白印，{apprentice}替他刮了一下午焦底。',
+        text: '{subject}添煤时多添了一铲，炉温上来得太快。第一排面包底黑了，{master}把整盘倒进泔水桶，说不能拿这个糊弄早上的人。{subject}赔了五克朗，手背在炉门上烫出一道白印；{apprentice}替{subjectPronoun}刮了一下午焦底，刮刀在铁盘上响个不停。',
         significance: 0.8,
         fx: {
           cash: -5,
@@ -2587,7 +2587,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'reported-the-injury-to-the-union',
         w: 0.3,
-        text: '{subject}把受伤的手指给{union}的代表看，代表当场记下车间号，说这已经是本月第三起。{forelady}在门口拦人，{subject}从她身边走过去，把带血的线轴放在办公桌上。第二天，车间装了新的护指板。',
+        text: '{subject}把受伤的手指给{union}的代表看，代表当场记下车间号，说这已经是本月第三起，却只把一张入会表推过来。{forelady}在门口拦人，{subject}从她身边走过去，把带血的线轴放在办公桌上。第二天，机器照旧转，谁也没提护指板。',
         significance: 0.84,
         when: { hasRole: 'union_member' },
         fx: {
@@ -2670,7 +2670,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'scalded-at-the-stove',
         w: 0.35,
-        text: '{subject}端锅时手背贴上了炉沿，皮肉响了一声。{cook}把他推到水缸边，让他把手插进凉水里，自己接着翻勺。{waiter}在传菜口催第九盘，{subject}用左手把盘子递出去，右手还在滴水。',
+        text: '{subject}端锅时手背贴上了炉沿，皮肉响了一声。{cook}把{subjectPronoun}推到水缸边，让{subjectPronoun}把手插进凉水里，自己接着翻勺。{waiter}在传菜口催第九盘，{subject}用左手把盘子递出去，右手还在滴水；收工结账时，老板扣了一克朗，说是烫坏的那块抹布。',
         significance: 0.78,
         fx: {
           health: -0.12,
@@ -2735,7 +2735,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'returned-the-ring',
         w: 0.4,
-        text: '{subject}掀起床垫时，一枚金戒指滚到地板上。{guest}已经退了房，{subject}把戒指交给{manager}，{manager}当着他的面锁进抽屉。三天后{guest}回来找，{manager}说是{subject}发现的，{guest}把四克朗塞进{subject}的围裙口袋。',
+        text: '{subject}掀起床垫时，一枚金戒指滚到地板上。{guest}已经退了房，{subject}把戒指交给{manager}，{manager}当着{subjectPronoun}的面锁进抽屉，又让{subjectPronoun}在登记簿上按了个指印。三天后{guest}回来找，{manager}说是{subject}发现的；{guest}把四克朗塞进{subject}的围裙口袋。',
         significance: 0.78,
         fx: {
           cash: 4,
@@ -3557,7 +3557,7 @@ export const BATCH1_WORK_COMMERCE: PlotKernel[] = recipes([
       {
         id: 'slept-past-the-station',
         w: 0.35,
-        text: '{subject}在回程的车上睡着了，醒来时已经过了两站。{conductor}把他叫醒，说再坐下去就到终点调车场了。{subject}下车走回上一站，雨把外套淋透，到家时饭已经凉了，第二天上工还是迟到。',
+        text: '{subject}在回程的车上睡着了，醒来时已经过了两站。{conductor}把{subjectPronoun}叫醒，说再坐下去就到终点调车场了，顺手补了一张一克朗的越站票。{subject}下车走回上一站，雨把外套淋透，到家时饭已经凉了，第二天上工还是迟到。',
         significance: 0.74,
         fx: {
           cash: -1,

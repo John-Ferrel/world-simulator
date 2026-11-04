@@ -360,7 +360,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-leaflet-police',
         weight: 0.3,
-        text: '巡警在巷口拦住{subjectPronoun}，问{subjectPronoun}怀里那包纸是什么。{subjectPronoun}说是包面包的旧纸；巡警抽出一张，对着路灯读了两行，又放回去，把{subjectPronoun}的名字和住址写进小本子。第二天，印刷所的门口多了一把新锁。',
+        text: '巡警在巷口拦住{subjectPronoun}，问{subjectPronoun}怀里那包纸是什么。{subjectPronoun}说是包面包的旧纸；巡警抽出一张，对着路灯读了两行，又放回去，把{subjectPronoun}的名字和住址写进小本子。第二天，排字房的人轮流问那张纸是谁招来的；{subjectPronoun}没有承认，只把围裙上的油墨又擦了一遍，回家时绕开了有巡警的街口。',
         effects: [
           condition('under_police_observation', '巡警记下了{subjectPronoun}的姓名和住址'),
           flag('leaflet_seen_by_police', '巡警看过{subjectPronoun}携带的传单'),

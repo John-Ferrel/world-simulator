@@ -1519,7 +1519,7 @@ function mergeIds(...lists: (Id[] | undefined)[]): Id[] {
       result.push(id);
     }
   }
-  return result.sort();
+  return result;
 }
 
 const sortedPeopleCache = new WeakMap<WorldState, { length: number; people: Id[] }>();
@@ -1537,6 +1537,7 @@ function roleCandidates(
   context: EngineContext,
   subject: Person,
   requirement: SceneDefinition['roles'][number],
+  allowNewPartner = false,
 ): Id[] {
   if (requirement.kind === 'subject') return [subject.id];
   const world = context.world;
@@ -1572,17 +1573,27 @@ function roleCandidates(
       break;
     }
     case 'partner': {
-      const pool =
-        requirement.sameHousehold === true
-          ? mergeIds(...(world.households[subject.householdId]?.memberIds ?? []).map((id) => [id]))
-          : sample(index.all);
+      const existing = relationsFor(world, subject.id).find(
+        (relation) =>
+          relation.kind === 'partner' &&
+          relation.end === undefined &&
+          (relation.a === subject.id || relation.b === subject.id),
+      );
+      const existingId = existing
+        ? existing.a === subject.id
+          ? existing.b
+          : existing.a
+        : undefined;
+      if (existingId && existingId !== subject.id) {
+        candidates.add(existingId);
+        break;
+      }
+      if (!allowNewPartner || requirement.sameHousehold === true) break;
       const check = (ids: Id[]): void => {
         for (const id of ids) {
           if (id === subject.id) continue;
           const person = world.persons[id]!;
           if (person.died) continue;
-          if (person.householdId === subject.householdId && requirement.sameHousehold !== true)
-            continue;
           if (person.parentIds.includes(subject.id) || subject.parentIds.includes(person.id))
             continue;
           if (person.parentIds.some((parentId) => subject.parentIds.includes(parentId))) continue;
@@ -1594,7 +1605,7 @@ function roleCandidates(
               ((relation.a === id && relation.b === subject.id) ||
                 (relation.b === id && relation.a === subject.id)),
           );
-          if (requirement.sameHousehold === true && !partneredWithSubject) continue;
+          if (partneredWithSubject) continue;
           const partneredWithAnother = personRelations.some(
             (relation) =>
               relation.kind === 'partner' &&
@@ -1603,13 +1614,18 @@ function roleCandidates(
                 (relation.b === id && relation.a !== subject.id)),
           );
           if (partneredWithAnother) continue;
+          if (
+            person.householdId === subject.householdId &&
+            requirement.sameHousehold !== true &&
+            !partneredWithSubject
+          ) {
+            continue;
+          }
           candidates.add(id);
         }
       };
-      check(pool);
-      // A narrow age/sex window can miss every sampled candidate. Fall back to
-      // the full deterministic pool only in that rare case.
-      if (candidates.size === 0 && requirement.sameHousehold !== true) check(index.all);
+      check(sample(index.all));
+      if (candidates.size === 0) check(index.all);
       break;
     }
     case 'teacher': {
@@ -2013,13 +2029,21 @@ function castSceneRoles(
       requirement.kind === 'parent' ||
       requirement.kind === 'guardian' ||
       requirement.kind === 'sibling' ||
-      requirement.kind === 'partner'
+      requirement.kind === 'partner' ||
+      requirement.kind === 'subject'
         ? subject.id
         : '',
     ].join('|');
     let candidates = context.roleCastCache.get(roleKey);
     if (!candidates) {
-      candidates = roleCandidates(context, subject, requirement).filter((id) =>
+      const allowNewPartner =
+        requirement.kind === 'partner' &&
+        (definition.tags.includes('courtship') ||
+          definition.tags.includes('marriage') ||
+          definition.tags.includes('wedding') ||
+          definition.id.includes('courtship') ||
+          definition.id.includes('family-formation'));
+      candidates = roleCandidates(context, subject, requirement, allowNewPartner).filter((id) =>
         candidateFits(context.world, subject, id, requirement, date),
       );
       context.roleCastCache.set(roleKey, candidates);
@@ -2049,7 +2073,8 @@ function castSceneRoles(
       if (preferred.length > 0) candidates = preferred;
     }
     const unused = candidates.filter((id) => !usedPeople.has(id) || requirement.kind === 'subject');
-    const pool = unused.length > 0 ? unused : candidates;
+    // Never reuse a named person for two person-roles in one incident.
+    const pool = unused;
     if (pool.length === 0) {
       if (required) {
         const materialized = materializeRoleCandidate(
@@ -4321,6 +4346,10 @@ function buildIncidentTrace(
     }
   }
   const agency = subject.agency?.summary ?? subject.lifeContract?.privateGoal;
+  const interpolate = (value: string | undefined): string | undefined =>
+    value === undefined
+      ? undefined
+      : interpolateSceneText(value, context.world, subject, roles, date);
   return {
     mechanism: {
       sceneId: definition.id,
@@ -4553,7 +4582,24 @@ function commitEvent(
     sceneId: draft.sceneId,
     choices: draft.choices,
     provenance: draft.provenance,
-    ...(draft.trace ? { trace: draft.trace } : {}),
+    ...(draft.trace
+      ? {
+          trace: {
+            ...draft.trace,
+            effects: applied.map((effect) => ({
+              type: effect.type,
+              description:
+                interpolateSceneText(
+                  describeIncidentEffect(effect),
+                  context.world,
+                  subject,
+                  binding.roleIds,
+                  binding.date,
+                ) || effect.type,
+            })),
+          },
+        }
+      : {}),
   };
   // A death effect may have been recorded after ordinary events already
   // committed earlier in the same annual draft. Anchor both the death date and

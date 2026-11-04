@@ -18,7 +18,7 @@ type Sample = {
 
 const path = process.argv[2] ?? 'docs/v4/playtest.json';
 let report: {
-  focalLives?: { name?: string; id: string; events?: Sample[] }[];
+  excerpts?: { name?: string; personId: string; events?: Sample[] }[];
 };
 try {
   report = JSON.parse(readFileSync(path, 'utf8')) as typeof report;
@@ -27,8 +27,8 @@ try {
   process.exit(2);
 }
 
-const events = (report.focalLives ?? []).flatMap((life) =>
-  (life.events ?? []).map((event) => ({ ...event, life: life.name ?? life.id })),
+const events = (report.excerpts ?? []).flatMap((life) =>
+  (life.events ?? []).map((event) => ({ ...event, life: life.name ?? life.personId })),
 );
 
 const RULES: {
@@ -69,7 +69,17 @@ const RULES: {
   },
 ];
 
-const flags = [];
+type Flag = {
+  code: string;
+  note: string;
+  eventId: string;
+  date: { year: number; month: number };
+  action: string;
+  life: string;
+  text: string;
+  effectTypes: string[];
+};
+const flags: Flag[] = [];
 for (const event of events) {
   const types = new Set(event.effects ?? []);
   for (const rule of RULES) {

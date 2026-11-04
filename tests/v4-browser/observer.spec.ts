@@ -4,7 +4,11 @@ test('register, give birth, read a concrete log and inspect the map', async ({ p
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(String(error)));
   page.on('console', (message) => {
-    if (message.type() === 'error') errors.push(message.text());
+    // Private-event detail intentionally returns 403 to non-owners; the modal
+    // shows the privacy notice. Those browser resource errors are expected.
+    if (message.type() === 'error' && !/status of 403/.test(message.text())) {
+      errors.push(message.text());
+    }
   });
 
   const username = `e2e_${Date.now().toString(36)}`;
@@ -65,15 +69,39 @@ test('register, give birth, read a concrete log and inspect the map', async ({ p
   await page.locator('.person-heading h2').hover();
   await expect(page.locator('.person-dossier')).toHaveCount(0);
 
-  const majorTitle = page.locator('.log-entry.major .log-title-button').first();
-  if (await majorTitle.isVisible().catch(() => false)) {
-    await majorTitle.click();
+  const klaraOption = page
+    .locator('.person-switch select option')
+    .filter({ hasText: 'E2E Klara' })
+    .first();
+  const klaraId = await klaraOption.getAttribute('value');
+  expect(klaraId).toBeTruthy();
+  await page.locator('.person-switch select').selectOption(klaraId!);
+  await expect(page.locator('.log-entry').first()).toBeVisible();
+  let traceSeen = false;
+  const titleButtons = page.locator('.log-entry[data-trace="true"] .log-title-button');
+  const titleCount = Math.min(await titleButtons.count(), 12);
+  for (let index = 0; index < titleCount; index += 1) {
+    const button = page.locator('.log-entry .log-title-button').nth(index);
+    if (!(await button.isVisible().catch(() => false))) continue;
+    await button.click();
     await expect(page.locator('.event-modal')).toBeVisible();
-    await expect(page.locator('.incident-trace')).toBeVisible();
-    await expect(page.locator('.incident-trace')).toContainText('机制');
-    await expect(page.locator('.incident-trace .trace-effects li').first()).toBeVisible();
+    if (
+      await page
+        .locator('.incident-trace')
+        .isVisible()
+        .catch(() => false)
+    ) {
+      traceSeen = true;
+      await expect(page.locator('.incident-trace')).toContainText('机制');
+      await page.screenshot({ path: 'docs/v4/phase-12-incident-trace.png' });
+      await page.getByRole('button', { name: '关闭事件档案' }).click();
+      break;
+    }
     await page.getByRole('button', { name: '关闭事件档案' }).click();
   }
+  expect(traceSeen).toBe(true);
+  await page.locator('.person-switch select').selectOption('person-anna-bauer');
+  await expect(page.locator('.person-heading h2')).toHaveText('Anna Bauer');
 
   const pins = page.locator('.map-pin');
   await expect(pins.first()).toBeVisible();

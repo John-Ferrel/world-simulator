@@ -65,6 +65,12 @@ function activeContexts(world: WorldState, target: WorldDate): ContextProfile[] 
   });
 }
 
+function contextMatchScore(kernel: PlotKernel, context: ContextProfile): number {
+  const tags = kernel.contexts;
+  if (!tags || tags.length === 0) return 0;
+  return tags.filter((tag) => context.tags.includes(tag)).length;
+}
+
 function intersects(left: string[] | undefined, right: string[] | undefined): boolean {
   if (!left || left.length === 0 || !right || right.length === 0) return true;
   return left.some((value) => right.includes(value));
@@ -377,6 +383,39 @@ export function createCompositionSource(kernels: PlotKernel[]): CompositionSourc
       const contexts = activeContexts(world, target).sort(
         (a, b) => (b.priority ?? 0) - (a.priority ?? 0),
       );
+      const bestContextCache = new Map<string, Set<string>>();
+      const bestContextIdsFor = (kernel: PlotKernel, milieu: MilieuProfile): Set<string> => {
+        const key = `${kernel.id}|${milieu.id}`;
+        const cached = bestContextCache.get(key);
+        if (cached) return cached;
+        const byRegion = new Map<
+          string,
+          { context: ContextProfile; score: number; priority: number }
+        >();
+        for (const candidate of contexts) {
+          if (!intersects(kernel.contexts, candidate.tags)) continue;
+          if (!intersects(milieu.contextTags, candidate.tags)) continue;
+          const score = contextMatchScore(kernel, candidate);
+          const regions =
+            candidate.regionIds && candidate.regionIds.length > 0
+              ? candidate.regionIds
+              : ['@default'];
+          for (const region of regions) {
+            const previous = byRegion.get(region);
+            const priority = candidate.priority ?? 0;
+            if (
+              !previous ||
+              score > previous.score ||
+              (score === previous.score && priority > previous.priority)
+            ) {
+              byRegion.set(region, { context: candidate, score, priority });
+            }
+          }
+        }
+        const ids = new Set([...byRegion.values()].map((entry) => entry.context.id));
+        bestContextCache.set(key, ids);
+        return ids;
+      };
       const scenes: SceneDefinition[] = [];
       const tasks: TaskDefinition[] = [];
       const trace: CompositionTrace[] = [];
@@ -385,7 +424,6 @@ export function createCompositionSource(kernels: PlotKernel[]): CompositionSourc
       let skippedByContext = 0;
       let skippedByMilieu = 0;
       const activeMilieus = new Set<string>();
-      const chosen = new Set<string>();
 
       for (const context of contexts) {
         const milieus = MILIEU_PROFILES.filter((milieu) =>
@@ -403,10 +441,10 @@ export function createCompositionSource(kernels: PlotKernel[]): CompositionSourc
               skippedByMilieu += 1;
               continue;
             }
-            const precedenceKey = `${kernel.id}|${milieu.id}`;
-            if (chosen.has(precedenceKey)) continue;
+            if (!bestContextIdsFor(kernel, milieu).has(context.id)) {
+              continue;
+            }
             const result = compileKernel(kernel, context, milieu, world, errors);
-            if (result.scene || result.task) chosen.add(precedenceKey);
             if (result.scene) scenes.push(result.scene);
             if (result.task) tasks.push(result.task);
             if (result.trace) trace.push(result.trace);

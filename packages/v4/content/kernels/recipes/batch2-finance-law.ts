@@ -4631,5 +4631,4 @@ export const BATCH2_FINANCE_LAW: PlotKernel[] = recipes([
       },
     ],
   },
-  // CHUNK_END
 ]);
