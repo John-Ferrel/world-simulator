@@ -193,7 +193,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-union-register',
         weight: 0.4,
-        text: '登记桌前排了七个人，轮到她时，蓝皮会员册正好写到最后一页。{organizer}把她的车间和工龄念错了一个字，又用铅笔改回来，说下个月开始收会费。她把六十赫勒放在桌上，听见隔壁房间有人敲槌，像在给另一场会议计时。',
+        text: '登记桌前排了七个人，轮到{subjectPronoun}时，蓝皮会员册正好写到最后一页。{organizer}把{subjectPronoun}的车间和工龄念错了一个字，又用铅笔改回来，说下个月开始收会费。{subjectPronoun}把六十赫勒放在桌上，听见隔壁房间有人敲槌，像在给另一场会议计时。',
         effects: [
           membership('$union', '在工会活动室正式登记入会'),
           role('dues_book_keeper', '被安排替工会保管会费收据'),
@@ -201,7 +201,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
             'organizer',
             'acquaintance',
             { trust: 0.08, respect: 0.05 },
-            '介绍人替她核对了会员册',
+            '介绍人替{subjectPronoun}核对了会员册',
           ),
           cash(-0.6, '第一个月的工会会费'),
           know('工会入会要介绍人签字，会费按月交，收据要自己留好', 0.8, 'witnessed', '$organizer'),
@@ -211,11 +211,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-union-speak',
         weight: 0.35,
-        text: '轮到她发言时，她没有讲工资，只念了楼上住户的煤账和房东的催款单。{organizer}让她把纸留下，说下周可以带到区里的改革会议；散会后有两个陌生工人来问她的住址，她把门牌说得很轻。',
+        text: '轮到{subjectPronoun}发言时，{subjectPronoun}没有讲工资，只念了楼上住户的煤账和房东的催款单。{organizer}让{subjectPronoun}把纸留下，说下周可以带到区里的改革会议；散会后有两个陌生工人来问{subjectPronoun}的住址，{subjectPronoun}把门牌说得很轻。',
         effects: [
           role('rent_meeting_speaker', '在工会会议上替住户念了煤账'),
           reputation(0.05, '把住户的房租问题带进工会会议'),
-          link('organizer', 'acquaintance', { trust: 0.05, respect: 0.08 }, '组织者记住了她的发言'),
+          link(
+            'organizer',
+            'acquaintance',
+            { trust: 0.05, respect: 0.08 },
+            '组织者记住了{subjectPronoun}的发言',
+          ),
           cash(-0.2, '抄写煤账和表格的纸笔钱'),
           know('工会准备把房租问题带到区里的改革会议', 0.75, 'told', '$organizer'),
         ],
@@ -224,10 +229,15 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-union-leave',
         weight: 0.25,
-        text: '她只坐到表决前就起身，把没喝完的咖啡放回托盘。{organizer}追到楼梯口问她是不是不赞成，她说家里有人等门；第二天，活动室的黑板上多了一行“缺席者请交会费”，她的名字被写在最后。',
+        text: '{subjectPronoun}只坐到表决前就起身，把没喝完的咖啡放回托盘。{organizer}追到楼梯口问{subjectPronoun}是不是不赞成，{subjectPronoun}说家里有人等门；第二天，活动室的黑板上多了一行“缺席者请交会费”，{subjectPronoun}的名字被写在最后。',
         effects: [
           flag('left_union_meeting_early', '没有参加工会会议的表决就离开'),
-          link('organizer', 'acquaintance', { trust: -0.03 }, '组织者对她提前离场不满'),
+          link(
+            'organizer',
+            'acquaintance',
+            { trust: -0.03 },
+            '组织者对{subjectPronoun}提前离场不满',
+          ),
           reputation(-0.01, '名字被写在工会缺席者名单上'),
           know('工会把缺席者和欠费者列在同一块黑板上', 0.7, 'witnessed', '$organizer'),
         ],
@@ -248,7 +258,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-union-reform-arbitration',
             weight: 0.55,
-            text: '工会把活动室借给住户开房租会议，{housingOfficer}带着仲裁表来，却先问谁有固定工位。{organizer}在桌下踢她的鞋，示意别把煤账原件交出去；她只交了抄本，把原件缝回围裙夹层。散会时，官员把抄本折好，说还要一份房东签字。',
+            text: '工会把活动室借给住户开房租会议，{housingOfficer}带着仲裁表来，却先问谁有固定工位。{organizer}在桌下踢{subjectPronoun}的鞋，示意别把煤账原件交出去；{subjectPronoun}只交了抄本，把原件缝回围裙夹层。散会时，官员把抄本折好，说还要一份房东签字。',
             effects: [
               role('rent_arbitration_delegate', '被住户推选去参加房租仲裁'),
               membership('$union', '以工会代表身份参加改革咨询'),
@@ -271,11 +281,21 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-union-reform-waitlist',
             weight: 0.45,
-            text: '会议开到一半，{housingOfficer}宣布新住宅的钥匙先发给“表现良好”的家庭。{organizer}把这句话记在本子上，没人再举手；散会时，她发现自己带来的租约复印件被收进了市政厅的文件夹，连收条也没有。',
+            text: '会议开到一半，{housingOfficer}宣布新住宅的钥匙先发给“表现良好”的家庭。{organizer}把这句话记在本子上，没人再举手；散会时，{subjectPronoun}发现自己带来的租约复印件被收进了市政厅的文件夹，连收条也没有。',
             effects: [
-              flag('reform_housing_waitlisted', '新住宅名单上没有她的门牌'),
-              link('housingOfficer', 'acquaintance', { fear: 0.06 }, '官员收走了她的租约复印件'),
-              link('organizer', 'acquaintance', { trust: 0.04 }, '组织者和她一起记住了名单的排序'),
+              flag('reform_housing_waitlisted', '新住宅名单上没有{subjectPronoun}的门牌'),
+              link(
+                'housingOfficer',
+                'acquaintance',
+                { fear: 0.06 },
+                '官员收走了{subjectPronoun}的租约复印件',
+              ),
+              link(
+                'organizer',
+                'acquaintance',
+                { trust: 0.04 },
+                '组织者和{subjectPronoun}一起记住了名单的排序',
+              ),
               cash(-0.5, '补交租约复印件的费用'),
               reputation(-0.02, '在改革会议上被跳过'),
             ],
@@ -311,7 +331,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-leaflet-print',
         weight: 0.4,
-        text: '印刷机停下来的间隙，{printer}把一叠还温热的传单推到她面前，让她按街区折成三摞。传单上只印着明天的集会和一句“带上你的工牌”，没有署名；她用围裙擦掉指尖的油墨，把最上面一张塞进内袋。',
+        text: '印刷机停下来的间隙，{printer}把一叠还温热的传单推到{subjectPronoun}面前，让{subjectPronoun}按街区折成三摞。传单上只印着明天的集会和一句“带上你的工牌”，没有署名；{subjectPronoun}用围裙擦掉指尖的油墨，把最上面一张塞进内袋。',
         effects: [
           flag('printed_leaflet', '替印刷所折好并带走了一张集会传单'),
           link('printer', 'colleague', { trust: 0.07 }, '一起在停机间隙折传单'),
@@ -328,22 +348,22 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-leaflet-refuse',
         weight: 0.3,
-        text: '她认出传单上的地址是自家那条街，便把纸推回去，说自己只负责排版，不负责分发。{printer}没抬头，只把工钱从抽屉里数出来，少给了两枚十赫勒硬币，说铅字也要算损耗。',
+        text: '{subjectPronoun}认出传单上的地址是自家那条街，便把纸推回去，说自己只负责排版，不负责分发。{printer}没抬头，只把工钱从抽屉里数出来，少给了两枚十赫勒硬币，说铅字也要算损耗。',
         effects: [
           flag('refused_leaflet_printing', '拒绝分发指向自家街区的传单'),
           link('printer', 'colleague', { trust: -0.05 }, '拒绝接传单后与排字工关系变冷'),
           cash(2, '排版工钱，被扣掉铅字损耗'),
-          know('这张传单会送到她住的街区，散发者可能被邻居认出来', 0.9, 'witnessed'),
+          know('这张传单会送到{subjectPronoun}住的街区，散发者可能被邻居认出来', 0.9, 'witnessed'),
         ],
         significance: 0.35,
       },
       {
         id: 'civic-leaflet-police',
         weight: 0.3,
-        text: '巡警在巷口拦住她，问她怀里那包纸是什么。她说是包面包的旧纸；巡警抽出一张，对着路灯读了两行，又放回去，把她的名字和住址写进小本子。第二天，印刷所的门口多了一把新锁。',
+        text: '巡警在巷口拦住{subjectPronoun}，问{subjectPronoun}怀里那包纸是什么。{subjectPronoun}说是包面包的旧纸；巡警抽出一张，对着路灯读了两行，又放回去，把{subjectPronoun}的名字和住址写进小本子。第二天，印刷所的门口多了一把新锁。',
         effects: [
-          condition('under_police_observation', '巡警记下了她的姓名和住址'),
-          flag('leaflet_seen_by_police', '巡警看过她携带的传单'),
+          condition('under_police_observation', '巡警记下了{subjectPronoun}的姓名和住址'),
+          flag('leaflet_seen_by_police', '巡警看过{subjectPronoun}携带的传单'),
           link('policeman', 'acquaintance', { fear: 0.12 }, '在巷口被巡警盘问'),
           reputation(-0.03, '名字被巡警写进笔记本'),
           know('巡警会记下携带传单者的住址，印刷所也可能被盯上', 0.7, 'witnessed', '$policeman'),
@@ -362,11 +382,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-leaflet-war-ration',
             weight: 0.55,
-            text: '配给办公室把面包分量又减了一成，{rationOfficer}在告示上盖了章。她连夜排了一版号外，只印配给表和一句“先问为什么”，{printer}把机器踩得比平时慢，怕声音传到街上。她把号外折成四折，塞进装面包票的铁盒。',
+            text: '配给办公室把面包分量又减了一成，{rationOfficer}在告示上盖了章。{subjectPronoun}连夜排了一版号外，只印配给表和一句“先问为什么”，{printer}把机器踩得比平时慢，怕声音传到街上。{subjectPronoun}把号外折成四折，塞进装面包票的铁盒。',
             effects: [
               flag('printed_ration_leaflet', '印了一版质疑配给减量的号外'),
               link('rationOfficer', 'acquaintance', { fear: 0.08 }, '在配给告示前与官员照面'),
-              link('printer', 'colleague', { trust: 0.08 }, '排字工冒险放慢机器配合她'),
+              link(
+                'printer',
+                'colleague',
+                { trust: 0.08 },
+                '排字工冒险放慢机器配合{subjectPronoun}',
+              ),
               cash(-2, '买纸和油墨'),
               know('配给站按周发面包卡，减量告示由配给官盖章', 0.85, 'witnessed', '$rationOfficer'),
             ],
@@ -375,11 +400,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-leaflet-war-hide',
             weight: 0.45,
-            text: '她把没发完的号外塞进炉子，火苗把铅字照得发白。{printer}说纸可以再印，人只有一个；她把最后一叠藏在面粉袋底下，第二天配给站果然来查，{rationOfficer}只翻走了桌上的旧报纸。',
+            text: '{subjectPronoun}把没发完的号外塞进炉子，火苗把铅字照得发白。{printer}说纸可以再印，人只有一个；{subjectPronoun}把最后一叠藏在面粉袋底下，第二天配给站果然来查，{rationOfficer}只翻走了桌上的旧报纸。',
             effects: [
               flag('hid_ration_leaflet', '把最后一批配给号外藏进面粉袋'),
-              link('printer', 'colleague', { trust: 0.06 }, '排字工劝她先保住人'),
-              link('rationOfficer', 'acquaintance', { fear: 0.1 }, '配给站来查时她藏住了传单'),
+              link('printer', 'colleague', { trust: 0.06 }, '排字工劝{subjectPronoun}先保住人'),
+              link(
+                'rationOfficer',
+                'acquaintance',
+                { fear: 0.1 },
+                '配给站来查时{subjectPronoun}藏住了传单',
+              ),
               cash(-1, '烧掉和藏起的纸张损失'),
               health(-0.01, '在炉边熬夜和惊吓'),
             ],
@@ -416,7 +446,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-strike-yes',
         weight: 0.4,
-        text: '表决用的木箱还没搬走，{delegate}已经把要求抄成三份：工时、工资、受伤后的药费。她举手时，车间里有一半人跟着举；散会后，{delegate}把她的名字写进谈判委员会，说“你去记数字，别让他们把账念乱”。',
+        text: '表决用的木箱还没搬走，{delegate}已经把要求抄成三份：工时、工资、受伤后的药费。{subjectPronoun}举手时，车间里有一半人跟着举；散会后，{delegate}把{subjectPronoun}的名字写进谈判委员会，说“你去记数字，别让他们把账念乱”。',
         effects: [
           role('strike_committee_member', '被选进罢工谈判委员会'),
           membership('$union', '在罢工表决后正式加入工会'),
@@ -434,10 +464,10 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-strike-no',
         weight: 0.35,
-        text: '她算了算家里的房租和母亲的药钱，在表决时把手放在膝盖上。{delegate}看见了，没有点名，只把反对票数念了两遍；第二天，工头把她的工位调到了机器最响的那一头。下班时，工头在门口记下她的工号。',
+        text: '{subjectPronoun}算了算家里的房租和母亲的药钱，在表决时把手放在膝盖上。{delegate}看见了，没有点名，只把反对票数念了两遍；第二天，工头把{subjectPronoun}的工位调到了机器最响的那一头。下班时，工头在门口记下{subjectPronoun}的工号。',
         effects: [
           flag('voted_against_strike', '在罢工表决中投了反对票'),
-          link('delegate', 'colleague', { trust: -0.05 }, '代表记住了她的反对票'),
+          link('delegate', 'colleague', { trust: -0.05 }, '代表记住了{subjectPronoun}的反对票'),
           reputation(-0.02, '被工头视为不配合集体行动的人'),
           know('反对罢工的人不会被点名，但工位可能被调换', 0.7, 'witnessed', '$delegate'),
         ],
@@ -446,10 +476,10 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-strike-abstain',
         weight: 0.25,
-        text: '表决前她去了一趟厕所，回来时票已经投完。{delegate}问她算什么，她说算弃权；{delegate}把她的名字写在“未表态”一栏，旁边画了一个问号，说下次开会要解释。她回到座位时，木箱已经空了，地上只剩几张踩皱的票。',
+        text: '表决前{subjectPronoun}去了一趟厕所，回来时票已经投完。{delegate}问{subjectPronoun}算什么，{subjectPronoun}说算弃权；{delegate}把{subjectPronoun}的名字写在“未表态”一栏，旁边画了一个问号，说下次开会要解释。{subjectPronoun}回到座位时，木箱已经空了，地上只剩几张踩皱的票。',
         effects: [
           flag('abstained_from_strike_vote', '罢工表决时离开会场，被记为弃权'),
-          link('delegate', 'colleague', { trust: 0.02 }, '代表把她的弃权记在名单上'),
+          link('delegate', 'colleague', { trust: 0.02 }, '代表把{subjectPronoun}的弃权记在名单上'),
           reputation(-0.01, '被记入“未表态”名单'),
           know('弃权也会被记录，下次会议要说明理由', 0.75, 'witnessed', '$delegate'),
         ],
@@ -468,7 +498,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-strike-crisis-lose-job',
             weight: 0.5,
-            text: '厂里先贴出停工序名单，再让车间表决要不要接受减薪。{delegate}把她的名字从名单上划掉，说参加罢工的人下个月不一定还有工位；她还是举手，散会后工头把她的工具柜清空，工资袋里只剩下半周的钱。',
+            text: '厂里先贴出停工序名单，再让车间表决要不要接受减薪。{delegate}把{subjectPronoun}的名字从名单上划掉，说参加罢工的人下个月不一定还有工位；{subjectPronoun}还是举手，散会后工头把{subjectPronoun}的工具柜清空，工资袋里只剩下半周的钱。',
             effects: [
               unemployment('参加罢工后被厂方停用'),
               role('strike_committee_member', '在减薪表决中仍被选进委员会'),
@@ -477,7 +507,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
                 'delegate',
                 'colleague',
                 { trust: 0.1, obligation: 0.08 },
-                '代表答应替她找下一份工',
+                '代表答应替{subjectPronoun}找下一份工',
               ),
               cash(-2, '停用后没有领到的半周工资'),
               know(
@@ -492,11 +522,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-strike-crisis-cut',
             weight: 0.5,
-            text: '她把减薪通知折成四折，塞进围裙口袋，投了反对罢工的一票。{delegate}没有骂她，只把工会的互助金名单推过来，说“先签这个，别让孩子的牛奶断掉”；她签字时手比投票时还抖。',
+            text: '{subjectPronoun}把减薪通知折成四折，塞进围裙口袋，投了反对罢工的一票。{delegate}没有骂{subjectPronoun}，只把工会的互助金名单推过来，说“先签这个，别让孩子的牛奶断掉”；{subjectPronoun}签字时手比投票时还抖。',
             effects: [
               cash(-3, '接受减薪后仍要补交的房租差额'),
               flag('accepted_wage_cut', '在危机表决中接受减薪以避免停职'),
-              link('delegate', 'colleague', { trust: 0.03 }, '代表把互助金名单给了她'),
+              link(
+                'delegate',
+                'colleague',
+                { trust: 0.03 },
+                '代表把互助金名单给了{subjectPronoun}',
+              ),
               know(
                 '工会互助金可以补一部分减薪，但签字后要接受委员会核查',
                 0.8,
@@ -535,10 +570,10 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-police-followed',
         weight: 0.4,
-        text: '她从活动室出来，发现街角卖栗子的小贩换成了一个戴硬领的男人。那人没有看她，只在她走过时把报纸折了一下；第二天，房东说警察来问过她几点回家，还问她的窗台为什么总亮着灯。',
+        text: '{subjectPronoun}从活动室出来，发现街角卖栗子的小贩换成了一个戴硬领的男人。那人没有看{subjectPronoun}，只在{subjectPronoun}走过时把报纸折了一下；第二天，房东说警察来问过{subjectPronoun}几点回家，还问{subjectPronoun}的窗台为什么总亮着灯。',
         effects: [
           flag('police_surveillance', '发现住处被警察问过作息'),
-          condition('under_police_observation', '警察开始记录她的出入时间'),
+          condition('under_police_observation', '警察开始记录{subjectPronoun}的出入时间'),
           link('policeman', 'acquaintance', { fear: 0.12 }, '在街角被便衣盯上'),
           health(-0.02, '被跟踪后的失眠'),
           know('警察会向房东打听住户的回家时间和窗灯', 0.7, 'told'),
@@ -548,27 +583,37 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-police-questioned',
         weight: 0.35,
-        text: '两名巡警在门口等她，说只是“了解情况”。问话从下午持续到天黑，问题围着她认识的人打转；她回答得越多，记录纸上的名字越少。临走时，{policeman}让她在末尾按手印，说按了就可以回家。',
+        text: '两名巡警在门口等{subjectPronoun}，说只是“了解情况”。问话从下午持续到天黑，问题围着{subjectPronoun}认识的人打转；{subjectPronoun}回答得越多，记录纸上的名字越少。临走时，{policeman}让{subjectPronoun}在末尾按手印，说按了就可以回家。',
         effects: [
           flag('police_questioned', '被巡警带到门口问话并按了手印'),
           condition('police_record', '问话记录进入警察档案'),
           link('policeman', 'acquaintance', { fear: 0.15 }, '在问话记录上按了手印'),
-          reputation(-0.04, '邻居看见她被巡警带走问话'),
+          reputation(-0.04, '邻居看见{subjectPronoun}被巡警带走问话'),
           health(-0.03, '长时间问话后的疲惫'),
-          know('问话记录只留名字和手印，不留她说过的话', 0.75, 'witnessed', '$policeman'),
+          know(
+            '问话记录只留名字和手印，不留{subjectPronoun}说过的话',
+            0.75,
+            'witnessed',
+            '$policeman',
+          ),
         ],
         significance: 0.6,
       },
       {
         id: 'civic-police-warning',
         weight: 0.25,
-        text: '邻居在楼梯口拉住她，说下午有人来问她的丈夫，还翻过煤箱。她把活动的地址从纸上划掉，改成一个已经搬走的朋友家；当晚她把传单折成引火纸，一张一张塞进炉子。',
+        text: '邻居在楼梯口拉住{subjectPronoun}，说下午有人来问{subjectPronoun}的丈夫，还翻过煤箱。{subjectPronoun}把活动的地址从纸上划掉，改成一个已经搬走的朋友家；当晚{subjectPronoun}把传单折成引火纸，一张一张塞进炉子。',
         effects: [
-          flag('warned_about_police', '被邻居提醒有人来查她的住处'),
-          link('neighbor', 'acquaintance', { trust: 0.08, obligation: 0.04 }, '邻居冒险提醒她'),
+          flag('warned_about_police', '被邻居提醒有人来查{subjectPronoun}的住处'),
+          link(
+            'neighbor',
+            'acquaintance',
+            { trust: 0.08, obligation: 0.04 },
+            '邻居冒险提醒{subjectPronoun}',
+          ),
           cash(-0.5, '烧掉传单和重写地址的损失'),
           health(-0.01, '连夜烧纸后的咳嗽'),
-          know('警察已经来问过她的丈夫，并翻过煤箱', 0.85, 'told', '$neighbor'),
+          know('警察已经来问过{subjectPronoun}的丈夫，并翻过煤箱', 0.85, 'told', '$neighbor'),
         ],
         significance: 0.5,
       },
@@ -585,7 +630,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-police-crisis-detained',
             weight: 0.55,
-            text: '夜里十点，巡警封了活动室的门，把桌上的人名册带走。{policeman}让她在走廊里等，说“查清楚就放”；天亮时她拿到一张没有签名的释放纸，工位已经有人顶上，柜子里的围裙不见了。',
+            text: '夜里十点，巡警封了活动室的门，把桌上的人名册带走。{policeman}让{subjectPronoun}在走廊里等，说“查清楚就放”；天亮时{subjectPronoun}拿到一张没有签名的释放纸，工位已经有人顶上，柜子里的围裙不见了。',
             effects: [
               unemployment('被拘留一夜后工位已被顶替'),
               condition('detained_activist', '被巡警带走拘留了一夜'),
@@ -599,7 +644,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-police-crisis-flee',
             weight: 0.45,
-            text: '她从后窗翻出去，沿着煤库的墙走到车站。第二天，活动室的玻璃碎了一地，{policeman}站在门口核对名单；她把车票攥在手心，没敢回头看那条街。她在车站厕所里洗掉手上的煤灰，才敢买票。',
+            text: '{subjectPronoun}从后窗翻出去，沿着煤库的墙走到车站。第二天，活动室的玻璃碎了一地，{policeman}站在门口核对名单；{subjectPronoun}把车票攥在手心，没敢回头看那条街。{subjectPronoun}在车站厕所里洗掉手上的煤灰，才敢买票。',
             effects: [
               move('@station', '从后窗逃走，暂避到车站一带'),
               unemployment('搜查后不敢回厂上工'),
@@ -639,7 +684,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-reform-speak',
         weight: 0.4,
-        text: '市政厅侧厅的椅子不够，后来的人只能靠墙站。她带来一张写满住户签名的纸，念到第三行时，{official}打断她，说“数字要由管理处核实”；她把纸折好，发现背面已经被汗浸透。',
+        text: '市政厅侧厅的椅子不够，后来的人只能靠墙站。{subjectPronoun}带来一张写满住户签名的纸，念到第三行时，{official}打断{subjectPronoun}，说“数字要由管理处核实”；{subjectPronoun}把纸折好，发现背面已经被汗浸透。',
         effects: [
           role('housing_delegate', '代表住户在市政厅会议上发言'),
           reputation(0.04, '替住户把签名纸带进市政厅'),
@@ -657,7 +702,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-reform-file',
         weight: 0.35,
-        text: '她没有发言，只把投诉表填了两遍：一遍交窗口，一遍自己留着。{official}收下表格，在右上角盖了一个日期章，说“回去等通知”；她等到下一个月，通知没来，房租倒先涨了。她把回执压在桌玻璃下，和房租单放在一起。',
+        text: '{subjectPronoun}没有发言，只把投诉表填了两遍：一遍交窗口，一遍自己留着。{official}收下表格，在右上角盖了一个日期章，说“回去等通知”；{subjectPronoun}等到下一个月，通知没来，房租倒先涨了。{subjectPronoun}把回执压在桌玻璃下，和房租单放在一起。',
         effects: [
           flag('filed_reform_complaint', '向市政厅递交了住房投诉表'),
           link('official', 'acquaintance', { fear: 0.03 }, '在窗口递交表格'),
@@ -670,7 +715,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-reform-dismissed',
         weight: 0.25,
-        text: '会议提前散场，因为隔壁的供暖管爆了。{official}说改革不是一天能办完的，让大家把问题写在纸上投进木箱；她看见木箱底部有一条缝，纸片正一张张滑进下面的抽屉。',
+        text: '会议提前散场，因为隔壁的供暖管爆了。{official}说改革不是一天能办完的，让大家把问题写在纸上投进木箱；{subjectPronoun}看见木箱底部有一条缝，纸片正一张张滑进下面的抽屉。',
         effects: [
           flag('reform_meeting_dismissed', '会议因暖气管爆裂提前散场'),
           reputation(-0.02, '看见意见纸滑进抽屉却没能说出来'),
@@ -695,7 +740,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-reform-clinic-committee',
             weight: 0.55,
-            text: '活动室临时改成咨询处，墙上并排贴着房租仲裁和市立门诊的时间表。{housingOfficer}要她先证明在同一间屋里住满三年，{organizer}在桌下踢她的鞋，示意别把煤账原件交出去。她把住户的煤账抄了一份，原件仍缝在围裙里。',
+            text: '活动室临时改成咨询处，墙上并排贴着房租仲裁和市立门诊的时间表。{housingOfficer}要{subjectPronoun}先证明在同一间屋里住满三年，{organizer}在桌下踢{subjectPronoun}的鞋，示意别把煤账原件交出去。{subjectPronoun}把住户的煤账抄了一份，原件仍缝在围裙里。',
             effects: [
               role('rent_arbitration_delegate', '被住户推选参加房租仲裁'),
               membership('$union', '以工会代表身份参加改革咨询'),
@@ -718,11 +763,21 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-reform-clinic-waitlist',
             weight: 0.45,
-            text: '新住宅的钥匙先发给“表现良好”的家庭，{housingOfficer}念名单时把她的门牌跳了过去。她追问，得到的回答是“材料还在路上”；散会时，她带来的租约复印件被收进市政厅的文件夹，没有收条。',
+            text: '新住宅的钥匙先发给“表现良好”的家庭，{housingOfficer}念名单时把{subjectPronoun}的门牌跳了过去。{subjectPronoun}追问，得到的回答是“材料还在路上”；散会时，{subjectPronoun}带来的租约复印件被收进市政厅的文件夹，没有收条。',
             effects: [
-              flag('reform_housing_waitlisted', '新住宅名单跳过了她的门牌'),
-              link('housingOfficer', 'acquaintance', { fear: 0.06 }, '官员收走了她的租约复印件'),
-              link('organizer', 'acquaintance', { trust: 0.04 }, '组织者和她一起记住名单排序'),
+              flag('reform_housing_waitlisted', '新住宅名单跳过了{subjectPronoun}的门牌'),
+              link(
+                'housingOfficer',
+                'acquaintance',
+                { fear: 0.06 },
+                '官员收走了{subjectPronoun}的租约复印件',
+              ),
+              link(
+                'organizer',
+                'acquaintance',
+                { trust: 0.04 },
+                '组织者和{subjectPronoun}一起记住名单排序',
+              ),
               cash(-0.5, '补交租约复印件的费用'),
               reputation(-0.02, '在改革会议上被跳过'),
             ],
@@ -756,12 +811,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-election-party',
         weight: 0.4,
-        text: '投票站设在学校的走廊里，桌上摆着蓝铅笔和一本翻烂的选民册。她把票投给{party}，又在门口替人核对门牌；{pollWorker}提醒她不要把票根带走，她才发现自己一直攥着那张小纸。',
+        text: '投票站设在学校的走廊里，桌上摆着蓝铅笔和一本翻烂的选民册。{subjectPronoun}把票投给{party}，又在门口替人核对门牌；{pollWorker}提醒{subjectPronoun}不要把票根带走，{subjectPronoun}才发现自己一直攥着那张小纸。',
         effects: [
           membership('$party', '在投票日替党部核对门牌并登记'),
           role('election_worker', '在投票站门口替党部核对选民'),
           reputation(0.04, '投票日替邻居核对门牌'),
-          link('pollWorker', 'acquaintance', { trust: 0.04 }, '投票站工作人员提醒她票根不能带走'),
+          link(
+            'pollWorker',
+            'acquaintance',
+            { trust: 0.04 },
+            '投票站工作人员提醒{subjectPronoun}票根不能带走',
+          ),
           cash(-0.3, '投票日买咖啡和传单'),
           know('票根不能带出投票站，选民册按门牌分栏', 0.8, 'witnessed', '$pollWorker'),
         ],
@@ -770,7 +830,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-election-opposition',
         weight: 0.3,
-        text: '她在票上画了一个叉，投给了{party}的对手。走出投票站时，邻居问她投了谁，她说“投给能修好水管的人”；第二天，党部门口贴出一张没有署名的名单，她的名字不在上面。',
+        text: '{subjectPronoun}在票上画了一个叉，投给了{party}的对手。走出投票站时，邻居问{subjectPronoun}投了谁，{subjectPronoun}说“投给能修好水管的人”；第二天，党部门口贴出一张没有署名的名单，{subjectPronoun}的名字不在上面。',
         effects: [
           flag('voted_opposition', '把票投给执政党以外的候选人'),
           link('neighbor', 'acquaintance', { trust: 0.06 }, '向邻居解释自己的投票理由'),
@@ -782,10 +842,10 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-election-missed',
         weight: 0.3,
-        text: '她排到桌前才发现自己的名字被登记在另一条街。{pollWorker}让她先去市政厅改地址，她赶过去时窗口已经关了；回到投票站，票箱正被搬上车，她站在路边看了一会儿。回家后，她把选民册上的地址改成了朋友的住处。',
+        text: '{subjectPronoun}排到桌前才发现自己的名字被登记在另一条街。{pollWorker}让{subjectPronoun}先去市政厅改地址，{subjectPronoun}赶过去时窗口已经关了；回到投票站，票箱正被搬上车，{subjectPronoun}站在路边看了一会儿。回家后，{subjectPronoun}把选民册上的地址改成了朋友的住处。',
         effects: [
           flag('missed_ballot', '因地址登记错误没有投成票'),
-          link('pollWorker', 'acquaintance', { fear: 0.02 }, '投票站让她先去改地址'),
+          link('pollWorker', 'acquaintance', { fear: 0.02 }, '投票站让{subjectPronoun}先去改地址'),
           cash(-0.4, '往返市政厅的车钱'),
           reputation(-0.01, '错过了投票'),
           health(-0.01, '来回奔波后的疲惫'),
@@ -805,7 +865,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-election-postwar-first',
             weight: 0.55,
-            text: '战后第一次投票，队伍从学校门口拐到面包店。{womanVoter}把选票举得很高，问她“这一栏是不是写女人的名字”；她替对方念完，又把自己的票投进箱里，听见纸落下去的声音比想象中轻。',
+            text: '战后第一次投票，队伍从学校门口拐到面包店。{womanVoter}把选票举得很高，问{subjectPronoun}“这一栏是不是写女人的名字”；{subjectPronoun}替对方念完，又把自己的票投进箱里，听见纸落下去的声音比想象中轻。',
             effects: [
               role('first_time_voter', '在战后第一次选举中投票'),
               membership('$party', '投票日替党部照看队伍'),
@@ -823,7 +883,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-election-postwar-invalid',
             weight: 0.45,
-            text: '她的票被{womanVoter}不小心带出了投票站，守门的{pollWorker}追出来，把两张票都作废。她说没关系，明天还要上班；回家路上，她把作废的票根夹进日历，像夹一张没寄出的信。她把作废票根夹进日历，旁边写着当天的天气。',
+            text: '{subjectPronoun}的票被{womanVoter}不小心带出了投票站，守门的{pollWorker}追出来，把两张票都作废。{subjectPronoun}说没关系，明天还要上班；回家路上，{subjectPronoun}把作废的票根夹进日历，像夹一张没寄出的信。{subjectPronoun}把作废票根夹进日历，旁边写着当天的天气。',
             effects: [
               flag('ballot_invalidated', '选票被带出投票站而作废'),
               link('womanVoter', 'acquaintance', { trust: 0.05 }, '两人的选票一起作废'),
@@ -863,12 +923,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-demonstration-march',
         weight: 0.4,
-        text: '队伍从工会门口出发，沿着环城路走，鞋底把前夜的雨踩成一片响。她举着一块写有“面包与工时”的纸牌，走到第三条街时，{organizer}让她站到队伍外侧，替后面的人看住路口。',
+        text: '队伍从工会门口出发，沿着环城路走，鞋底把前夜的雨踩成一片响。{subjectPronoun}举着一块写有“面包与工时”的纸牌，走到第三条街时，{organizer}让{subjectPronoun}站到队伍外侧，替后面的人看住路口。',
         effects: [
           role('demonstration_marshal', '在游行队伍外侧担任纠察'),
           flag('marched_in_demonstration', '参加了环城路游行'),
           reputation(0.04, '在游行中替队伍看住路口'),
-          link('organizer', 'acquaintance', { trust: 0.08, respect: 0.05 }, '组织者让她担任纠察'),
+          link(
+            'organizer',
+            'acquaintance',
+            { trust: 0.08, respect: 0.05 },
+            '组织者让{subjectPronoun}担任纠察',
+          ),
           health(-0.02, '走了半天路'),
           know('游行队伍需要外侧纠察，路口比队伍中间更容易被冲散', 0.8, 'witnessed', '$organizer'),
         ],
@@ -877,10 +942,15 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-demonstration-leave',
         weight: 0.3,
-        text: '她看见巡警在街角列队，便提前拐进侧巷。{organizer}后来问她为什么走，她说家里有人等门；{organizer}把她的名字从纠察名单上划掉，说“下次别来了”。回家后，她把鞋底的泥刮在门槛上，没跟任何人提游行。',
+        text: '{subjectPronoun}看见巡警在街角列队，便提前拐进侧巷。{organizer}后来问{subjectPronoun}为什么走，{subjectPronoun}说家里有人等门；{organizer}把{subjectPronoun}的名字从纠察名单上划掉，说“下次别来了”。回家后，{subjectPronoun}把鞋底的泥刮在门槛上，没跟任何人提游行。',
         effects: [
           flag('left_demonstration_before_police', '看到巡警列队后提前离开游行'),
-          link('organizer', 'acquaintance', { trust: -0.05 }, '组织者把她从纠察名单上划掉'),
+          link(
+            'organizer',
+            'acquaintance',
+            { trust: -0.05 },
+            '组织者把{subjectPronoun}从纠察名单上划掉',
+          ),
           reputation(-0.02, '提前离开游行被同伴看见'),
           know('巡警在街角列队时，队伍外侧的人最先被冲散', 0.75, 'witnessed'),
         ],
@@ -889,7 +959,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-demonstration-banner',
         weight: 0.3,
-        text: '旗杆比她想象的重，风一吹，布面拍在她脸上。她一路把旗举到广场，散场时才发现手心磨出了两个水泡；{organizer}把旗收起来，说下回还让她举。那面旗后来挂在工会墙上，边角还留着她的指印。',
+        text: '旗杆比{subjectPronoun}想象的重，风一吹，布面拍在{subjectPronoun}脸上。{subjectPronoun}一路把旗举到广场，散场时才发现手心磨出了两个水泡；{organizer}把旗收起来，说下回还让{subjectPronoun}举。那面旗后来挂在工会墙上，边角还留着{subjectPronoun}的指印。',
         effects: [
           role('banner_bearer', '在游行中举旗走到广场'),
           membership('$union', '在游行后加入工会'),
@@ -898,7 +968,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
             'organizer',
             'acquaintance',
             { trust: 0.05, respect: 0.06 },
-            '组织者让她下次继续举旗',
+            '组织者让{subjectPronoun}下次继续举旗',
           ),
           health(-0.03, '旗杆磨出的水泡'),
         ],
@@ -917,7 +987,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-demonstration-crisis-beaten',
             weight: 0.55,
-            text: '队伍刚走到桥头，巡警从两侧冲出来。她被人群推倒，膝盖磕在石阶上；{organizer}把她拉进一家面包店的后门，外面传来警棍敲在铁栏上的声音。面包店老板给她一杯水，让她从后门走，不要留在店里。',
+            text: '队伍刚走到桥头，巡警从两侧冲出来。{subjectPronoun}被人群推倒，膝盖磕在石阶上；{organizer}把{subjectPronoun}拉进一家面包店的后门，外面传来警棍敲在铁栏上的声音。面包店老板给{subjectPronoun}一杯水，让{subjectPronoun}从后门走，不要留在店里。',
             effects: [
               condition('injured_in_demonstration', '在桥头被冲散时磕伤膝盖'),
               flag('beaten_at_demonstration', '在游行冲突中受伤'),
@@ -926,7 +996,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
                 'organizer',
                 'acquaintance',
                 { trust: 0.1, obligation: 0.05 },
-                '组织者把她拉进面包店后门',
+                '组织者把{subjectPronoun}拉进面包店后门',
               ),
               link('policeman', 'acquaintance', { fear: 0.15 }, '在桥头看见巡警冲散队伍'),
               know('巡警会从队伍两侧同时冲出，面包店后门可以通到巷子', 0.9, 'witnessed'),
@@ -936,12 +1006,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-demonstration-crisis-escape',
             weight: 0.45,
-            text: '她跟着人群退进院子，翻过煤棚的矮墙，从后街绕回家。第二天，工厂门口贴着“参加骚乱者停职”的名单，她的名字在第三行；{organizer}说先去工会登记，别自己去找工头。她把工牌留在更衣箱里，钥匙从窗缝塞回给同事。',
+            text: '{subjectPronoun}跟着人群退进院子，翻过煤棚的矮墙，从后街绕回家。第二天，工厂门口贴着“参加骚乱者停职”的名单，{subjectPronoun}的名字在第三行；{organizer}说先去工会登记，别自己去找工头。{subjectPronoun}把工牌留在更衣箱里，钥匙从窗缝塞回给同事。',
             effects: [
               flag('escaped_police_charge', '从游行冲突中翻墙逃回家'),
               unemployment('因参加游行被厂方停职'),
               move('@home', '从煤棚后街绕回住处'),
-              link('organizer', 'acquaintance', { trust: 0.08 }, '组织者让她先去工会登记'),
+              link(
+                'organizer',
+                'acquaintance',
+                { trust: 0.08 },
+                '组织者让{subjectPronoun}先去工会登记',
+              ),
               health(-0.03, '翻墙时擦伤'),
               know(
                 '厂方会把参加游行的人列入停职名单，工会可以先登记再交涉',
@@ -980,18 +1055,18 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-denunciation-accused',
         weight: 0.4,
-        text: '门房把一张没有署名的纸塞进警察信箱，上面写着她家半夜有人搬煤。第二天，{official}来敲门，问煤是从哪里来的；她拿出收据，收据上的日期被水泡糊了，{neighbor}站在楼梯口，没有替她说话。',
+        text: '门房把一张没有署名的纸塞进警察信箱，上面写着{subjectPronoun}家半夜有人搬煤。第二天，{official}来敲门，问煤是从哪里来的；{subjectPronoun}拿出收据，收据上的日期被水泡糊了，{neighbor}站在楼梯口，没有替{subjectPronoun}说话。',
         effects: [
           flag('denounced_by_neighbor', '被人匿名告发半夜搬煤'),
           condition('under_investigation', '警察因匿名信上门调查'),
-          reputation(-0.05, '邻居看见警察来敲她家的门'),
+          reputation(-0.05, '邻居看见警察来敲{subjectPronoun}家的门'),
           link(
             'neighbor',
             'acquaintance',
             { trust: -0.08, fear: 0.05 },
-            '邻居在楼梯口没有替她说话',
+            '邻居在楼梯口没有替{subjectPronoun}说话',
           ),
-          link('official', 'acquaintance', { fear: 0.08 }, '官员收走了她的煤收据'),
+          link('official', 'acquaintance', { fear: 0.08 }, '官员收走了{subjectPronoun}的煤收据'),
           cash(-1, '补交煤款和复印收据'),
           know('匿名告发信会直接进警察信箱，收据日期模糊就说不清', 0.8, 'witnessed', '$official'),
         ],
@@ -1000,14 +1075,14 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-denunciation-refuse',
         weight: 0.3,
-        text: '她知道楼上那家把配给面粉藏在地窖里，却没有举报。{official}第二次来问时，她只说“每家都有难处”；{neighbor}后来在楼道里塞给她半块面包，什么也没说。那天夜里，楼上的面粉袋被搬走了，楼道里留下白印。',
+        text: '{subjectPronoun}知道楼上那家把配给面粉藏在地窖里，却没有举报。{official}第二次来问时，{subjectPronoun}只说“每家都有难处”；{neighbor}后来在楼道里塞给{subjectPronoun}半块面包，什么也没说。那天夜里，楼上的面粉袋被搬走了，楼道里留下白印。',
         effects: [
           flag('refused_to_denounce', '没有举报楼上藏面粉的邻居'),
           link(
             'neighbor',
             'acquaintance',
             { trust: 0.06, obligation: 0.03 },
-            '邻居用半块面包谢她没有举报',
+            '邻居用半块面包谢{subjectPronoun}没有举报',
           ),
           link('official', 'acquaintance', { fear: 0.05 }, '官员第二次上门问话'),
           health(-0.01, '被两次问话后的疲惫'),
@@ -1018,11 +1093,11 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-denunciation-informer',
         weight: 0.3,
-        text: '她为了把自己从名单上摘出来，写下了隔壁男人的名字。{official}把纸收进公文包，说“早这样就好了”；她回家时，隔壁的门已经锁上，煤箱里只剩一层灰。第二天，警察在隔壁门口贴了一张封条，浆糊还没干。',
+        text: '{subjectPronoun}为了把自己从名单上摘出来，写下了隔壁男人的名字。{official}把纸收进公文包，说“早这样就好了”；{subjectPronoun}回家时，隔壁的门已经锁上，煤箱里只剩一层灰。第二天，警察在隔壁门口贴了一张封条，浆糊还没干。',
         effects: [
           flag('denounced_someone', '为了自保写下了邻居的名字'),
           reputation(0.03, '配合警察调查，暂时从名单上除名'),
-          link('official', 'acquaintance', { trust: 0.04 }, '官员收下了她写的名字'),
+          link('official', 'acquaintance', { trust: 0.04 }, '官员收下了{subjectPronoun}写的名字'),
           condition('informer', '在警察档案里留下告发者记录'),
           cash(2, '配合调查后领到的补助'),
           know(
@@ -1045,13 +1120,23 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-denunciation-war-ration',
             weight: 0.55,
-            text: '配给站说她家的面包卡多领了一周，{neighbor}在窗口前指认她“昨天还拿过黄油”。{official}收走卡片，给了她一张临时票；她回家数了数，票上的日期比今天早三天。她拿着临时票去配给站，窗口说这张票只能领黑面包。',
+            text: '配给站说{subjectPronoun}家的面包卡多领了一周，{neighbor}在窗口前指认{subjectPronoun}“昨天还拿过黄油”。{official}收走卡片，给了{subjectPronoun}一张临时票；{subjectPronoun}回家数了数，票上的日期比今天早三天。{subjectPronoun}拿着临时票去配给站，窗口说这张票只能领黑面包。',
             effects: [
               condition('ration_card_revoked', '面包卡被指认多领后收走'),
               flag('ration_card_revoked', '配给卡被换成日期错误的临时票'),
               cash(-3, '临时票不能覆盖的配给缺口'),
-              link('neighbor', 'acquaintance', { trust: -0.06 }, '邻居在配给窗口指认她'),
-              link('official', 'acquaintance', { fear: 0.06 }, '配给官收走了她的面包卡'),
+              link(
+                'neighbor',
+                'acquaintance',
+                { trust: -0.06 },
+                '邻居在配给窗口指认{subjectPronoun}',
+              ),
+              link(
+                'official',
+                'acquaintance',
+                { fear: 0.06 },
+                '配给官收走了{subjectPronoun}的面包卡',
+              ),
               know('配给卡被收走后只能领临时票，票面日期可能出错', 0.9, 'witnessed', '$official'),
             ],
             significance: 0.6,
@@ -1059,11 +1144,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-denunciation-war-blackout',
             weight: 0.45,
-            text: '空袭演习时她家的窗帘漏了光，{neighbor}隔着院子喊了一声。{official}上来检查，把她的名字记在“不遵守灯火管制”一栏；她辩解说是煤油灯太亮，{official}只让她把灯芯剪短。那晚她把灯芯剪到最短，屋里只剩下炉火的蓝光。',
+            text: '空袭演习时{subjectPronoun}家的窗帘漏了光，{neighbor}隔着院子喊了一声。{official}上来检查，把{subjectPronoun}的名字记在“不遵守灯火管制”一栏；{subjectPronoun}辩解说是煤油灯太亮，{official}只让{subjectPronoun}把灯芯剪短。那晚{subjectPronoun}把灯芯剪到最短，屋里只剩下炉火的蓝光。',
             effects: [
               flag('blackout_accusation', '被邻居指认灯火管制时窗帘漏光'),
               reputation(-0.03, '名字被记进灯火管制记录'),
-              link('neighbor', 'acquaintance', { trust: -0.03 }, '邻居隔着院子喊她关灯'),
+              link(
+                'neighbor',
+                'acquaintance',
+                { trust: -0.03 },
+                '邻居隔着院子喊{subjectPronoun}关灯',
+              ),
               link('official', 'acquaintance', { fear: 0.04 }, '官员上门检查窗帘'),
               cash(-1, '买新灯芯和遮光布'),
               know('灯火管制检查会记名字，但不会当场罚款', 0.75, 'witnessed', '$official'),
@@ -1098,14 +1188,19 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-exile-leave',
         weight: 0.4,
-        text: '她把两把钥匙留在桌上：一把是房门，一把是印刷所的柜子。{official}在护照上盖了章，又在行李票上多写了一个名字；{friend}帮她把箱子提到站台，火车开动时，谁也没有挥手。站台上的钟慢了两分钟，她一直记着这个误差。',
+        text: '{subjectPronoun}把两把钥匙留在桌上：一把是房门，一把是印刷所的柜子。{official}在护照上盖了章，又在行李票上多写了一个名字；{friend}帮{subjectPronoun}把箱子提到站台，火车开动时，谁也没有挥手。站台上的钟慢了两分钟，{subjectPronoun}一直记着这个误差。',
         effects: [
           move('@station', '带着行李到车站准备离境'),
           unemployment('离开印刷所，准备流亡'),
           flag('went_into_exile', '在护照盖章后离开维也纳'),
           role('exile', '离开原住地流亡'),
           cash(-8, '护照费、行李票和车票'),
-          link('friend', 'friend', { trust: 0.08, affection: 0.06 }, '朋友帮她把箱子提到站台'),
+          link(
+            'friend',
+            'friend',
+            { trust: 0.08, affection: 0.06 },
+            '朋友帮{subjectPronoun}把箱子提到站台',
+          ),
           know(
             '护照盖章后行李票还要另写名字，离境者不能带走印刷所钥匙',
             0.85,
@@ -1118,13 +1213,18 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-exile-hide',
         weight: 0.3,
-        text: '她没有走，把行李又拖回楼上。{friend}帮她把传单藏进面粉袋，把窗台上的花盆移到里侧；{official}第二天来查时，她坐在桌边缝衣服，针脚比平时密。面粉袋口用蓝线缝了三道，传单的边角仍露在外面。',
+        text: '{subjectPronoun}没有走，把行李又拖回楼上。{friend}帮{subjectPronoun}把传单藏进面粉袋，把窗台上的花盆移到里侧；{official}第二天来查时，{subjectPronoun}坐在桌边缝衣服，针脚比平时密。面粉袋口用蓝线缝了三道，传单的边角仍露在外面。',
         effects: [
           flag('went_underground_in_city', '放弃离境，留在城里转入地下'),
           condition('in_hiding', '为躲避检查而减少外出'),
           cash(-3, '退票和藏匿传单的损失'),
-          link('friend', 'friend', { trust: 0.1 }, '朋友帮她把传单藏进面粉袋'),
-          link('official', 'acquaintance', { fear: 0.1 }, '官员上门检查时她装作在家缝衣'),
+          link('friend', 'friend', { trust: 0.1 }, '朋友帮{subjectPronoun}把传单藏进面粉袋'),
+          link(
+            'official',
+            'acquaintance',
+            { fear: 0.1 },
+            '官员上门检查时{subjectPronoun}装作在家缝衣',
+          ),
           health(-0.02, '连夜藏东西和提心吊胆'),
         ],
         significance: 0.7,
@@ -1132,11 +1232,11 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-exile-refused',
         weight: 0.3,
-        text: '她在护照窗口排到下午，{official}把材料推回来，说缺少一份“无政治记录”的证明。她问去哪里开，{official}说“去问你的警察局”；她走出市政厅时，天已经黑了，行李还在车站寄存处。她把行李票翻过来，背面记着朋友家的地址。',
+        text: '{subjectPronoun}在护照窗口排到下午，{official}把材料推回来，说缺少一份“无政治记录”的证明。{subjectPronoun}问去哪里开，{official}说“去问你的警察局”；{subjectPronoun}走出市政厅时，天已经黑了，行李还在车站寄存处。{subjectPronoun}把行李票翻过来，背面记着朋友家的地址。',
         effects: [
           flag('exit_visa_refused', '因缺少无政治记录证明被拒发护照'),
           cash(-2, '排队时交的照片费和寄存费'),
-          link('official', 'acquaintance', { fear: 0.08 }, '护照窗口退回了她的材料'),
+          link('official', 'acquaintance', { fear: 0.08 }, '护照窗口退回了{subjectPronoun}的材料'),
           health(-0.01, '白跑一天后的疲惫'),
           know('离境护照需要无政治记录证明，证明要去警察局开', 0.9, 'witnessed', '$official'),
         ],
@@ -1155,14 +1255,14 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-exile-crisis-false-name',
             weight: 0.55,
-            text: '她把名字改成母亲的姓，照片也换了一张。{official}看了很久，问“你确定这是你”；她点头，拿到一张去往边境的车票。{friend}在站台塞给她一包面包，说别在车上打开。车开过第一座桥时，她把母亲的名字在心里念了一遍。',
+            text: '{subjectPronoun}把名字改成母亲的姓，照片也换了一张。{official}看了很久，问“你确定这是你”；{subjectPronoun}点头，拿到一张去往边境的车票。{friend}在站台塞给{subjectPronoun}一包面包，说别在车上打开。车开过第一座桥时，{subjectPronoun}把母亲的名字在心里念了一遍。',
             effects: [
               move('@station', '用假名买到车票，前往边境'),
               unemployment('用假名离境前辞掉工作'),
               flag('fled_with_false_papers', '用母亲的姓办了假护照'),
               cash(-12, '假证件、车票和路上开销'),
               link('official', 'acquaintance', { fear: 0.12 }, '护照官盯着假照片看了很久'),
-              link('friend', 'friend', { trust: 0.1 }, '朋友在站台塞给她面包'),
+              link('friend', 'friend', { trust: 0.1 }, '朋友在站台塞给{subjectPronoun}面包'),
               know(
                 '假名护照上的照片必须和本人接近，车站会核对行李票',
                 0.9,
@@ -1175,12 +1275,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-exile-crisis-stay',
             weight: 0.45,
-            text: '她把信一封封投进炉子，火光照出墙上原来的相框印。{friend}问她要不要一起走，她说再等一天；第二天，活动室的门被钉上木板，她还是没有走。天亮后，她把灰烬倒进煤箱，钥匙仍留在门垫下。',
+            text: '{subjectPronoun}把信一封封投进炉子，火光照出墙上原来的相框印。{friend}问{subjectPronoun}要不要一起走，{subjectPronoun}说再等一天；第二天，活动室的门被钉上木板，{subjectPronoun}还是没有走。天亮后，{subjectPronoun}把灰烬倒进煤箱，钥匙仍留在门垫下。',
             effects: [
               flag('stayed_after_crackdown', '镇压后仍留在城里'),
               condition('police_surveillance', '活动室被钉死后住处受到注意'),
               cash(-2, '烧掉信件和停工的损失'),
-              link('friend', 'friend', { trust: 0.06 }, '朋友劝她一起走，她没有答应'),
+              link(
+                'friend',
+                'friend',
+                { trust: 0.06 },
+                '朋友劝{subjectPronoun}一起走，{subjectPronoun}没有答应',
+              ),
               health(-0.04, '熬夜烧信和担惊受怕'),
               know('活动室被钉死后，留在城里的人会被逐个上门核对', 0.8, 'witnessed'),
             ],
@@ -1218,7 +1323,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-salon-introduced',
         weight: 0.4,
-        text: '沙龙的主人{host}把她领到窗边，说今晚有位作家会来。她原本准备了一肚子问题，真正握手时只问出一句“您还写吗”；{historical}笑了笑，反问她最近在读什么，她报了一本借来的小说，书名说错了一个字。',
+        text: '沙龙的主人{host}把{subjectPronoun}领到窗边，说今晚有位作家会来。{subjectPronoun}原本准备了一肚子问题，真正握手时只问出一句“您还写吗”；{historical}笑了笑，反问{subjectPronoun}最近在读什么，{subjectPronoun}报了一本借来的小说，书名说错了一个字。',
         effects: [
           link(
             'historical',
@@ -1241,7 +1346,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-salon-argue',
         weight: 0.35,
-        text: '她不同意{historical}对报纸的评论，声音比预想的大。屋里安静了一瞬，{host}把茶杯往她这边推了推；{historical}没有生气，只问她“那你写吗”，她答不上来，回家后写了一整夜。那篇没写完的稿子，第二天被她塞进了抽屉最底层。',
+        text: '{subjectPronoun}不同意{historical}对报纸的评论，声音比预想的大。屋里安静了一瞬，{host}把茶杯往{subjectPronoun}这边推了推；{historical}没有生气，只问{subjectPronoun}“那你写吗”，{subjectPronoun}答不上来，回家后写了一整夜。那篇没写完的稿子，第二天被{subjectPronoun}塞进了抽屉最底层。',
         effects: [
           link(
             'historical',
@@ -1259,9 +1364,9 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-salon-unnoticed',
         weight: 0.25,
-        text: '她坐在门边的椅子上，听完两小时谈话，只和{host}说了三句。散场时，{historical}从她身边走过，没有停；她看见他大衣袖口有一块墨迹，像一枚没盖好的章。她记住了作家袖口的墨迹，却忘了自己说过哪三句话。',
+        text: '{subjectPronoun}坐在门边的椅子上，听完两小时谈话，只和{host}说了三句。散场时，{historical}从{subjectPronoun}身边走过，没有停；{subjectPronoun}看见他大衣袖口有一块墨迹，像一枚没盖好的章。{subjectPronoun}记住了作家袖口的墨迹，却忘了自己说过哪三句话。',
         effects: [
-          link('host', 'acquaintance', { trust: 0.04 }, '沙龙主人记得她一直坐在门边'),
+          link('host', 'acquaintance', { trust: 0.04 }, '沙龙主人记得{subjectPronoun}一直坐在门边'),
           reputation(-0.01, '在沙龙里没有引起注意'),
           know('沙龙里被记住的人要么发言，要么被主人介绍', 0.65, 'inferred'),
           flag('salon_unnoticed', '在沙龙里坐了一晚没有被介绍'),
@@ -1280,12 +1385,22 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-salon-university-paper',
             weight: 0.55,
-            text: '讨论会挪到大学侧楼，{professor}把她的论文提纲夹在书里带来。她刚念到第二页，{historical}就打断她，问“你的证据在哪里”；她翻到脚注，发现引用的那本书就在他手边。她把那本书借回家，发现页边有上一位读者写的问号。',
+            text: '讨论会挪到大学侧楼，{professor}把{subjectPronoun}的论文提纲夹在书里带来。{subjectPronoun}刚念到第二页，{historical}就打断{subjectPronoun}，问“你的证据在哪里”；{subjectPronoun}翻到脚注，发现引用的那本书就在他手边。{subjectPronoun}把那本书借回家，发现页边有上一位读者写的问号。',
             effects: [
               role('salon_speaker', '在大学沙龙里宣读论文提纲'),
               reputation(0.05, '在沙龙里被作家追问证据'),
-              link('professor', 'acquaintance', { respect: 0.08 }, '教授把她的提纲带进讨论会'),
-              link('historical', 'acquaintance', { respect: 0.08 }, '作家当场追问她的脚注'),
+              link(
+                'professor',
+                'acquaintance',
+                { respect: 0.08 },
+                '教授把{subjectPronoun}的提纲带进讨论会',
+              ),
+              link(
+                'historical',
+                'acquaintance',
+                { respect: 0.08 },
+                '作家当场追问{subjectPronoun}的脚注',
+              ),
               know('沙龙里的追问会直接落到脚注和手边那本书上', 0.85, 'witnessed', '$historical'),
               cash(-0.5, '复印提纲和电车费'),
             ],
@@ -1294,15 +1409,20 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-salon-university-criticized',
             weight: 0.45,
-            text: '她的提纲被批评得只剩标题，{professor}说可以改，{historical}说不如重写。散会后，{host}把她的稿纸收进抽屉，说明年再拿出来；她走到街上，发现雪已经把台阶盖平了。稿纸在抽屉里放了一年，纸角被虫蛀出一个小洞。',
+            text: '{subjectPronoun}的提纲被批评得只剩标题，{professor}说可以改，{historical}说不如重写。散会后，{host}把{subjectPronoun}的稿纸收进抽屉，说明年再拿出来；{subjectPronoun}走到街上，发现雪已经把台阶盖平了。稿纸在抽屉里放了一年，纸角被虫蛀出一个小洞。',
             effects: [
               reputation(-0.03, '论文提纲在沙龙里被要求重写'),
-              link('professor', 'acquaintance', { trust: 0.04 }, '教授答应帮她改提纲'),
+              link(
+                'professor',
+                'acquaintance',
+                { trust: 0.04 },
+                '教授答应帮{subjectPronoun}改提纲',
+              ),
               link(
                 'historical',
                 'acquaintance',
                 { respect: 0.03, fear: 0.02 },
-                '作家说她的提纲不如重写',
+                '作家说{subjectPronoun}的提纲不如重写',
               ),
               know(
                 '提纲被否定不等于被禁止，稿纸还在沙龙主人的抽屉里',
@@ -1346,10 +1466,15 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-cafe-win',
         weight: 0.4,
-        text: '争论从一份报纸的头版开始，最后落到邻桌的糖罐上。{editor}说她的论证像“没拧紧的龙头”，她回了一句，满桌人笑起来；散场时，{editor}把自己的地址写在烟盒背面，说下周还来。',
+        text: '争论从一份报纸的头版开始，最后落到邻桌的糖罐上。{editor}说{subjectPronoun}的论证像“没拧紧的龙头”，{subjectPronoun}回了一句，满桌人笑起来；散场时，{editor}把自己的地址写在烟盒背面，说下周还来。',
         effects: [
           reputation(0.05, '在咖啡馆争论中占了上风'),
-          link('editor', 'colleague', { respect: 0.08, trust: 0.04 }, '编辑把地址写在烟盒背面给她'),
+          link(
+            'editor',
+            'colleague',
+            { respect: 0.08, trust: 0.04 },
+            '编辑把地址写在烟盒背面给{subjectPronoun}',
+          ),
           know('这位编辑每周三下午坐在靠窗第二桌，愿意听人反驳', 0.75, 'witnessed', '$editor'),
           cash(-1, '三杯咖啡和一份报纸'),
           flag('won_cafe_debate', '在咖啡馆争论中让编辑无言以对'),
@@ -1359,10 +1484,15 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-cafe-lose',
         weight: 0.3,
-        text: '她说了三句就被人打断，之后一直听。{editor}问她怎么不说话，她说“我在想你们为什么都不提房租”；桌上安静了一会儿，{editor}把账单推给她，说“那你想”。她把账单上的数字重新算了一遍，发现少算了自己的咖啡。',
+        text: '{subjectPronoun}说了三句就被人打断，之后一直听。{editor}问{subjectPronoun}怎么不说话，{subjectPronoun}说“我在想你们为什么都不提房租”；桌上安静了一会儿，{editor}把账单推给{subjectPronoun}，说“那你想”。{subjectPronoun}把账单上的数字重新算了一遍，发现少算了自己的咖啡。',
         effects: [
           reputation(-0.02, '在咖啡馆争论中被打断'),
-          link('editor', 'colleague', { trust: 0.05 }, '编辑把账单推给她，等她继续讲'),
+          link(
+            'editor',
+            'colleague',
+            { trust: 0.05 },
+            '编辑把账单推给{subjectPronoun}，等{subjectPronoun}继续讲',
+          ),
           know('咖啡馆里的争论可以谈文学和战争，谈房租会让人沉默', 0.8, 'witnessed', '$editor'),
           cash(-0.5, '替桌上人付的咖啡钱'),
           flag('lost_cafe_debate', '在争论中提出房租后没人接话'),
@@ -1373,7 +1503,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-cafe-friend',
         weight: 0.3,
-        text: '她原本只想借一份报纸，结果坐到打烊。邻桌的{neighbor}分给她半块蛋糕，问她是不是也在等稿费；两个人从稿费聊到电车月票，最后一起走到路口。路口的风把她的围巾吹到对方肩上，两个人都笑了。',
+        text: '{subjectPronoun}原本只想借一份报纸，结果坐到打烊。邻桌的{neighbor}分给{subjectPronoun}半块蛋糕，问{subjectPronoun}是不是也在等稿费；两个人从稿费聊到电车月票，最后一起走到路口。路口的风把{subjectPronoun}的围巾吹到对方肩上，两个人都笑了。',
         effects: [
           link('neighbor', 'friend', { trust: 0.08, affection: 0.05 }, '在咖啡馆分蛋糕后成为朋友'),
           know('这位新朋友也在等稿费，知道哪家报社拖得最久', 0.7, 'told', '$neighbor'),
@@ -1394,10 +1524,15 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-cafe-postwar-argue',
             weight: 0.55,
-            text: '有人提起战壕里的冬天，桌上忽然没人接话。{editor}说“现在说这些太早”，她反问“要等到什么时候”；争论没有结果，但散场时有两三个人留下来，帮她把椅子叠好。她走出咖啡馆时，发现自己的手还在抖，烟却没点着。',
+            text: '有人提起战壕里的冬天，桌上忽然没人接话。{editor}说“现在说这些太早”，{subjectPronoun}反问“要等到什么时候”；争论没有结果，但散场时有两三个人留下来，帮{subjectPronoun}把椅子叠好。{subjectPronoun}走出咖啡馆时，发现自己的手还在抖，烟却没点着。',
             effects: [
               reputation(0.04, '在战后咖啡馆里坚持谈战争记忆'),
-              link('editor', 'colleague', { trust: 0.04 }, '编辑与她争论该不该现在谈战争'),
+              link(
+                'editor',
+                'colleague',
+                { trust: 0.04 },
+                '编辑与{subjectPronoun}争论该不该现在谈战争',
+              ),
               know(
                 '战后咖啡馆里有人愿意听战争记忆，但不希望它变成日常话题',
                 0.8,
@@ -1412,11 +1547,11 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-cafe-postwar-silent',
             weight: 0.45,
-            text: '她本来准备讲自己的战争经历，听见邻桌有人在笑，就把话咽了回去。{editor}问她怎么了，她说“没什么”；回家路上，她第一次注意到咖啡馆的招牌缺了一个字母。她回家后把战争日记翻到最后一页，又合上了。',
+            text: '{subjectPronoun}本来准备讲自己的战争经历，听见邻桌有人在笑，就把话咽了回去。{editor}问{subjectPronoun}怎么了，{subjectPronoun}说“没什么”；回家路上，{subjectPronoun}第一次注意到咖啡馆的招牌缺了一个字母。{subjectPronoun}回家后把战争日记翻到最后一页，又合上了。',
             effects: [
               flag('fell_silent_about_war', '在咖啡馆里把战争经历咽了回去'),
               reputation(-0.01, '没有接住战争话题'),
-              link('editor', 'colleague', { trust: 0.03 }, '编辑注意到她突然沉默'),
+              link('editor', 'colleague', { trust: 0.03 }, '编辑注意到{subjectPronoun}突然沉默'),
               know('战后公开谈战争会改变桌上的气氛，沉默也是一种回答', 0.7, 'inferred'),
               cash(-0.5, '没喝完的咖啡'),
               health(-0.01, '压住回忆后的疲惫'),
@@ -1434,12 +1569,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-cafe-university-dispute',
             weight: 0.55,
-            text: '讨论从一篇讨论课报告开始，{professor}把她的反驳称作“聪明的跑题”，{editor}在桌下记下这句话。她继续讲，声音越来越稳；散场时，{professor}说下周把她的名字列进讨论名单。她把反驳的要点写在餐巾上，回家后才发现墨水透了。',
+            text: '讨论从一篇讨论课报告开始，{professor}把{subjectPronoun}的反驳称作“聪明的跑题”，{editor}在桌下记下这句话。{subjectPronoun}继续讲，声音越来越稳；散场时，{professor}说下周把{subjectPronoun}的名字列进讨论名单。{subjectPronoun}把反驳的要点写在餐巾上，回家后才发现墨水透了。',
             effects: [
               role('seminar_respondent', '被列入下周讨论会的回应人名单'),
               reputation(0.05, '在咖啡馆讨论会上反驳教授'),
-              link('professor', 'acquaintance', { respect: 0.08 }, '教授把她的名字列进讨论名单'),
-              link('editor', 'colleague', { trust: 0.04 }, '编辑记下了她的反驳'),
+              link(
+                'professor',
+                'acquaintance',
+                { respect: 0.08 },
+                '教授把{subjectPronoun}的名字列进讨论名单',
+              ),
+              link('editor', 'colleague', { trust: 0.04 }, '编辑记下了{subjectPronoun}的反驳'),
               know('讨论名单由教授决定，被列进去就要准备回应', 0.85, 'witnessed', '$professor'),
               flag('seminar_dispute', '在咖啡馆讨论会上与教授交锋'),
             ],
@@ -1448,12 +1588,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-cafe-university-notes',
             weight: 0.45,
-            text: '她离开座位去取水，回来时笔记本不见了。{neighbor}说看见有人翻过，{professor}让她别声张；第二天，她的论点出现在另一篇报告里，连措辞都没改。她把剩下的笔记重新抄了一遍，故意漏掉最关键的公式。',
+            text: '{subjectPronoun}离开座位去取水，回来时笔记本不见了。{neighbor}说看见有人翻过，{professor}让{subjectPronoun}别声张；第二天，{subjectPronoun}的论点出现在另一篇报告里，连措辞都没改。{subjectPronoun}把剩下的笔记重新抄了一遍，故意漏掉最关键的公式。',
             effects: [
               flag('seminar_notes_stolen', '讨论会上的笔记本被人翻走'),
               reputation(-0.02, '论点被另一篇报告先用'),
-              link('neighbor', 'acquaintance', { trust: -0.05 }, '邻座看见有人翻她的笔记本'),
-              link('professor', 'acquaintance', { fear: 0.03 }, '教授让她不要声张'),
+              link(
+                'neighbor',
+                'acquaintance',
+                { trust: -0.05 },
+                '邻座看见有人翻{subjectPronoun}的笔记本',
+              ),
+              link('professor', 'acquaintance', { fear: 0.03 }, '教授让{subjectPronoun}不要声张'),
               know('讨论会上的笔记会被人借走，论点的优先权很难证明', 0.8, 'witnessed', '$neighbor'),
               health(-0.02, '发现笔记不见后的焦虑'),
             ],
@@ -1487,10 +1632,10 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-theatre-applaud',
         weight: 0.4,
-        text: '首演到第二幕，台下有人站起来喊“下流”，有人鼓掌。她坐在正厅后排，手心里全是汗；{actor}在台上停了一拍，接着把台词念完，声音比开场时更高。散场后，她在节目单背面写下第二幕停顿的次数。',
+        text: '首演到第二幕，台下有人站起来喊“下流”，有人鼓掌。{subjectPronoun}坐在正厅后排，手心里全是汗；{actor}在台上停了一拍，接着把台词念完，声音比开场时更高。散场后，{subjectPronoun}在节目单背面写下第二幕停顿的次数。',
         effects: [
           reputation(0.05, '在首演争议中鼓掌支持演员'),
-          link('actor', 'colleague', { respect: 0.08 }, '演员看见她在争议中鼓掌'),
+          link('actor', 'colleague', { respect: 0.08 }, '演员看见{subjectPronoun}在争议中鼓掌'),
           know('这出戏的第二幕会引发抗议，演员不会停下来', 0.8, 'witnessed', '$actor'),
           cash(-2, '正厅后排的票钱'),
           flag('applauded_scandal_play', '在争议首演中鼓掌'),
@@ -1500,10 +1645,10 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-theatre-protest',
         weight: 0.3,
-        text: '她跟着几个人在幕间离场，把票根撕成两半。{actor}后来在门口抽烟，问她觉得哪里不好；她说“不是戏不好，是你们把话说得太响”，{actor}笑了，把烟递给她。票根被她夹进书里，后来每次翻到那一页都会停一下。',
+        text: '{subjectPronoun}跟着几个人在幕间离场，把票根撕成两半。{actor}后来在门口抽烟，问{subjectPronoun}觉得哪里不好；{subjectPronoun}说“不是戏不好，是你们把话说得太响”，{actor}笑了，把烟递给{subjectPronoun}。票根被{subjectPronoun}夹进书里，后来每次翻到那一页都会停一下。',
         effects: [
           reputation(0.03, '在幕间公开退场'),
-          link('actor', 'colleague', { trust: 0.06 }, '演员在门口问她为什么退场'),
+          link('actor', 'colleague', { trust: 0.06 }, '演员在门口问{subjectPronoun}为什么退场'),
           know('幕间退场会被演员看见，散场后的门口比剧场里更容易说话', 0.7, 'witnessed', '$actor'),
           cash(-1, '只看半场的票钱'),
           flag('protested_scandal_play', '在争议首演的幕间退场'),
@@ -1513,11 +1658,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-theatre-review',
         weight: 0.3,
-        text: '她替小报写了三百字剧评，把丑闻写成“时代的病症”。{actor}读到后托人带话，说她连第二幕都没看懂；她把稿费存进银行，又在下一期加了一句“演员有权反驳”。下一期小报多了一行编者按，说剧评只代表作者本人。',
+        text: '{subjectPronoun}替小报写了三百字剧评，把丑闻写成“时代的病症”。{actor}读到后托人带话，说{subjectPronoun}连第二幕都没看懂；{subjectPronoun}把稿费存进银行，又在下一期加了一句“演员有权反驳”。下一期小报多了一行编者按，说剧评只代表作者本人。',
         effects: [
           role('theatre_critic', '替小报写争议首演的剧评'),
           reputation(0.06, '剧评引起演员回应'),
-          link('actor', 'rival', { trust: -0.05, respect: 0.03 }, '演员托人带话反驳她的剧评'),
+          link(
+            'actor',
+            'rival',
+            { trust: -0.05, respect: 0.03 },
+            '演员托人带话反驳{subjectPronoun}的剧评',
+          ),
           cash(1, '三百字剧评的稿费'),
           know('剧评发表后演员可以回应，下一期还能再写一句', 0.8, 'witnessed', '$actor'),
           flag('reviewed_scandal_play', '写了争议首演的剧评'),
@@ -1535,7 +1685,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-theatre-reform-censored',
             weight: 0.55,
-            text: '审查官在首演前删掉整段独白，{actor}在台上用停顿把空白填满。她坐在第三排，听见后排有人小声数删掉的字；散场时，{censor}站在门口，手里拿着被划过的脚本。她把被划掉的句子抄在节目单背面，带回了家。',
+            text: '审查官在首演前删掉整段独白，{actor}在台上用停顿把空白填满。{subjectPronoun}坐在第三排，听见后排有人小声数删掉的字；散场时，{censor}站在门口，手里拿着被划过的脚本。{subjectPronoun}把被划掉的句子抄在节目单背面，带回了家。',
             effects: [
               flag('premiere_censored', '首演前整段独白被审查官删掉'),
               link('actor', 'colleague', { trust: 0.08 }, '演员用停顿填满被删的独白'),
@@ -1554,11 +1704,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-theatre-reform-read',
             weight: 0.45,
-            text: '她弄到一页被删的台词，在咖啡馆里读给几个人听。{actor}赶来时，她已经读到结尾；{actor}没有阻止，只说“别把我的名字念进去”。读完她把那页纸折成四折，塞进咖啡馆的糖罐底下。',
+            text: '{subjectPronoun}弄到一页被删的台词，在咖啡馆里读给几个人听。{actor}赶来时，{subjectPronoun}已经读到结尾；{actor}没有阻止，只说“别把我的名字念进去”。读完{subjectPronoun}把那页纸折成四折，塞进咖啡馆的糖罐底下。',
             effects: [
               flag('read_banned_scene', '在咖啡馆里读了被删的台词'),
               reputation(0.05, '把被删的台词带到咖啡馆'),
-              link('actor', 'colleague', { trust: 0.06, fear: 0.03 }, '演员让她别念自己的名字'),
+              link(
+                'actor',
+                'colleague',
+                { trust: 0.06, fear: 0.03 },
+                '演员让{subjectPronoun}别念自己的名字',
+              ),
               link('censor', 'acquaintance', { fear: 0.06 }, '审查官会追查被删台词的抄本'),
               cash(-0.5, '咖啡馆的茶点'),
               know('被删的台词有抄本在演员和观众之间流传', 0.8, 'document'),
@@ -1576,11 +1731,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-theatre-university-protest',
             weight: 0.55,
-            text: '学生在售票处散发抗议传单，{professor}站在台阶上，既没有接，也没有走开。她问教授要不要进去，{professor}说“戏是戏，审查是审查”；她买了最后一张站票。她把传单折好，放进课本里，站票却一直攥在手上。',
+            text: '学生在售票处散发抗议传单，{professor}站在台阶上，既没有接，也没有走开。{subjectPronoun}问教授要不要进去，{professor}说“戏是戏，审查是审查”；{subjectPronoun}买了最后一张站票。{subjectPronoun}把传单折好，放进课本里，站票却一直攥在手上。',
             effects: [
               role('student_protest_organizer', '在学生抗议中负责散发传单'),
               reputation(0.04, '在学生抗议中买了站票进场'),
-              link('professor', 'acquaintance', { trust: 0.04 }, '教授在台阶上看着她买票'),
+              link(
+                'professor',
+                'acquaintance',
+                { trust: 0.04 },
+                '教授在台阶上看着{subjectPronoun}买票',
+              ),
               know(
                 '教授不会公开支持学生抗议，但也不会阻止他们进场',
                 0.7,
@@ -1595,7 +1755,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-theatre-university-cancelled',
             weight: 0.45,
-            text: '院长在开演前宣布取消，理由是“可能引起误解”。{professor}把票钱退给学生，{actor}在后台卸妆；她站在空座位之间，听见舞台上的灯一盏盏熄灭。她把退回来的票钱数了一遍，留下最旧的一张票根。',
+            text: '院长在开演前宣布取消，理由是“可能引起误解”。{professor}把票钱退给学生，{actor}在后台卸妆；{subjectPronoun}站在空座位之间，听见舞台上的灯一盏盏熄灭。{subjectPronoun}把退回来的票钱数了一遍，留下最旧的一张票根。',
             effects: [
               flag('dean_cancelled_play', '大学剧场在开演前取消演出'),
               reputation(-0.02, '演出取消后留在空剧场'),
@@ -1642,12 +1802,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-publication-accepted',
         weight: 0.4,
-        text: '编辑把校样摊在桌上，红铅笔从第一行划到最后一行。她以为要被退稿，{editor}却把最后一页翻过来，说“结尾留着，前面重写”；她走出印刷所时，天已经亮了，手里多了一张排字单。',
+        text: '编辑把校样摊在桌上，红铅笔从第一行划到最后一行。{subjectPronoun}以为要被退稿，{editor}却把最后一页翻过来，说“结尾留着，前面重写”；{subjectPronoun}走出印刷所时，天已经亮了，手里多了一张排字单。',
         effects: [
           role('published_author', '短篇被出版社接受并进入排字'),
           cash(6, '短篇的预付稿费'),
           reputation(0.06, '短篇被出版社接受'),
-          link('editor', 'colleague', { respect: 0.08, trust: 0.04 }, '编辑让她保留结尾、重写前面'),
+          link(
+            'editor',
+            'colleague',
+            { respect: 0.08, trust: 0.04 },
+            '编辑让{subjectPronoun}保留结尾、重写前面',
+          ),
           know('出版社愿意保留结尾，但前两章要按编辑的红笔重写', 0.85, 'document', '$editor'),
           flag('manuscript_accepted', '第一篇短篇通过出版社审稿'),
         ],
@@ -1656,7 +1821,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-publication-rejected',
         weight: 0.3,
-        text: '退稿信只有两行，说“题材太近，读者会不舒服”。{editor}把信推过来时没有抬头；她把稿纸收回包里，走到桥上才打开，发现背面还有一行铅笔字：“换个名字再寄。”她把退稿信和稿纸分开，信留在抽屉，稿纸带去印刷所。',
+        text: '退稿信只有两行，说“题材太近，读者会不舒服”。{editor}把信推过来时没有抬头；{subjectPronoun}把稿纸收回包里，走到桥上才打开，发现背面还有一行铅笔字：“换个名字再寄。”{subjectPronoun}把退稿信和稿纸分开，信留在抽屉，稿纸带去印刷所。',
         effects: [
           flag('manuscript_rejected', '短篇因题材太近被退稿'),
           reputation(-0.02, '收到出版社退稿信'),
@@ -1669,12 +1834,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-publication-self',
         weight: 0.3,
-        text: '她等不到出版社的回信，便把积蓄拿出来，找印刷所印了三百本。{printer}问她要不要署真名，她说“署”；书堆在床底下，第一本卖给了楼下的面包师。面包师把书放在柜台最显眼的位置，三天才卖出一本。',
+        text: '{subjectPronoun}等不到出版社的回信，便把积蓄拿出来，找印刷所印了三百本。{printer}问{subjectPronoun}要不要署真名，{subjectPronoun}说“署”；书堆在床底下，第一本卖给了楼下的面包师。面包师把书放在柜台最显眼的位置，三天才卖出一本。',
         effects: [
           role('self_published_author', '自费印刷并署名出版'),
           cash(-10, '自费印刷三百本的费用'),
           reputation(0.04, '自费出版第一本书'),
-          link('printer', 'colleague', { trust: 0.06 }, '印刷工替她印了三百本'),
+          link('printer', 'colleague', { trust: 0.06 }, '印刷工替{subjectPronoun}印了三百本'),
           know('自费出版要自己找印刷所、自己卖书，书店不会主动进货', 0.8, 'witnessed', '$printer'),
           flag('self_published_book', '自费出版了一本书'),
         ],
@@ -1691,12 +1856,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-publication-postwar-memoir',
             weight: 0.55,
-            text: '出版社愿意出她的战争笔记，但要求把结尾改得“更有希望”。{editor}说这是市场，她说这是撒谎；最后各让一步，书印出来了，最后一章只有三页，标题叫《后来》。她把《后来》的第一本送给医院档案室，没有留名。',
+            text: '出版社愿意出{subjectPronoun}的战争笔记，但要求把结尾改得“更有希望”。{editor}说这是市场，{subjectPronoun}说这是撒谎；最后各让一步，书印出来了，最后一章只有三页，标题叫《后来》。{subjectPronoun}把《后来》的第一本送给医院档案室，没有留名。',
             effects: [
               role('published_author', '战争笔记以《后来》为题出版'),
               cash(8, '战争笔记的版税预付'),
               reputation(0.07, '战争笔记出版并引起讨论'),
-              link('editor', 'colleague', { trust: 0.05 }, '编辑和她为结尾各让一步'),
+              link('editor', 'colleague', { trust: 0.05 }, '编辑和{subjectPronoun}为结尾各让一步'),
               know(
                 '出版社要求战争笔记的结尾更有希望，作者可以保留一个短章',
                 0.9,
@@ -1711,11 +1876,11 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-publication-postwar-cuts',
             weight: 0.45,
-            text: '书稿被退回来，附了一张清单：删去战壕、删去医院、删去葬礼。她照着删到第三处，发现自己已经不记得原来想写什么；{editor}说“这样更好卖”，她把清单折成纸船放进多瑙河。',
+            text: '书稿被退回来，附了一张清单：删去战壕、删去医院、删去葬礼。{subjectPronoun}照着删到第三处，发现自己已经不记得原来想写什么；{editor}说“这样更好卖”，{subjectPronoun}把清单折成纸船放进多瑙河。',
             effects: [
               flag('war_book_censored', '战争书稿被要求删除战壕、医院和葬礼'),
               reputation(0.03, '按出版社清单删改书稿'),
-              link('editor', 'colleague', { trust: -0.03 }, '编辑催她按清单删改'),
+              link('editor', 'colleague', { trust: -0.03 }, '编辑催{subjectPronoun}按清单删改'),
               cash(3, '删改后重新签约的稿费'),
               know(
                 '出版社的删改清单会改变书稿的记忆顺序，删到最后可能找不到原意',
@@ -1755,10 +1920,15 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-censorship-submit',
         weight: 0.35,
-        text: '她把稿子交到审查窗口，{censor}翻了两页，用蓝铅笔在页边画了一个圈。她问圈是什么意思，{censor}说“等通知”；三个星期后，通知来了，圈里的句子还在，圈外的段落不见了。通知上没有解释，只写着“按删改稿排印”。',
+        text: '{subjectPronoun}把稿子交到审查窗口，{censor}翻了两页，用蓝铅笔在页边画了一个圈。{subjectPronoun}问圈是什么意思，{censor}说“等通知”；三个星期后，通知来了，圈里的句子还在，圈外的段落不见了。通知上没有解释，只写着“按删改稿排印”。',
         effects: [
           flag('submitted_to_censor', '把稿子交到审查窗口'),
-          link('censor', 'acquaintance', { fear: 0.06 }, '审查官用蓝铅笔圈了她的稿子'),
+          link(
+            'censor',
+            'acquaintance',
+            { fear: 0.06 },
+            '审查官用蓝铅笔圈了{subjectPronoun}的稿子',
+          ),
           cash(-1, '送审的复写纸和车钱'),
           know('审查官用蓝铅笔圈句子，圈外段落可能在通知前被删', 0.85, 'witnessed', '$censor'),
           reputation(-0.01, '稿子被审查拖延'),
@@ -1768,12 +1938,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-censorship-defy',
         weight: 0.35,
-        text: '她按原样把稿子印了出来。{censor}第二天出现在印刷所，把未装订的纸页堆在院子里烧；{editor}站在旁边，一句话也没说，只把她的名字从作者栏里划掉。烧纸的烟飘进院子，邻居把窗一扇扇关上。',
+        text: '{subjectPronoun}按原样把稿子印了出来。{censor}第二天出现在印刷所，把未装订的纸页堆在院子里烧；{editor}站在旁边，一句话也没说，只把{subjectPronoun}的名字从作者栏里划掉。烧纸的烟飘进院子，邻居把窗一扇扇关上。',
         effects: [
           flag('defied_censor', '按原样印发了未送审的稿子'),
-          condition('under_police_observation', '审查官开始注意她常去的印刷所'),
+          condition('under_police_observation', '审查官开始注意{subjectPronoun}常去的印刷所'),
           reputation(0.05, '敢在审查下按原样印稿'),
-          link('editor', 'colleague', { trust: -0.05 }, '编辑把她的名字从作者栏划掉'),
+          link('editor', 'colleague', { trust: -0.05 }, '编辑把{subjectPronoun}的名字从作者栏划掉'),
           link('censor', 'acquaintance', { fear: 0.12 }, '审查官在印刷所院子里烧纸'),
           cash(-2, '被烧掉的纸页和印刷费'),
           know('未送审的稿子会被当场烧掉，编辑可能先划掉作者名自保', 0.9, 'witnessed', '$censor'),
@@ -1783,12 +1953,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-censorship-cut',
         weight: 0.3,
-        text: '她自己删掉了最危险的一段，又在空白处补了一句无关的风景。{censor}看完后盖了章，{editor}却把稿子退回来，说“读者会看出你怕了”；她把删掉的那页夹进日记。日记里那页纸比稿纸厚，摸上去像一道没愈的疤。',
+        text: '{subjectPronoun}自己删掉了最危险的一段，又在空白处补了一句无关的风景。{censor}看完后盖了章，{editor}却把稿子退回来，说“读者会看出你怕了”；{subjectPronoun}把删掉的那页夹进日记。日记里那页纸比稿纸厚，摸上去像一道没愈的疤。',
         effects: [
           flag('self_censored_text', '自己删掉最危险的一段后送审'),
           know('审查官会盖章放行删改稿，但编辑能看出作者在害怕', 0.75, 'witnessed', '$editor'),
           reputation(-0.03, '稿子被编辑认为自我审查过度'),
-          link('editor', 'colleague', { trust: -0.02 }, '编辑退回她自我删改的稿子'),
+          link('editor', 'colleague', { trust: -0.02 }, '编辑退回{subjectPronoun}自我删改的稿子'),
           cash(2, '删改后重印的稿费'),
           health(-0.01, '删掉自己文字后的不适'),
         ],
@@ -1805,12 +1975,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-censorship-war-ban',
             weight: 0.55,
-            text: '报纸因为一条前线消息被勒令停刊，{censor}在门口贴了封条。{editor}把最后的校样塞给她，说“找个地方藏起来”；她把纸页铺在床板下，晚上睡觉时能闻到油墨味。她把校样铺在床板下，每晚睡前都摸一遍纸边。',
+            text: '报纸因为一条前线消息被勒令停刊，{censor}在门口贴了封条。{editor}把最后的校样塞给{subjectPronoun}，说“找个地方藏起来”；{subjectPronoun}把纸页铺在床板下，晚上睡觉时能闻到油墨味。{subjectPronoun}把校样铺在床板下，每晚睡前都摸一遍纸边。',
             effects: [
               flag('newspaper_banned', '报纸因前线消息被勒令停刊'),
               unemployment('报纸停刊后失去编辑工作'),
               cash(-4, '停刊后没有领到的工资'),
-              link('editor', 'colleague', { trust: 0.08 }, '编辑把最后的校样交给她藏'),
+              link(
+                'editor',
+                'colleague',
+                { trust: 0.08 },
+                '编辑把最后的校样交给{subjectPronoun}藏',
+              ),
               link('censor', 'acquaintance', { fear: 0.12 }, '审查官在印刷所门口贴封条'),
               know(
                 '战时一条前线消息就足以让报纸停刊，封条由审查官亲自贴',
@@ -1824,7 +1999,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-censorship-war-replace',
             weight: 0.45,
-            text: '她把战报里的“撤退”改成“转移”，又删去伤亡数字。{censor}这次没有删，只在页眉写“可发”；{editor}看完后把报纸摔在桌上，说“我们成了什么”。他把报纸摔在桌上，油墨沾了她的手心，洗了两遍才掉。',
+            text: '{subjectPronoun}把战报里的“撤退”改成“转移”，又删去伤亡数字。{censor}这次没有删，只在页眉写“可发”；{editor}看完后把报纸摔在桌上，说“我们成了什么”。他把报纸摔在桌上，油墨沾了{subjectPronoun}的手心，洗了两遍才掉。',
             effects: [
               flag('wartime_text_replaced', '把战报中的撤退改成转移并删去伤亡数字'),
               cash(1, '照常出版的稿费'),
@@ -1868,10 +2043,15 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-lecture-challenge',
         weight: 0.4,
-        text: '讲堂最后一排没有桌子，她把笔记本垫在膝盖上。{professor}讲到第三张图表时，她举手指出样本只来自一家医院；{professor}停了一下，说“这位同学说得对”，{rival}在旁边笑了一声。下课后，{rival}在门口问她要不要一起去看标本。',
+        text: '讲堂最后一排没有桌子，{subjectPronoun}把笔记本垫在膝盖上。{professor}讲到第三张图表时，{subjectPronoun}举手指出样本只来自一家医院；{professor}停了一下，说“这位同学说得对”，{rival}在旁边笑了一声。下课后，{rival}在门口问{subjectPronoun}要不要一起去看标本。',
         effects: [
           reputation(0.05, '在讲堂上指出教授样本的局限'),
-          link('professor', 'acquaintance', { respect: 0.08 }, '教授当堂承认她的质疑'),
+          link(
+            'professor',
+            'acquaintance',
+            { respect: 0.08 },
+            '教授当堂承认{subjectPronoun}的质疑',
+          ),
           link('rival', 'rival', { trust: -0.02, respect: 0.03 }, '对手在讲堂上笑了一声'),
           role('seminar_challenger', '在讲堂上公开质疑教授的样本'),
           know('教授的图表只来自一家医院，公开质疑会得到当堂回应', 0.85, 'witnessed', '$professor'),
@@ -1881,11 +2061,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-lecture-note',
         weight: 0.3,
-        text: '她原本准备提问，最后只在课后把纸条塞进{professor}的信箱。第二天，{professor}在课上念了她的问题，没有念名字；{rival}回头看了她一眼，她把头低下去。她把问题又抄了一遍，这次在末尾写上自己的名字。',
+        text: '{subjectPronoun}原本准备提问，最后只在课后把纸条塞进{professor}的信箱。第二天，{professor}在课上念了{subjectPronoun}的问题，没有念名字；{rival}回头看了{subjectPronoun}一眼，{subjectPronoun}把头低下去。{subjectPronoun}把问题又抄了一遍，这次在末尾写上自己的名字。',
         effects: [
-          link('professor', 'acquaintance', { respect: 0.05 }, '教授在课上念了她匿名纸条上的问题'),
+          link(
+            'professor',
+            'acquaintance',
+            { respect: 0.05 },
+            '教授在课上念了{subjectPronoun}匿名纸条上的问题',
+          ),
           reputation(0.03, '问题被教授在课上念出'),
-          link('rival', 'rival', { fear: 0.02 }, '对手回头看了她一眼'),
+          link('rival', 'rival', { fear: 0.02 }, '对手回头看了{subjectPronoun}一眼'),
           know('教授会念匿名纸条上的问题，但不会说出提问者', 0.8, 'witnessed', '$professor'),
           flag('anonymous_question', '用匿名纸条向教授提问'),
         ],
@@ -1894,15 +2079,20 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-lecture-priority',
         weight: 0.3,
-        text: '她发现{rival}的论文用了她去年未发表的数据，连表格的错别字都一样。她去找{professor}，{professor}说“先证明数据是你的”；她回到宿舍，把实验记录一页页抄进挂号信。挂号信的回执被她夹进实验记录，日期朝外。',
+        text: '{subjectPronoun}发现{rival}的论文用了{subjectPronoun}去年未发表的数据，连表格的错别字都一样。{subjectPronoun}去找{professor}，{professor}说“先证明数据是你的”；{subjectPronoun}回到宿舍，把实验记录一页页抄进挂号信。挂号信的回执被{subjectPronoun}夹进实验记录，日期朝外。',
         effects: [
-          flag('research_priority_dispute', '发现对手论文使用了她未发表的数据'),
-          link('rival', 'rival', { trust: -0.1, fear: 0.05 }, '对手论文用了她的数据'),
-          link('professor', 'acquaintance', { trust: -0.02 }, '教授要她先证明数据归属'),
+          flag('research_priority_dispute', '发现对手论文使用了{subjectPronoun}未发表的数据'),
+          link('rival', 'rival', { trust: -0.1, fear: 0.05 }, '对手论文用了{subjectPronoun}的数据'),
+          link(
+            'professor',
+            'acquaintance',
+            { trust: -0.02 },
+            '教授要{subjectPronoun}先证明数据归属',
+          ),
           reputation(0.02, '开始用挂号信固定研究记录'),
           health(-0.02, '抄写实验记录到深夜'),
           know(
-            '研究优先权要靠邮寄记录和日期证明，教授不会替她裁决',
+            '研究优先权要靠邮寄记录和日期证明，教授不会替{subjectPronoun}裁决',
             0.85,
             'witnessed',
             '$professor',
@@ -1921,11 +2111,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-lecture-university-give',
             weight: 0.55,
-            text: '她被安排替{lecturer}讲一堂课，讲稿写到凌晨。第二天，教室里只来了九个人，{rival}坐在第一排，每隔几分钟就翻一次书；她讲完时，{lecturer}在门口点了点头。下课后，{rival}把翻过的书留在第一排，没有带走。',
+            text: '{subjectPronoun}被安排替{lecturer}讲一堂课，讲稿写到凌晨。第二天，教室里只来了九个人，{rival}坐在第一排，每隔几分钟就翻一次书；{subjectPronoun}讲完时，{lecturer}在门口点了点头。下课后，{rival}把翻过的书留在第一排，没有带走。',
             effects: [
               role('lecturer', '替教授讲了一堂大学课程'),
               reputation(0.05, '第一次站上大学讲台'),
-              link('lecturer', 'acquaintance', { respect: 0.08 }, '讲师在门口听完她的课'),
+              link(
+                'lecturer',
+                'acquaintance',
+                { respect: 0.08 },
+                '讲师在门口听完{subjectPronoun}的课',
+              ),
               link('rival', 'rival', { trust: -0.02 }, '对手坐在第一排不断翻书'),
               know('替课只来了九个人，但讲师会在门口听最后几分钟', 0.8, 'witnessed', '$lecturer'),
               flag('gave_university_lecture', '第一次在大学讲堂授课'),
@@ -1936,12 +2131,22 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-lecture-university-stolen',
             weight: 0.45,
-            text: '她的讲稿被{rival}先拿去印刷，署名只剩对方。{lecturer}说“学术界常有这种事”，{professor}让她把通信记录留好；她把两人的来往信件按日期排开，发现自己最早的那封没有寄出。她把未寄出的信重新封好，在信封上补了日期。',
+            text: '{subjectPronoun}的讲稿被{rival}先拿去印刷，署名只剩对方。{lecturer}说“学术界常有这种事”，{professor}让{subjectPronoun}把通信记录留好；{subjectPronoun}把两人的来往信件按日期排开，发现自己最早的那封没有寄出。{subjectPronoun}把未寄出的信重新封好，在信封上补了日期。',
             effects: [
               flag('rival_published_first', '讲稿被对手先印刷，署名只剩对方'),
               reputation(-0.03, '讲稿被对手抢先发表'),
-              link('rival', 'rival', { trust: -0.08, fear: 0.04 }, '对手拿走了她的讲稿'),
-              link('lecturer', 'acquaintance', { trust: 0.04 }, '讲师让她保留通信记录'),
+              link(
+                'rival',
+                'rival',
+                { trust: -0.08, fear: 0.04 },
+                '对手拿走了{subjectPronoun}的讲稿',
+              ),
+              link(
+                'lecturer',
+                'acquaintance',
+                { trust: 0.04 },
+                '讲师让{subjectPronoun}保留通信记录',
+              ),
               know('讲稿被抢先发表时，未寄出的信件不能证明优先权', 0.9, 'document', '$lecturer'),
               health(-0.02, '发现自己没有寄出关键信件后的懊悔'),
             ],
@@ -1974,7 +2179,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-rumor-believe',
         weight: 0.4,
-        text: '楼梯间的水管又漏了，{neighbor}一边接水一边说，城北新开的工厂在招女工，一天给两克朗。她回屋把这句话记在账单背面，第二天去车站问车次，售票员说那条线已经改道。',
+        text: '楼梯间的水管又漏了，{neighbor}一边接水一边说，城北新开的工厂在招女工，一天给两克朗。{subjectPronoun}回屋把这句话记在账单背面，第二天去车站问车次，售票员说那条线已经改道。',
         effects: [
           flag('believed_city_work_rumor', '相信城北新工厂招女工的消息'),
           know(
@@ -1983,7 +2188,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
             'told',
             '$neighbor',
           ),
-          link('neighbor', 'acquaintance', { trust: 0.04 }, '邻居把招工消息告诉她'),
+          link('neighbor', 'acquaintance', { trust: 0.04 }, '邻居把招工消息告诉{subjectPronoun}'),
           cash(-0.2, '去车站问车次的车钱'),
         ],
         significance: 0.4,
@@ -1991,24 +2196,29 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-rumor-verify',
         weight: 0.3,
-        text: '她没有直接信，先去市场问了两个摊贩，又在报纸中缝找到一条招工启事。启事上的地址和{neighbor}说的差三条街；她把报纸折好，决定周日自己去看。摊贩说那条街最近换了门牌，旧地址已经找不到。',
+        text: '{subjectPronoun}没有直接信，先去市场问了两个摊贩，又在报纸中缝找到一条招工启事。启事上的地址和{neighbor}说的差三条街；{subjectPronoun}把报纸折好，决定周日自己去看。摊贩说那条街最近换了门牌，旧地址已经找不到。',
         effects: [
           flag('verified_work_rumor', '没有直接相信，先去市场和报纸核对招工消息'),
           know('招工启事上的地址和邻居说的差三条街，周日可以自己去看', 0.85, 'document'),
-          link('neighbor', 'acquaintance', { trust: 0.03 }, '邻居的消息被她拿去核对'),
+          link('neighbor', 'acquaintance', { trust: 0.03 }, '邻居的消息被{subjectPronoun}拿去核对'),
           cash(-0.5, '买报纸和去市场的车钱'),
-          reputation(0.02, '邻居知道她做事会先核对'),
+          reputation(0.02, '邻居知道{subjectPronoun}做事会先核对'),
         ],
         significance: 0.4,
       },
       {
         id: 'civic-rumor-spread',
         weight: 0.3,
-        text: '她把消息添了一句“包吃住”，传到隔壁院子。三天后，有五个女人来问她怎么报名；她这才发现{neighbor}说的是“可能招人”，而她已经替人家许下了工位。那五个女人走后，院子里的人开始躲着她说话。',
+        text: '{subjectPronoun}把消息添了一句“包吃住”，传到隔壁院子。三天后，有五个女人来问{subjectPronoun}怎么报名；{subjectPronoun}这才发现{neighbor}说的是“可能招人”，而{subjectPronoun}已经替人家许下了工位。那五个女人走后，院子里的人开始躲着{subjectPronoun}说话。',
         effects: [
           flag('spread_neighborhood_rumor', '把“可能招人”传成了“包吃住”'),
           reputation(-0.03, '替邻居许下了并不存在的工位'),
-          link('neighbor', 'acquaintance', { trust: -0.04 }, '邻居发现她添了“包吃住”'),
+          link(
+            'neighbor',
+            'acquaintance',
+            { trust: -0.04 },
+            '邻居发现{subjectPronoun}添了“包吃住”',
+          ),
           know('招工消息在院子里传一圈就会多出条件，最先传话的人要负责', 0.8, 'inferred'),
           health(-0.01, '被五个人围着追问后的头痛'),
         ],
@@ -2025,7 +2235,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-rumor-rural-work',
             weight: 0.55,
-            text: '葡萄园的{farmer}说今年缺人手，收成后按桶算钱。她把消息带回院子，第二天就有人来问；{farmer}却改口说“先来试一天”，她站在两人中间，觉得自己像个没有佣金的中间人。试工结束时，{farmer}只按半天算钱，说剩下的看收成。',
+            text: '葡萄园的{farmer}说今年缺人手，收成后按桶算钱。{subjectPronoun}把消息带回院子，第二天就有人来问；{farmer}却改口说“先来试一天”，{subjectPronoun}站在两人中间，觉得自己像个没有佣金的中间人。试工结束时，{farmer}只按半天算钱，说剩下的看收成。',
             effects: [
               cash(2, '替葡萄园找到短工后得到的谢礼'),
               flag('found_vineyard_work', '把葡萄园招工消息带回院子'),
@@ -2033,7 +2243,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
                 'farmer',
                 'acquaintance',
                 { trust: 0.06, obligation: 0.04 },
-                '农场主让她先带人来试工',
+                '农场主让{subjectPronoun}先带人来试工',
               ),
               know('葡萄园按桶算钱，但试工当天不算工钱', 0.85, 'told', '$farmer'),
               reputation(0.02, '替邻居找到短工'),
@@ -2043,11 +2253,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-rumor-rural-false',
             weight: 0.45,
-            text: '她听说山那边的酒庄要雇人，走了两个小时才到，门口却挂着“本季已满”。回程时下起雨，她把鞋提在手里；{farmer}在村口看见她，说“下次先让人带个话”。她把湿鞋晾在炉边，鞋底沾着山那边的红土。',
+            text: '{subjectPronoun}听说山那边的酒庄要雇人，走了两个小时才到，门口却挂着“本季已满”。回程时下起雨，{subjectPronoun}把鞋提在手里；{farmer}在村口看见{subjectPronoun}，说“下次先让人带个话”。{subjectPronoun}把湿鞋晾在炉边，鞋底沾着山那边的红土。',
             effects: [
               flag('vineyard_rumor_false', '走到山那边才发现酒庄已经招满'),
               cash(-1, '白跑一趟的鞋和干粮'),
-              link('farmer', 'acquaintance', { trust: -0.03 }, '农场主提醒她下次先带话'),
+              link(
+                'farmer',
+                'acquaintance',
+                { trust: -0.03 },
+                '农场主提醒{subjectPronoun}下次先带话',
+              ),
               know('酒庄招工要先让人带话，直接走过去常常已经满了', 0.8, 'told', '$farmer'),
               health(-0.02, '冒雨走山路'),
             ],
@@ -2083,12 +2298,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-retirement-retire',
         weight: 0.4,
-        text: '最后一天，车间没有仪式，只有一张签满名字的卡片和一把用旧的卡尺。她把工具一件件放回盒子，{colleague}问她明天还来不来；她说“不来了”，走到门口又回头看了一眼自己的工位。',
+        text: '最后一天，车间没有仪式，只有一张签满名字的卡片和一把用旧的卡尺。{subjectPronoun}把工具一件件放回盒子，{colleague}问{subjectPronoun}明天还来不来；{subjectPronoun}说“不来了”，走到门口又回头看了一眼自己的工位。',
         effects: [
           unemployment('到了退休年龄，交回工具离开车间'),
           role('retired', '从工厂正式退休'),
           flag('retired_from_work', '最后一天交回工具并离开车间'),
-          link('colleague', 'colleague', { trust: 0.06 }, '同事在最后一天问她明天还来不来'),
+          link(
+            'colleague',
+            'colleague',
+            { trust: 0.06 },
+            '同事在最后一天问{subjectPronoun}明天还来不来',
+          ),
           know('退休没有仪式，只有一张签名卡片和交回的工具', 0.85, 'witnessed', '$colleague'),
           health(-0.01, '离开工位时的失落'),
         ],
@@ -2097,12 +2317,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-retirement-stay',
         weight: 0.3,
-        text: '厂里问她愿不愿意再干两年，工资不加，工时不减。她算了算养老金，发现少干一年就少一截；第二天，她在续聘表上签了字，{colleague}说“你比机器还耐用”。那天晚上，她把止痛药和工牌一起放进抽屉。',
+        text: '厂里问{subjectPronoun}愿不愿意再干两年，工资不加，工时不减。{subjectPronoun}算了算养老金，发现少干一年就少一截；第二天，{subjectPronoun}在续聘表上签了字，{colleague}说“你比机器还耐用”。那天晚上，{subjectPronoun}把止痛药和工牌一起放进抽屉。',
         effects: [
           role('senior_worker', '签了两年续聘表，继续留在车间'),
           cash(2, '续聘后的当月工资'),
           health(-0.03, '继续上工后的腰腿痛'),
-          link('colleague', 'colleague', { trust: 0.04 }, '同事说她比机器还耐用'),
+          link('colleague', 'colleague', { trust: 0.04 }, '同事说{subjectPronoun}比机器还耐用'),
           know('续聘不加薪，但少干一年养老金会少一截', 0.85, 'document'),
           flag('postponed_retirement', '推迟退休，签了两年续聘'),
         ],
@@ -2111,11 +2331,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-retirement-papers',
         weight: 0.3,
-        text: '她去市政厅问养老金，窗口让她先补交三年的保险。她拿着表格回到厂里，{colleague}帮她找出旧工资单；两个人蹲在更衣室里数到天黑，发现还差两个月。她把缺的两个月记在日历上，每天翻一页。',
+        text: '{subjectPronoun}去市政厅问养老金，窗口让{subjectPronoun}先补交三年的保险。{subjectPronoun}拿着表格回到厂里，{colleague}帮{subjectPronoun}找出旧工资单；两个人蹲在更衣室里数到天黑，发现还差两个月。{subjectPronoun}把缺的两个月记在日历上，每天翻一页。',
         effects: [
           flag('pension_application_started', '开始补办养老金申请'),
           know('养老金申请要先补交三年保险，旧工资单还差两个月', 0.9, 'document'),
-          link('colleague', 'colleague', { trust: 0.08 }, '同事陪她在更衣室翻旧工资单'),
+          link(
+            'colleague',
+            'colleague',
+            { trust: 0.08 },
+            '同事陪{subjectPronoun}在更衣室翻旧工资单',
+          ),
           cash(-1, '补交保险表格和复印费'),
           health(-0.01, '蹲在更衣室数单据后的腰酸'),
         ],
@@ -2132,7 +2357,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-retirement-postwar-wound',
             weight: 0.55,
-            text: '她的工龄里有一段是在战地医院度过的，档案上只写了“临时勤务”。{colleague}帮她把旧绷带证和工资单订在一起；窗口的官员说材料不够，她问还缺什么，对方说“缺一个活着回来的证明”。',
+            text: '{subjectPronoun}的工龄里有一段是在战地医院度过的，档案上只写了“临时勤务”。{colleague}帮{subjectPronoun}把旧绷带证和工资单订在一起；窗口的官员说材料不够，{subjectPronoun}问还缺什么，对方说“缺一个活着回来的证明”。',
             effects: [
               unemployment('退休时战地勤务工龄不被完整承认'),
               role('retired', '带着战地医院工龄退休'),
@@ -2152,7 +2377,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-retirement-postwar-light',
             weight: 0.45,
-            text: '厂里给她留了一张轻活岗位，工资按半日算。她接受了，因为养老金还不够付房租；{colleague}说“你该歇了”，她回答“歇了谁交煤钱”。她每天下午三点下班，路过医院时不再往里看，怕碰见旧病友。',
+            text: '厂里给{subjectPronoun}留了一张轻活岗位，工资按半日算。{subjectPronoun}接受了，因为养老金还不够付房租；{colleague}说“你该歇了”，{subjectPronoun}回答“歇了谁交煤钱”。{subjectPronoun}每天下午三点下班，路过医院时不再往里看，怕碰见旧病友。',
             effects: [
               employment(
                 '$subjectOrg',
@@ -2162,7 +2387,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
                 '退休后接受半日轻活岗位',
               ),
               flag('light_duty_retirement', '养老金不够付房租，接受半日轻活'),
-              link('colleague', 'colleague', { trust: 0.04 }, '同事劝她歇息，她反问谁交煤钱'),
+              link(
+                'colleague',
+                'colleague',
+                { trust: 0.04 },
+                '同事劝{subjectPronoun}歇息，{subjectPronoun}反问谁交煤钱',
+              ),
               know(
                 '半日轻活按半日工资算，养老金不够付房租时只能继续上工',
                 0.85,
@@ -2203,7 +2433,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-last-friend-funeral',
         weight: 0.4,
-        text: '葬礼在一个刮风的下午，来的人比她预想的少。她站在墓边，听见土块落在棺材上的声音；回家的路上，她第一次觉得楼道比平时长，钥匙在锁孔里转了两圈才开。',
+        text: '葬礼在一个刮风的下午，来的人比{subjectPronoun}预想的少。{subjectPronoun}站在墓边，听见土块落在棺材上的声音；回家的路上，{subjectPronoun}第一次觉得楼道比平时长，钥匙在锁孔里转了两圈才开。',
         effects: [
           unlink('friend', 'friend', '唯一的老友去世，关系随葬礼结束'),
           flag('last_friend_died', '送走了最后一个老朋友'),
@@ -2216,13 +2446,23 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-last-friend-missed',
         weight: 0.3,
-        text: '她没能去葬礼，因为膝盖肿得穿不上鞋。邻居替她带回来一小块黑纱；她把它系在床头，想起两个人年轻时在河边分过一块面包。黑纱在床头挂了七天，她每天换一次水，像照料一盆花。',
+        text: '{subjectPronoun}没能去葬礼，因为膝盖肿得穿不上鞋。邻居替{subjectPronoun}带回来一小块黑纱；{subjectPronoun}把它系在床头，想起两个人年轻时在河边分过一块面包。黑纱在床头挂了七天，{subjectPronoun}每天换一次水，像照料一盆花。',
         effects: [
-          unlink('friend', 'friend', '老友去世，她因膝盖肿痛未能送葬'),
+          unlink('friend', 'friend', '老友去世，{subjectPronoun}因膝盖肿痛未能送葬'),
           flag('missed_last_friends_funeral', '因膝盖肿痛错过老友葬礼'),
           condition('bereaved', '没有送葬，丧亲状态拖得更久'),
-          link('neighbor', 'acquaintance', { trust: 0.05, obligation: 0.04 }, '邻居替她带回黑纱'),
-          know('老友的葬礼在她无法出门的那天举行，邻居替她带了黑纱', 0.9, 'told', '$neighbor'),
+          link(
+            'neighbor',
+            'acquaintance',
+            { trust: 0.05, obligation: 0.04 },
+            '邻居替{subjectPronoun}带回黑纱',
+          ),
+          know(
+            '老友的葬礼在{subjectPronoun}无法出门的那天举行，邻居替{subjectPronoun}带了黑纱',
+            0.9,
+            'told',
+            '$neighbor',
+          ),
           health(-0.05, '膝盖肿痛和丧亲'),
         ],
         significance: 0.65,
@@ -2230,12 +2470,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-last-friend-memory',
         weight: 0.3,
-        text: '她没有去墓地，只在家里翻出一叠旧信。信纸脆得掉渣，落款处的名字她看了很久；傍晚，她把信按日期排好，用一根红线捆起来，放进抽屉最上层。线头打了一个死结，她试了三次才把它系紧。',
+        text: '{subjectPronoun}没有去墓地，只在家里翻出一叠旧信。信纸脆得掉渣，落款处的名字{subjectPronoun}看了很久；傍晚，{subjectPronoun}把信按日期排好，用一根红线捆起来，放进抽屉最上层。线头打了一个死结，{subjectPronoun}试了三次才把它系紧。',
         effects: [
           unlink('friend', 'friend', '老友去世后，关系以整理旧信结束'),
           flag('kept_last_friend_memory', '把老友的旧信按日期捆好保存'),
           know('旧信上的日期比记忆可靠，最早的一封写于他们认识的那年', 0.9, 'document'),
-          reputation(0.01, '邻居知道她保存了老友的信'),
+          reputation(0.01, '邻居知道{subjectPronoun}保存了老友的信'),
           health(0.01, '整理旧信后稍感安定'),
         ],
         significance: 0.6,
@@ -2251,7 +2491,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-last-friend-postwar-comrade',
             weight: 0.55,
-            text: '墓园里并排立着几块没有名字的军墓。她在一块空碑前放下石头，想起那个从战壕里给她写信的人；回程的车上，她问检票员这条线以前是不是经过医院。检票员说这条线以前确实经过医院，后来改道了。',
+            text: '墓园里并排立着几块没有名字的军墓。{subjectPronoun}在一块空碑前放下石头，想起那个从战壕里给{subjectPronoun}写信的人；回程的车上，{subjectPronoun}问检票员这条线以前是不是经过医院。检票员说这条线以前确实经过医院，后来改道了。',
             effects: [
               unlink('friend', 'friend', '战时通信的同伴去世，关系在军墓前结束'),
               flag('buried_war_comrade', '在没有名字的军墓前送走战时同伴'),
@@ -2268,11 +2508,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-last-friend-postwar-photo',
             weight: 0.45,
-            text: '她在旧箱底找到一张战时的合影，背面写着几个人的绰号。她拿着照片去问还活着的邻居，没有人认得全；最后她把照片放进镜框，摆在窗台上。镜框的玻璃有一道裂纹，正好落在最左边那个人的脸上。',
+            text: '{subjectPronoun}在旧箱底找到一张战时的合影，背面写着几个人的绰号。{subjectPronoun}拿着照片去问还活着的邻居，没有人认得全；最后{subjectPronoun}把照片放进镜框，摆在窗台上。镜框的玻璃有一道裂纹，正好落在最左边那个人的脸上。',
             effects: [
               flag('found_war_photo', '在旧箱底找到一张战时合影'),
               know('照片背面只有绰号，活着的邻居也认不全', 0.8, 'witnessed', '$neighbor'),
-              link('neighbor', 'acquaintance', { trust: 0.04 }, '邻居帮她辨认照片上的绰号'),
+              link(
+                'neighbor',
+                'acquaintance',
+                { trust: 0.04 },
+                '邻居帮{subjectPronoun}辨认照片上的绰号',
+              ),
               reputation(0.01, '把战时合影摆上窗台'),
               health(0.01, '找到旧照片后的安定'),
             ],
@@ -2309,7 +2554,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-city-arrival-factory',
         weight: 0.4,
-        text: '她在车站把箱子拖下台阶，轮子卡在石缝里。{landlord}带她去看一间朝院的屋子，说押金可以先欠一半；第二天，她拿着介绍信去{factory}，门房让她在门口等到午休，最后收下她做临时工。',
+        text: '{subjectPronoun}在车站把箱子拖下台阶，轮子卡在石缝里。{landlord}带{subjectPronoun}去看一间朝院的屋子，说押金可以先欠一半；第二天，{subjectPronoun}拿着介绍信去{factory}，门房让{subjectPronoun}在门口等到午休，最后收下{subjectPronoun}做临时工。',
         effects: [
           employment('$factory', 'Fabrikarbeiter', 24, '@workplace', '进城后在一家工厂找到临时工'),
           residence('@home', '租下朝院的一间屋子'),
@@ -2318,7 +2563,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
             'landlord',
             'acquaintance',
             { trust: 0.05, obligation: 0.05 },
-            '房东允许她先欠一半押金',
+            '房东允许{subjectPronoun}先欠一半押金',
           ),
           flag('arrived_in_city', '从车站进城并找到第一份工作'),
           know(
@@ -2333,11 +2578,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-city-arrival-room',
         weight: 0.35,
-        text: '她没找到工厂的招工处，先在一间合租房住下。房东{landlord}要她一次交三个月的租，她把箱子底的钱数了两遍，还是差四克朗；晚上，她把衣服叠成枕头，听见隔壁孩子在背乘法表。',
+        text: '{subjectPronoun}没找到工厂的招工处，先在一间合租房住下。房东{landlord}要{subjectPronoun}一次交三个月的租，{subjectPronoun}把箱子底的钱数了两遍，还是差四克朗；晚上，{subjectPronoun}把衣服叠成枕头，听见隔壁孩子在背乘法表。',
         effects: [
           residence('@home', '住进一间按季度收租的合租房'),
           cash(-5, '三个月房租的大部分和押金'),
-          link('landlord', 'acquaintance', { obligation: 0.05 }, '房东允许她欠下四克朗租金'),
+          link(
+            'landlord',
+            'acquaintance',
+            { obligation: 0.05 },
+            '房东允许{subjectPronoun}欠下四克朗租金',
+          ),
           condition('overcrowded', '合租房里没有单独床位'),
           flag('city_room_without_work', '进城后先住下，工作还没有着落'),
           know('合租房按季度收租，差四克朗就要替房东做零工抵账', 0.9, 'witnessed', '$landlord'),
@@ -2347,7 +2597,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-city-arrival-return',
         weight: 0.25,
-        text: '她在站台坐了一夜，第二天买了一张回程票。{landlord}来退押金时扣下两克朗，说床板被她压裂了；她没有争，提着箱子走回车站，觉得城里的钟走得比乡下快。回到乡下后，她把城里的车票贴在账本第一页。',
+        text: '{subjectPronoun}在站台坐了一夜，第二天买了一张回程票。{landlord}来退押金时扣下两克朗，说床板被{subjectPronoun}压裂了；{subjectPronoun}没有争，提着箱子走回车站，觉得城里的钟走得比乡下快。回到乡下后，{subjectPronoun}把城里的车票贴在账本第一页。',
         effects: [
           move('@station', '没有找到落脚处，回到车站'),
           cash(-1, '回程票和押金扣款'),
@@ -2373,7 +2623,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-city-arrival-rural-leave',
             weight: 0.55,
-            text: '她把葡萄园的最后一批筐搬上车，家里托人带话，说城里地下室还有一张空床。火车开动时，她看见田埂上的石墙一段段退后；到城里已是傍晚，她按地址找到那间屋子，房东说工作要等下周。',
+            text: '{subjectPronoun}把葡萄园的最后一批筐搬上车，家里托人带话，说城里地下室还有一张空床。火车开动时，{subjectPronoun}看见田埂上的石墙一段段退后；到城里已是傍晚，{subjectPronoun}按地址找到那间屋子，房东说工作要等下周。',
             effects: [
               move('@station', '带着行李从葡萄园坐火车进城'),
               residence('@home', '按亲戚给的地址住进城里地下室'),
@@ -2387,7 +2637,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-city-arrival-rural-fail',
             weight: 0.45,
-            text: '她在车站被偷了钱包，只剩一张写着地址的纸。她按地址找到亲戚家，门房说人已经搬走；她在城里转了三天，最后还是用最后一点钱买了一张站票。回到葡萄园时，正赶上压榨季，她第二天就下地了。',
+            text: '{subjectPronoun}在车站被偷了钱包，只剩一张写着地址的纸。{subjectPronoun}按地址找到亲戚家，门房说人已经搬走；{subjectPronoun}在城里转了三天，最后还是用最后一点钱买了一张站票。回到葡萄园时，正赶上压榨季，{subjectPronoun}第二天就下地了。',
             effects: [
               move('@station', '在城里找不到亲戚，回到车站'),
               cash(-6, '被偷的钱和回程站票'),
@@ -2432,7 +2682,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-emigration-granted',
         weight: 0.35,
-        text: '护照窗口的玻璃上有一道裂纹，{clerk}把她的材料从裂纹下面推回来，说缺少出生证明。她跑了两趟教堂、一趟市政厅，最后在旧箱底找到一张洗礼纸；再回到窗口时，队伍已经排到街上。',
+        text: '护照窗口的玻璃上有一道裂纹，{clerk}把{subjectPronoun}的材料从裂纹下面推回来，说缺少出生证明。{subjectPronoun}跑了两趟教堂、一趟市政厅，最后在旧箱底找到一张洗礼纸；再回到窗口时，队伍已经排到街上。',
         effects: [
           move('@station', '办妥护照后到车站准备离境'),
           cash(-12, '护照费、出生证明补办费和车票'),
@@ -2447,7 +2697,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-emigration-bribe',
         weight: 0.3,
-        text: '她把一笔钱塞进{clerk}的登记簿，纸页合上时没有声音。三天后，护照和船票一起寄到；她拿着票去辞工，工头说“走了就别回来”，她点了点头。她把船票缝进内衣，辞工时没敢看工头的眼睛。',
+        text: '{subjectPronoun}把一笔钱塞进{clerk}的登记簿，纸页合上时没有声音。三天后，护照和船票一起寄到；{subjectPronoun}拿着票去辞工，工头说“走了就别回来”，{subjectPronoun}点了点头。{subjectPronoun}把船票缝进内衣，辞工时没敢看工头的眼睛。',
         effects: [
           move('@station', '用钱打通窗口后拿到船票'),
           cash(-18, '给窗口职员的钱、护照费和船票'),
@@ -2462,12 +2712,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-emigration-refused',
         weight: 0.35,
-        text: '她的申请被退回，理由是“担保人收入不足”。{clerk}说可以找第二担保人；她翻遍通讯录，发现能签字的人不是已经走了，就是不肯再担保。回家后，她把通讯录上能签字的名字一个个划掉。',
+        text: '{subjectPronoun}的申请被退回，理由是“担保人收入不足”。{clerk}说可以找第二担保人；{subjectPronoun}翻遍通讯录，发现能签字的人不是已经走了，就是不肯再担保。回家后，{subjectPronoun}把通讯录上能签字的名字一个个划掉。',
         effects: [
           flag('emigration_papers_refused', '因担保人收入不足被拒发护照'),
           cash(-2, '照片、表格和往返车钱'),
-          link('clerk', 'acquaintance', { fear: 0.05 }, '窗口职员退回她的申请'),
-          reputation(-0.01, '亲友知道她的出境申请被拒'),
+          link('clerk', 'acquaintance', { fear: 0.05 }, '窗口职员退回{subjectPronoun}的申请'),
+          reputation(-0.01, '亲友知道{subjectPronoun}的出境申请被拒'),
           health(-0.02, '奔走找担保人后的疲惫'),
           know('护照申请需要担保人收入证明，找不到第二担保人就办不下去', 0.9, 'told', '$clerk'),
         ],
@@ -2484,7 +2734,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-emigration-war-refused',
             weight: 0.5,
-            text: '战时出境需要军方通行证，{clerk}说她的车票日期和许可日期对不上。她在车站等了两天，睡在行李房的长椅上；第三天，一个穿军装的人把她的材料带走，再没有送回来。',
+            text: '战时出境需要军方通行证，{clerk}说{subjectPronoun}的车票日期和许可日期对不上。{subjectPronoun}在车站等了两天，睡在行李房的长椅上；第三天，一个穿军装的人把{subjectPronoun}的材料带走，再没有送回来。',
             effects: [
               move('@station', '因通行证日期不符困在车站'),
               cash(-8, '车票、行李寄存和两天的饭钱'),
@@ -2499,13 +2749,18 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-emigration-war-one-way',
             weight: 0.5,
-            text: '她拿到一张只许单程的通行证，上面写着“不得返回”。{clerk}把纸递出来时压低声音，说“别在边境多停”；她把通行证缝进内衣，火车开动后才敢哭。她把通行证缝进内衣，针脚歪歪扭扭，线头藏在衣角。',
+            text: '{subjectPronoun}拿到一张只许单程的通行证，上面写着“不得返回”。{clerk}把纸递出来时压低声音，说“别在边境多停”；{subjectPronoun}把通行证缝进内衣，火车开动后才敢哭。{subjectPronoun}把通行证缝进内衣，针脚歪歪扭扭，线头藏在衣角。',
             effects: [
               move('@station', '拿到单程通行证后前往边境'),
               cash(-10, '通行证、车票和路上开销'),
               flag('one_way_wartime_permit', '拿到注明不得返回的单程通行证'),
               role('emigrant', '持单程许可离开'),
-              link('clerk', 'acquaintance', { trust: 0.08 }, '窗口职员低声提醒她别在边境停留'),
+              link(
+                'clerk',
+                'acquaintance',
+                { trust: 0.08 },
+                '窗口职员低声提醒{subjectPronoun}别在边境停留',
+              ),
               unemployment('辞掉工作准备离境'),
               know('单程通行证注明不得返回，边境不会给第二次机会', 0.9, 'document', '$clerk'),
             ],
@@ -2543,7 +2798,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-refugee-search',
         weight: 0.35,
-        text: '名单墙前挤着十几个人，{refugee}指着一行被划掉的名字，说那是她妹妹。她替对方抄下名字，又去{official}的窗口问；窗口说档案在另一栋楼，她去时那栋楼已经锁门。她在档案楼门口等到锁门，只记下了一个门牌号。',
+        text: '名单墙前挤着十几个人，{refugee}指着一行被划掉的名字，说那是{subjectPronoun}妹妹。{subjectPronoun}替对方抄下名字，又去{official}的窗口问；窗口说档案在另一栋楼，{subjectPronoun}去时那栋楼已经锁门。{subjectPronoun}在档案楼门口等到锁门，只记下了一个门牌号。',
         effects: [
           link(
             'refugee',
@@ -2566,7 +2821,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-refugee-shelter',
         weight: 0.35,
-        text: '她把{refugee}带回自己家，在厨房支了一张行军床。房东第二天就来敲门，说多住一个人要加钱；她付了半个月的煤钱，把{refugee}的行李藏进床底。房东来查煤表时，她把行军床折起来靠在墙边。',
+        text: '{subjectPronoun}把{refugee}带回自己家，在厨房支了一张行军床。房东第二天就来敲门，说多住一个人要加钱；{subjectPronoun}付了半个月的煤钱，把{refugee}的行李藏进床底。房东来查煤表时，{subjectPronoun}把行军床折起来靠在墙边。',
         effects: [
           moveOther('$refugee', '@home', '把难民安置在厨房的行军床上'),
           link('refugee', 'acquaintance', { trust: 0.1, obligation: 0.08 }, '让难民住进自己家厨房'),
@@ -2580,7 +2835,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-refugee-error',
         weight: 0.3,
-        text: '她在一张错误名单上找到熟悉的名字，跑去找{refugee}确认。对方看了很久，说“不是他，是我哥哥”；她把纸折好，没有把那个名字划掉。她把那张纸折好，决定明天再去名单墙前问一次。',
+        text: '{subjectPronoun}在一张错误名单上找到熟悉的名字，跑去找{refugee}确认。对方看了很久，说“不是他，是我哥哥”；{subjectPronoun}把纸折好，没有把那个名字划掉。{subjectPronoun}把那张纸折好，决定明天再去名单墙前问一次。',
         effects: [
           flag('refugee_list_error', '在错误名单上找到相似的名字'),
           know('名单上的名字可能属于同姓的另一个人，划掉前要当面确认', 0.9, 'told', '$refugee'),
@@ -2601,7 +2856,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-refugee-postwar-list',
             weight: 0.55,
-            text: '战后回来的名单贴在市政厅门口，她一早就去等。{official}每念一个名字，人群就往前挤一寸；念到她亲戚的名字时，没有人应答，她替那个名字举了手。她把亲戚的名字写在手背上，怕回家后忘记。',
+            text: '战后回来的名单贴在市政厅门口，{subjectPronoun}一早就去等。{official}每念一个名字，人群就往前挤一寸；念到{subjectPronoun}亲戚的名字时，没有人应答，{subjectPronoun}替那个名字举了手。{subjectPronoun}把亲戚的名字写在手背上，怕回家后忘记。',
             effects: [
               know(
                 '战后返乡名单由市政厅逐名念出，没人应答的名字要单独登记',
@@ -2619,7 +2874,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-refugee-postwar-found',
             weight: 0.45,
-            text: '她终于在一家临时收容所找到{refugee}，对方瘦得认不出，手里还攥着半张车票。她把外套脱下来，带人去办登记；窗口说今天的号发完了，她让对方坐在台阶上等，自己回去拿面包。',
+            text: '{subjectPronoun}终于在一家临时收容所找到{refugee}，对方瘦得认不出，手里还攥着半张车票。{subjectPronoun}把外套脱下来，带人去办登记；窗口说今天的号发完了，{subjectPronoun}让对方坐在台阶上等，自己回去拿面包。',
             effects: [
               link(
                 'refugee',
@@ -2644,7 +2899,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-refugee-rural-farm',
             weight: 0.55,
-            text: '收容所把一批难民送到乡下，{refugee}被分到葡萄园做工。她去看时，对方正在搬筐，手上全是划痕；农场主说“管饭就不错了”，她把自己带的奶酪留下。她离开时，{refugee}把一只编好的草篮塞给她。',
+            text: '收容所把一批难民送到乡下，{refugee}被分到葡萄园做工。{subjectPronoun}去看时，对方正在搬筐，手上全是划痕；农场主说“管饭就不错了”，{subjectPronoun}把自己带的奶酪留下。{subjectPronoun}离开时，{refugee}把一只编好的草篮塞给{subjectPronoun}。',
             effects: [
               link('refugee', 'acquaintance', { trust: 0.08 }, '去葡萄园看望被安置的难民'),
               cash(-2, '带给难民的奶酪和车钱'),
@@ -2657,7 +2912,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-refugee-rural-barn',
             weight: 0.45,
-            text: '村里人不愿意让难民住进空屋，说“谁知道他们从哪来”。她去找{official}，对方让她先担保；她签了字，{refugee}才被允许住进谷仓旁边的小间。谷仓的小间没有窗，她用旧麻袋堵住门缝，夜里仍能听见风。',
+            text: '村里人不愿意让难民住进空屋，说“谁知道他们从哪来”。{subjectPronoun}去找{official}，对方让{subjectPronoun}先担保；{subjectPronoun}签了字，{refugee}才被允许住进谷仓旁边的小间。谷仓的小间没有窗，{subjectPronoun}用旧麻袋堵住门缝，夜里仍能听见风。',
             effects: [
               link(
                 'refugee',
@@ -2665,7 +2920,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
                 { trust: 0.1, obligation: 0.08 },
                 '签字担保难民住进谷仓小间',
               ),
-              link('official', 'acquaintance', { trust: 0.03 }, '村长接受她的担保'),
+              link('official', 'acquaintance', { trust: 0.03 }, '村长接受{subjectPronoun}的担保'),
               flag('refugee_barn_placement', '担保难民住进谷仓旁的小间'),
               cash(-1, '担保登记费'),
               know(
@@ -2674,7 +2929,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
                 'witnessed',
                 '$official',
               ),
-              reputation(0.02, '村里人知道她替难民担保'),
+              reputation(0.02, '村里人知道{subjectPronoun}替难民担保'),
             ],
             significance: 0.55,
           },
@@ -2710,12 +2965,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-pension-granted',
         weight: 0.3,
-        text: '她带来一叠发黄的工资单，用线缝在一起。{clerk}数到第三张时抬起头，说“这些可以算”；一个月后，第一笔养老金汇到，她把钱分成房租、药费和给孙子的糖。她把汇款单压在桌玻璃下，旁边是丈夫的旧照片。',
+        text: '{subjectPronoun}带来一叠发黄的工资单，用线缝在一起。{clerk}数到第三张时抬起头，说“这些可以算”；一个月后，第一笔养老金汇到，{subjectPronoun}把钱分成房租、药费和给孙子的糖。{subjectPronoun}把汇款单压在桌玻璃下，旁边是丈夫的旧照片。',
         effects: [
           role('pensioner', '拿到第一笔养老金'),
           flag('pension_granted', '凭旧工资单领到养老金'),
           cash(28, '第一笔养老金'),
-          link('clerk', 'acquaintance', { trust: 0.05 }, '窗口职员认可她缝好的旧工资单'),
+          link(
+            'clerk',
+            'acquaintance',
+            { trust: 0.05 },
+            '窗口职员认可{subjectPronoun}缝好的旧工资单',
+          ),
           know('旧工资单缝在一起也能算工龄，第一笔养老金可以分三份用', 0.9, 'document', '$clerk'),
           health(0.01, '领到养老金后稍微安心'),
         ],
@@ -2724,11 +2984,11 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-pension-missing',
         weight: 0.35,
-        text: '窗口的玻璃后面坐着三个职员，只有最右边那个在收材料。{clerk}把她的工龄单翻来覆去看，说缺一份十年前的雇主证明；她问那家厂还在不在，{clerk}说“这不归我们管”。她把工龄单收回包里，去档案馆问那家厂的旧地址。',
+        text: '窗口的玻璃后面坐着三个职员，只有最右边那个在收材料。{clerk}把{subjectPronoun}的工龄单翻来覆去看，说缺一份十年前的雇主证明；{subjectPronoun}问那家厂还在不在，{clerk}说“这不归我们管”。{subjectPronoun}把工龄单收回包里，去档案馆问那家厂的旧地址。',
         effects: [
           flag('pension_missing_record', '养老金申请缺一份十年前的雇主证明'),
           know('养老金窗口只认雇主证明，不负责查找已经关门的工厂', 0.9, 'witnessed', '$clerk'),
-          link('clerk', 'acquaintance', { fear: 0.04 }, '窗口职员退回了她的工龄单'),
+          link('clerk', 'acquaintance', { fear: 0.04 }, '窗口职员退回了{subjectPronoun}的工龄单'),
           cash(-2, '补开证明的表格费和车钱'),
           health(-0.02, '被告知材料不全后的失眠'),
         ],
@@ -2737,11 +2997,11 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-pension-reduced',
         weight: 0.35,
-        text: '她的申请被批了一半，理由是“中间有三年没有缴费”。她没有争，回家把药量减了一半；{clerk}后来托人带话，说可以补交，但要在月底前凑齐。月底前她跑遍亲戚家，只凑到补交款的一半。',
+        text: '{subjectPronoun}的申请被批了一半，理由是“中间有三年没有缴费”。{subjectPronoun}没有争，回家把药量减了一半；{clerk}后来托人带话，说可以补交，但要在月底前凑齐。月底前{subjectPronoun}跑遍亲戚家，只凑到补交款的一半。',
         effects: [
           flag('pension_reduced', '养老金因三年未缴费被批了一半'),
           cash(14, '减半后的第一笔养老金'),
-          link('clerk', 'acquaintance', { trust: 0.03 }, '窗口职员托人带话让她补交'),
+          link('clerk', 'acquaintance', { trust: 0.03 }, '窗口职员托人带话让{subjectPronoun}补交'),
           know('三年未缴费会让养老金减半，补交要在月底前凑齐', 0.9, 'told', '$clerk'),
           health(-0.03, '减药后的身体反应'),
         ],
@@ -2758,7 +3018,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-pension-postwar-paperwork',
             weight: 0.5,
-            text: '她拿着亡故配偶的工龄证明来办遗属抚恤金，{clerk}要她证明婚姻关系，还要证明对方没有再婚。她问“死人怎么再婚”，{clerk}说“表格上要这么填”。她回家翻出结婚证，发现上面的名字少了一个字母。',
+            text: '{subjectPronoun}拿着亡故配偶的工龄证明来办遗属抚恤金，{clerk}要{subjectPronoun}证明婚姻关系，还要证明对方没有再婚。{subjectPronoun}问“死人怎么再婚”，{clerk}说“表格上要这么填”。{subjectPronoun}回家翻出结婚证，发现上面的名字少了一个字母。',
             effects: [
               flag('widow_pension_paperwork', '办遗属抚恤金被要求证明亡者未再婚'),
               know(
@@ -2776,7 +3036,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-pension-postwar-granted',
             weight: 0.5,
-            text: '抚恤金批下来了，每月比她预想的少一截。{clerk}解释说“战前工龄只能折算一半”；她把通知折好，放进装结婚证的铁盒，回家路上买了一小束花。那一小束花插在铁盒旁边，她坐了很久才起身。',
+            text: '抚恤金批下来了，每月比{subjectPronoun}预想的少一截。{clerk}解释说“战前工龄只能折算一半”；{subjectPronoun}把通知折好，放进装结婚证的铁盒，回家路上买了一小束花。那一小束花插在铁盒旁边，{subjectPronoun}坐了很久才起身。',
             effects: [
               role('pensioner', '领到遗属抚恤金'),
               flag('widow_pension_granted', '遗属抚恤金按战前工龄折算后发放'),
@@ -2797,7 +3057,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-pension-rural-refused',
             weight: 0.5,
-            text: '她在葡萄园干了四十年，档案上却只写“季节性帮工”。{clerk}说季节工没有连续工龄；她问那些年冬天修石墙算不算，{clerk}让她去找当时的农场主。她去找老农场主，才知道人已经瘫在床上，话也说不清。',
+            text: '{subjectPronoun}在葡萄园干了四十年，档案上却只写“季节性帮工”。{clerk}说季节工没有连续工龄；{subjectPronoun}问那些年冬天修石墙算不算，{clerk}让{subjectPronoun}去找当时的农场主。{subjectPronoun}去找老农场主，才知道人已经瘫在床上，话也说不清。',
             effects: [
               flag('farm_pension_refused', '葡萄园季节工龄不被算作连续工龄'),
               know('季节工没有连续工龄，冬天修石墙需要农场主另出证明', 0.9, 'witnessed', '$clerk'),
@@ -2810,10 +3070,10 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-pension-rural-granted',
             weight: 0.5,
-            text: '老农场主的儿子还记得她，替她写了一张证明。{clerk}看完后把表格收下，说“下个月再来”；她走出市政厅，看见广场上的栗树已经发芽。她把通知读了三遍，才想起自己已经很多年没进过城。',
+            text: '老农场主的儿子还记得{subjectPronoun}，替{subjectPronoun}写了一张证明。{clerk}看完后把表格收下，说“下个月再来”；{subjectPronoun}走出市政厅，看见广场上的栗树已经发芽。{subjectPronoun}把通知读了三遍，才想起自己已经很多年没进过城。',
             effects: [
               role('pensioner', '凭农场主儿子的证明领到乡村养老金'),
-              flag('farm_pension_granted', '农场主儿子替她证明冬季修墙也算工龄'),
+              flag('farm_pension_granted', '农场主儿子替{subjectPronoun}证明冬季修墙也算工龄'),
               cash(18, '第一笔乡村养老金'),
               link('clerk', 'acquaintance', { trust: 0.04 }, '窗口职员收下了农场主儿子的证明'),
               know('农场主儿子的证明能把冬季修墙算进季节工龄', 0.85, 'document', '$clerk'),
@@ -2852,7 +3112,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-library-document',
         weight: 0.4,
-        text: '图书馆的目录柜卡住，{librarian}用一把小刀撬开抽屉。她要找的那本地方志只剩半册，借书卡上最后一个名字是三十年前；她坐在窗边抄到闭馆，手指被纸边割了一道。管理员说这半册不能复印，只能一页一页抄。',
+        text: '图书馆的目录柜卡住，{librarian}用一把小刀撬开抽屉。{subjectPronoun}要找的那本地方志只剩半册，借书卡上最后一个名字是三十年前；{subjectPronoun}坐在窗边抄到闭馆，手指被纸边割了一道。管理员说这半册不能复印，只能一页一页抄。',
         effects: [
           know(
             '地方志只剩半册，借书卡上最后一个名字是三十年前，闭馆前可以抄完',
@@ -2871,12 +3131,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-library-map',
         weight: 0.3,
-        text: '博物馆的地下室堆着未编目的箱子，{librarian}说不能借出，只能看。她在箱底找到一张旧地图，边角写着几个已经不存在的地名；她用铅笔描下来，管理员提醒她不能用钢笔。',
+        text: '博物馆的地下室堆着未编目的箱子，{librarian}说不能借出，只能看。{subjectPronoun}在箱底找到一张旧地图，边角写着几个已经不存在的地名；{subjectPronoun}用铅笔描下来，管理员提醒{subjectPronoun}不能用钢笔。',
         effects: [
           know('旧地图边角的地名已经不存在，描图只能用铅笔', 0.9, 'document', '$librarian'),
           cash(-0.5, '博物馆存包和描图纸'),
           flag('copied_archive_map', '在博物馆地下室描下一张旧地图'),
-          link('librarian', 'acquaintance', { trust: 0.04 }, '管理员允许她在箱边看地图'),
+          link(
+            'librarian',
+            'acquaintance',
+            { trust: 0.04 },
+            '管理员允许{subjectPronoun}在箱边看地图',
+          ),
           reputation(0.03, '在未编目箱子里找到旧地图'),
         ],
         significance: 0.4,
@@ -2884,7 +3149,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-library-closed',
         weight: 0.3,
-        text: '她到得太晚，阅览室已经关门。{librarian}隔着玻璃摆手，她站在台阶上看了一会儿海报，发现下周有一场讲座；回家后，她把要查的问题重新列了一遍。她把问题清单折好，决定下周讲座后再来一次。',
+        text: '{subjectPronoun}到得太晚，阅览室已经关门。{librarian}隔着玻璃摆手，{subjectPronoun}站在台阶上看了一会儿海报，发现下周有一场讲座；回家后，{subjectPronoun}把要查的问题重新列了一遍。{subjectPronoun}把问题清单折好，决定下周讲座后再来一次。',
         effects: [
           flag('library_access_refused', '到图书馆时阅览室已经关门'),
           know('图书馆下周有一场讲座，讲座后可能可以申请调阅闭架书', 0.7, 'document'),
@@ -2905,7 +3170,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-library-university-source',
             weight: 0.55,
-            text: '她要找的档案在教授的个人藏书里，{professor}只允许她在办公室看一个小时。她翻到第三封书信时，{professor}进来倒水，站在她身后读完了一整页，什么也没说。她把关键的一段抄在卡片上，卡片背面写上页码。',
+            text: '{subjectPronoun}要找的档案在教授的个人藏书里，{professor}只允许{subjectPronoun}在办公室看一个小时。{subjectPronoun}翻到第三封书信时，{professor}进来倒水，站在{subjectPronoun}身后读完了一整页，什么也没说。{subjectPronoun}把关键的一段抄在卡片上，卡片背面写上页码。',
             effects: [
               role('thesis_candidate', '获准在教授办公室查阅个人藏书'),
               know(
@@ -2914,7 +3179,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
                 'document',
                 '$professor',
               ),
-              link('professor', 'acquaintance', { respect: 0.08 }, '教授站在她身后读完了那页书信'),
+              link(
+                'professor',
+                'acquaintance',
+                { respect: 0.08 },
+                '教授站在{subjectPronoun}身后读完了那页书信',
+              ),
               reputation(0.04, '在教授藏书里找到论文材料'),
               flag('found_thesis_source', '在教授办公室找到论文关键书信'),
               cash(-0.5, '抄信纸和电车费'),
@@ -2924,11 +3194,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-library-university-taken',
             weight: 0.45,
-            text: '她发现自己的论文题目已经被人写过，作者是{professor}十年前的学生。{professor}说“你可以接着做”，她问“那算谁的”；办公室里只剩下翻纸的声音。她回家查了旧课程目录，发现那个题目十年前就出现过。',
+            text: '{subjectPronoun}发现自己的论文题目已经被人写过，作者是{professor}十年前的学生。{professor}说“你可以接着做”，{subjectPronoun}问“那算谁的”；办公室里只剩下翻纸的声音。{subjectPronoun}回家查了旧课程目录，发现那个题目十年前就出现过。',
             effects: [
               flag('thesis_topic_taken', '发现论文题目已被教授十年前的学生写过'),
               know('同一个题目可以接着做，但优先权要看谁先发表', 0.85, 'told', '$professor'),
-              link('professor', 'acquaintance', { trust: 0.03 }, '教授建议她接着做旧题目'),
+              link(
+                'professor',
+                'acquaintance',
+                { trust: 0.03 },
+                '教授建议{subjectPronoun}接着做旧题目',
+              ),
               reputation(-0.02, '论文题目与旧学生重复'),
               health(-0.01, '在办公室沉默后的失落'),
             ],
@@ -2965,10 +3240,10 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-music-perform',
         weight: 0.4,
-        text: '露天舞台搭在广场边，风把乐谱吹得哗哗响。她站在第二排，等{conductor}抬手；第一支曲子开始后，她听见自己的声音和别人的叠在一起，忽然不紧张了。唱到第二段时，风把她的声音吹散，她又唱了一遍。',
+        text: '露天舞台搭在广场边，风把乐谱吹得哗哗响。{subjectPronoun}站在第二排，等{conductor}抬手；第一支曲子开始后，{subjectPronoun}听见自己的声音和别人的叠在一起，忽然不紧张了。唱到第二段时，风把{subjectPronoun}的声音吹散，{subjectPronoun}又唱了一遍。',
         effects: [
           reputation(0.05, '在露天音乐会上登台演唱'),
-          link('conductor', 'colleague', { respect: 0.08 }, '指挥让她站在第二排'),
+          link('conductor', 'colleague', { respect: 0.08 }, '指挥让{subjectPronoun}站在第二排'),
           cash(3, '音乐会演出费'),
           role('festival_musician', '在露天音乐节登台'),
           flag('performed_at_festival', '第一次在露天音乐节登台'),
@@ -2984,10 +3259,10 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-music-tickets',
         weight: 0.3,
-        text: '她被安排去门口卖票，整场只听见断断续续的旋律。散场时，{conductor}问她听了没有，她说“听了，从收钱箱上面”；{conductor}把一张剩票塞给她，说明年再听。她把剩票夹在账本里，票根上还留着收钱箱的油墨。',
+        text: '{subjectPronoun}被安排去门口卖票，整场只听见断断续续的旋律。散场时，{conductor}问{subjectPronoun}听了没有，{subjectPronoun}说“听了，从收钱箱上面”；{conductor}把一张剩票塞给{subjectPronoun}，说明年再听。{subjectPronoun}把剩票夹在账本里，票根上还留着收钱箱的油墨。',
         effects: [
           cash(2, '卖票的工钱和剩票'),
-          link('conductor', 'colleague', { trust: 0.04 }, '指挥把一张剩票塞给她'),
+          link('conductor', 'colleague', { trust: 0.04 }, '指挥把一张剩票塞给{subjectPronoun}'),
           flag('sold_festival_tickets', '在音乐节门口卖票'),
           know('音乐节卖票要自己备零钱，剩票可以留到下一场', 0.8, 'witnessed', '$conductor'),
           reputation(0.01, '替音乐节守了门口'),
@@ -2997,7 +3272,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-music-rain',
         weight: 0.3,
-        text: '雨在开场前落下，舞台上的帆布积水，{conductor}决定取消。她帮着把乐器搬进教堂，手指冻得发僵；回家路上，她听见有人在屋檐下继续唱刚才的曲子。教堂的神父借给他们一块干布，条件是别在弥撒时排练。',
+        text: '雨在开场前落下，舞台上的帆布积水，{conductor}决定取消。{subjectPronoun}帮着把乐器搬进教堂，手指冻得发僵；回家路上，{subjectPronoun}听见有人在屋檐下继续唱刚才的曲子。教堂的神父借给他们一块干布，条件是别在弥撒时排练。',
         effects: [
           cash(-2, '淋湿的乐谱和搬乐器的车钱'),
           link('conductor', 'colleague', { trust: 0.05 }, '一起把乐器搬进教堂'),
@@ -3023,11 +3298,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-music-rural-harvest',
             weight: 0.55,
-            text: '收获节在打谷场办，{conductor}把乐队排成一圈，让吹管的人站在酒桶上。她唱到第二段时，看见{farmer}在人群后面跟着哼；散场后，农场主请所有人喝新酒。她喝了半杯新酒，嗓子发热，又唱了一首没排练过的歌。',
+            text: '收获节在打谷场办，{conductor}把乐队排成一圈，让吹管的人站在酒桶上。{subjectPronoun}唱到第二段时，看见{farmer}在人群后面跟着哼；散场后，农场主请所有人喝新酒。{subjectPronoun}喝了半杯新酒，嗓子发热，又唱了一首没排练过的歌。',
             effects: [
               role('festival_musician', '在收获节打谷场登台'),
               cash(3, '收获节演出费'),
-              link('conductor', 'colleague', { respect: 0.06 }, '指挥让她在打谷场唱第二段'),
+              link(
+                'conductor',
+                'colleague',
+                { respect: 0.06 },
+                '指挥让{subjectPronoun}在打谷场唱第二段',
+              ),
               link('farmer', 'acquaintance', { trust: 0.05 }, '农场主请所有演出的人喝新酒'),
               flag('sang_at_harvest_festival', '在收获节打谷场唱歌'),
               know(
@@ -3042,7 +3322,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-music-rural-barn',
             weight: 0.45,
-            text: '村里临时取消音乐会，因为天气预报说有冰雹。她和{conductor}还是去了，在谷仓里给几个孩子唱；{farmer}送来一篮苹果，说“比在广场上强”。孩子们坐在干草上，跟着她唱错了两句，谁也没有纠正。',
+            text: '村里临时取消音乐会，因为天气预报说有冰雹。{subjectPronoun}和{conductor}还是去了，在谷仓里给几个孩子唱；{farmer}送来一篮苹果，说“比在广场上强”。孩子们坐在干草上，跟着{subjectPronoun}唱错了两句，谁也没有纠正。',
             effects: [
               reputation(0.03, '在谷仓里给孩子们唱歌'),
               link('conductor', 'colleague', { trust: 0.05 }, '和指挥在谷仓里临时加唱'),
@@ -3087,11 +3367,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-film-screen',
         weight: 0.4,
-        text: '她从发行商那里租来三本胶片，{projectionist}在开演前发现第二本装反了。观众已经坐满，她让{projectionist}先放第一本，自己跑到后台重新接线；灯灭时，她听见前排有人小声说“开始了”。第二本胶片接上时，观众已经忘了刚才的断片。',
+        text: '{subjectPronoun}从发行商那里租来三本胶片，{projectionist}在开演前发现第二本装反了。观众已经坐满，{subjectPronoun}让{projectionist}先放第一本，自己跑到后台重新接线；灯灭时，{subjectPronoun}听见前排有人小声说“开始了”。第二本胶片接上时，观众已经忘了刚才的断片。',
         effects: [
           cash(2, '放映票房扣除租片费后的收入'),
           reputation(0.04, '第一次独立组织活动影戏放映'),
-          link('projectionist', 'colleague', { trust: 0.06 }, '放映员和她一起处理装反的胶片'),
+          link(
+            'projectionist',
+            'colleague',
+            { trust: 0.06 },
+            '放映员和{subjectPronoun}一起处理装反的胶片',
+          ),
           flag('screened_film', '组织了一场活动影戏放映'),
           know('胶片第二本容易装反，开演前要按编号对一遍', 0.9, 'witnessed', '$projectionist'),
         ],
@@ -3100,10 +3385,15 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-film-censored',
         weight: 0.3,
-        text: '审查官在放映前剪掉了两段，{projectionist}把剪下的胶片放在桌上。她问能不能接回去，{projectionist}说“接了也过不了”；她还是接了一段，观众看到画面跳了一下，没有人出声。散场后，{projectionist}把剪下的胶片塞进她的包里。',
+        text: '审查官在放映前剪掉了两段，{projectionist}把剪下的胶片放在桌上。{subjectPronoun}问能不能接回去，{projectionist}说“接了也过不了”；{subjectPronoun}还是接了一段，观众看到画面跳了一下，没有人出声。散场后，{projectionist}把剪下的胶片塞进{subjectPronoun}的包里。',
         effects: [
           flag('film_censored', '放映前被审查官剪掉两段胶片'),
-          link('projectionist', 'colleague', { trust: 0.05 }, '放映员把剪下的胶片交给她'),
+          link(
+            'projectionist',
+            'colleague',
+            { trust: 0.05 },
+            '放映员把剪下的胶片交给{subjectPronoun}',
+          ),
           link('censor', 'acquaintance', { fear: 0.08 }, '审查官在放映前剪片'),
           cash(-2, '被剪后补租胶片的费用'),
           reputation(0.03, '把被剪的胶片接回一段'),
@@ -3114,10 +3404,15 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-film-fire',
         weight: 0.3,
-        text: '放映机在最后一本烧了胶片，观众在黑暗里等了几分钟。她点起一盏煤气灯，{projectionist}把烧焦的片段举给大家看；有人笑，有人退票，她把退票钱一张张数出去。她把烧焦的片段收进铁盒，铁盒后来一直有醋酸味。',
+        text: '放映机在最后一本烧了胶片，观众在黑暗里等了几分钟。{subjectPronoun}点起一盏煤气灯，{projectionist}把烧焦的片段举给大家看；有人笑，有人退票，{subjectPronoun}把退票钱一张张数出去。{subjectPronoun}把烧焦的片段收进铁盒，铁盒后来一直有醋酸味。',
         effects: [
           cash(-3, '烧毁的胶片赔偿和退票'),
-          link('projectionist', 'colleague', { trust: 0.05 }, '放映员和她一起处理烧片'),
+          link(
+            'projectionist',
+            'colleague',
+            { trust: 0.05 },
+            '放映员和{subjectPronoun}一起处理烧片',
+          ),
           flag('projector_fire', '放映机烧了最后一本胶片'),
           reputation(-0.02, '放映事故后给观众退票'),
           health(-0.01, '在黑暗里等维修后的头痛'),
@@ -3137,11 +3432,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-film-reform-school',
             weight: 0.55,
-            text: '市立学校请她放一部教育片，{teacher}在门口点名，只允许带孩子的家长进场。她站在放映机旁，看见{teacher}把迟到的人挡在外面，忽然觉得银幕比教室还窄。散场后，{teacher}把剩下的教育片锁进学校柜子。',
+            text: '市立学校请{subjectPronoun}放一部教育片，{teacher}在门口点名，只允许带孩子的家长进场。{subjectPronoun}站在放映机旁，看见{teacher}把迟到的人挡在外面，忽然觉得银幕比教室还窄。散场后，{teacher}把剩下的教育片锁进学校柜子。',
             effects: [
               role('film_lecturer', '替市立学校放映教育片'),
               reputation(0.04, '替学校组织教育片放映'),
-              link('teacher', 'acquaintance', { respect: 0.06 }, '教师让她按名单放人进场'),
+              link(
+                'teacher',
+                'acquaintance',
+                { respect: 0.06 },
+                '教师让{subjectPronoun}按名单放人进场',
+              ),
               cash(3, '学校支付的放映费'),
               know('教育片放映要按学校名单放人，迟到的家长不能进场', 0.9, 'witnessed', '$teacher'),
               flag('screened_educational_film', '替市立学校放映教育片'),
@@ -3151,7 +3451,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-film-reform-stop',
             weight: 0.45,
-            text: '片子放到一半，{teacher}要求停下，说有一幕不适合学生。她关掉机器，观众席里有人鼓掌，有人吹口哨；{teacher}让她退一半票钱，她没有争。观众散尽后，她把机器擦了一遍，胶片仍卡在片门里。',
+            text: '片子放到一半，{teacher}要求停下，说有一幕不适合学生。{subjectPronoun}关掉机器，观众席里有人鼓掌，有人吹口哨；{teacher}让{subjectPronoun}退一半票钱，{subjectPronoun}没有争。观众散尽后，{subjectPronoun}把机器擦了一遍，胶片仍卡在片门里。',
             effects: [
               flag('educational_film_stopped', '教育片被教师要求中途停下'),
               cash(-1, '退给观众的一半票钱'),
@@ -3193,12 +3493,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-radio-read',
         weight: 0.4,
-        text: '播音室比壁橱大不了多少，{engineer}让她离话筒一臂远。她读的是市集价格和一段天气预报，读到一半，耳机里传来自己的声音，比平时慢半拍；{editor}在玻璃后面竖起大拇指。播完后，{engineer}让她把稿子留下，说明天还要重播。',
+        text: '播音室比壁橱大不了多少，{engineer}让{subjectPronoun}离话筒一臂远。{subjectPronoun}读的是市集价格和一段天气预报，读到一半，耳机里传来自己的声音，比平时慢半拍；{editor}在玻璃后面竖起大拇指。播完后，{engineer}让{subjectPronoun}把稿子留下，说明天还要重播。',
         effects: [
           role('radio_reader', '在广播站朗读市集价格和天气'),
           cash(3, '广播稿费'),
           reputation(0.05, '第一次在无线电里朗读'),
-          link('engineer', 'colleague', { trust: 0.05 }, '工程师教她离话筒一臂远'),
+          link('engineer', 'colleague', { trust: 0.05 }, '工程师教{subjectPronoun}离话筒一臂远'),
           link('editor', 'colleague', { respect: 0.06 }, '编辑在玻璃后竖起大拇指'),
           know('播音要离话筒一臂远，耳机里自己的声音会慢半拍', 0.9, 'witnessed', '$engineer'),
           flag('radio_broadcast', '第一次在广播站播音'),
@@ -3208,7 +3508,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-radio-cut',
         weight: 0.3,
-        text: '稿子被{editor}删得只剩三行，她问能不能加一句失业救济的电话。{editor}说“上面不让”；她还是把那句写在手心，直播时没有念出来。她把那行字在手心攥出了汗，回家洗手时才发现墨迹已经晕开。',
+        text: '稿子被{editor}删得只剩三行，{subjectPronoun}问能不能加一句失业救济的电话。{editor}说“上面不让”；{subjectPronoun}还是把那句写在手心，直播时没有念出来。{subjectPronoun}把那行字在手心攥出了汗，回家洗手时才发现墨迹已经晕开。',
         effects: [
           flag('radio_script_cut', '广播稿被删得只剩三行'),
           reputation(0.02, '在广播里按删改稿朗读'),
@@ -3222,7 +3522,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-radio-failure',
         weight: 0.3,
-        text: '开播前十分钟，发射机坏了。{engineer}钻到桌子底下接线，她坐在话筒前听见电流声；节目晚了八分钟，{editor}在走廊里来回走，最后只播了音乐。音乐放完，{editor}在走廊尽头向她摊了摊手。',
+        text: '开播前十分钟，发射机坏了。{engineer}钻到桌子底下接线，{subjectPronoun}坐在话筒前听见电流声；节目晚了八分钟，{editor}在走廊里来回走，最后只播了音乐。音乐放完，{editor}在走廊尽头向{subjectPronoun}摊了摊手。',
         effects: [
           flag('radio_failure', '广播因发射机故障晚播八分钟'),
           cash(-2, '被取消的稿费'),
@@ -3246,7 +3546,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-radio-reform-school',
             weight: 0.55,
-            text: '学校安排一次广播课，{teacher}把学生带到走廊尽头听。她念了一段关于市立图书馆的稿子，孩子们在纸上记下开放时间；直播结束后，{teacher}说“他们其实更想听侦探故事”。孩子们走后，{teacher}把广播稿折好，放进讲台抽屉。',
+            text: '学校安排一次广播课，{teacher}把学生带到走廊尽头听。{subjectPronoun}念了一段关于市立图书馆的稿子，孩子们在纸上记下开放时间；直播结束后，{teacher}说“他们其实更想听侦探故事”。孩子们走后，{teacher}把广播稿折好，放进讲台抽屉。',
             effects: [
               role('school_radio_reader', '替学校广播课朗读图书馆开放时间'),
               reputation(0.04, '在学校广播里朗读'),
@@ -3260,11 +3560,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-radio-reform-dispute',
             weight: 0.45,
-            text: '技术员说线路只能通到三个教室，{teacher}还是让她播。她读到一半，发现自己在替学校念招生通知；关掉话筒后，她问{teacher}“这也算文化吗”，{teacher}没有回答。她关掉话筒，听见走廊里学生在模仿她的声音。',
+            text: '技术员说线路只能通到三个教室，{teacher}还是让{subjectPronoun}播。{subjectPronoun}读到一半，发现自己在替学校念招生通知；关掉话筒后，{subjectPronoun}问{teacher}“这也算文化吗”，{teacher}没有回答。{subjectPronoun}关掉话筒，听见走廊里学生在模仿{subjectPronoun}的声音。',
             effects: [
               flag('school_broadcast_dispute', '学校广播实际成了招生通知'),
               reputation(-0.01, '在广播里念了招生通知'),
-              link('teacher', 'acquaintance', { trust: 0.03 }, '教师没有回答她的问题'),
+              link(
+                'teacher',
+                'acquaintance',
+                { trust: 0.03 },
+                '教师没有回答{subjectPronoun}的问题',
+              ),
               know(
                 '学校线路只能通三个教室，广播内容常被改成招生通知',
                 0.85,
@@ -3307,7 +3612,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-petition-filed',
         weight: 0.35,
-        text: '她在一家面包店门口摆开签名纸，{neighbor}第一个签，写完又把丈夫的名字也添上。到傍晚，纸上有一百二十个名字；{official}收下时数了两遍，说“我们会研究”。回家的电车上，她发现签名纸的边角被汗浸软了。',
+        text: '{subjectPronoun}在一家面包店门口摆开签名纸，{neighbor}第一个签，写完又把丈夫的名字也添上。到傍晚，纸上有一百二十个名字；{official}收下时数了两遍，说“我们会研究”。回家的电车上，{subjectPronoun}发现签名纸的边角被汗浸软了。',
         effects: [
           role('petition_carrier', '把一百二十个签名的请愿书送进市政厅'),
           reputation(0.05, '在面包店门口收集到一百二十个签名'),
@@ -3322,11 +3627,11 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-petition-refused',
         weight: 0.35,
-        text: '她把签名纸送到市政厅，{official}说格式不对，要按街道分开。她回去重抄，发现有几个名字已经认不出；再去时，窗口换了一个人，说前一班没有交接。她坐在市政厅台阶上重抄，风把纸吹到花坛里。',
+        text: '{subjectPronoun}把签名纸送到市政厅，{official}说格式不对，要按街道分开。{subjectPronoun}回去重抄，发现有几个名字已经认不出；再去时，窗口换了一个人，说前一班没有交接。{subjectPronoun}坐在市政厅台阶上重抄，风把纸吹到花坛里。',
         effects: [
           flag('petition_refused', '请愿书因格式不对被退回'),
           reputation(0.02, '为请愿书格式来回跑了两趟'),
-          link('official', 'acquaintance', { fear: 0.04 }, '窗口职员退回她的签名纸'),
+          link('official', 'acquaintance', { fear: 0.04 }, '窗口职员退回{subjectPronoun}的签名纸'),
           cash(-0.5, '重抄签名纸的纸笔钱'),
           health(-0.01, '来回跑市政厅后的疲惫'),
           know('请愿书要按街道分页，窗口换班时前一班可能没有交接', 0.9, 'witnessed', '$official'),
@@ -3336,11 +3641,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-petition-lost',
         weight: 0.3,
-        text: '签名纸在电车上被挤掉一角，最后十个名字不见了。她站在终点站找了一刻钟，只在座位下找到一张被踩脏的纸；{neighbor}说“算了”，她还是把剩下的名字重新抄了一遍。她把重抄的名单交给{neighbor}，让对方再核一遍。',
+        text: '签名纸在电车上被挤掉一角，最后十个名字不见了。{subjectPronoun}站在终点站找了一刻钟，只在座位下找到一张被踩脏的纸；{neighbor}说“算了”，{subjectPronoun}还是把剩下的名字重新抄了一遍。{subjectPronoun}把重抄的名单交给{neighbor}，让对方再核一遍。',
         effects: [
           flag('petition_signatures_lost', '签名纸在电车上被挤掉一角'),
           reputation(-0.01, '请愿书丢了十个签名'),
-          link('neighbor', 'acquaintance', { trust: 0.04 }, '邻居劝她算了，她仍重抄'),
+          link(
+            'neighbor',
+            'acquaintance',
+            { trust: 0.04 },
+            '邻居劝{subjectPronoun}算了，{subjectPronoun}仍重抄',
+          ),
           cash(-0.5, '重抄签名纸和电车票'),
           health(-0.01, '在终点站找纸'),
           know('签名纸要夹在硬纸板里，电车挤掉的一角找不回来', 0.85, 'witnessed', '$neighbor'),
@@ -3360,7 +3670,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-petition-crisis-unemployed',
             weight: 0.55,
-            text: '失业者把市政厅的台阶坐满，她抱着签名纸挤到门口。{official}出来说救济金要等下一季度，人群开始敲栏杆；她把纸举过头顶，听见有人喊她的名字。人群里有人把她的名字喊成另一个人的，她没有纠正。',
+            text: '失业者把市政厅的台阶坐满，{subjectPronoun}抱着签名纸挤到门口。{official}出来说救济金要等下一季度，人群开始敲栏杆；{subjectPronoun}把纸举过头顶，听见有人喊{subjectPronoun}的名字。人群里有人把{subjectPronoun}的名字喊成另一个人的，{subjectPronoun}没有纠正。',
             effects: [
               role('unemployment_petition_carrier', '替失业者把请愿书举到市政厅门口'),
               reputation(0.05, '在失业者请愿中被推到前面'),
@@ -3374,11 +3684,11 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-petition-crisis-relief',
             weight: 0.45,
-            text: '当局同意发一批临时救济，但要按名单发放。她帮着核对地址，发现自己的名字不在上面；{neighbor}让她把名字加上，她犹豫了一会儿，最后没有加。她把救济金分成房租、煤和药费，最后只剩几枚硬币。',
+            text: '当局同意发一批临时救济，但要按名单发放。{subjectPronoun}帮着核对地址，发现自己的名字不在上面；{neighbor}让{subjectPronoun}把名字加上，{subjectPronoun}犹豫了一会儿，最后没有加。{subjectPronoun}把救济金分成房租、煤和药费，最后只剩几枚硬币。',
             effects: [
               cash(5, '临时救济金'),
-              flag('relief_list_excluded_self', '临时救济名单上没有她的名字'),
-              link('neighbor', 'acquaintance', { trust: 0.05 }, '邻居让她把名字加上'),
+              flag('relief_list_excluded_self', '临时救济名单上没有{subjectPronoun}的名字'),
+              link('neighbor', 'acquaintance', { trust: 0.05 }, '邻居让{subjectPronoun}把名字加上'),
               link('official', 'acquaintance', { trust: 0.03 }, '核对救济名单时与窗口职员接触'),
               know(
                 '临时救济按名单发放，核对地址时最容易漏掉不在册的人',
@@ -3422,13 +3732,18 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-return-home',
         weight: 0.35,
-        text: '火车到边境时天刚亮，{official}把她的证件翻了三遍，问她在外面做什么。她说“做工”，对方在表格上写“经济移民”；她纠正说“回家”，对方没有改。她把表格上的“经济移民”看了很久，最后没有要求改。',
+        text: '火车到边境时天刚亮，{official}把{subjectPronoun}的证件翻了三遍，问{subjectPronoun}在外面做什么。{subjectPronoun}说“做工”，对方在表格上写“经济移民”；{subjectPronoun}纠正说“回家”，对方没有改。{subjectPronoun}把表格上的“经济移民”看了很久，最后没有要求改。',
         effects: [
           move('@home', '过境后回到登记的住处'),
           residence('@home', '把家庭住址重新登记在原住处'),
           cash(-6, '回程票、过境费和行李托运费'),
-          link('official', 'acquaintance', { fear: 0.04 }, '边境官员把她的身份写成经济移民'),
-          link('relative', 'kin', { trust: 0.05 }, '家里等她回来'),
+          link(
+            'official',
+            'acquaintance',
+            { fear: 0.04 },
+            '边境官员把{subjectPronoun}的身份写成经济移民',
+          ),
+          link('relative', 'kin', { trust: 0.05 }, '家里等{subjectPronoun}回来'),
           flag('returned_home', '从外地回到登记的住处'),
           know('边境表格会把返乡写成经济移民，改不改由官员决定', 0.9, 'witnessed', '$official'),
         ],
@@ -3437,12 +3752,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-return-wait',
         weight: 0.3,
-        text: '她的入境许可过期两天，{official}让她在原车返回和等待审查之间选。她选择等，在边境小屋的硬板床上睡了三个晚上；第四天，许可补好了，她的行李却少了一只。她数了数行李，发现少的是装母亲照片的那只箱子。',
+        text: '{subjectPronoun}的入境许可过期两天，{official}让{subjectPronoun}在原车返回和等待审查之间选。{subjectPronoun}选择等，在边境小屋的硬板床上睡了三个晚上；第四天，许可补好了，{subjectPronoun}的行李却少了一只。{subjectPronoun}数了数行李，发现少的是装母亲照片的那只箱子。',
         effects: [
           move('@station', '在边境等待审查三天'),
           cash(-4, '边境小屋的住宿和补办许可'),
           flag('border_refused_then_admitted', '入境许可过期，在边境等了三天'),
-          link('official', 'acquaintance', { fear: 0.06 }, '边境官员让她等待审查'),
+          link('official', 'acquaintance', { fear: 0.06 }, '边境官员让{subjectPronoun}等待审查'),
           condition('displaced', '在边境小屋暂住三天'),
           health(-0.03, '硬板床和等待'),
           know('入境许可过期可以先等审查，但行李在边境小屋不安全', 0.9, 'witnessed', '$official'),
@@ -3452,13 +3767,13 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-return-refused',
         weight: 0.35,
-        text: '她被拒绝入境，理由是“没有固定住所”。她在边境站给{relative}打电话，电话转到邻居家；对方说“先回来再说”，她买了一张反向车票。她在边境站的长椅上坐到天亮，才买下反向车票。',
+        text: '{subjectPronoun}被拒绝入境，理由是“没有固定住所”。{subjectPronoun}在边境站给{relative}打电话，电话转到邻居家；对方说“先回来再说”，{subjectPronoun}买了一张反向车票。{subjectPronoun}在边境站的长椅上坐到天亮，才买下反向车票。',
         effects: [
           move('@station', '被拒绝入境，回到车站'),
           cash(-5, '反向车票和电话费'),
           flag('border_refused', '因没有固定住所被拒绝入境'),
           link('official', 'acquaintance', { fear: 0.08 }, '边境官员以没有固定住所为由拒绝入境'),
-          link('relative', 'kin', { trust: 0.04 }, '亲戚在电话里让她先回来'),
+          link('relative', 'kin', { trust: 0.04 }, '亲戚在电话里让{subjectPronoun}先回来'),
           condition('displaced', '被拒绝入境后暂时没有住处'),
           health(-0.02, '在边境站过夜'),
           know(
@@ -3481,7 +3796,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-return-war-closed',
             weight: 0.5,
-            text: '战时边境只认军方通行证，{official}说她的平民证件“等于没有”。她把行李寄存在车站，走了半公里去军需处；队伍排到门外，轮到她时窗口已经关了。她在军需处门口等到天黑，窗口再没有开过。',
+            text: '战时边境只认军方通行证，{official}说{subjectPronoun}的平民证件“等于没有”。{subjectPronoun}把行李寄存在车站，走了半公里去军需处；队伍排到门外，轮到{subjectPronoun}时窗口已经关了。{subjectPronoun}在军需处门口等到天黑，窗口再没有开过。',
             effects: [
               move('@station', '因边境关闭困在车站'),
               cash(-3, '行李寄存和去军需处的车钱'),
@@ -3496,13 +3811,18 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-return-war-freight',
             weight: 0.5,
-            text: '她跟着一群返乡的伤员挤上货车，{official}在门口点名，点到她时愣了一下。她说“我也是回来的”，对方挥手让她上去；车开了一天一夜，她站在车厢里，脚麻得没有知觉。到站时，她的脚已经站不直，{relative}在月台上扶了她一把。',
+            text: '{subjectPronoun}跟着一群返乡的伤员挤上货车，{official}在门口点名，点到{subjectPronoun}时愣了一下。{subjectPronoun}说“我也是回来的”，对方挥手让{subjectPronoun}上去；车开了一天一夜，{subjectPronoun}站在车厢里，脚麻得没有知觉。到站时，{subjectPronoun}的脚已经站不直，{relative}在月台上扶了{subjectPronoun}一把。',
             effects: [
               move('@home', '跟着返乡伤员坐货车回到住处'),
               residence('@home', '重新登记原住处'),
               cash(-2, '货车上的干粮和到站后的车钱'),
-              link('official', 'acquaintance', { trust: 0.04 }, '边境官员挥手让她上货车'),
-              link('relative', 'kin', { trust: 0.05 }, '家里等她回来'),
+              link(
+                'official',
+                'acquaintance',
+                { trust: 0.04 },
+                '边境官员挥手让{subjectPronoun}上货车',
+              ),
+              link('relative', 'kin', { trust: 0.05 }, '家里等{subjectPronoun}回来'),
               flag('returned_home_in_freight_car', '跟着伤员货车回到家里'),
               health(-0.03, '站了一天一夜，脚麻'),
             ],
@@ -3550,7 +3870,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-memoir-complete',
         weight: 0.35,
-        text: '她在一本旧账本的背面开始写，第一页写日期，第二页写母亲的名字。{editor}每周来取一次稿，提醒她“不要把所有人都写成好人”；她删掉两句，又偷偷在页边加回去。交稿那天，她把旧账本翻到最后一页，发现背面还有字。',
+        text: '{subjectPronoun}在一本旧账本的背面开始写，第一页写日期，第二页写母亲的名字。{editor}每周来取一次稿，提醒{subjectPronoun}“不要把所有人都写成好人”；{subjectPronoun}删掉两句，又偷偷在页边加回去。交稿那天，{subjectPronoun}把旧账本翻到最后一页，发现背面还有字。',
         effects: [
           role('memoirist', '完成并交出回忆录初稿'),
           reputation(0.05, '回忆录初稿被编辑接受'),
@@ -3564,7 +3884,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-memoir-unfinished',
         weight: 0.3,
-        text: '她写到战争那一章就停了，稿纸在桌上放了半年。{editor}问她要不要跳过，她说“跳不过去”；最后她把那一章锁进抽屉，只交上前面的部分。她把抽屉钥匙藏在米缸里，每次做饭都会碰到它。',
+        text: '{subjectPronoun}写到战争那一章就停了，稿纸在桌上放了半年。{editor}问{subjectPronoun}要不要跳过，{subjectPronoun}说“跳不过去”；最后{subjectPronoun}把那一章锁进抽屉，只交上前面的部分。{subjectPronoun}把抽屉钥匙藏在米缸里，每次做饭都会碰到它。',
         effects: [
           flag('memoir_unfinished', '战争那一章被锁进抽屉，只交前半部'),
           know('战争章节可以暂时锁起来，但编辑看得出缺了一章', 0.8, 'told', '$editor'),
@@ -3577,11 +3897,11 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-memoir-dispute',
         weight: 0.35,
-        text: '亲戚听说她在写回忆录，轮流上门解释当年的事。{relative}要求删掉一段，她不同意；两个人翻出旧照片对质，最后谁也没说服谁，照片被茶水洇湿了一角。那杯茶凉在桌上，照片上的几个人慢慢粘在一起。',
+        text: '亲戚听说{subjectPronoun}在写回忆录，轮流上门解释当年的事。{relative}要求删掉一段，{subjectPronoun}不同意；两个人翻出旧照片对质，最后谁也没说服谁，照片被茶水洇湿了一角。那杯茶凉在桌上，照片上的几个人慢慢粘在一起。',
         effects: [
           flag('memoir_family_dispute', '亲戚要求删掉回忆录里的一段'),
-          link('relative', 'kin', { trust: -0.05 }, '亲戚为回忆录的一段与她争执'),
-          reputation(0.02, '亲戚知道她在写回忆录'),
+          link('relative', 'kin', { trust: -0.05 }, '亲戚为回忆录的一段与{subjectPronoun}争执'),
+          reputation(0.02, '亲戚知道{subjectPronoun}在写回忆录'),
           know('旧照片能证明一些事，也能让争执更久', 0.8, 'witnessed', '$relative'),
           cash(-1, '被茶水洇湿的照片和重印费'),
           health(-0.01, '与亲戚争执后的头痛'),
@@ -3599,11 +3919,11 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-memoir-postwar-gap',
             weight: 0.5,
-            text: '她写到自己从战场上回来那天，发现记忆里没有车站，只有一扇关着的门。{editor}建议她去医院问问，她去了，档案室说那几年的记录已经移交；她回家把空白留在稿子里。',
+            text: '{subjectPronoun}写到自己从战场上回来那天，发现记忆里没有车站，只有一扇关着的门。{editor}建议{subjectPronoun}去医院问问，{subjectPronoun}去了，档案室说那几年的记录已经移交；{subjectPronoun}回家把空白留在稿子里。',
             effects: [
               role('memoirist', '把战后失忆写进回忆录'),
               reputation(0.05, '回忆录里保留了一段空白'),
-              link('editor', 'colleague', { trust: 0.05 }, '编辑建议她去医院查记录'),
+              link('editor', 'colleague', { trust: 0.05 }, '编辑建议{subjectPronoun}去医院查记录'),
               cash(2, '回忆录前半部的稿费'),
               know(
                 '战后返乡的记录已经移交，医院档案室不能补出缺失的那一天',
@@ -3619,7 +3939,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-memoir-postwar-published',
             weight: 0.5,
-            text: '她把亡友的名字写进书里，出版社要求改成缩写。她不同意，最后双方各退一步，用了一个只有熟人看得懂的绰号；书出版后，她收到一封没有署名的信，说“谢谢你还记得”。',
+            text: '{subjectPronoun}把亡友的名字写进书里，出版社要求改成缩写。{subjectPronoun}不同意，最后双方各退一步，用了一个只有熟人看得懂的绰号；书出版后，{subjectPronoun}收到一封没有署名的信，说“谢谢你还记得”。',
             effects: [
               role('memoirist', '回忆录出版'),
               reputation(0.06, '回忆录出版后收到匿名感谢信'),
@@ -3668,12 +3988,17 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-underground-print',
         weight: 0.35,
-        text: '印刷机藏在地下室，进纸时得用手摇。{printer}让她负责折页，自己盯着楼梯口；印到一半，楼上传来脚步声，两个人把纸塞进煤箱，假装在修水管。脚步声在楼梯口停了一会儿，又往上走了。',
+        text: '印刷机藏在地下室，进纸时得用手摇。{printer}让{subjectPronoun}负责折页，自己盯着楼梯口；印到一半，楼上传来脚步声，两个人把纸塞进煤箱，假装在修水管。脚步声在楼梯口停了一会儿，又往上走了。',
         effects: [
           role('underground_printer', '在地下室印刷秘密传单'),
           flag('printed_underground_paper', '参与印刷秘密传单'),
           reputation(0.05, '在地下印刷所负责折页'),
-          link('printer', 'colleague', { trust: 0.08 }, '排字工让她负责折页并一起藏纸'),
+          link(
+            'printer',
+            'colleague',
+            { trust: 0.08 },
+            '排字工让{subjectPronoun}负责折页并一起藏纸',
+          ),
           cash(-4, '纸张、油墨和地下室煤钱'),
           condition('police_surveillance', '印刷所被巡警注意'),
           know(
@@ -3688,11 +4013,16 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-underground-courier',
         weight: 0.3,
-        text: '她把印好的纸分成四包，分别交给四个不认识的人。{courier}教她把传单夹在报纸里，遇到巡警就说去送货；她走到第三个路口时，看见{printer}被拦在墙边。第四个接纸的人没有说名字，只把报纸折成同样的角度。',
+        text: '{subjectPronoun}把印好的纸分成四包，分别交给四个不认识的人。{courier}教{subjectPronoun}把传单夹在报纸里，遇到巡警就说去送货；{subjectPronoun}走到第三个路口时，看见{printer}被拦在墙边。第四个接纸的人没有说名字，只把报纸折成同样的角度。',
         effects: [
           role('underground_courier', '替地下印刷所分送传单'),
           flag('distributed_underground_paper', '把秘密传单分送给四个人'),
-          link('courier', 'acquaintance', { trust: 0.08 }, '交通员教她把传单夹在报纸里'),
+          link(
+            'courier',
+            'acquaintance',
+            { trust: 0.08 },
+            '交通员教{subjectPronoun}把传单夹在报纸里',
+          ),
           link('printer', 'colleague', { fear: 0.05 }, '看见排字工被巡警拦在墙边'),
           know('传单夹在报纸里，遇到巡警就说去送货', 0.9, 'told', '$courier'),
           health(-0.02, '送完四包纸后的紧张'),
@@ -3703,12 +4033,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-underground-seized',
         weight: 0.35,
-        text: '巡警搜了地下室，印刷机被抬上卡车。{printer}从后窗逃走，她留在门口，说自己是来收房租的；{policeman}翻了她的包，只找到一把菜刀和半块面包。她看着印刷机被抬上车，想起自己第一次摇那台机器。',
+        text: '巡警搜了地下室，印刷机被抬上卡车。{printer}从后窗逃走，{subjectPronoun}留在门口，说自己是来收房租的；{policeman}翻了{subjectPronoun}的包，只找到一把菜刀和半块面包。{subjectPronoun}看着印刷机被抬上车，想起自己第一次摇那台机器。',
         effects: [
           flag('press_seized', '地下印刷机被巡警搜走'),
-          condition('police_record', '巡警搜地下室时记下她的身份'),
+          condition('police_record', '巡警搜地下室时记下{subjectPronoun}的身份'),
           link('printer', 'colleague', { trust: 0.06 }, '排字工从后窗逃走'),
-          link('policeman', 'acquaintance', { fear: 0.12 }, '巡警翻了她的包'),
+          link('policeman', 'acquaintance', { fear: 0.12 }, '巡警翻了{subjectPronoun}的包'),
           cash(-8, '被搜走的印刷机和纸张损失'),
           unemployment('地下印刷所被搜后失去工作'),
           know('巡警搜地下室时会先抬机器，后窗是唯一出口', 0.9, 'witnessed', '$policeman'),
@@ -3728,7 +4058,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-underground-crisis-night',
             weight: 0.55,
-            text: '戒严期间，印刷所白天关门，夜里才开工。{printer}把铅字盒藏在面包箱里，她负责在门口望风；第一个晚上印了三百份，天亮前全部发完，地上只剩一层黑灰。天亮前，她把最后一张纸塞进面包箱，锁好地下室。',
+            text: '戒严期间，印刷所白天关门，夜里才开工。{printer}把铅字盒藏在面包箱里，{subjectPronoun}负责在门口望风；第一个晚上印了三百份，天亮前全部发完，地上只剩一层黑灰。天亮前，{subjectPronoun}把最后一张纸塞进面包箱，锁好地下室。',
             effects: [
               role('underground_printer', '在戒严夜班印刷传单'),
               flag('printed_underground_paper', '在戒严夜班印了三百份传单'),
@@ -3743,7 +4073,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
           {
             id: 'civic-underground-crisis-baby',
             weight: 0.45,
-            text: '警察在街区挨户搜查，她把最后一叠传单塞进婴儿车的夹层。{courier}推着车走在前面，她隔着马路跟着；到拐角时，{policeman}拦下婴儿车，掀开毯子，只看见一个睡着的孩子。巡警走后，{courier}推着车拐进巷子，孩子在毯子下翻了个身。',
+            text: '警察在街区挨户搜查，{subjectPronoun}把最后一叠传单塞进婴儿车的夹层。{courier}推着车走在前面，{subjectPronoun}隔着马路跟着；到拐角时，{policeman}拦下婴儿车，掀开毯子，只看见一个睡着的孩子。巡警走后，{courier}推着车拐进巷子，孩子在毯子下翻了个身。',
             effects: [
               flag('hid_underground_paper', '把传单藏进婴儿车夹层'),
               link('courier', 'acquaintance', { trust: 0.1 }, '交通员推着藏传单的婴儿车'),

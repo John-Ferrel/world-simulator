@@ -41,6 +41,7 @@ const BUILTIN_TEXT_TOKENS = new Set([
   'milieu',
   'context',
   'flavor',
+  'subjectPronoun',
 ]);
 const PLACEHOLDERS = new Set([
   '@school',
@@ -130,7 +131,10 @@ describe('Phase 11 Plot Kernel library', () => {
     for (const kernel of KERNEL_LIBRARY) {
       expect(kernel.stage, kernel.id).toBeTruthy();
       expect(kernel.ageWindow.min, kernel.id).toBeLessThanOrEqual(kernel.ageWindow.max);
-      expect(kernel.roles.some((role) => role.kind === 'subject'), kernel.id).toBe(true);
+      expect(
+        kernel.roles.some((role) => role.kind === 'subject'),
+        kernel.id,
+      ).toBe(true);
       for (const role of kernel.roles) {
         expect(ROLE_KINDS.has(role.kind), `${kernel.id}/${role.key}`).toBe(true);
       }

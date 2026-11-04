@@ -2168,6 +2168,7 @@ const BUILTIN_TEXT_TOKENS = new Set([
   'year',
   'household',
   'child',
+  'subjectPronoun',
 ]);
 
 function textReferencesMissingRole(text: string, roles: Record<Id, Id>): boolean {
@@ -2193,6 +2194,7 @@ export function interpolateSceneText(
   const residence = world.households[subject.householdId]?.residenceId;
   const values: Record<string, string | undefined> = {
     subject: subject.name,
+    subjectPronoun: subject.sex === 'female' ? '她' : subject.sex === 'male' ? '他' : '其',
     place: world.places[subject.locationId]?.name,
     residence: residence ? world.places[residence]?.name : undefined,
     school: subject.education.placeId

@@ -258,6 +258,7 @@ const BUILTIN_TEXT_TOKENS = new Set([
   'year',
   'household',
   'child',
+  'subjectPronoun',
 ]);
 
 const ROLE_TOKEN_ALIASES: Record<string, string[]> = {

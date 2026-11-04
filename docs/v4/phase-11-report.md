@@ -181,6 +181,8 @@ compose → definitions/tasks
 6. 重复：15.6% base outcomes 用“第二天”，16.2%“门口”，27.8%“克朗”，14.4% 同一官僚窗口，5.3% 沉默结尾。
 7. Context 多数是 B 级：只有 1/98 variants 按 `milieuTags`；1/686 outcome 使用 `{milieu}`；没有 outcome 使用 `{context}`/`{flavor}`。地点/工资变化多于制度因果。
 
+Critic 之后，civic 30 个 Kernel 的“她”已批量替换为 `{subjectPronoun}`，由 Engine 按 `subject.sex` 解析；这只修复了最集中的一组代词，其他领域、货币、集体效果和条件问题没有全部重写，也没有重新通过 34/40 复审。
+
 结论：**组合架构与数量扩容完成；文学质量未完成。** 不能把 150 个 Kernel 或 1.26M 上界当作文学成功。
 
 ## 7. 测试与浏览器
@@ -192,18 +194,18 @@ pnpm typecheck
 pnpm exec vitest run tests/v4-*.test.ts
 → 31 files passed / 2 skipped
 → 183 tests passed / 8 skipped
-→ 21.33s
+→ 20.25s
 
 pnpm test
 → 80 files passed / 7 skipped
 → 463 tests passed / 36 skipped
-→ 159.75s
+→ 160.22s
 
 pnpm build
-→ 通过，2.85s
+→ 通过，3.26s
 
 pnpm test:e2e --config playwright.v4.config.ts
-→ 1 passed (13.3s total; test 9.4s)
+→ 1 passed (9.9s total; test 4.6s)
 ```
 
 e2e 覆盖出生、日志、人物切换、semantic person hover、事件档案、进程档案、地图；组合事件使用同一 API/UI 投影。
