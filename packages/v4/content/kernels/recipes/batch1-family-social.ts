@@ -11,27 +11,18 @@ import { recipes } from './kit.js';
  */
 
 const HOME = ['home', 'family', 'neighbor', 'poverty', 'everyday'];
-const FARM = [...HOME, 'farm', 'vineyard', 'rural', 'land'];
 const CARE = [...HOME, 'health', 'medicine', 'hospital', 'care'];
-const MARKET = [...HOME, 'market', 'shop', 'merchant', 'customer'];
 const SCHOOL = ['school', 'education', 'teacher', 'childhood', 'adolescence', 'home', 'family'];
 const WORK = [...HOME, 'work', 'craft', 'factory', 'shop'];
-const CIVIC = [...HOME, 'official', 'bureaucracy', 'state', 'papers', 'public_service'];
 const CHURCH = [...HOME, 'school', 'education', 'teacher'];
 
-const SETTLE = [
-  'vienna',
-  'urban',
-  'rural',
-  'war',
-  'postwar',
-  'reform',
-  'crisis',
-  'peace',
-  'scarcity',
-];
-const URBAN = ['vienna', 'urban', 'war', 'postwar', 'reform', 'crisis', 'peace', 'scarcity'];
-const RURAL = ['rural', 'small_town', 'agriculture', 'vineyard', 'peace', 'scarcity'];
+/**
+ * Urban/Vienna context tags. Deliberately excludes `rural` and the `peace`
+ * tag: the rural context outranks Vienna 1912 in the composer, so a recipe
+ * carrying `peace` would be bound to Klosterneuburg instead of the city.
+ */
+const URBAN = ['vienna', 'urban', 'war', 'postwar', 'reform', 'crisis', 'scarcity'];
+const SETTLE = URBAN;
 
 export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
   {
@@ -43,6 +34,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     tags: ['social', 'courtship', 'dance', 'marriage', 'chaperone'],
     contexts: URBAN,
     milieus: [...HOME, 'cafe', 'market'],
+    conditions: [{ kind: 'sex', in: ['female'] }],
     roles: {
       partner: ['partner', { minAge: 18, maxAge: 34, sex: 'opposite' }],
       chaperone: ['neighbor', { minAge: 35, maxAge: 72 }],
@@ -58,11 +50,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           relation: ['partner', 'acquaintance', 0.08, 0.12],
           role: 'courting',
           flag: 'met_at_dance',
-          knowledge: [
-            '对象把住址写在纸片上，塞进手套。',
-            0.8,
-            'partner',
-          ],
+          knowledge: ['对象把住址写在纸片上，塞进手套。', 0.8, 'partner'],
         },
       },
       {
@@ -117,41 +105,9 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
             fx: {
               mood: -0.18,
               relation: ['partner', 'acquaintance', 0.02, 0.06],
+              role: 'waiting_for_soldier',
               flag: 'soldier_failed_to_come',
               knowledge: ['兵营门口贴出了新的伤亡名单。', 0.7, 'chaperone'],
-            },
-          },
-        ],
-      },
-      {
-        id: 'dance-rural',
-        when: { contextTags: ['rural'] },
-        title: '打谷场上的灯',
-        outcomes: [
-          {
-            id: 'dance.harvest',
-            w: 0.55,
-            text: '打谷场上的灯挂在葡萄架上，{partner}请{subject}跳第一支，{chaperone}在长凳上看着，手里剥着核桃。跳到一半，{partner}的母亲走过来，说家里的地够种，缺的是人手；{subject}的舞步没乱，但手心出了汗。',
-            significance: 0.62,
-            fx: {
-              relation: ['partner', 'acquaintance', 0.08, 0.1],
-              flag: 'harvest_dance',
-              knowledge: [
-                '男方的母亲要的是人手，不是儿媳。',
-                0.7,
-                'partner',
-              ],
-            },
-          },
-          {
-            id: 'dance.ride-home',
-            w: 0.45,
-            text: '{partner}踩了{subject}的脚，连声道歉。{chaperone}过来说天凉了，该回去；{partner}把外套脱下来垫在车上，让{subject}坐。一路上谁也没说话；到了门口，{partner}说下个集日还在桥头等。',
-            significance: 0.58,
-            fx: {
-              mood: 0.06,
-              relation: ['partner', 'acquaintance', 0.06, 0.08],
-              flag: 'ride_home_from_dance',
             },
           },
         ],
@@ -171,6 +127,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     tags: ['social', 'courtship', 'chaperone', 'walk', 'reputation'],
     contexts: SETTLE,
     milieus: [...HOME, 'cafe', 'market'],
+    conditions: [{ kind: 'sex', in: ['female'] }],
     roles: {
       partner: ['partner', { minAge: 18, maxAge: 32, sex: 'opposite' }],
       chaperone: ['neighbor', { minAge: 38, maxAge: 75, sex: 'female' }],
@@ -228,11 +185,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
               relation: ['partner', 'acquaintance', 0.14, 0.12],
               role: 'courting',
               flag: 'postwar_walk',
-              knowledge: [
-                '丈夫从战场上回来，最怕的是没人等他。',
-                0.8,
-                'partner',
-              ],
+              knowledge: ['丈夫从战场上回来，最怕的是没人等他。', 0.8, 'partner'],
             },
           },
           {
@@ -265,6 +218,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     contexts: SETTLE,
     milieus: [...HOME, 'market', 'shop'],
     roles: {
+      bride: ['subject', { sex: 'female' }],
       parent: ['parent', { minAge: 40, maxAge: 70, sex: 'male' }],
       elder: ['neighbor', { minAge: 45, maxAge: 78, sex: 'female' }],
       partner: ['partner', { minAge: 18, maxAge: 35, sex: 'opposite', required: false }],
@@ -278,6 +232,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         fx: {
           cash: -2,
           relation: ['elder', 'acquaintance', -0.05, 0],
+          role: 'dowry_settled',
           flag: 'dowry_settled_with_patched_pot',
           knowledge: ['争了半天，补过的铜锅还是被写成新的。', 0.85, 'elder'],
         },
@@ -303,43 +258,13 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         fx: {
           mood: -0.12,
           relation: ['partner', 'acquaintance', 0.05, 0.04],
+          role: 'dowry_disputed',
           flag: 'dowry_negotiation_collapsed',
           knowledge: ['嫁妆谈崩后，对象还在等。', 0.8, 'partner'],
         },
       },
     ],
-    variants: [
-      {
-        id: 'dowry-rural',
-        when: { contextTags: ['rural'] },
-        title: '四十七株葡萄',
-        outcomes: [
-          {
-            id: 'dowry.vines',
-            w: 0.55,
-            text: '嫁妆单上写的是葡萄园最东边的一行，{elder}要数清楚有多少株。那天下着雨，两家人在泥里数到天黑，数出四十七株，有一株是枯的。{parent}说枯的那株明年会活；{elder}用指甲在单子上划了一道，写“四十六株，活的”。',
-            significance: 0.72,
-            fx: {
-              cash: -1,
-              relation: ['elder', 'acquaintance', -0.03, 0],
-              flag: 'dowry_vines_counted',
-              knowledge: ['嫁妆是葡萄园最东边的一行，雨天里数过。', 0.9, 'elder'],
-            },
-          },
-          {
-            id: 'dowry.north-slope',
-            w: 0.45,
-            text: '{elder}嫌那行葡萄向着北坡，霜来得早。{parent}说北坡的酒更酸，做菜正好。两人在田埂上争起来，{subject}蹲下去，把一株葡萄根部的土拨开，让{elder}看新发的芽；老太太看了很久，说那就写四十七株，嫁妆照旧。',
-            significance: 0.64,
-            fx: {
-              mood: 0.04,
-              relation: ['elder', 'acquaintance', 0.06, 0],
-              flag: 'dowry_vines_accepted',
-            },
-          },
-        ],
-      },
-    ],
+    variants: [],
     baseRate: 0.05,
     cooldownYears: 4,
     significance: 0.65,
@@ -353,8 +278,9 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [18, 34],
     tags: ['family', 'marriage', 'contract', 'law', 'money'],
     contexts: SETTLE,
-    milieus: [...HOME, 'government', 'shop'],
+    milieus: [...HOME, 'official', 'shop'],
     roles: {
+      wife: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 19, maxAge: 38, sex: 'opposite' }],
       official: ['official', { minAge: 28, maxAge: 70 }],
       parent: ['parent', { minAge: 42, maxAge: 75, required: false }],
@@ -381,18 +307,15 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         fx: {
           mood: -0.15,
           relation: ['partner', 'partner', -0.08, 0.02],
+          role: 'betrothed_contract',
           flag: 'marriage_contract_delayed',
-          knowledge: [
-            '没有父亲签字，等三个礼拜也能办婚事。',
-            0.8,
-            'official',
-          ],
+          knowledge: ['没有父亲签字，等三个礼拜也能办婚事。', 0.8, 'official'],
         },
       },
       {
         id: 'contract.widow-clause',
         w: 0.3,
-        text: '签字前，{subject}要求加一条：若{partner}死在前头，这间租屋归她住到再嫁。{official}抬头看了她一眼，说这样的条款要加钱。{partner}笑了一声，说加吧，反正他还想活很久；{subject}没有笑，只把条款念了两遍。',
+        text: '签字前，{subject}要求加一条：若{partner}死在前头，这间租屋归{subjectPronoun}住到再嫁。{official}抬头看了她一眼，说这样的条款要加钱。{partner}笑了一声，说加吧，反正他还想活很久；{subject}没有笑，只把条款念了两遍。',
         significance: 0.74,
         fx: {
           cash: -2,
@@ -419,11 +342,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
               relation: ['partner', 'partner', 0.1, 0.1],
               role: 'civil_marriage',
               flag: 'married_under_new_law',
-              knowledge: [
-                '新婚姻法规定婚后财产各半。',
-                0.9,
-                'official',
-              ],
+              knowledge: ['新婚姻法规定婚后财产各半。', 0.9, 'official'],
             },
           },
           {
@@ -435,11 +354,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
               relation: ['parent', 'kin', -0.06, 0],
               role: 'civil_marriage',
               flag: 'invoked_new_marriage_law',
-              knowledge: [
-                '新法不认父母单方面定下的婚约。',
-                0.85,
-                'official',
-              ],
+              knowledge: ['新法不认父母单方面定下的婚约。', 0.85, 'official'],
             },
           },
         ],
@@ -494,11 +409,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           ],
           role: 'debt_settler',
           flag: 'settled_old_wedding_debt',
-          knowledge: [
-            '当年的酒钱如今写成了一张签字的欠条。',
-            0.85,
-            'brother_in_law',
-          ],
+          knowledge: ['当年的酒钱如今写成了一张签字的欠条。', 0.85, 'brother_in_law'],
         },
       },
       {
@@ -509,6 +420,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         fx: {
           cash: -5,
           relation: ['brother_in_law', 'acquaintance', -0.08, 0],
+          role: 'refused_guarantor',
           flag: 'refused_guarantee_gave_cash',
         },
       },
@@ -529,11 +441,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
               relation: ['brother_in_law', 'acquaintance', 0.05, 0],
               role: 'reference_writer',
               flag: 'helped_unemployed_in_law',
-              knowledge: [
-                '布店关门时，姐夫被解雇了。',
-                0.9,
-                'brother_in_law',
-              ],
+              knowledge: ['布店关门时，姐夫被解雇了。', 0.9, 'brother_in_law'],
             },
           },
           {
@@ -544,12 +452,9 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
             fx: {
               mood: -0.1,
               relation: ['brother_in_law', 'rival', -0.12, 0],
+              role: 'refused_reference',
               flag: 'refused_to_help_in_law',
-              knowledge: [
-                '姐夫已经失业一个月了。',
-                0.8,
-                'brother_in_law',
-              ],
+              knowledge: ['姐夫已经失业一个月了。', 0.8, 'brother_in_law'],
             },
           },
         ],
@@ -574,6 +479,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       { kind: 'notHasRole', role: 'married' },
     ],
     roles: {
+      bride: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 19, maxAge: 36, sex: 'opposite' }],
       landlady: ['neighbor', { minAge: 40, maxAge: 75, sex: 'female' }],
     },
@@ -587,7 +493,16 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           cash: -3,
           mood: 0.1,
           relation: ['partner', 'partner', 0.12, 0.1],
+          role: 'married',
           flag: 'wedding_night_in_rented_room',
+          raw: [
+            {
+              type: 'household',
+              personId: '$partner',
+              householdId: '$household',
+              reason: 'moved in after the wedding night',
+            },
+          ],
         },
       },
       {
@@ -599,21 +514,38 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           cash: -1,
           mood: -0.05,
           relation: ['partner', 'partner', 0.06, 0.08],
+          role: 'married',
           flag: 'rented_wedding_ring',
           knowledge: ['结婚戒指是租来用一天的。', 0.9, 'partner'],
+          raw: [
+            {
+              type: 'household',
+              personId: '$partner',
+              householdId: '$household',
+              reason: 'moved in after the wedding night',
+            },
+          ],
         },
       },
       {
         id: 'night.rent-increase',
         w: 0.3,
-        text: '{landlady}半夜来敲门，说这间屋不许住两个人，除非加房租。{partner}要去开门，{subject}把他按住，自己披上衣服出去，在走廊里和{landlady}说了很久。回来时，她手里多了一张新租约，月租多了两克朗；{partner}已经睡着了。',
+        text: '{landlady}半夜来敲门，说这间屋不许住两个人，除非加房租。{partner}要去开门，{subject}把他按住，自己披上衣服出去，在走廊里和{landlady}说了很久。回来时，{subjectPronoun}手里多了一张新租约，月租多了两克朗；{partner}已经睡着了。',
         significance: 0.76,
         fx: {
           cash: -2,
           relation: ['landlady', 'acquaintance', -0.05, 0],
-          role: 'tenant_wife',
+          role: ['tenant_wife', 'married'],
           flag: 'rent_raised_on_wedding_night',
           knowledge: ['房东太太对多住一个人另收房租。', 0.9, 'landlady'],
+          raw: [
+            {
+              type: 'household',
+              personId: '$partner',
+              householdId: '$household',
+              reason: 'moved in after the wedding night',
+            },
+          ],
         },
       },
     ],
@@ -632,8 +564,17 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
               cash: -1,
               mood: 0.02,
               relation: ['partner', 'partner', 0.15, 0.12],
+              role: ['married', 'soldier_wife'],
               flag: 'wedding_night_before_departure',
               knowledge: ['丈夫坐凌晨四点的车走。', 0.95, 'partner'],
+              raw: [
+                {
+                  type: 'household',
+                  personId: '$partner',
+                  householdId: '$household',
+                  reason: 'moved in before the early departure',
+                },
+              ],
             },
           },
           {
@@ -644,8 +585,17 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
             fx: {
               mood: -0.05,
               relation: ['partner', 'partner', 0.1, 0.1],
+              role: ['married', 'soldier_wife'],
               flag: 'wedding_night_leave_taking',
               knowledge: ['丈夫会听见并不存在的号声。', 0.7],
+              raw: [
+                {
+                  type: 'household',
+                  personId: '$partner',
+                  householdId: '$household',
+                  reason: 'moved in before the early departure',
+                },
+              ],
             },
           },
         ],
@@ -667,6 +617,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'hospital', 'shop'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: 0.1 }],
     roles: {
+      expectant: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 20, maxAge: 45, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 35, maxAge: 72, sex: 'female' }],
     },
@@ -674,7 +625,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'pregnancy.confirmed',
         w: 0.4,
-        text: '{subject}在洗衣盆边站起来，眼前一黑，扶住了墙。{neighbor}把手上的肥皂冲掉，说这个月的布没有来，是不是有了。{subject}没有说话，回家把日历翻了三遍，在每一页上画了一个小小的叉；晚上{partner}回来，她把叉给他看。',
+        text: '{subject}在洗衣盆边站起来，眼前一黑，扶住了墙。{neighbor}把手上的肥皂冲掉，说这个月的布没有来，是不是有了。{subject}没有说话，回家把日历翻了三遍，在每一页上画了一个小小的叉；晚上{partner}回来，{subjectPronoun}把叉给{partner}看。',
         significance: 0.76,
         fx: {
           condition: 'pregnancy',
@@ -722,7 +673,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'pregnancy.letter-unsent',
             w: 0.55,
-            text: '{partner}在信里说，等打完仗回来就办洗礼。{subject}把怀孕的事写进回信，又划掉，改成“家里都好”。信寄出去以后，她每天去邮局问有没有前线的信；{neighbor}替她排着队，什么也不问。',
+            text: '{partner}在信里说，等打完仗回来就办洗礼。{subject}把怀孕的事写进回信，又划掉，改成“家里都好”。信寄出去以后，{subjectPronoun}每天去邮局问有没有前线的信；{neighbor}替{subjectPronoun}排着队，什么也不问。',
             significance: 0.76,
             fx: {
               condition: 'pregnancy',
@@ -736,7 +687,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'pregnancy.missing-husband',
             w: 0.45,
-            text: '{subject}没有写信，怕他分心。她把日历上的日子一天天划掉，划到第三个月，前线来了电报，说{partner}失踪。{neighbor}把电报念了两遍；{subject}摸着肚子，第一次觉得这个孩子不知道该姓什么。',
+            text: '{subject}没有写信，怕他分心。{subjectPronoun}把日历上的日子一天天划掉，划到第三个月，前线来了电报，说{partner}失踪。{neighbor}把电报念了两遍；{subject}{subjectPronoun}摸着肚子，第一次觉得这个孩子不知道该姓什么。',
             significance: 0.88,
             fx: {
               condition: 'pregnancy',
@@ -768,6 +719,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       { kind: 'health', min: 0.3 },
     ],
     roles: {
+      birthing_mother: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 20, maxAge: 48, sex: 'opposite', sameHousehold: true }],
       midwife: ['neighbor', { minAge: 35, maxAge: 75, sex: 'female' }],
       doctor: ['worker', { minAge: 28, maxAge: 70, required: false }],
@@ -812,7 +764,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'birth.hemorrhage',
         w: 0.2,
-        text: '血止不住。{midwife}把被子一层层压上去，又让人去请医生；{partner}跑到街口，鞋掉了一只也没回头。医生来的时候，{subject}已经说不出话，只把手伸向摇篮；孩子在她手边哭了一声，她没有听见。',
+        text: '血止不住。{midwife}把被子一层层压上去，又让人去请医生；{partner}跑到街口，鞋掉了一只也没回头。医生来的时候，{subject}已经说不出话，只把手伸向摇篮；孩子在{subjectPronoun}手边哭了一声，{subjectPronoun}没有听见。',
         significance: 0.98,
         fx: [
           {
@@ -878,55 +830,6 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           },
         ],
       },
-      {
-        id: 'birth-rural',
-        when: { contextTags: ['rural'] },
-        title: '雪夜里的产婆',
-        outcomes: [
-          {
-            id: 'birth.unassisted',
-            w: 0.5,
-            text: '产婆住在山那边，{partner}骑马去接，回来时天已经亮了。孩子等不及，{subject}自己咬着毛巾生了下来，脐带是用剪刀在火上烧过剪的。产婆进门时，孩子已经在她怀里吃奶了；老太太说，下次早点叫我。',
-            significance: 0.84,
-            fx: [
-              {
-                birth: {
-                  father: 'partner',
-                  sex: 'female',
-                  reason: 'an unassisted birth before the midwife arrived',
-                },
-              },
-              { health: -0.15, cash: -2, condition: 'birth_without_midwife' },
-              {
-                role: 'mother_after_hard_birth',
-                flag: 'unassisted_birth',
-                knowledge: ['脐带是用在火上烧过的剪刀剪的。', 0.9],
-              },
-            ],
-          },
-          {
-            id: 'birth.snowstorm',
-            w: 0.5,
-            text: '雪封了路，产婆来不了。{partner}去请邻居的老太太，老太太说只会接牲口。{subject}疼了一天一夜，最后是老太太按着肚子把孩子推出来的；孩子哭了，老太太却坐在地上起不来，说这辈子没这么怕过。',
-            significance: 0.94,
-            fx: [
-              {
-                birth: {
-                  father: 'partner',
-                  sex: 'male',
-                  reason: 'a birth assisted by a neighbour in a snowstorm',
-                },
-              },
-              { health: -0.3, cash: -1, condition: 'birth_injury' },
-              {
-                role: 'mother_after_hard_birth',
-                flag: 'birth_in_snowstorm',
-                knowledge: ['邻居老太太用手把孩子推了出来。', 0.8, 'midwife'],
-              },
-            ],
-          },
-        ],
-      },
     ],
     baseRate: 0.06,
     cooldownYears: 2,
@@ -944,6 +847,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...CARE, 'home', 'family'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: 0.1 }],
     roles: {
+      birthing_mother: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 20, maxAge: 48, sex: 'opposite', sameHousehold: true }],
       midwife: ['neighbor', { minAge: 35, maxAge: 75, sex: 'female' }],
       doctor: ['worker', { minAge: 28, maxAge: 70 }],
@@ -974,7 +878,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'fever.sepsis',
         w: 0.25,
-        text: '烧到第五天，{subject}开始说胡话，把{partner}认成自己的父亲。{doctor}说要送医院，{partner}去借车，回来时人已经不清醒了。她死在一个下雨的早晨，孩子被抱到楼下喂奶；{partner}把那盆洗过的手巾烧了。',
+        text: '烧到第五天，{subject}开始说胡话，把{partner}认成自己的父亲。{doctor}说要送医院，{partner}去借车，回来时人已经不清醒了。{subjectPronoun}死在一个下雨的早晨，孩子被抱到楼下喂奶；{partner}把那盆洗过的手巾烧了。',
         significance: 0.98,
         fx: [
           {
@@ -992,7 +896,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'fever.mastitis',
         w: 0.3,
-        text: '{subject}退了烧，但左边乳房肿得像石头，{doctor}说要热敷，不能喂奶。{partner}去市场买了一只山羊，孩子喝羊奶，{subject}每天把奶挤在碗里倒掉。她的手从此一遇冷水就抖，洗衣裳时要先用热水烫过。',
+        text: '{subject}退了烧，但左边乳房肿得像石头，{doctor}说要热敷，不能喂奶。{partner}去市场买了一只山羊，孩子喝羊奶，{subject}每天把奶挤在碗里倒掉。{subjectPronoun}的手从此一遇冷水就抖，洗衣裳时要先用热水烫过。',
         significance: 0.76,
         fx: [
           {
@@ -1020,7 +924,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'fever.ward',
             w: 0.6,
-            text: '产房的护士每进一次门就用石炭酸洗手，指甲缝里全是黄的。{subject}烧到第三天，{doctor}把她转到隔离间，说不能让孩子再吸奶。{partner}隔着玻璃看她，用手指在雾上画了一个圈；她看见了，也抬起手，画了一个一样的。',
+            text: '产房的护士每进一次门就用石炭酸洗手，指甲缝里全是黄的。{subject}烧到第三天，{doctor}把她转到隔离间，说不能让孩子再吸奶。{partner}隔着玻璃看她，用手指在雾上画了一个圈；{subjectPronoun}看见了，也抬起手，{subjectPronoun}画了一个一样的。',
             significance: 0.82,
             fx: [
               {
@@ -1042,7 +946,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'fever.readmitted',
             w: 0.4,
-            text: '{subject}出院后第五天又烧起来，{partner}用板车把她推回医院。{doctor}说是伤口没长好，要再刮一次；{subject}听见“再”字，抓住了{partner}的袖子。第二次出院时，她瘦得颧骨突出，抱着孩子站在医院门口，闻见街上的煤烟，才觉得自己活过来了。',
+            text: '{subject}出院后第五天又烧起来，{partner}用板车把她推回医院。{doctor}说是伤口没长好，要再刮一次；{subject}听见“再”字，抓住了{partner}的袖子。第二次出院时，{subjectPronoun}瘦得颧骨突出，抱着孩子站在医院门口，闻见街上的煤烟，才觉得自己活过来了。',
             significance: 0.86,
             fx: [
               {
@@ -1078,6 +982,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     contexts: SETTLE,
     milieus: [...CARE, 'home', 'family'],
     roles: {
+      mother: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 21, maxAge: 46, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 40, maxAge: 75, sex: 'female' }],
       doctor: ['worker', { minAge: 28, maxAge: 70, required: false }],
@@ -1141,6 +1046,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...CARE, 'home', 'family'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: 0.05 }],
     roles: {
+      mother: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 20, maxAge: 45, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 40, maxAge: 78, sex: 'female' }],
       official: ['official', { minAge: 25, maxAge: 68 }],
@@ -1202,7 +1108,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'infant.measles',
             w: 0.55,
-            text: '楼里五个孩子同时出麻疹，走廊上全是煮醋的味道。{subject}的孩子烧到第四天开始抽，{neighbor}说医院不收传染病，只能用湿毛巾擦。天亮时孩子安静了，{subject}摸他的额头，凉的；她把配给证上的奶粉票撕下来，压在枕头底下。',
+            text: '楼里五个孩子同时出麻疹，走廊上全是煮醋的味道。{subject}的孩子烧到第四天开始抽，{neighbor}说医院不收传染病，只能用湿毛巾擦。天亮时孩子安静了，{subject}摸他的额头，凉的；{subjectPronoun}把配给证上的奶粉票撕下来，压在枕头底下。',
             significance: 0.94,
             fx: {
               condition: 'infant_loss',
@@ -1485,7 +1391,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'childcare.munitions',
             w: 0.55,
-            text: '{mother}进了军工厂，三班倒，{subject}成了家里唯一按时起床的人。他把粥煮好，给妹妹梳头，再把最小的送到厂办的托儿所；托儿所说只收三岁以上的，他只好把弟弟放在门口的长椅上，让门房看着。',
+            text: '{mother}进了军工厂，三班倒，{subject}成了家里唯一按时起床的人。{subjectPronoun}把粥煮好，给妹妹梳头，再把最小的送到厂办的托儿所；托儿所说只收三岁以上的，{subjectPronoun}只好把弟弟放在门口的长椅上，让门房看着。',
             significance: 0.8,
             fx: {
               education: ['primary', 1],
@@ -1498,7 +1404,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'childcare.nursery',
             w: 0.45,
-            text: '厂里的托儿所新开了一间，{subject}排了一早上的队，终于把弟弟送进去。{official}要出生证，他跑回家翻箱子，找到一张被奶渍粘住的纸。登记完，他在托儿所门口站了一会儿，听见里面在唱歌，才想起自己还没吃早饭。',
+            text: '厂里的托儿所新开了一间，{subject}排了一早上的队，终于把弟弟送进去。{official}要出生证，{subjectPronoun}跑回家翻箱子，找到一张被奶渍粘住的纸。登记完，{subjectPronoun}在托儿所门口站了一会儿，听见里面在唱歌，才想起自己还没吃早饭。',
             significance: 0.72,
             fx: {
               education: ['primary', 2],
@@ -1542,11 +1448,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           relation: ['master', 'colleague', 0.05, 0],
           role: 'apprentice',
           flag: 'left_school_for_apprenticeship',
-          knowledge: [
-            '老师认定这个学生能考上师范。',
-            0.8,
-            'teacher',
-          ],
+          knowledge: ['老师认定这个学生能考上师范。', 0.8, 'teacher'],
         },
       },
       {
@@ -1579,40 +1481,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         },
       },
     ],
-    variants: [
-      {
-        id: 'school-rural',
-        when: { contextTags: ['rural'] },
-        title: '收葡萄的那两个星期',
-        outcomes: [
-          {
-            id: 'school.harvest-absent',
-            w: 0.55,
-            text: '学校九月开学，葡萄也正好要收。{parent}给{teacher}捎了句话，说孩子要在家帮两个星期；{teacher}回话说两个星期一过，座位就给别人。{subject}在园子里摘葡萄，指甲缝里全是紫汁，晚上点着灯补作业，补到趴在桌上睡着。',
-            significance: 0.76,
-            fx: {
-              education: ['primary', 2],
-              condition: 'exhaustion',
-              role: 'harvest_scholar',
-              flag: 'missed_school_for_grape_harvest',
-              knowledge: ['缺课两个星期，学校就把位置给别人。', 0.8, 'teacher'],
-            },
-          },
-          {
-            id: 'school.teacher-visit',
-            w: 0.45,
-            text: '{teacher}在集日找到{parent}，说{subject}的作文写得好，不该埋在葡萄园里。{parent}把一筐葡萄塞给老师，说那你就多教教他。老师没要葡萄，留下一本旧算术书；{subject}把那本书读到散页，用葡萄藤的皮把书脊重新缝了一遍。',
-            significance: 0.74,
-            fx: {
-              relation: ['teacher', 'friend', 0.08, 0.04],
-              skill: { numeracy: 0.04, literacy: 0.03 },
-              role: 'vineyard_scholar',
-              flag: 'teacher_visited_the_vineyard',
-            },
-          },
-        ],
-      },
-    ],
+    variants: [],
     baseRate: 0.05,
     cooldownYears: 3,
     significance: 0.7,
@@ -1626,7 +1495,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [24, 62],
     tags: ['family', 'inheritance', 'will', 'court', 'workshop'],
     contexts: SETTLE,
-    milieus: [...HOME, 'government', 'work', 'craft'],
+    milieus: [...HOME, 'official', 'work', 'craft'],
     roles: {
       sibling: ['sibling', { minAge: 20, maxAge: 68 }],
       official: ['official', { minAge: 28, maxAge: 70 }],
@@ -1635,7 +1504,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'inheritance.upheld',
         w: 0.4,
-        text: '{official}把封蜡敲开，念到“工坊及全部工具归小女儿”时，{sibling}从椅子上站了起来。{subject}没有动，只看着父亲的字迹，最后一笔拖得很长。{sibling}说这份遗嘱是病中写的，不算数；{official}把眼镜摘下来，说见证人有两个，都还活着。',
+        text: '{official}把封蜡敲开，念到“工坊及全部工具归最小的孩子”时，{sibling}从椅子上站了起来。{subject}没有动，只看着父亲的字迹，最后一笔拖得很长。{sibling}说这份遗嘱是病中写的，不算数；{official}把眼镜摘下来，说见证人有两个，都还活着。',
         significance: 0.86,
         fx: {
           cash: 8,
@@ -1673,41 +1542,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         },
       },
     ],
-    variants: [
-      {
-        id: 'inheritance-rural',
-        when: { contextTags: ['rural'] },
-        title: '界石下面的那行葡萄',
-        outcomes: [
-          {
-            id: 'inheritance.vine-row',
-            w: 0.55,
-            text: '父亲留下的遗嘱写在酒瓶的标签背面：东边那行葡萄归{subject}，因为只有{subjectPronoun}记得给老根培土。{sibling}把标签对着灯看了半天，说这不算遗嘱；{official}说只要有两个证人，酒瓶标签也算。两家人站在界石边，谁也不肯先走。',
-            significance: 0.86,
-            fx: {
-              cash: 6,
-              relation: ['sibling', 'rival', -0.22, 0],
-              role: 'heir_to_vine_row',
-              flag: 'vine_row_will_on_a_label',
-              knowledge: ['遗嘱写在酒瓶标签的背面。', 0.9, 'official'],
-            },
-          },
-          {
-            id: 'inheritance.boundary-stone',
-            w: 0.45,
-            text: '{sibling}半夜把界石挪了半米。{subject}第二天发现时，石头上还带着湿土；{subjectPronoun}没有吵，只把界石搬回去，在原来的坑里埋了一只空酒瓶。{official}来量地时，挖出那只瓶子，说这就算是记号；{sibling}站在田埂上，脸比葡萄叶还青。',
-            significance: 0.84,
-            fx: {
-              cash: 2,
-              relation: ['sibling', 'rival', -0.28, 0],
-              role: 'heir_to_vine_row',
-              flag: 'boundary_stone_moved_at_night',
-              knowledge: ['界石被人挪走，又挪了回来。', 0.9, 'official'],
-            },
-          },
-        ],
-      },
-    ],
+    variants: [],
     baseRate: 0.035,
     cooldownYears: 8,
     significance: 0.82,
@@ -1745,7 +1580,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'elder.rota-kept',
         w: 0.35,
-        text: '{subject}按表格把{sibling}堵在门口，把一周的夜班念给他听。{sibling}说自己的孩子也在生病，{subject}说自己的孩子已经会自己热饭了。两人在楼梯上吵到邻居开门；最后{sibling}答应每星期三来，来的时候带一罐汤，汤里没有肉。',
+        text: '{subject}按表格把{sibling}堵在门口，把一周的夜班念给{sibling}听。{sibling}说自己的孩子也在生病，{subject}说自己的孩子已经会自己热饭了。两人在楼梯上吵到邻居开门；最后{sibling}答应每星期三来，来的时候带一罐汤，汤里没有肉。',
         significance: 0.72,
         fx: {
           cash: 1,
@@ -1802,11 +1637,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
               relation: ['official', 'acquaintance', 0.03, 0],
               role: 'pensioned_carer',
               flag: 'care_allowance_granted',
-              knowledge: [
-                '护理津贴要求证明其他子女确实帮不上忙。',
-                0.85,
-                'official',
-              ],
+              knowledge: ['护理津贴要求证明其他子女确实帮不上忙。', 0.85, 'official'],
             },
           },
         ],
@@ -1886,9 +1717,10 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [20, 45],
     tags: ['family', 'violence', 'safety', 'neighbor', 'escape'],
     contexts: SETTLE,
-    milieus: [...HOME, 'government', 'official'],
+    milieus: [...HOME, 'official'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: -1 }],
     roles: {
+      wife: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 22, maxAge: 50, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 25, maxAge: 70 }],
       official: ['official', { minAge: 25, maxAge: 65 }],
@@ -1931,7 +1763,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'violence.flight',
         w: 0.25,
-        text: '{subject}没有等到天亮。她把两只箱子从窗口递下去，让{neighbor}接住，自己抱着孩子从后楼梯走。{partner}追到巷口，被{official}拦住；{subject}没有回头，一直走到火车站。三个月后，她在另一个区租了一间屋，给人家熨衣服。',
+        text: '{subject}没有等到天亮。{subjectPronoun}把两只箱子从窗口递下去，让{neighbor}接住，自己抱着孩子从后楼梯走。{partner}追到巷口，被{official}拦住；{subject}没有回头，一直走到火车站。三个月后，{subjectPronoun}在另一个区租了一间屋，给人家熨衣服。',
         significance: 0.9,
         fx: {
           cash: -6,
@@ -1998,9 +1830,10 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [25, 50],
     tags: ['family', 'marriage', 'separation', 'housing', 'cold_truce'],
     contexts: URBAN,
-    milieus: [...HOME, 'government'],
+    milieus: [...HOME, 'official'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: -1 }],
     roles: {
+      wife: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 25, maxAge: 55, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 25, maxAge: 70 }],
     },
@@ -2008,7 +1841,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'separation.chalk-line',
         w: 0.35,
-        text: '{subject}用粉笔在木桌上画了一道线，左边是他的杯子，右边是她的。{partner}看了一眼，把自己的杯子挪过去，又把盐罐放在线上。两人开始各买各的煤，各洗各的衣服；晚上躺在床上，中间隔着一只塞满旧衣服的枕头。',
+        text: '{subject}用粉笔在木桌上画了一道线，左边是他的杯子，右边是{subjectPronoun}的。{partner}看了一眼，把自己的杯子挪过去，又把盐罐放在线上。两人开始各买各的煤，各洗各的衣服；晚上躺在床上，中间隔着一只塞满旧衣服的枕头。',
         significance: 0.8,
         fx: {
           cash: -2,
@@ -2070,9 +1903,10 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [22, 45],
     tags: ['family', 'desertion', 'abandonment', 'money', 'shame'],
     contexts: URBAN,
-    milieus: [...HOME, 'government', 'shop'],
+    milieus: [...HOME, 'official', 'shop'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', minTrust: -1 }],
     roles: {
+      wife: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 24, maxAge: 50, sex: 'opposite', sameHousehold: true }],
       official: ['official', { minAge: 25, maxAge: 65 }],
       mother_in_law: ['neighbor', { minAge: 48, maxAge: 80, sex: 'female' }],
@@ -2092,18 +1926,14 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           },
           { endRelation: ['partner', 'partner'], flag: 'spouse_deserted_household' },
           {
-            knowledge: [
-              '男人自己离家，警察不管。',
-              0.9,
-              'official',
-            ],
+            knowledge: ['男人自己离家，警察不管。', 0.9, 'official'],
           },
         ],
       },
       {
         id: 'desertion.station',
         w: 0.25,
-        text: '{subject}追到火车站，看见{partner}和一个戴红帽子的女人站在月台上。她走过去，没有喊，只把他的工票夹递过去，说这个你忘了。{partner}伸手来接，她把工票夹扔在铁轨上；火车进站时，风把票夹吹得翻了个面。',
+        text: '{subject}追到火车站，看见{partner}和一个戴红帽子的女人站在月台上。{subjectPronoun}走过去，没有喊，只把他的工票夹递过去，说这个你忘了。{partner}伸手来接，{subjectPronoun}把工票夹扔在铁轨上；火车进站时，风把票夹吹得翻了个面。',
         significance: 0.86,
         fx: [
           {
@@ -2148,7 +1978,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         id: 'desertion.relief',
         w: 0.15,
         when: { maxCash: 2 },
-        text: '{subject}去救济所申请补助，办事员要她先证明丈夫确实走了。她拿不出证明，只把他的旧帽子放在柜台上；办事员看了看帽子，又看了看她脚上的鞋，最后在表格上写了“弃养，待查”。补助批下来，一个月三克朗。',
+        text: '{subject}去救济所申请补助，办事员要{subjectPronoun}先证明丈夫确实走了。{subjectPronoun}拿不出证明，只把他的旧帽子放在柜台上；办事员看了看帽子，又看了看{subjectPronoun}脚上的鞋，最后在表格上写了“弃养，待查”。补助批下来，一个月三克朗。',
         significance: 0.82,
         fx: {
           cash: 3,
@@ -2177,6 +2007,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       { kind: 'householdSize', min: 2 },
     ],
     roles: {
+      widow: ['subject', { sex: 'female' }],
       suitor: ['partner', { minAge: 30, maxAge: 55, sex: 'opposite' }],
       sibling: ['sibling', { minAge: 22, maxAge: 60 }],
     },
@@ -2184,7 +2015,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'remarriage.refused',
         w: 0.3,
-        text: '{suitor}把话说得很清楚：他愿意娶{subject}，但两个小的一般不能带过来。{subject}看着桌上的糖，想起丈夫下葬那天，小儿子还不肯相信土会盖住人。她把糖推回去，说那就不用了；{suitor}走后，她在门口站到路灯亮。',
+        text: '{suitor}把话说得很清楚：他愿意娶{subject}，但两个小的一般不能带过来。{subject}看着桌上的糖，想起丈夫下葬那天，小儿子还不肯相信土会盖住人。{subjectPronoun}把糖推回去，说那就不用了；{suitor}走后，{subjectPronoun}在门口站到路灯亮。',
         significance: 0.82,
         fx: {
           mood: -0.12,
@@ -2214,7 +2045,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'remarriage.child-share',
         w: 0.25,
-        text: '{subject}带着孩子嫁了过去。{suitor}起初不说什么，直到交房租那天，他把账单分成三份，说孩子也算人头。{subject}把自己的那件大衣拿去当了，补上孩子的那一份；当票她没有给他看，只夹在孩子的课本里。',
+        text: '{subject}带着孩子嫁了过去。{suitor}起初不说什么，直到交房租那天，他把账单分成三份，说孩子也算人头。{subject}把自己的那件大衣拿去当了，补上孩子的那一份；当票{subjectPronoun}没有给他看，只夹在孩子的课本里。',
         significance: 0.84,
         fx: {
           cash: -4,
@@ -2259,6 +2090,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       { kind: 'health', min: 0.2 },
     ],
     roles: {
+      widow: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 30, maxAge: 60, sex: 'opposite', sameHousehold: true }],
       foreman: ['worker', { minAge: 32, maxAge: 68 }],
       neighbor: ['neighbor', { minAge: 30, maxAge: 72, sex: 'female' }],
@@ -2288,7 +2120,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'widow.workplace',
         w: 0.35,
-        text: '{partner}死在工地上，一块掉下来的木梁。{foreman}来通知时，{subject}正在和面，手上的面粉还没擦。她跟着去了工棚，看见他躺在一张草席上，鞋少了一只；厂里赔了二十克朗，扣掉棺材钱，剩下九克朗。',
+        text: '{partner}死在工地上，一块掉下来的木梁。{foreman}来通知时，{subject}正在和面，手上的面粉还没擦。{subjectPronoun}跟着去了工棚，看见他躺在一张草席上，鞋少了一只；厂里赔了二十克朗，扣掉棺材钱，剩下九克朗。',
         significance: 0.94,
         fx: [
           { cash: 9, condition: 'grief', relation: ['foreman', 'rival', -0.15, 0], role: 'widow' },
@@ -2309,7 +2141,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'widow.window',
         w: 0.25,
-        text: '{partner}病了很久，最后那天忽然清醒，让{subject}把窗打开，说想闻闻雪。她开了窗，回来时他已经没有气了。{neighbor}来帮忙擦身，说他的眼睛还睁着；{subject}伸手给他合上，说他是舍不得这间屋。',
+        text: '{partner}病了很久，最后那天忽然清醒，让{subject}把窗打开，说想闻闻雪。{subjectPronoun}开了窗，回来时他已经没有气了。{neighbor}来帮忙擦身，说他的眼睛还睁着；{subject}伸手给他合上，说他是舍不得这间屋。',
         significance: 0.92,
         fx: [
           { cash: -4, mood: -0.28, relation: ['neighbor', 'friend', 0.08, 0.03], role: 'widow' },
@@ -2417,18 +2249,14 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           },
           { flag: 'reference_letter_stolen' },
           {
-            knowledge: [
-              '朋友拿着偷来的推荐信，写了自己的名字。',
-              0.9,
-              'foreman',
-            ],
+            knowledge: ['朋友拿着偷来的推荐信，写了自己的名字。', 0.9, 'foreman'],
           },
         ],
       },
       {
         id: 'betrayal.exposed',
         w: 0.3,
-        text: '{subject}没有当场揭穿，而是去问{foreman}要回那封信。{foreman}从抽屉里拿出来，说名字被划掉改过；{subject}把信纸对着灯看，认出{friend}的笔迹。她没有去找{friend}，只把这件事告诉了整条走廊；从此{friend}打水时总排在最后。',
+        text: '{subject}没有当场揭穿，而是去问{foreman}要回那封信。{foreman}从抽屉里拿出来，说名字被划掉改过；{subject}把信纸对着灯看，认出{friend}的笔迹。{subjectPronoun}没有去找{friend}，只把这件事告诉了整条走廊；从此{friend}打水时总排在最后。',
         significance: 0.8,
         fx: [
           {
@@ -2444,7 +2272,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         id: 'betrayal.forgiven',
         w: 0.3,
         when: { skill: { name: 'social', min: 0.3 } },
-        text: '{subject}去找{friend}对质，{friend}先是抵赖，后来蹲在地上哭了，说家里断粮三天了。{subject}把口袋里的面包掏出来，掰了一半给她；推荐信的事没有再提。第二天，{friend}去了工头那里，把工作让了回来。',
+        text: '{subject}去找{friend}对质，{friend}先是抵赖，后来蹲在地上哭了，说家里断粮三天了。{subject}把口袋里的面包掏出来，掰了一半给{friend}；推荐信的事没有再提。第二天，{friend}去了工头那里，把工作让了回来。',
         significance: 0.78,
         fx: [
           {
@@ -2573,7 +2401,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [18, 50],
     tags: ['social', 'housing', 'landlord', 'harassment', 'tenants'],
     contexts: URBAN,
-    milieus: [...HOME, 'government'],
+    milieus: [...HOME, 'official'],
     roles: {
       landlord: ['neighbor', { minAge: 32, maxAge: 75 }],
       neighbor: ['neighbor', { minAge: 18, maxAge: 72 }],
@@ -2596,7 +2424,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'landlord.rent-complaint',
         w: 0.35,
-        text: '{landlord}说要涨房租，不然就请{subject}一家搬走；涨的钱正好是{subject}半个月的工钱。{subject}去找{neighbor}商量，两个人把楼里欠租的人家都列了一遍，发现没有一家不欠。她们一起去了住房委员会，{official}收下了状子，说等通知。',
+        text: '{landlord}说要涨房租，不然就请{subject}一家搬走；涨的钱正好是{subject}半个月的工钱。{subject}去找{neighbor}商量，两个人把楼里欠租的人家都列了一遍，发现没有一家不欠。{subject}和{neighbor}一起去了住房委员会，{official}收下了状子，说等通知。',
         significance: 0.8,
         fx: {
           cash: -2,
@@ -2727,41 +2555,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         },
       },
     ],
-    variants: [
-      {
-        id: 'gossip-rural',
-        when: { contextTags: ['rural'] },
-        title: '教堂门前的耳语',
-        outcomes: [
-          {
-            id: 'gossip.church-porch',
-            w: 0.55,
-            text: '礼拜天散场时，{gossiper}在教堂门口拉住第三个人说话，眼睛一直往{subject}这边瞟。{subject}走过去，把手里的祈祷书递给她，说您念到第几页了。{gossiper}翻开书，里面夹着{subject}丈夫的死亡证明；她念了两行，声音越来越小。',
-            significance: 0.78,
-            fx: {
-              reputation: 0.1,
-              relation: ['gossiper', 'rival', -0.15, 0],
-              role: 'publicly_cleared',
-              flag: 'silenced_gossip_with_a_death_certificate',
-              knowledge: ['那女人在传的是关于死去丈夫的旧话。', 0.8],
-            },
-          },
-          {
-            id: 'gossip.confession',
-            w: 0.45,
-            text: '{gossiper}在告解室里说了很久，出来时眼睛是红的。神父把{subject}叫到一边，说那个女人承认自己编了话，因为她的女儿没嫁出去，看见{subject}家办喜事就难受。{subject}听完，没有去找{gossiper}，只在下次领圣餐时，排在了她后面。',
-            significance: 0.74,
-            fx: {
-              mood: 0.04,
-              relation: ['gossiper', 'acquaintance', -0.05, 0],
-              role: 'forgave_the_gossip',
-              flag: 'gossip_confessed_to_the_priest',
-              knowledge: ['谣言是那女人因为嫉妒编出来的。', 0.85],
-            },
-          },
-        ],
-      },
-    ],
+    variants: [],
     baseRate: 0.04,
     cooldownYears: 5,
     significance: 0.72,
@@ -2778,6 +2572,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'cafe', 'market'],
     conditions: [{ kind: 'age', min: 18, max: 35 }],
     roles: {
+      brother: ['subject', { sex: 'male' }],
       rival: ['worker', { minAge: 18, maxAge: 38, sex: 'male' }],
       sibling: ['sibling', { minAge: 15, maxAge: 30, sex: 'female' }],
       official: ['official', { minAge: 26, maxAge: 65 }],
@@ -2861,11 +2656,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           relation: ['client', 'friend', 0.12, 0.04],
           role: 'matchmaker',
           flag: 'match_arranged',
-          knowledge: [
-            '亲事是用一包糖和一张八字纸定下的。',
-            0.9,
-            'candidate_mother',
-          ],
+          knowledge: ['亲事是用一包糖和一张八字纸定下的。', 0.9, 'candidate_mother'],
         },
       },
       {
@@ -2898,40 +2689,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         },
       },
     ],
-    variants: [
-      {
-        id: 'match-rural',
-        when: { contextTags: ['rural'] },
-        title: '按葡萄行数说亲',
-        outcomes: [
-          {
-            id: 'match.vineyard-ledger',
-            w: 0.55,
-            text: '乡下说亲先看地。{subject}的小本子上不写八字，写的是各家有几行葡萄、几头牛、几间瓦房。{client}要的是一户没有婆婆的人家；{subject}翻了三页，停在一户只有公公的人家上，说这家的酒去年在集市上卖得最好。',
-            significance: 0.72,
-            fx: {
-              cash: 2,
-              relation: ['client', 'friend', 0.1, 0.03],
-              role: 'matchmaker',
-              flag: 'match_arranged_by_vineyard_rows',
-              knowledge: ['媒人的小本子上记的是地亩和牲口。', 0.9],
-            },
-          },
-          {
-            id: 'match.harvest-romance',
-            w: 0.45,
-            text: '{candidate}和{client}的女儿在去年的收葡萄时节一起抬过筐，{subject}早就看在眼里。她只安排了一次“偶遇”，让两家在集市上同一个摊子前站了一会儿；{candidate_mother}看了看姑娘的手，说这双手能干活，事情就成了。',
-            significance: 0.72,
-            fx: {
-              cash: 3,
-              relation: ['candidate_mother', 'acquaintance', 0.08, 0],
-              role: 'matchmaker',
-              flag: 'match_from_a_harvest_acquaintance',
-            },
-          },
-        ],
-      },
-    ],
+    variants: [],
     baseRate: 0.035,
     cooldownYears: 5,
     significance: 0.62,
@@ -2944,9 +2702,10 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [22, 40],
     tags: ['family', 'guardianship', 'orphans', 'siblings', 'household'],
     contexts: SETTLE,
-    milieus: [...HOME, 'government', 'school'],
+    milieus: [...HOME, 'official', 'school'],
     conditions: [{ kind: 'householdSize', max: 7 }],
     roles: {
+      elder_sister: ['subject', { sex: 'female' }],
       mother: ['parent', { minAge: 42, maxAge: 72, sex: 'female' }],
       sibling: ['sibling', { minAge: 8, maxAge: 16 }],
       official: ['official', { minAge: 25, maxAge: 68 }],
@@ -2984,7 +2743,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'fostering.orphanage',
         w: 0.3,
-        text: '{subject}说自己养不起，把{sibling}送去了孤儿院。{sibling}没有哭，只把{subject}小时候给的一只木马塞进包袱里。{subject}每个月去看一次，隔着铁栅栏递进去一包糖；第三次去的时候，{sibling}把糖分给了别的孩子，叫她“阿姨”。',
+        text: '{subject}说自己养不起，把{sibling}送去了孤儿院。{sibling}没有哭，只把{subject}小时候给的一只木马塞进包袱里。{subject}每个月去看一次，隔着铁栅栏递进去一包糖；第三次去的时候，{sibling}把糖分给了别的孩子，叫{subjectPronoun}“阿姨”。',
         significance: 0.88,
         fx: [
           {
@@ -3000,6 +2759,13 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
                 personId: '$mother',
                 cause: '流感',
                 reason: 'the mother died and the younger sibling was sent to an orphanage',
+              },
+              {
+                type: 'role',
+                personId: '$sibling',
+                role: 'orphanage_inmate',
+                add: true,
+                reason: 'sent to the parish orphanage after the mother died',
               },
             ],
           },
@@ -3049,6 +2815,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'hospital', 'army'],
     conditions: [{ kind: 'hasRelation', relationKind: 'partner', sameHousehold: true }],
     roles: {
+      soldier_wife: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 24, maxAge: 50, sex: 'opposite', sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 25, maxAge: 70 }],
     },
@@ -3070,7 +2837,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'soldier.return-changed',
         w: 0.35,
-        text: '{partner}回来了，却不肯说前线的事。夜里他坐在床边，听见街上有人放炮仗就钻到桌子底下；{subject}把他拉起来，他反手把她推开。第二天，{subject}去问军医，军医说这样的病人很多，要慢慢来；她回家把炮仗都收进了柜子。',
+        text: '{partner}回来了，却不肯说前线的事。夜里他坐在床边，听见街上有人放炮仗就钻到桌子底下；{subject}把他拉起来，他反手把{subjectPronoun}推开。第二天，{subject}去问军医，军医说这样的病人很多，要慢慢来；{subjectPronoun}回家把炮仗都收进了柜子。',
         significance: 0.84,
         fx: {
           cash: -3,
@@ -3084,7 +2851,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'soldier.return-shop',
         w: 0.25,
-        text: '{partner}回来时，{subject}已经把铺子撑了三年。他站在柜台前，看见账本上全是她的字，说这家店本来是他的。{subject}把账本合上，说你可以留下，但账要照旧由我管；{partner}没有争，只把军帽挂在门后，帽子上的灰落了一地。',
+        text: '{partner}回来时，{subject}已经把铺子撑了三年。他站在柜台前，看见账本上全是{subjectPronoun}的字，说这家店本来是他的。{subject}把账本合上，说你可以留下，但账要照旧由我管；{partner}没有争，只把军帽挂在门后，帽子上的灰落了一地。',
         significance: 0.8,
         fx: {
           cash: 3,
@@ -3112,11 +2879,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
               relation: ['partner', 'partner', 0.1, 0.05],
               role: 'veteran_household',
               flag: 'prisoner_of_war_returned',
-              knowledge: [
-                '丈夫从战俘营走了七个星期才回到家。',
-                0.9,
-                'partner',
-              ],
+              knowledge: ['丈夫从战俘营走了七个星期才回到家。', 0.9, 'partner'],
             },
           },
           {
@@ -3148,8 +2911,8 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     stage: 'adulthood',
     ages: [25, 60],
     tags: ['family', 'missing', 'migration', 'letters', 'grief'],
-    contexts: ['vienna', 'urban', 'postwar', 'crisis', 'port', 'migration', 'peace'],
-    milieus: [...HOME, 'government', 'market'],
+    contexts: ['vienna', 'urban', 'postwar', 'crisis', 'port', 'migration'],
+    milieus: [...HOME, 'official', 'market'],
     roles: {
       official: ['official', { minAge: 28, maxAge: 70 }],
       neighbor: ['neighbor', { minAge: 28, maxAge: 72 }],
@@ -3172,7 +2935,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'missing.unresolved',
         w: 0.4,
-        text: '{official}说没有死亡证明，就不能算死了，也不能领任何东西。{subject}拿回一张盖了“查无此人”的纸，在邮局门口站了一会儿。回家后，她把弟弟的房间收拾干净，床单换了新的；母亲问是不是有消息了，她说还没有。',
+        text: '{official}说没有死亡证明，就不能算死了，也不能领任何东西。{subject}拿回一张盖了“查无此人”的纸，在邮局门口站了一会儿。回家后，{subjectPronoun}把弟弟的房间收拾干净，床单换了新的；母亲问是不是有消息了，{subjectPronoun}说还没有。',
         significance: 0.8,
         fx: {
           cash: -2,
@@ -3213,11 +2976,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
               mood: -0.1,
               role: 'family_searcher',
               flag: 'relative_listed_as_pow',
-              knowledge: [
-                '红十字会名单上写着弟弟被俘于西伯利亚。',
-                0.9,
-                'official',
-              ],
+              knowledge: ['红十字会名单上写着弟弟被俘于西伯利亚。', 0.9, 'official'],
             },
           },
           {
@@ -3248,7 +3007,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [22, 50],
     tags: ['family', 'migration', 'housing', 'move', 'household'],
     contexts: SETTLE,
-    milieus: [...HOME, 'government', 'market'],
+    milieus: [...HOME, 'official', 'market'],
     roles: {
       partner: ['partner', { minAge: 24, maxAge: 52, sex: 'opposite' }],
       neighbor: ['neighbor', { minAge: 22, maxAge: 70 }],
@@ -3273,7 +3032,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'migration.papers',
         w: 0.35,
-        text: '{official}说手续不全，少一张原籍的证明。{partner}要回去取，{subject}说来不及了，新屋的钥匙只留到星期六。两人在车站吵了一架，最后{partner}留下看行李，{subject}坐夜车回去盖章；三天后她回来时，行李还在，{partner}在长椅上睡着了。',
+        text: '{official}说手续不全，少一张原籍的证明。{partner}要回去取，{subject}说来不及了，新屋的钥匙只留到星期六。两人在车站吵了一架，最后{partner}留下看行李，{subject}坐夜车回去盖章；三天后{subjectPronoun}回来时，行李还在，{partner}在长椅上睡着了。',
         significance: 0.78,
         fx: {
           cash: -5,
@@ -3336,7 +3095,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'migration.stayed',
             w: 0.45,
-            text: '{subject}没有走。{partner}说留下来只能等救济，{subject}说走了就连救济都没有。两人把家具又抬回屋里，床架在楼梯上卡了半天。第二天，{subject}去工厂门口排队，队伍从铁门一直排到河边；她数了数前面的人，把围巾往上拉了拉。',
+            text: '{subject}没有走。{partner}说留下来只能等救济，{subject}说走了就连救济都没有。两人把家具又抬回屋里，床架在楼梯上卡了半天。第二天，{subject}去工厂门口排队，队伍从铁门一直排到河边；{subjectPronoun}数了数前面的人，把围巾往上拉了拉。',
             significance: 0.78,
             fx: {
               cash: -2,
@@ -3507,7 +3266,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     contexts: SETTLE,
     milieus: [...HOME, 'hospital', 'work'],
     roles: {
-      sibling: ['sibling', { minAge: 10, maxAge: 30, sameHousehold: true }],
+      sibling: ['sibling', { minAge: 10, maxAge: 30, sex: 'male', sameHousehold: true }],
       parent: ['parent', { minAge: 40, maxAge: 68 }],
     },
     outcomes: [
@@ -3574,10 +3333,13 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [30, 55],
     tags: ['family', 'eldercare', 'housing', 'overcrowding', 'in_laws'],
     contexts: URBAN,
-    milieus: [...HOME, 'government'],
+    milieus: [...HOME, 'official'],
     roles: {
       parent: ['parent', { minAge: 65, maxAge: 90, sex: 'female' }],
-      partner: ['partner', { minAge: 28, maxAge: 58, sex: 'opposite', sameHousehold: true, required: false }],
+      partner: [
+        'partner',
+        { minAge: 28, maxAge: 58, sex: 'opposite', sameHousehold: true, required: false },
+      ],
       sibling: ['sibling', { minAge: 25, maxAge: 60 }],
     },
     outcomes: [
@@ -3609,7 +3371,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'aging.sibling-pays',
         w: 0.35,
-        text: '{sibling}说自己家也挤，但可以出钱。{subject}说钱不够，人要来。两人在电话里吵了一架，最后{sibling}答应每月出四克朗，条件是{parent}的房子退了以后，家具归他。{subject}挂了电话，看见{parent}正把遗像擦了一遍又一遍。',
+        text: '{sibling}说自己家也挤，但可以出钱。{subject}说钱不够，人要来。两人在电话里吵了一架，最后{sibling}答应每月出四克朗，条件是{parent}的房子退了以后，家具归{sibling}。{subject}挂了电话，看见{parent}正把遗像擦了一遍又一遍。',
         significance: 0.8,
         fx: [
           {
@@ -3630,11 +3392,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
             ],
           },
           {
-            knowledge: [
-              '老屋一退，家具归兄弟。',
-              0.85,
-              'sibling',
-            ],
+            knowledge: ['老屋一退，家具归兄弟。', 0.85, 'sibling'],
           },
         ],
       },
@@ -3708,7 +3466,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     contexts: SETTLE,
     milieus: [...CARE, 'home', 'family'],
     roles: {
-      parent: ['parent', { minAge: 62, maxAge: 92 }],
+      parent: ['parent', { minAge: 62, maxAge: 92, sex: 'male' }],
       sibling: ['sibling', { minAge: 22, maxAge: 65 }],
       doctor: ['worker', { minAge: 30, maxAge: 72, required: false }],
     },
@@ -3776,7 +3534,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [25, 55],
     tags: ['family', 'funeral', 'debt', 'siblings', 'grief'],
     contexts: SETTLE,
-    milieus: [...HOME, 'market', 'shop', 'government'],
+    milieus: [...HOME, 'market', 'shop', 'official'],
     roles: {
       sibling: ['sibling', { minAge: 22, maxAge: 62 }],
       undertaker: ['worker', { minAge: 30, maxAge: 70 }],
@@ -3889,7 +3647,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         id: 'secret.visit',
         w: 0.3,
         when: { minCash: 4 },
-        text: '{subject}在樟木箱底找到一张照片：父亲站在一个女人身边，女人抱着一个孩子。照片背面写着一个地址，就在河对岸。{subject}把照片放回去，过了三天又拿出来；最后她去了那个地址，开门的是一个和父亲长得很像的男孩。',
+        text: '{subject}在樟木箱底找到一张照片：父亲站在一个女人身边，女人抱着一个孩子。照片背面写着一个地址，就在河对岸。{subject}把照片放回去，过了三天又拿出来；最后{subjectPronoun}去了那个地址，开门的是一个和父亲长得很像的男孩。',
         significance: 0.84,
         fx: {
           cash: -2,
@@ -3916,7 +3674,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'secret.burned',
         w: 0.3,
-        text: '{subject}把照片烧了，灰倒进炉子里。{sibling}问烧什么，她说旧纸。那天晚上她梦见父亲站在门口，手里提着两只箱子；醒来后，她把箱子从床底拖出来，发现其中一只的锁是新的。',
+        text: '{subject}把照片烧了，灰倒进炉子里。{sibling}问烧什么，{subjectPronoun}说旧纸。那天晚上{subjectPronoun}梦见父亲站在门口，手里提着两只箱子；醒来后，{subjectPronoun}把箱子从床底拖出来，发现其中一只的锁是新的。',
         significance: 0.78,
         fx: {
           mood: -0.12,
@@ -3936,7 +3694,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'secret.wartime-wife',
             w: 0.55,
-            text: '照片上的女人穿着战时的黑裙，身边站着{subject}的父亲，胸口别着一枚军功章。{parent}说那是他在前线娶的第二个妻子，回来时没有带她，只带回来一只箱子。{subject}把照片翻过来，背面写着“1917，克拉科夫”；她把年份念了一遍，屋里没有人接话。',
+            text: '照片上的女人穿着战时的黑裙，身边站着{subject}的父亲，胸口别着一枚军功章。{parent}说那是他在前线娶的第二个妻子，回来时没有带她，只带回来一只箱子。{subject}把照片翻过来，背面写着“1917，克拉科夫”；{subjectPronoun}把年份念了一遍，屋里没有人接话。',
             significance: 0.86,
             fx: {
               mood: -0.18,
@@ -3975,8 +3733,9 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [18, 32],
     tags: ['family', 'birth', 'unmarried', 'registry', 'reputation'],
     contexts: SETTLE,
-    milieus: [...CARE, 'home', 'family', 'government'],
+    milieus: [...CARE, 'home', 'family', 'official'],
     roles: {
+      daughter: ['subject', { sex: 'female' }],
       father: ['neighbor', { minAge: 19, maxAge: 40, sex: 'male' }],
       mother: ['parent', { minAge: 38, maxAge: 62, sex: 'female' }],
       official: ['official', { minAge: 25, maxAge: 68 }],
@@ -3990,7 +3749,12 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         significance: 0.88,
         fx: [
           { birth: { father: 'father', sex: 'female', reason: 'a child born outside marriage' } },
-          { cash: -4, reputation: -0.12, relation: ['father', 'acquaintance', -0.1, 0], role: 'unmarried_mother' },
+          {
+            cash: -4,
+            reputation: -0.12,
+            relation: ['father', 'acquaintance', -0.1, 0],
+            role: 'unmarried_mother',
+          },
           { relation: ['mother', 'kin', 0.08, 0.04], flag: 'father_signed_the_birth_record' },
           { knowledge: ['父亲签了字，却不肯进产房。', 0.9, 'official'] },
         ],
@@ -3998,12 +3762,22 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'illegitimate.absent',
         w: 0.4,
-        text: '{father}没有来。{official}在父亲一栏画了一道横线，写上“不详”。{mother}把{subject}接回家，在门口挂了一面镜子，说是挡晦气。孩子半夜哭，{subject}起来喂奶，听见{mother}在隔壁念经；她抱着孩子坐在黑暗里，第一次觉得自己没有家了。',
+        text: '{father}没有来。{official}在父亲一栏画了一道横线，写上“不详”。{mother}把{subject}接回家，在门口挂了一面镜子，说是挡晦气。孩子半夜哭，{subject}起来喂奶，听见{mother}在隔壁念经；{subjectPronoun}抱着孩子坐在黑暗里，第一次觉得自己没有家了。',
         significance: 0.9,
         fx: [
-          { birth: { father: 'father', sex: 'male', reason: 'a child born outside marriage and registered without a father' } },
+          {
+            birth: {
+              father: 'father',
+              sex: 'male',
+              reason: 'a child born outside marriage and registered without a father',
+            },
+          },
           { cash: -3, reputation: -0.18, mood: -0.25, condition: 'social_isolation' },
-          { relation: ['mother', 'kin', -0.1, -0.04], role: 'unmarried_mother', flag: 'father_absent_from_the_record' },
+          {
+            relation: ['mother', 'kin', -0.1, -0.04],
+            role: 'unmarried_mother',
+            flag: 'father_absent_from_the_record',
+          },
         ],
       },
       {
@@ -4012,7 +3786,13 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         text: '{father}带着他母亲来了，提着一篮鸡蛋和一只银锁。他母亲说孩子不能没有姓，婚事可以慢慢办；{mother}把银锁挂在孩子脖子上，说先办登记，再谈别的。{subject}靠在床头，看着两个母亲讨价还价，忽然笑了一声。',
         significance: 0.84,
         fx: [
-          { birth: { father: 'father', sex: 'female', reason: 'a child born outside marriage and acknowledged at the bedside' } },
+          {
+            birth: {
+              father: 'father',
+              sex: 'female',
+              reason: 'a child born outside marriage and acknowledged at the bedside',
+            },
+          },
           { cash: 2, relation: ['father', 'acquaintance', 0.05, 0.02], role: 'unmarried_mother' },
           { relation: ['mother', 'kin', 0.1, 0.05], flag: 'shotgun_wedding_negotiated' },
           { knowledge: ['两个母亲说好先登记再办婚事。', 0.9] },
@@ -4028,11 +3808,23 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'illegitimate.ward-rules',
             w: 0.55,
-            text: '市立产院的墙上贴着规矩：未婚产妇出院时须有家属来接，孩子不得留在院内。{subject}住了五天，{mother}一直没有来；护士最后替她叫了一辆马车，车钱记在账上。回到家，门锁换了，{mother}从里面把门打开，说不是不让你进，是怕邻居看见。',
+            text: '市立产院的墙上贴着规矩：未婚产妇出院时须有家属来接，孩子不得留在院内。{subject}住了五天，{mother}一直没有来；护士最后替{subjectPronoun}叫了一辆马车，车钱记在账上。回到家，门锁换了，{mother}从里面把门打开，说不是不让你进，是怕邻居看见。',
             significance: 0.88,
             fx: [
-              { birth: { father: 'father', sex: 'female', reason: 'a birth in the municipal lying-in hospital' } },
-              { cash: -6, reputation: -0.15, condition: 'social_isolation', relation: ['mother', 'kin', -0.08, -0.03], role: 'unmarried_mother' },
+              {
+                birth: {
+                  father: 'father',
+                  sex: 'female',
+                  reason: 'a birth in the municipal lying-in hospital',
+                },
+              },
+              {
+                cash: -6,
+                reputation: -0.15,
+                condition: 'social_isolation',
+                relation: ['mother', 'kin', -0.08, -0.03],
+                role: 'unmarried_mother',
+              },
               { flag: 'discharged_from_the_lying_in_hospital' },
               { knowledge: ['市立产院不留未婚母亲的孩子。', 0.9, 'official'] },
             ],
@@ -4043,8 +3835,18 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
             text: '同病房的女人教{subject}怎么把孩子裹紧，怎么在登记表上把父亲的职业写成“工人”。{official}来收表时，看了一眼，什么也没问。出院那天，女人把自己的旧披肩塞给{subject}，说孩子不能冻着；披肩上有一块补丁，针脚很密。',
             significance: 0.82,
             fx: [
-              { birth: { father: 'father', sex: 'male', reason: 'a birth in the municipal lying-in hospital' } },
-              { cash: -4, relation: ['official', 'acquaintance', 0.03, 0], role: 'unmarried_mother' },
+              {
+                birth: {
+                  father: 'father',
+                  sex: 'male',
+                  reason: 'a birth in the municipal lying-in hospital',
+                },
+              },
+              {
+                cash: -4,
+                relation: ['official', 'acquaintance', 0.03, 0],
+                role: 'unmarried_mother',
+              },
               { flag: 'received_a_ward_mothers_shawl' },
               { knowledge: ['登记处允许用职业代替父亲姓名。', 0.8, 'official'] },
             ],
@@ -4065,7 +3867,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [40, 66],
     tags: ['family', 'paternity', 'pension', 'court', 'grandchild'],
     contexts: SETTLE,
-    milieus: [...HOME, 'government', 'market'],
+    milieus: [...HOME, 'official', 'market'],
     roles: {
       fiancee: ['neighbor', { minAge: 20, maxAge: 40, sex: 'female' }],
       official: ['official', { minAge: 28, maxAge: 68 }],
@@ -4133,6 +3935,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       { kind: 'notHasRole', role: 'married' },
     ],
     roles: {
+      daughter: ['subject', { sex: 'female' }],
       parent: ['parent', { minAge: 40, maxAge: 70 }],
       suitor: ['partner', { minAge: 20, maxAge: 42, sex: 'opposite' }],
       elder: ['neighbor', { minAge: 45, maxAge: 80 }],
@@ -4174,7 +3977,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'refusal.fled',
         w: 0.25,
-        text: '{subject}在订婚宴前一夜跑了，去了城里的姑妈家。{parent}第二天对外说她病了，{suitor}家来探病，看见床上的被子是平的。婚事退了，聘礼退了一半；{subject}在姑妈家住到冬天，学会了自己养活自己。',
+        text: '{subject}在订婚宴前一夜跑了，去了城里的姑妈家。{parent}第二天对外说{subjectPronoun}病了，{suitor}家来探病，看见床上的被子是平的。婚事退了，聘礼退了一半；{subject}在姑妈家住到冬天，学会了自己养活自己。',
         significance: 0.9,
         fx: {
           cash: -3,
@@ -4202,6 +4005,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     milieus: [...HOME, 'market', 'shop'],
     conditions: [{ kind: 'notHasRole', role: 'married' }],
     roles: {
+      bride: ['subject', { sex: 'female' }],
       partner: ['partner', { minAge: 19, maxAge: 34, sex: 'opposite' }],
       parent: ['parent', { minAge: 42, maxAge: 72 }],
       neighbor: ['neighbor', { minAge: 18, maxAge: 60 }],
@@ -4210,11 +4014,22 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'elopement.train',
         w: 0.4,
-        text: '{subject}在夜里把箱子从窗口递下去，{neighbor}在下面接。{partner}在巷口等着，手里攥着两张去林茨的车票；{subject}从后楼梯下去时，听见{parent}在屋里翻身。她没有回头，走到巷口才把鞋提上；火车开动时，她看见自家的窗户还黑着。',
+        text: '{subject}在夜里把箱子从窗口递下去，{neighbor}在下面接。{partner}在巷口等着，手里攥着两张去林茨的车票；{subject}从后楼梯下去时，听见{parent}在屋里翻身。{subjectPronoun}没有回头，走到巷口才把鞋提上；火车开动时，{subjectPronoun}看见自家的窗户还黑着。',
         significance: 0.88,
         fx: [
-          { cash: -4, mood: 0.05, relation: [['partner', 'partner', 0.15, 0.08], ['parent', 'kin', -0.2, -0.08]] },
-          { move: ['@station', 'left on the night train without permission'], role: 'eloped', flag: 'eloped_by_night_train' },
+          {
+            cash: -4,
+            mood: 0.05,
+            relation: [
+              ['partner', 'partner', 0.15, 0.08],
+              ['parent', 'kin', -0.2, -0.08],
+            ],
+          },
+          {
+            move: ['@station', 'left on the night train without permission'],
+            role: 'eloped',
+            flag: 'eloped_by_night_train',
+          },
           {
             raw: [
               {
@@ -4245,7 +4060,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
       {
         id: 'elopement.stayed',
         w: 0.3,
-        text: '{subject}没有走。她把箱子放回床底，第二天照常去上工；{partner}在厂门口等她，问她是不是怕了。{subject}说不是怕，是不能把母亲一个人丢下。{partner}沉默了很久，说他可以等；两人在雪地里站到厂门关上。',
+        text: '{subject}没有走。{subjectPronoun}把箱子放回床底，第二天照常去上工；{partner}在厂门口等{subjectPronoun}，问{subjectPronoun}是不是怕了。{subject}说不是怕，是不能把母亲一个人丢下。{partner}沉默了很久，说他可以等；两人在雪地里站到厂门关上。',
         significance: 0.76,
         fx: {
           relation: [
@@ -4270,14 +4085,19 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
             text: '{partner}第二天一早就要去兵营报到，两人等不到婚礼了。{subject}把箱子递下窗口，{neighbor}在巷口望风；他们没去车站，只去了市政厅门口，等开门盖章。天亮时，{partner}穿着军装站在台阶上，手里攥着刚办好的结婚证。',
             significance: 0.9,
             fx: [
-              { cash: -4, relation: ['partner', 'partner', 0.16, 0.08], role: 'wartime_bride', flag: 'married_before_mobilization' },
+              {
+                cash: -4,
+                relation: ['partner', 'partner', 0.16, 0.08],
+                role: 'wartime_bride',
+                flag: 'married_before_mobilization',
+              },
               { knowledge: ['办事处七点开门，队伍九点开拔。', 0.9] },
             ],
           },
           {
             id: 'elopement.no-time',
             w: 0.4,
-            text: '{subject}赶到兵营门口时，队伍已经开出去了。{neighbor}说看见{partner}在车上回头，帽子举在手里。{subject}沿着铁轨走了一段，捡到一只被踩扁的军用水壶；她把水壶带回家，放在窗台上，每天擦一遍，直到漆全掉了。',
+            text: '{subject}赶到兵营门口时，队伍已经开出去了。{neighbor}说看见{partner}在车上回头，帽子举在手里。{subject}沿着铁轨走了一段，捡到一只被踩扁的军用水壶；{subjectPronoun}把水壶带回家，放在窗台上，每天擦一遍，直到漆全掉了。',
             significance: 0.88,
             fx: {
               mood: -0.22,
@@ -4302,8 +4122,8 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     stage: 'adulthood',
     ages: [30, 65],
     tags: ['family', 'letters', 'estrangement', 'migration', 'money'],
-    contexts: ['vienna', 'urban', 'postwar', 'crisis', 'port', 'migration', 'peace'],
-    milieus: [...HOME, 'government', 'market'],
+    contexts: ['vienna', 'urban', 'postwar', 'crisis', 'port', 'migration'],
+    milieus: [...HOME, 'official', 'market'],
     roles: {
       parent: ['parent', { minAge: 55, maxAge: 88, sex: 'female' }],
       official: ['official', { minAge: 25, maxAge: 68 }],
@@ -4400,7 +4220,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [25, 50],
     tags: ['family', 'succession', 'workshop', 'guild', 'craft'],
     contexts: SETTLE,
-    milieus: [...WORK, 'home', 'family', 'government'],
+    milieus: [...WORK, 'home', 'family', 'official'],
     conditions: [{ kind: 'employment', employed: true }],
     roles: {
       parent: ['parent', { minAge: 55, maxAge: 80, sex: 'male' }],
@@ -4461,11 +4281,14 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
         id: 'succession-reform',
         when: { contextTags: ['reform'] },
         title: '商会考场里的女徒弟',
+        roles: {
+          apprentice_woman: ['subject', { sex: 'female' }],
+        },
         outcomes: [
           {
             id: 'succession.woman-master',
             w: 0.55,
-            text: '商会新规允许女性参加师傅考试，{subject}是考场里唯一一个没有胡子的人。{official}让她做一只抽屉的燕尾榫，她做完，又主动把抽屉装回去试了三遍。{journeyman}在窗外看着，手里的帽子越捏越紧；{parent}坐在最后一排，第一次没有替她说话。',
+            text: '商会新规允许女性参加师傅考试，{subject}是考场里唯一一个没有胡子的人。{official}让{subject}做一只抽屉的燕尾榫，{subjectPronoun}做完，又主动把抽屉装回去试了三遍。{journeyman}在窗外看着，手里的帽子越捏越紧；{parent}坐在最后一排，第一次没有替{subjectPronoun}说话。',
             significance: 0.9,
             fx: [
               { cash: -4, role: 'master_craftsman', flag: 'woman_passed_the_master_examination' },
@@ -4476,11 +4299,14 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
           {
             id: 'succession.blocked',
             w: 0.45,
-            text: '{official}把她的卷子压在下面，说章程上写的是“师傅”，没写女人算不算。{subject}问那要改章程吗，{official}说那得等下一次开会。她把自己的工具收进箱子，走到门口又回来，把那句“没写女人算不算”抄在纸上，贴在了商会的公告栏。',
+            text: '{official}把{subjectPronoun}的卷子压在下面，说章程上写的是“师傅”，没写女人算不算。{subject}问那要改章程吗，{official}说那得等下一次开会。{subjectPronoun}把自己的工具收进箱子，走到门口又回来，把那句“没写女人算不算”抄在纸上，贴在了商会的公告栏。',
             significance: 0.86,
             fx: [
               { mood: -0.15, role: 'excluded_apprentice', flag: 'barred_from_master_examination' },
-              { relation: ['official', 'rival', -0.1, 0], knowledge: ['行会章程里没有写女人算不算师傅。', 0.9, 'official'] },
+              {
+                relation: ['official', 'rival', -0.1, 0],
+                knowledge: ['行会章程里没有写女人算不算师傅。', 0.9, 'official'],
+              },
             ],
           },
         ],
@@ -4499,7 +4325,7 @@ export const BATCH1_FAMILY_SOCIAL: PlotKernel[] = recipes([
     ages: [20, 50],
     tags: ['family', 'shame', 'union', 'embezzlement', 'loyalty'],
     contexts: ['vienna', 'urban', 'industrial', 'crisis', 'reform', 'war', 'postwar'],
-    milieus: [...HOME, 'union', 'government', 'work'],
+    milieus: [...HOME, 'union', 'official', 'work'],
     conditions: [{ kind: 'hasRelation', relationKind: 'kin', minTrust: 0 }],
     roles: {
       sibling: ['sibling', { minAge: 18, maxAge: 55 }],

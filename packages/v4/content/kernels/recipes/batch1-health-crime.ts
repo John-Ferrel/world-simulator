@@ -767,7 +767,7 @@ export const BATCH1_HEALTH_CRIME: PlotKernel[] = recipes([
     contexts: ['vienna', 'urban', 'industrial', 'peace', 'crisis', 'postwar'],
     milieus: [...HOME, ...SHOP],
     roles: {
-      partner: ['partner', { minAge: 18, maxAge: 65, sameHousehold: true }],
+      partner: ['partner', { minAge: 18, maxAge: 65, sameHousehold: true, required: false }],
       foreman: ['worker', { minAge: 28, maxAge: 70, required: false }],
       neighbor: ['neighbor', { minAge: 18, maxAge: 70, required: false }],
     },
@@ -985,7 +985,7 @@ export const BATCH1_HEALTH_CRIME: PlotKernel[] = recipes([
     tags: ['health', 'childbirth', 'fever', 'hospital', 'ward'],
     contexts: ['vienna', 'urban', 'medical', 'reform', 'postwar', 'crisis'],
     milieus: [...HEALTH, ...HOME],
-    conditions: [{ kind: 'hasRelation', relationKind: 'partner' }],
+    conditions: [{ kind: 'hasRelation', relationKind: 'partner', sameHousehold: true }],
     roles: {
       doctor: ['worker', { minAge: 28, maxAge: 75, occupation: 'Arzt', required: false }],
       partner: ['partner', { minAge: 18, maxAge: 55, sameHousehold: true }],
@@ -1403,6 +1403,7 @@ export const BATCH1_HEALTH_CRIME: PlotKernel[] = recipes([
     tags: ['health', 'amputation', 'surgery', 'crush', 'disability'],
     contexts: ['vienna', 'urban', 'medical', 'industrial', 'war', 'crisis'],
     milieus: [...HEALTH, ...WORK],
+    conditions: [{ kind: 'hasRelation', relationKind: 'partner', sameHousehold: true }],
     roles: {
       doctor: ['worker', { minAge: 28, maxAge: 75, occupation: 'Arzt', required: false }],
       partner: ['partner', { minAge: 18, maxAge: 60, sameHousehold: true }],
@@ -2368,7 +2369,7 @@ export const BATCH1_HEALTH_CRIME: PlotKernel[] = recipes([
     contexts: ['vienna', 'urban', 'crisis', 'postwar', 'industrial'],
     milieus: HOME,
     roles: {
-      partner: ['partner', { minAge: 18, maxAge: 70, sameHousehold: true }],
+      partner: ['partner', { minAge: 18, maxAge: 70, sameHousehold: true, required: false }],
       neighbor: ['neighbor', { minAge: 18, maxAge: 75, required: false }],
       pawnbroker: ['worker', { minAge: 30, maxAge: 70, required: false }],
     },
@@ -2892,6 +2893,7 @@ export const BATCH1_HEALTH_CRIME: PlotKernel[] = recipes([
     tags: ['court', 'trial', 'theft', 'sentence', 'institution'],
     contexts: ['vienna', 'urban', 'reform', 'crisis', 'postwar'],
     milieus: GOV,
+    conditions: [{ kind: 'hasRelation', relationKind: 'partner', sameHousehold: true }],
     roles: {
       official: ['official', { minAge: 30, maxAge: 70 }],
       partner: ['partner', { minAge: 18, maxAge: 65, sameHousehold: true }],
@@ -3214,7 +3216,7 @@ export const BATCH1_HEALTH_CRIME: PlotKernel[] = recipes([
     milieus: HOME,
     roles: {
       neighbor: ['neighbor', { minAge: 20, maxAge: 70 }],
-      partner: ['partner', { minAge: 18, maxAge: 65, sameHousehold: true }],
+      partner: ['partner', { minAge: 18, maxAge: 65, sameHousehold: true, required: false }],
       official: ['official', { minAge: 25, maxAge: 65, required: false }],
     },
     outcomes: [
@@ -4386,6 +4388,7 @@ export const BATCH1_HEALTH_CRIME: PlotKernel[] = recipes([
     tags: ['home', 'poisoning', 'coal', 'winter', 'death'],
     contexts: ['vienna', 'urban', 'crisis', 'war', 'postwar'],
     milieus: HOME,
+    conditions: [{ kind: 'hasRelation', relationKind: 'partner', sameHousehold: true }],
     roles: {
       partner: ['partner', { minAge: 18, maxAge: 75, sameHousehold: true }],
       neighbor: ['neighbor', { minAge: 18, maxAge: 75, required: false }],

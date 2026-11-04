@@ -2057,7 +2057,7 @@ export const BATCH1_CHILDHOOD_EDUCATION: PlotKernel[] = recipes([
   },
   {
     id: 'r1-child.first-wage',
-    title: '第一张工票',
+    title: '鞋垫下的工票',
     domain: 'work',
     stage: 'adolescence',
     ages: [12, 15],
