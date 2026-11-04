@@ -69,6 +69,9 @@ test('register, give birth, read a concrete log and inspect the map', async ({ p
   if (await majorTitle.isVisible().catch(() => false)) {
     await majorTitle.click();
     await expect(page.locator('.event-modal')).toBeVisible();
+    await expect(page.locator('.incident-trace')).toBeVisible();
+    await expect(page.locator('.incident-trace')).toContainText('机制');
+    await expect(page.locator('.incident-trace .trace-effects li').first()).toBeVisible();
     await page.getByRole('button', { name: '关闭事件档案' }).click();
   }
 
@@ -77,5 +80,6 @@ test('register, give birth, read a concrete log and inspect the map', async ({ p
   await pins.nth(12).click();
   await expect(page.locator('.place-people')).toBeVisible();
 
+  await page.screenshot({ path: 'docs/v4/phase-12-browser.png', fullPage: true });
   expect(errors).toEqual([]);
 });

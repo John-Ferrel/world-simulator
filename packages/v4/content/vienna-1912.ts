@@ -1543,7 +1543,7 @@ const places: Record<string, Place> = {
     name: 'Haus der Tante in Klosterneuburg',
     kind: 'home',
     settlementId: ID.places.klosterneuburg,
-    regionId: 'region-lower-austria',
+    regionId: 'region-klosterneuburg',
     polityId: 'polity-austria-hungary',
     capacity: 4,
     offers: ['shelter_child', 'farm_work'],

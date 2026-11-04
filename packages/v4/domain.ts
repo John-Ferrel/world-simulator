@@ -629,6 +629,7 @@ export type SceneCondition =
   | { kind: 'notHasRelation'; relationKind: Relation['kind']; sameHousehold?: boolean }
   | { kind: 'worldYear'; min?: number; max?: number }
   | { kind: 'region'; in: string[] }
+  | { kind: 'sex'; in: Person['sex'][] }
   | { kind: 'pressure'; key: string; min: number };
 
 export type SceneEffect = EventEffect; // v4 effects are the same typed vocabulary.

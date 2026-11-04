@@ -1,7 +1,6 @@
 import { pathToFileURL } from 'node:url';
 import type { EventEffect, RoleRequirement } from '../packages/v4/domain.js';
 import type { PlotKernel } from '../packages/v4/composition/types.js';
-import { KERNEL_LIBRARY } from '../packages/v4/content/kernels/index.js';
 
 const ROLE_KINDS = new Set<RoleRequirement['kind']>([
   'subject',
@@ -101,7 +100,6 @@ if (!exportName || !Array.isArray(module[exportName])) {
   process.exit(2);
 }
 const kernels = module[exportName] as PlotKernel[];
-const existing = new Set(KERNEL_LIBRARY.map((kernel) => kernel.id));
 const errors: string[] = [];
 const seen = new Set<string>();
 
@@ -109,6 +107,7 @@ function validateOutcome(
   kernelId: string,
   outcome: PlotKernel['outcomes'][number],
   roleKeys: Set<string>,
+  roleKinds: Map<string, string>,
 ): void {
   if (!outcome.id) errors.push(`${kernelId}: outcome without id`);
   if (!outcome.text || outcome.text.length <= 45) {
@@ -129,6 +128,13 @@ function validateOutcome(
       !RELATION_KINDS.has(effect.kind)
     ) {
       errors.push(`${kernelId}/${outcome.id}: invalid relation kind ${effect.kind}`);
+    }
+    if (effect.type === 'relation' || effect.type === 'relation_end') {
+      const ref = String(effect.b).replace(/^\$/, '');
+      const kind = roleKinds.get(ref);
+      if (kind === 'organization' || kind === 'employer') {
+        errors.push(`${kernelId}/${outcome.id}: relation target $${ref} is an organization`);
+      }
     }
     for (const [key, value] of Object.entries(effect)) {
       if (typeof value !== 'string') continue;
@@ -154,8 +160,6 @@ function validateOutcome(
 
 for (const kernel of kernels) {
   if (seen.has(kernel.id)) errors.push(`${kernel.id}: duplicate id inside file`);
-  if (existing.has(kernel.id))
-    console.warn(`WARN ${kernel.id}: id already exists in KERNEL_LIBRARY`);
   seen.add(kernel.id);
   if (!kernel.stage) errors.push(`${kernel.id}: missing stage`);
   if (!kernel.title || kernel.title.length < 2) errors.push(`${kernel.id}: weak title`);
@@ -168,11 +172,16 @@ for (const kernel of kernels) {
   }
   if (kernel.outcomes.length < 2) errors.push(`${kernel.id}: fewer than two outcomes`);
   const roleKeys = new Set(kernel.roles.map((role) => role.key));
-  for (const outcome of kernel.outcomes) validateOutcome(kernel.id, outcome, roleKeys);
+  const roleKinds = new Map(kernel.roles.map((role) => [role.key, role.kind]));
+  for (const outcome of kernel.outcomes) validateOutcome(kernel.id, outcome, roleKeys, roleKinds);
   for (const variant of kernel.variants ?? []) {
     const variantKeys = new Set([...roleKeys, ...(variant.roles ?? []).map((role) => role.key)]);
+    const variantKinds = new Map([
+      ...roleKinds,
+      ...(variant.roles ?? []).map((role) => [role.key, role.kind] as const),
+    ]);
     for (const outcome of variant.outcomes ?? []) {
-      validateOutcome(`${kernel.id}::${variant.id}`, outcome, variantKeys);
+      validateOutcome(`${kernel.id}::${variant.id}`, outcome, variantKeys, variantKinds);
     }
   }
   if (kernel.kind === 'task') {

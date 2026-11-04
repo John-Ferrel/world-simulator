@@ -55,7 +55,11 @@ export type Fx = {
   loseRole?: string | string[];
   skill?: Partial<Record<keyof NonNullable<Person['life']>['skills'], number>>;
   relation?: RelationFx | RelationFx[];
+  /** Additional relations; kept as an alias used by parallel authoring batches. */
+  relation2?: RelationFx | RelationFx[];
   endRelation?: [role: string, kind: Relation['kind']];
+  relationEnd?: [role: string, kind: Relation['kind']];
+  relation_end?: [role: string, kind: Relation['kind']];
   membership?: [orgRole: string, add?: boolean, reason?: string];
   funds?: [orgRole: string, amount: number, reason?: string];
   knowledge?: [proposition: string, confidence?: number, sourceRole?: string];
@@ -189,12 +193,13 @@ export function compileEffect(fx: Fx, reason: string): EventEffect[] {
       reason,
     });
   }
-  if (fx.endRelation) {
+  const endedRelation = fx.endRelation ?? fx.relationEnd ?? fx.relation_end;
+  if (endedRelation) {
     effects.push({
       type: 'relation_end',
       a: '$subject',
-      b: `$${fx.endRelation[0]}`,
-      kind: fx.endRelation[1],
+      b: `$${endedRelation[0]}`,
+      kind: endedRelation[1],
       reason,
     });
   }

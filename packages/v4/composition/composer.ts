@@ -122,6 +122,7 @@ function personConditions(when: KernelVariantWhen | undefined): SceneCondition[]
   if (when.relationKind) {
     conditions.push({ kind: 'hasRelation', relationKind: when.relationKind as never });
   }
+  if (when.sex) conditions.push({ kind: 'sex', in: [when.sex] });
   return conditions;
 }
 

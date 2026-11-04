@@ -125,6 +125,23 @@ type LogEvent = {
   major: boolean;
   segments: LogSegment[];
   processRefs?: ProcessRef[];
+  trace?: {
+    mechanism: {
+      sceneId: string;
+      outcomeId: string;
+      kernelId?: string;
+      contextId?: string;
+      milieuId?: string;
+      variantId?: string;
+    };
+    place?: { id: string; name: string; kind: string };
+    subject: { id: string; name: string; age: number; occupation?: string; roles: string[] };
+    participants: { personId: string; role: string; name: string; organizationId?: string }[];
+    motive?: string;
+    conflict?: string;
+    response?: string;
+    effects: { type: string; description: string }[];
+  };
 };
 type PersonHover = {
   personId: string;
@@ -2092,6 +2109,45 @@ function EventDossierModal({
                 onSelectPerson={onSelectPerson}
               />
             </p>
+            {event.trace && (
+              <section className="modal-section incident-trace">
+                <h3>因果链</h3>
+                {(event.trace.motive || event.trace.conflict || event.trace.response) && (
+                  <dl className="trace-grid">
+                    {event.trace.motive && (
+                      <>
+                        <dt>动机</dt>
+                        <dd>{event.trace.motive}</dd>
+                      </>
+                    )}
+                    {event.trace.conflict && (
+                      <>
+                        <dt>冲突</dt>
+                        <dd>{event.trace.conflict}</dd>
+                      </>
+                    )}
+                    {event.trace.response && (
+                      <>
+                        <dt>回应</dt>
+                        <dd>{event.trace.response}</dd>
+                      </>
+                    )}
+                  </dl>
+                )}
+                {event.trace.effects.length > 0 && (
+                  <ul className="modal-list trace-effects">
+                    {event.trace.effects.slice(0, 8).map((effect, index) => (
+                      <li key={`${effect.type}-${index}`}>{effect.description}</li>
+                    ))}
+                  </ul>
+                )}
+                <p className="trace-mechanism">
+                  {event.trace.mechanism.kernelId
+                    ? `机制：${event.trace.mechanism.kernelId} / ${event.trace.mechanism.contextId} / ${event.trace.mechanism.milieuId}`
+                    : `机制：${event.trace.mechanism.sceneId}`}
+                </p>
+              </section>
+            )}
             {people.length > 0 && (
               <section className="modal-section">
                 <h3>在场人物</h3>

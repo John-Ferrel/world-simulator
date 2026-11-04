@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advanceV4Year } from '../packages/v4/engine.js';
+import { advanceV4Year, auditCandidatePools } from '../packages/v4/engine.js';
 import { VIENNA_1912_SEED } from '../packages/v4/content/vienna-1912.js';
 import { defaultMacroState } from '../packages/v4/macro.js';
 import { createCompositionSource } from '../packages/v4/composition/composer.js';
@@ -60,6 +60,47 @@ function testKernel(overrides: Partial<PlotKernel> = {}): PlotKernel {
 }
 
 describe('Phase 11 context × kernel composition', () => {
+  it('does not offer a Vienna-gated recipe to a person who actually lives in the rural region', () => {
+    const kernel = testKernel({
+      contexts: ['vienna', 'rural'],
+      milieus: [],
+      conditions: [],
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 70 }],
+      outcomes: [
+        {
+          id: 'region-test',
+          weight: 1,
+          text: '{subject}在本地找到一件差事。',
+          effects: [
+            {
+              type: 'flag',
+              personId: '$subject',
+              flag: 'region-test',
+              add: true,
+              reason: 'region test',
+            },
+          ],
+        },
+      ],
+    });
+    const source = createCompositionSource([kernel]);
+    const world = structuredClone(VIENNA_1912_SEED);
+    const personId = Object.keys(world.persons).find((id) => {
+      const person = world.persons[id]!;
+      const age = world.date.year - person.born.year;
+      const household = world.households[person.householdId];
+      return !person.died && age >= 20 && age <= 55 && (household?.memberIds.length ?? 0) >= 2;
+    })!;
+    const person = world.persons[personId]!;
+    person.locationId = 'place-klosterneuburg-aunt-house';
+    world.households[person.householdId]!.residenceId = 'place-klosterneuburg-aunt-house';
+    const audit = auditCandidatePools(world, personId, world.date, [], [], source);
+    const composed =
+      audit?.events.filter((event) => event.id.includes('kernel-test.workshop-job')) ?? [];
+    expect(composed.some((event) => event.id.includes('ctx-vienna'))).toBe(false);
+    expect(composed.some((event) => event.id.includes('klosterneuburg'))).toBe(true);
+  });
+
   it('compiles region gates so the same recipe does not automatically follow a person across regions', () => {
     const kernel = testKernel();
     const source = createCompositionSource([kernel]);
