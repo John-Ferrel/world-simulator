@@ -73,6 +73,18 @@ export type KernelVariantWhen = {
   processKinds?: string[];
   /** Require one of these legacy kinds in the current world. */
   legacyKinds?: string[];
+  /** Person-level conditions; compiled into SceneOutcome.conditions. */
+  hasRole?: string | string[];
+  notHasRole?: string;
+  employment?: boolean;
+  education?: string[];
+  minCash?: number;
+  maxCash?: number;
+  skill?: { name: string; min?: number; max?: number };
+  capability?: string;
+  minAge?: number;
+  maxAge?: number;
+  relationKind?: string;
 };
 
 export type KernelOutcome = {

@@ -69,7 +69,7 @@ function intersects(left: string[] | undefined, right: string[] | undefined): bo
   return left.some((value) => right.includes(value));
 }
 
-function variantMatches(
+function compileTimeMatches(
   when: KernelVariantWhen | undefined,
   world: WorldState,
   context: ContextProfile,
@@ -81,6 +81,47 @@ function variantMatches(
   if (!activeProcessKinds(world, when.processKinds)) return false;
   if (!activeLegacyKinds(world, when.legacyKinds)) return false;
   return true;
+}
+
+function personConditions(when: KernelVariantWhen | undefined): SceneCondition[] {
+  if (!when) return [];
+  const conditions: SceneCondition[] = [];
+  const roles = Array.isArray(when.hasRole) ? when.hasRole : when.hasRole ? [when.hasRole] : [];
+  for (const role of roles) conditions.push({ kind: 'hasRole', role });
+  if (when.notHasRole) conditions.push({ kind: 'notHasRole', role: when.notHasRole });
+  if (when.employment !== undefined) {
+    conditions.push({ kind: 'employment', employed: when.employment });
+  }
+  if (when.education && when.education.length > 0) {
+    conditions.push({ kind: 'education', in: when.education as never });
+  }
+  if (when.minCash !== undefined || when.maxCash !== undefined) {
+    conditions.push({
+      kind: 'cash',
+      ...(when.minCash !== undefined ? { min: when.minCash } : {}),
+      ...(when.maxCash !== undefined ? { max: when.maxCash } : {}),
+    });
+  }
+  if (when.skill) {
+    conditions.push({
+      kind: 'skill',
+      skill: when.skill.name as never,
+      ...(when.skill.min !== undefined ? { min: when.skill.min } : {}),
+      ...(when.skill.max !== undefined ? { max: when.skill.max } : {}),
+    });
+  }
+  if (when.capability) conditions.push({ kind: 'capability', capability: when.capability });
+  if (when.minAge !== undefined || when.maxAge !== undefined) {
+    conditions.push({
+      kind: 'age',
+      ...(when.minAge !== undefined ? { min: when.minAge } : {}),
+      ...(when.maxAge !== undefined ? { max: when.maxAge } : {}),
+    });
+  }
+  if (when.relationKind) {
+    conditions.push({ kind: 'hasRelation', relationKind: when.relationKind as never });
+  }
+  return conditions;
 }
 
 function resolveContextValue(value: string, context: ContextProfile): string | undefined {
@@ -131,9 +172,14 @@ function compileOutcomes(
   outcomes: KernelOutcome[],
   context: ContextProfile,
   milieu: MilieuProfile,
+  world: WorldState,
 ): SceneOutcome[] {
   const result: SceneOutcome[] = [];
   for (const outcome of outcomes) {
+    if (outcome.when && !compileTimeMatches(outcome.when, world, context, milieu)) {
+      continue;
+    }
+    const branchConditions = personConditions(outcome.when);
     const effects = outcome.effects
       .map((effect) => resolveEffect(effect, context))
       .filter((effect): effect is EventEffect => Boolean(effect));
@@ -143,6 +189,7 @@ function compileOutcomes(
       weight: outcome.weight,
       immediateText: resolveText(outcome.text, context, milieu),
       effects,
+      ...(branchConditions.length > 0 ? { conditions: branchConditions } : {}),
       ...(outcome.significance !== undefined ? { significance: outcome.significance } : {}),
     });
   }
@@ -158,9 +205,9 @@ function compileKernel(
   if (!intersects(kernel.contexts, context.tags)) return {};
   if (!intersects(kernel.milieus, milieu.tags)) return {};
   const variant: KernelVariant | undefined = kernel.variants?.find((entry) =>
-    variantMatches(entry.when, world, context, milieu),
+    compileTimeMatches(entry.when, world, context, milieu),
   );
-  const outcomes = compileOutcomes(variant?.outcomes ?? kernel.outcomes, context, milieu);
+  const outcomes = compileOutcomes(variant?.outcomes ?? kernel.outcomes, context, milieu, world);
   if (outcomes.length === 0) return {};
 
   const roles = [...kernel.roles, ...(variant?.roles ?? [])].map((role) => ({ ...role }));
@@ -273,9 +320,8 @@ function signature(world: WorldState, target: WorldDate): string {
   return `${world.id}|${target.year}|${contexts.join(',')}|${processes.join(',')}|${legacies.join(',')}`;
 }
 
-const cache = new Map<string, ComposedContent>();
-
 export function createCompositionSource(kernels: PlotKernel[]): CompositionSource {
+  const cache = new Map<string, ComposedContent>();
   return {
     compile(world: WorldState, target: WorldDate): ComposedContent {
       const key = signature(world, target);

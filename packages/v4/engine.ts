@@ -239,6 +239,10 @@ type EngineContext = {
   sceneHistory: Map<string, number>;
   definitions: SceneDefinition[];
   triggerIndex: Map<string, SceneDefinition[]>;
+  /** Cached role candidate pools filtered by requirement + subject context. */
+  roleCastCache: Map<string, Id[]>;
+  /** Lazily built per-year index of the named population, used to avoid O(n) casts. */
+  peopleIndex?: PeopleIndex;
   tasks: TaskDefinition[];
   tasksByStage: Map<SceneStage, TaskDefinition[]>;
   materializedCount: number;
@@ -421,6 +425,7 @@ export function advanceV4Year(
     sceneHistory: resolvedSceneHistory(draft),
     definitions: [],
     triggerIndex: new Map(),
+    roleCastCache: new Map(),
     tasks: [],
     tasksByStage: new Map(),
     materializedCount: 0,
@@ -671,6 +676,7 @@ export function auditCandidatePools(
     sceneHistory: resolvedSceneHistory(world),
     definitions,
     triggerIndex: new Map(),
+    roleCastCache: new Map(),
     tasks: allTasks,
     tasksByStage: new Map(),
     materializedCount: 0,
@@ -1341,8 +1347,104 @@ function organizationMatchesRole(
   return true;
 }
 
-function personIdsWithRole(world: WorldState, role: string): Id[] {
-  return sortedPeople(world).filter((id) => world.persons[id]?.roles.includes(role));
+type PeopleIndex = {
+  world: WorldState;
+  all: Id[];
+  byRole: Map<string, Id[]>;
+  employed: Id[];
+  byEmployer: Map<Id, Id[]>;
+  byResidence: Map<Id, Id[]>;
+  byLocation: Map<Id, Id[]>;
+  byParent: Map<Id, Id[]>;
+  bySex: Map<Person['sex'], Id[]>;
+  teachers: Id[];
+  officials: Id[];
+  historical: Id[];
+  unionMembers: Id[];
+  organizationsByKind: Map<string, Id[]>;
+  organizations: Id[];
+};
+
+function appendIndex(map: Map<string, Id[]>, key: string, id: Id): void {
+  const list = map.get(key);
+  if (list) list.push(id);
+  else map.set(key, [id]);
+}
+
+function indexPerson(index: PeopleIndex, person: Person): void {
+  index.all.push(person.id);
+  for (const role of person.roles) appendIndex(index.byRole, role, person.id);
+  if (person.employment) {
+    index.employed.push(person.id);
+    appendIndex(index.byEmployer, person.employment.organizationId, person.id);
+  }
+  appendIndex(index.byResidence, person.householdId, person.id);
+  appendIndex(index.byLocation, person.locationId, person.id);
+  for (const parentId of person.parentIds) appendIndex(index.byParent, parentId, person.id);
+  appendIndex(index.bySex, person.sex, person.id);
+  if (person.roles.includes('teacher')) index.teachers.push(person.id);
+  if (person.roles.includes('official')) index.officials.push(person.id);
+  if (person.historicalIdentity) index.historical.push(person.id);
+  if (person.roles.includes('union_member')) index.unionMembers.push(person.id);
+}
+
+function buildPeopleIndex(world: WorldState): PeopleIndex {
+  const index: PeopleIndex = {
+    world,
+    all: [],
+    byRole: new Map(),
+    employed: [],
+    byEmployer: new Map(),
+    byResidence: new Map(),
+    byLocation: new Map(),
+    byParent: new Map(),
+    bySex: new Map(),
+    teachers: [],
+    officials: [],
+    historical: [],
+    unionMembers: [],
+    organizationsByKind: new Map(),
+    organizations: Object.keys(world.organizations).sort(),
+  };
+  const people = Object.values(world.persons).sort((a, b) => a.id.localeCompare(b.id));
+  for (const person of people) indexPerson(index, person);
+  for (const id of index.organizations) {
+    const organization = world.organizations[id]!;
+    appendIndex(index.organizationsByKind, organization.kind, id);
+  }
+  return index;
+}
+
+function peopleIndexFor(context: EngineContext): PeopleIndex {
+  if (context.peopleIndex?.world === context.world) return context.peopleIndex;
+  context.peopleIndex = buildPeopleIndex(context.world);
+  return context.peopleIndex;
+}
+
+function registerIndexedPerson(context: EngineContext, person: Person): void {
+  if (context.peopleIndex?.world !== context.world) return;
+  indexPerson(context.peopleIndex, person);
+}
+
+function sampleIds(ids: Id[], limit: number, rng: () => number): Id[] {
+  if (ids.length <= limit) return ids;
+  const start = Math.floor(rng() * ids.length) % ids.length;
+  const result: Id[] = [];
+  for (let i = 0; i < limit; i += 1) result.push(ids[(start + i) % ids.length]!);
+  return result.sort();
+}
+
+function mergeIds(...lists: (Id[] | undefined)[]): Id[] {
+  const seen = new Set<Id>();
+  const result: Id[] = [];
+  for (const list of lists) {
+    for (const id of list ?? []) {
+      if (seen.has(id)) continue;
+      seen.add(id);
+      result.push(id);
+    }
+  }
+  return result.sort();
 }
 
 const sortedPeopleCache = new WeakMap<WorldState, { length: number; people: Id[] }>();
@@ -1357,14 +1459,25 @@ function sortedPeople(world: WorldState): Id[] {
 }
 
 function roleCandidates(
-  world: WorldState,
+  context: EngineContext,
   subject: Person,
   requirement: SceneDefinition['roles'][number],
 ): Id[] {
   if (requirement.kind === 'subject') return [subject.id];
-  const people = sortedPeople(world);
-  const organizations = Object.keys(world.organizations).sort();
+  const world = context.world;
+  const index = peopleIndexFor(context);
+  const organizations = index.organizations;
   const candidates = new Set<Id>();
+  const sampleRng = seededRng(
+    world.seed,
+    'role-pool',
+    subject.id,
+    requirement.key,
+    requirement.kind,
+    context.target.year,
+    context.target.month,
+  );
+  const sample = (ids: Id[]): Id[] => sampleIds(ids, 48, sampleRng);
 
   switch (requirement.kind) {
     case 'parent':
@@ -1376,47 +1489,60 @@ function roleCandidates(
       for (const id of household?.guardianIds ?? []) if (world.persons[id]) candidates.add(id);
       break;
     }
-    case 'sibling':
-      for (const id of people) {
-        if (id === subject.id) continue;
-        const person = world.persons[id]!;
-        if (person.parentIds.some((parentId) => subject.parentIds.includes(parentId))) {
+    case 'sibling': {
+      const siblings = mergeIds(
+        ...subject.parentIds.map((parentId) => index.byParent.get(parentId)),
+      );
+      for (const id of siblings) if (id !== subject.id) candidates.add(id);
+      break;
+    }
+    case 'partner': {
+      const pool =
+        requirement.sameHousehold === true
+          ? mergeIds(...(world.households[subject.householdId]?.memberIds ?? []).map((id) => [id]))
+          : sample(index.all);
+      const check = (ids: Id[]): void => {
+        for (const id of ids) {
+          if (id === subject.id) continue;
+          const person = world.persons[id]!;
+          if (person.died) continue;
+          if (person.householdId === subject.householdId && requirement.sameHousehold !== true)
+            continue;
+          if (person.parentIds.includes(subject.id) || subject.parentIds.includes(person.id))
+            continue;
+          if (person.parentIds.some((parentId) => subject.parentIds.includes(parentId))) continue;
+          const personRelations = relationsFor(world, id);
+          const partneredWithSubject = personRelations.some(
+            (relation) =>
+              relation.kind === 'partner' &&
+              relation.end === undefined &&
+              ((relation.a === id && relation.b === subject.id) ||
+                (relation.b === id && relation.a === subject.id)),
+          );
+          if (requirement.sameHousehold === true && !partneredWithSubject) continue;
+          const partneredWithAnother = personRelations.some(
+            (relation) =>
+              relation.kind === 'partner' &&
+              relation.end === undefined &&
+              ((relation.a === id && relation.b !== subject.id) ||
+                (relation.b === id && relation.a !== subject.id)),
+          );
+          if (partneredWithAnother) continue;
           candidates.add(id);
         }
-      }
+      };
+      check(pool);
+      // A narrow age/sex window can miss every sampled candidate. Fall back to
+      // the full deterministic pool only in that rare case.
+      if (candidates.size === 0 && requirement.sameHousehold !== true) check(index.all);
       break;
-    case 'partner':
-      for (const id of people) {
-        if (id === subject.id) continue;
-        const person = world.persons[id]!;
-        if (person.died) continue;
-        if (person.householdId === subject.householdId && requirement.sameHousehold !== true)
-          continue;
-        if (person.parentIds.includes(subject.id) || subject.parentIds.includes(person.id))
-          continue;
-        if (person.parentIds.some((parentId) => subject.parentIds.includes(parentId))) continue;
-        const personRelations = relationsFor(world, id);
-        const partneredWithSubject = personRelations.some(
-          (relation) =>
-            relation.kind === 'partner' &&
-            relation.end === undefined &&
-            ((relation.a === id && relation.b === subject.id) ||
-              (relation.b === id && relation.a === subject.id)),
-        );
-        if (requirement.sameHousehold === true && !partneredWithSubject) continue;
-        const partneredWithAnother = personRelations.some(
-          (relation) =>
-            relation.kind === 'partner' &&
-            relation.end === undefined &&
-            ((relation.a === id && relation.b !== subject.id) ||
-              (relation.b === id && relation.a !== subject.id)),
-        );
-        if (partneredWithAnother) continue;
-        candidates.add(id);
-      }
-      break;
-    case 'teacher':
-      for (const id of people) {
+    }
+    case 'teacher': {
+      const schools = index.organizationsByKind.get('school') ?? [];
+      for (const id of mergeIds(
+        index.teachers,
+        ...schools.map((school) => index.byEmployer.get(school)),
+      )) {
         if (id === subject.id) continue;
         const person = world.persons[id]!;
         const organization = person.employment
@@ -1435,6 +1561,7 @@ function roleCandidates(
         }
       }
       break;
+    }
     case 'employer': {
       if (subject.employment && world.organizations[subject.employment.organizationId]) {
         candidates.add(subject.employment.organizationId);
@@ -1474,7 +1601,9 @@ function roleCandidates(
       const employer = subject.employment
         ? world.organizations[subject.employment.organizationId]
         : undefined;
-      const pool = employer ? [...employer.memberIds].sort() : people;
+      const pool = employer
+        ? [...employer.memberIds].sort()
+        : mergeIds(index.employed, index.byRole.get('worker'));
       for (const id of pool) {
         if (id === subject.id) continue;
         const person = world.persons[id];
@@ -1484,10 +1613,11 @@ function roleCandidates(
       break;
     }
     case 'union_member': {
-      const unionOrganizations = new Set(
-        organizations.filter((id) => world.organizations[id]?.kind === 'union'),
-      );
-      for (const id of people) {
+      const unionOrganizations = new Set(index.organizationsByKind.get('union') ?? []);
+      for (const id of mergeIds(
+        index.unionMembers,
+        ...Array.from(unionOrganizations).map((unionId) => index.byEmployer.get(unionId)),
+      )) {
         if (id === subject.id) continue;
         const person = world.persons[id]!;
         if (person.roles.includes('union_member')) {
@@ -1501,25 +1631,21 @@ function roleCandidates(
       break;
     }
     case 'neighbor': {
-      const household = world.households[subject.householdId];
-      for (const id of people) {
+      const samePlace = mergeIds(
+        index.byResidence.get(subject.householdId),
+        index.byLocation.get(subject.locationId),
+        index.byRole.get('neighbor'),
+      );
+      for (const id of sample(samePlace)) {
         if (id === subject.id) continue;
         const person = world.persons[id]!;
-        const sameResidence =
-          household !== undefined &&
-          world.households[person.householdId]?.residenceId === household.residenceId;
-        if (
-          sameResidence ||
-          person.locationId === subject.locationId ||
-          person.roles.includes('neighbor')
-        ) {
-          candidates.add(id);
-        }
+        if (person.died) continue;
+        candidates.add(id);
       }
       break;
     }
     case 'historical':
-      for (const id of people) {
+      for (const id of index.historical) {
         if (id === subject.id) continue;
         const person = world.persons[id]!;
         if (!historicalPersonAvailable(person, world.date)) continue;
@@ -1531,8 +1657,12 @@ function roleCandidates(
         candidates.add(id);
       }
       break;
-    case 'official':
-      for (const id of people) {
+    case 'official': {
+      const stateOrgs = index.organizationsByKind.get('state') ?? [];
+      for (const id of mergeIds(
+        index.officials,
+        ...stateOrgs.map((orgId) => index.byEmployer.get(orgId)),
+      )) {
         if (id === subject.id) continue;
         const person = world.persons[id]!;
         const organization = person.employment
@@ -1550,6 +1680,7 @@ function roleCandidates(
         }
       }
       break;
+    }
     case 'organization':
       for (const id of organizations) candidates.add(id);
       break;
@@ -1744,6 +1875,7 @@ function materializeRoleCandidate(
     if (organization && !organization.memberIds.includes(id)) organization.memberIds.push(id);
   }
   context.world.persons[id] = person;
+  registerIndexedPerson(context, person);
   context.world.households[householdId] = {
     id: householdId,
     residenceId: residence.id,
@@ -1786,9 +1918,37 @@ function castSceneRoles(
       continue;
     }
     const required = requirement.required !== false;
-    let candidates = roleCandidates(context.world, subject, requirement).filter((id) =>
-      candidateFits(context.world, subject, id, requirement, date),
-    );
+    const roleKey = [
+      definition.tags.includes('development') || definition.tags.includes('social_movement')
+        ? definition.id
+        : '',
+      requirement.key,
+      requirement.kind,
+      requirement.minAge ?? '',
+      requirement.maxAge ?? '',
+      requirement.sex ?? '',
+      requirement.sameHousehold ? 'same-household' : '',
+      requirement.samePlaceKind ?? '',
+      requirement.occupation ?? '',
+      requirement.organizationKind ?? '',
+      requirement.historicalId ?? '',
+      subject.locationId,
+      requirement.sameHousehold ? subject.householdId : '',
+      subject.employment?.organizationId ?? '',
+      requirement.kind === 'parent' ||
+      requirement.kind === 'guardian' ||
+      requirement.kind === 'sibling' ||
+      requirement.kind === 'partner'
+        ? subject.id
+        : '',
+    ].join('|');
+    let candidates = context.roleCastCache.get(roleKey);
+    if (!candidates) {
+      candidates = roleCandidates(context, subject, requirement).filter((id) =>
+        candidateFits(context.world, subject, id, requirement, date),
+      );
+      context.roleCastCache.set(roleKey, candidates);
+    }
     // Development scenes must use the organization created by the active
     // development, not an unrelated army/church/party that happens to match the
     // generic organization role.
@@ -3456,6 +3616,28 @@ function indexedSceneFits(world: WorldState, entry: IndexedScene, subject: Perso
   return true;
 }
 
+function personSceneSignature(world: WorldState, subject: Person, stage: SceneStage): string {
+  const household = world.households[subject.householdId];
+  const size = household
+    ? household.memberIds.filter((id) => {
+        const person = world.persons[id];
+        return Boolean(person) && !person.died;
+      }).length
+    : 0;
+  return [
+    stage,
+    subject.locationId,
+    subject.employment ? subject.employment.organizationId : '',
+    subject.education.status,
+    [...subject.roles].sort().join(','),
+    household?.cash ?? 0,
+    household?.food ?? 0,
+    subject.health.vitality.toFixed(2),
+    size,
+    subject.lifeContract?.capability ?? '',
+  ].join('|');
+}
+
 function runEventYear(
   context: EngineContext,
   definitions: SceneDefinition[],
@@ -3463,6 +3645,18 @@ function runEventYear(
   resolvedCounts: Map<Id, number>,
 ): void {
   const byStage = indexScenesByStage(definitions);
+  const candidateCache = new Map<string, IndexedScene[]>();
+  const candidatesFor = (subject: Person): IndexedScene[] => {
+    const stage = stageForAge(ageAt(subject, context.target));
+    const key = `${stage}|${personSceneSignature(context.world, subject, stage)}`;
+    const cached = candidateCache.get(key);
+    if (cached) return cached;
+    const entries = (byStage.get(stage) ?? []).filter((entry) =>
+      indexedSceneFits(context.world, entry, subject),
+    );
+    candidateCache.set(key, entries);
+    return entries;
+  };
   const personIds = Object.keys(context.world.persons).sort();
   for (const personId of personIds) {
     let subject = context.world.persons[personId];
@@ -3476,7 +3670,7 @@ function runEventYear(
     // historical epidemic) must not be crowded out by weighted ordinary
     // events. Resolve at most one milestone first, then fill with ordinary
     // events.
-    const stageDefinitionsForMilestone = byStage.get(stageForAge(ageAt(subject, date))) ?? [];
+    const stageDefinitionsForMilestone = candidatesFor(subject);
     for (const entry of stageDefinitionsForMilestone) {
       const definition = entry.definition;
       if (!definition.oncePerPerson || used.has(definition.id)) continue;
@@ -3527,7 +3721,7 @@ function runEventYear(
     // attempt per person-year. A pack with dozens of ordinary neighbourhood
     // scenes must not crowd out the events that create the next generation.
     if (subject && !subject.died && ordinary < ordinaryCap) {
-      const lifecycleDefinitions = (byStage.get(stageForAge(ageAt(subject, date))) ?? []).filter(
+      const lifecycleDefinitions = candidatesFor(subject).filter(
         (entry) => entry.definition.tags.includes('lifecycle') && !used.has(entry.definition.id),
       );
       const lifecycleCandidates: { definition: SceneDefinition; weight: number }[] = [];
@@ -3590,7 +3784,7 @@ function runEventYear(
     while (ordinary < ordinaryCap) {
       if (!subject || subject.died) break;
       const candidates: { definition: SceneDefinition; weight: number }[] = [];
-      const stageDefinitions = byStage.get(stageForAge(ageAt(subject, date))) ?? [];
+      const stageDefinitions = candidatesFor(subject);
       for (const entry of stageDefinitions) {
         const definition = entry.definition;
         if (used.has(definition.id)) continue;
@@ -5284,6 +5478,7 @@ function applyBirth(
     provenance: { kind: 'birth', sourceId: binding.eventId },
   };
   context.world.persons[child.id] = child;
+  registerIndexedPerson(context, child);
   household.memberIds.push(child.id);
   if (father && father.householdId !== household.id) {
     const previous = context.world.households[father.householdId];

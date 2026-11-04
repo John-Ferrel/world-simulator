@@ -92,6 +92,54 @@ describe('Phase 11 context × kernel composition', () => {
     expect(scene?.outcomes?.[0]?.immediateText).toContain('排字房');
   });
 
+  it('compiles person-level branch conditions onto outcomes', () => {
+    const kernel = testKernel({
+      outcomes: [
+        {
+          id: 'member-action',
+          weight: 1,
+          text: '{subject}以会员身份在{context}发言。',
+          when: { hasRole: 'union_member' },
+          effects: [
+            { type: 'role', personId: '$subject', role: 'delegate', add: true, reason: 'member' },
+          ],
+          significance: 0.8,
+        },
+        {
+          id: 'outsider-action',
+          weight: 1,
+          text: '{subject}站在门外听{context}的讨论。',
+          when: { notHasRole: 'union_member' },
+          effects: [
+            {
+              type: 'flag',
+              personId: '$subject',
+              flag: 'outside_meeting',
+              add: true,
+              reason: 'outside',
+            },
+          ],
+          significance: 0.8,
+        },
+      ],
+    });
+    const source = createCompositionSource([kernel]);
+    const result = source.compile(structuredClone(VIENNA_1912_SEED), {
+      year: 1912,
+      month: 1,
+    });
+    const scene = result.scenes[0]!;
+    console.log('COMPOSED', scene.id, scene.outcomes?.map((outcome) => [outcome.id, outcome.conditions]));
+    const member = scene.outcomes?.find((outcome) => outcome.id === 'member-action');
+    const outsider = scene.outcomes?.find((outcome) => outcome.id === 'outsider-action');
+    expect(member?.conditions).toEqual(
+      expect.arrayContaining([{ kind: 'hasRole', role: 'union_member' }]),
+    );
+    expect(outsider?.conditions).toEqual(
+      expect.arrayContaining([{ kind: 'notHasRole', role: 'union_member' }]),
+    );
+  });
+
   it('uses a causal context variant rather than cosmetic renaming', () => {
     const kernel = testKernel({
       variants: [
