@@ -155,3 +155,15 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - 性能：角色候选使用年度人物索引；普通事件候选池按人物签名预过滤，milestone/lifecycle 分池，大池使用确定性抽样。20k 合成组合负载在部分新内容下约 4.6–5.1 s/年（多次测量受并行内容生产影响）；最终数字待内容冻结后重测。
 - 内容：6 个并行批次（童年教育、工作商业、家庭社会、健康犯罪、公民战争迁移、文化信仰科学）各目标 50 recipes；已完成/进行中的 kernel 库已达到 421 条（含原有 150），后续继续扩容到 1000+。
 - 验收：recipe checker、region/person branch tests、IncidentTrace test、composer unresolved-effect test 已加入；完整 20k/playtest/Critic/浏览器证据待内容冻结后执行。
+
+## Phase 12 最终状态（2026-11-04）
+
+- 完成：1,011 kernels / 31 domains / 740 variants / 692 人物分支 outcomes；Vienna 1912 编译 2,551 scenes + 191 tasks；四情境 5,960 distinct compiled scene IDs。
+- 事实条件：person/region conditions、sex、skill、cash、relations、process/legacy 均已接入现有 Engine；IncidentTrace 记录机制/人物/地点/后果；无法解析的 major effect 使 outcome 编译失败。
+- 百万容量：`scripts/v4-phase12-capacity.ts 1000` 实测 3,000 档案 / 1,073,786 eligible person×scene×outcome 情境（非 naive 乘积，非已执行事件）。
+- 性能：20k 2,515 ms/年 composed-only，2,760 ms/年原 benchmark；<5s 目标达成。
+- 长周期：88 年 20,186 events / 443 composed / 203 composed kernels / 482 persons；0 unresolved token、0 post-death event；仍有 63 个重复 prefix offender，max 72。
+- 文学：最终 excerpt 3/12 pass，mean 30.50；12 个定向改写 9/12 pass；未达 34/40 文学门槛。
+- 机制：修复 subject role cache 串人、陌生父亲、trace 未插值/未反映已提交 effects；仍存在出生率下降、代词残留、效果不可见、基础内容重复。
+- 验证：`pnpm test` 475 pass/36 skip；`pnpm build` 通过；`pnpm test:e2e` 通过；截图 `docs/v4/phase-12-browser.png`、`docs/v4/phase-12-incident-trace.png`。
+- 未完成：1M 实际事件、生产 PostgreSQL/API 规模、运行时 LLM 叙事、多城市 world pack、文学达标。详见 `docs/v4/phase-12-report.md`。

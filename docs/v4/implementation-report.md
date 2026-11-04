@@ -223,3 +223,21 @@ pnpm dev
 ## 结论
 
 Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久化、单写者、真实角色/地点/因果、可读个人日志、可推进年份、真实模型愿望读法和三栏观察器。它还不是 `simulator-1031` 的完整成品；主要缺口是婚配选择与完整代际、完整出生契约、跨玩家互动、内容工厂/导演和规模验证。任何把这些缺口说成“已完成”的说法都不符合本报告。
+
+## Phase 12（2026-11-04）— Event Recipes / 事实驱动事件
+
+完整报告：`docs/v4/phase-12-report.md`；文学批评：`docs/v4/phase-12-critique.md`；机制批评：`docs/v4/phase-12-mechanics-critique.md`。
+
+| 项 | 实测 |
+|---|---|
+| 内核 | 1,011（960 event + 51 task），31 域 |
+| 分支 | 740 variants；692 个带人物条件的 outcome |
+| 编译 | Vienna 1912：2,551 scenes + 191 tasks，8,188 outcome paths；四情境 5,960 distinct compiled scene IDs |
+| 百万容量 | 3,000 个合成有效人物档案，1,073,786 个通过真实资格/选角/条件检查的 person×scene×outcome 情境 |
+| 实际事件 | 88 年 playtest：20,186 events，443 composed events，203 composed kernels |
+| 性能 | 20k：2,515 ms/年（composed-only） / 2,760 ms/年（原 Phase 11 benchmark）；397–444 MB heap |
+| 验证 | `pnpm test` 81 files/475 pass/36 skip；`pnpm build` 通过；e2e 1 pass；截图 `phase-12-browser.png`、`phase-12-incident-trace.png` |
+| 文学 | 首轮 2/20 pass，mean 28.75/40；12 个改写 9/12 pass，mean 33.58；最终 excerpt 3/12 pass，mean 30.50 — **未达标** |
+| 机制 | 修复 subject 角色缓存串人和“陌生人当父亲”两个硬 bug；仍存在出生率下降（100 vs Phase 11 237）、代词残留、效果可见性不足 |
+
+未完成/限制：composed events 仍只占 443/20,186；基础内容重复严重；16 个农村占位符编译错误；91 个 `unresolved_effect_ref`、33 个 `invalid_relation` 运行警告；没有 1M 实际提交事件、生产 DB/API 压测或运行时 LLM 叙事。不得把 1,073,786 候选情境或 8,694,688 naive 上界称为已执行事件。
