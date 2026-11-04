@@ -249,6 +249,8 @@ type EngineContext = {
   lastEventMonths?: Map<Id, WorldDate>;
   /** Ids already committed into world.events, used to validate causes without O(n) scans. */
   eventIds?: Set<Id>;
+  /** Per-year opportunity multiplier cache, keyed by event family and region. */
+  poolMultiplierCache?: Map<string, number>;
   tasks: TaskDefinition[];
   tasksByStage: Map<SceneStage, TaskDefinition[]>;
   materializedCount: number;
@@ -433,6 +435,7 @@ export function advanceV4Year(
     definitions: [],
     triggerIndex: new Map(),
     roleCastCache: new Map(),
+    poolMultiplierCache: new Map(),
     tasks: [],
     tasksByStage: new Map(),
     materializedCount: 0,
@@ -706,6 +709,7 @@ export function auditCandidatePools(
     definitions,
     triggerIndex: new Map(),
     roleCastCache: new Map(),
+    poolMultiplierCache: new Map(),
     tasks: allTasks,
     tasksByStage: new Map(),
     materializedCount: 0,
@@ -2627,7 +2631,12 @@ export function v4EventRate(
   const regionId = context?.world
     ? regionIdForPerson(context.world, subject)
     : 'region-lower-austria';
-  const pool = eventPoolMultiplier(context?.world?.macro, definition, regionId);
+  const poolKey = `${definition.familyId ?? definition.id}|${regionId}`;
+  let pool = context?.poolMultiplierCache?.get(poolKey);
+  if (pool === undefined) {
+    pool = eventPoolMultiplier(context?.world?.macro, definition, regionId);
+    context?.poolMultiplierCache?.set(poolKey, pool);
+  }
   if (pool <= 0) return 0;
   return clamp(rate * pool, 0, 1);
 }
@@ -3619,6 +3628,10 @@ type IndexedScene = {
   residualConditions?: SceneCondition[];
   /** Precomputed stable definition hash for fast rate draws. */
   seed?: number;
+  /** Precomputed whether an asynchronous capability compilation gates this scene. */
+  requiresCapabilityCompilation?: boolean;
+  /** Subject sex required by an authored subject role. */
+  subjectSex?: Person['sex'];
 };
 
 type StageIndex = {
@@ -3677,6 +3690,13 @@ function indexScenesByStage(definitions: SceneDefinition[]): StageIndex {
       );
     }
     if (residual.length > 0) entry.residualConditions = residual;
+    entry.requiresCapabilityCompilation = definition.conditions.some(
+      (condition) => condition.kind === 'capability',
+    );
+    const subjectRole = definition.roles.find((role) => role.kind === 'subject');
+    if (subjectRole?.sex === 'female' || subjectRole?.sex === 'male') {
+      entry.subjectSex = subjectRole.sex;
+    }
     const list = all.get(definition.stage) ?? [];
     list.push(entry);
     all.set(definition.stage, list);
@@ -3704,6 +3724,7 @@ function indexedSceneFits(
     return false;
   }
   if (entry.subjectIds !== undefined && !entry.subjectIds.includes(subject.id)) return false;
+  if (entry.subjectSex !== undefined && subject.sex !== entry.subjectSex) return false;
   if (
     entry.requiredRegionIds !== undefined &&
     !entry.requiredRegionIds.has(regionIdForPerson(world, subject))
@@ -3843,11 +3864,7 @@ function sceneEligiblePrepared(
     !definition.subjectProvenance.includes(subject.provenance.kind)
   )
     return false;
-  if (
-    !subject.lifeContract?.compiledAt &&
-    definition.conditions.some((condition) => condition.kind === 'capability')
-  )
-    return false;
+  if (!subject.lifeContract?.compiledAt && entry.requiresCapabilityCompilation) return false;
   if (
     entry.residualConditions !== undefined &&
     !conditionsPass(context.world, subject, entry.residualConditions, date)
@@ -3907,13 +3924,14 @@ function pickOrdinaryCandidate(
 ): { definition: SceneDefinition; weight: number } | undefined {
   if (entries.length === 0) return undefined;
   const rng = seededRng(context.world.seed, 'ordinary-draw', subject.id, date.year, ordinal);
-  const attempts = Math.min(24, Math.max(8, Math.ceil(entries.length / 24)));
+  const attempts = Math.min(8, Math.max(4, Math.ceil(entries.length / 48)));
   for (let i = 0; i < attempts; i += 1) {
     const entry = drawWeighted(sampler, rng);
     if (!entry) return undefined;
     const definition = entry.definition;
     if (used.has(definition.id)) continue;
     if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
+    if (!indexedSceneFits(context.world, entry, subject, date)) continue;
     if (!ratePasses(context, entry, subject, date, 1, personSeed)) continue;
     if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
     return { definition, weight: Math.max(0, definition.weight ?? 1) };
@@ -3964,6 +3982,7 @@ function runEventYear(
     for (const entry of candidateSet.milestones) {
       const definition = entry.definition;
       if (used.has(definition.id)) continue;
+      if (!indexedSceneFits(context.world, entry, subject, date)) continue;
       if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
       if (!ratePasses(context, entry, subject, date, 3, personSeed)) continue;
       const cast = castSceneRoles(context, definition, subject, date);
@@ -3988,7 +4007,9 @@ function runEventYear(
       used.add(definition.id);
       resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
       subject = context.world.persons[personId];
-      candidateSet = candidateSetFor(subject);
+      // Keep the structurally filtered pool for the rest of this person-year.
+      // Dynamic facts are re-checked by sceneEligiblePrepared; newly gained
+      // structural facts become visible at the next annual candidate build.
       break;
     }
     // Lifecycle scenes (courtship, childbirth, separation) get one dedicated
@@ -4000,6 +4021,7 @@ function runEventYear(
         const definition = entry.definition;
         if (used.has(definition.id)) continue;
         if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
+        if (!indexedSceneFits(context.world, entry, subject, date)) continue;
         if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
         if (!ratePasses(context, entry, subject, date, 2, personSeed)) continue;
         lifecycleCandidates.push({
@@ -4039,7 +4061,6 @@ function runEventYear(
             ordinary += 1;
             resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
             subject = context.world.persons[personId];
-            candidateSet = candidateSetFor(subject);
           }
         }
       }
@@ -4067,6 +4088,7 @@ function runEventYear(
           const definition = entry.definition;
           if (used.has(definition.id)) continue;
           if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
+          if (!indexedSceneFits(context.world, entry, subject, date)) continue;
           if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
           if (!ratePasses(context, entry, subject, date, 1, personSeed)) continue;
           candidates.push({ definition, weight: Math.max(0, definition.weight ?? 1) });

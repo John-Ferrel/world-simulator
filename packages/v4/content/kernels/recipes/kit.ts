@@ -348,9 +348,39 @@ function compileVariant(spec: VariantSpec, fallbackReason: string): KernelVarian
 
 export function recipe(spec: RecipeSpec): PlotKernel {
   const [min, max] = spec.ages;
+  const roleEntries = Object.entries(spec.roles ?? {});
+  const subjectSexes = new Set<'female' | 'male'>();
+  let subjectOverride: Partial<RoleRequirement> = {};
+  for (const [key, decl] of roleEntries) {
+    if (typeof decl === 'string' || decl[0] !== 'subject') continue;
+    const options = decl[1];
+    if (key === 'subject') {
+      subjectOverride = {
+        ...(options.sex === 'female' || options.sex === 'male' ? { sex: options.sex } : {}),
+        ...(options.minAge !== undefined ? { minAge: options.minAge } : {}),
+        ...(options.maxAge !== undefined ? { maxAge: options.maxAge } : {}),
+      };
+    } else if (options.sex === 'female' || options.sex === 'male') {
+      // A second subject-role declaration is a sex gate, not a second actor.
+      subjectSexes.add(options.sex);
+    }
+  }
+  const extraConditions: SceneCondition[] = [...subjectSexes].map((sex) => ({
+    kind: 'sex',
+    in: [sex],
+  }));
   const roles: RoleRequirement[] = [
-    { key: 'subject', kind: 'subject', required: true, minAge: min, maxAge: max },
-    ...Object.entries(spec.roles ?? {}).map(([key, decl]) => expandRole(key, decl)),
+    {
+      key: 'subject',
+      kind: 'subject',
+      required: true,
+      minAge: min,
+      maxAge: max,
+      ...subjectOverride,
+    },
+    ...roleEntries
+      .filter(([, decl]) => typeof decl === 'string' || decl[0] !== 'subject')
+      .map(([key, decl]) => expandRole(key, decl)),
   ];
   return {
     id: spec.id,
@@ -363,7 +393,9 @@ export function recipe(spec: RecipeSpec): PlotKernel {
     ...(spec.familyId ? { familyId: spec.familyId } : {}),
     ...(spec.contexts ? { contexts: spec.contexts } : {}),
     ...(spec.milieus ? { milieus: spec.milieus } : {}),
-    ...(spec.conditions ? { conditions: spec.conditions } : {}),
+    ...(spec.conditions || extraConditions.length > 0
+      ? { conditions: [...(spec.conditions ?? []), ...extraConditions] }
+      : {}),
     roles,
     outcomes: spec.outcomes.map((outcome) => compileOutcome(outcome, spec.title)),
     ...(spec.variants

@@ -180,6 +180,70 @@ describe('Phase 11 context × kernel composition', () => {
     expect(result.errors.some((error) => error.outcomeId === 'moves-to-university')).toBe(true);
   });
 
+  it('compiles sex-gated outcome branches without a second subject actor', () => {
+    const kernel = testKernel({
+      roles: [{ key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 40 }],
+      outcomes: [
+        {
+          id: 'female-branch',
+          weight: 1,
+          text: '{subject}在注册处排队。',
+          when: { sex: 'female' },
+          effects: [
+            {
+              type: 'flag',
+              personId: '$subject',
+              flag: 'female-queue',
+              add: true,
+              reason: 'sex branch',
+            },
+          ],
+        },
+        {
+          id: 'male-branch',
+          weight: 1,
+          text: '{subject}在注册处排队。',
+          when: { sex: 'male' },
+          effects: [
+            {
+              type: 'flag',
+              personId: '$subject',
+              flag: 'male-queue',
+              add: true,
+              reason: 'sex branch',
+            },
+          ],
+        },
+      ],
+    });
+    const source = createCompositionSource([kernel]);
+    const result = source.compile(structuredClone(VIENNA_1912_SEED), {
+      year: 1912,
+      month: 1,
+    });
+    const scene = result.scenes[0]!;
+    expect(scene.outcomes?.find((outcome) => outcome.id === 'female-branch')?.conditions).toEqual([
+      { kind: 'sex', in: ['female'] },
+    ]);
+    expect(scene.outcomes?.find((outcome) => outcome.id === 'male-branch')?.conditions).toEqual([
+      { kind: 'sex', in: ['male'] },
+    ]);
+  });
+
+  it('reuses compiled scenes across years when the active context set is unchanged', () => {
+    const source = createCompositionSource([testKernel()]);
+    const first = source.compile(structuredClone(VIENNA_1912_SEED), {
+      year: 1912,
+      month: 1,
+    });
+    const second = source.compile(structuredClone(VIENNA_1912_SEED), {
+      year: 1913,
+      month: 1,
+    });
+    expect(second.stats.cacheHit).toBe(true);
+    expect(second.scenes.map((scene) => scene.id)).toEqual(first.scenes.map((scene) => scene.id));
+  });
+
   it('records an incident trace with the actual mechanism, roles and effects', () => {
     const world = structuredClone(VIENNA_1912_SEED);
     const personId = Object.keys(world.persons)[0]!;

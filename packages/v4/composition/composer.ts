@@ -363,7 +363,7 @@ function signature(world: WorldState, target: WorldDate): string {
     .filter((legacy) => legacy.status === 'active')
     .map((legacy) => `${legacy.id}:${legacy.kind}`)
     .sort();
-  return `${world.id}|${target.year}|${contexts.join(',')}|${processes.join(',')}|${legacies.join(',')}`;
+  return `${world.id}|${contexts.join(',')}|${processes.join(',')}|${legacies.join(',')}`;
 }
 
 export function createCompositionSource(kernels: PlotKernel[]): CompositionSource {
