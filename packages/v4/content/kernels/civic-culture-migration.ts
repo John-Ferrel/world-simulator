@@ -814,6 +814,12 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
         text: '投票站设在学校的走廊里，桌上摆着蓝铅笔和一本翻烂的选民册。{subjectPronoun}把票投给{party}，又在门口替人核对门牌；{pollWorker}提醒{subjectPronoun}不要把票根带走，{subjectPronoun}才发现自己一直攥着那张小纸。',
         effects: [
           membership('$party', '在投票日替党部核对门牌并登记'),
+          {
+            type: 'organization_funds',
+            organizationId: '$party',
+            amount: -4,
+            reason: 'election-day leaflets and polling-station costs',
+          },
           role('election_worker', '在投票站门口替党部核对选民'),
           reputation(0.04, '投票日替邻居核对门牌'),
           link(
@@ -1791,7 +1797,10 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
     tags: ['culture', 'publication', 'writing', 'work', 'censorship'],
     contexts: ['vienna', 'urban', 'culture', 'university', 'postwar', 'crisis'],
     milieus: ['writing', 'culture', 'university', 'print', 'work'],
-    conditions: [{ kind: 'age', min: 20, max: 70 }],
+    conditions: [
+      { kind: 'age', min: 20, max: 70 },
+      { kind: 'skill', skill: 'literacy', min: 0.35 },
+    ],
     roles: [
       subjectRole(20, 70),
       cast('editor', 'worker', { minAge: 25, maxAge: 75 }),

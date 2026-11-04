@@ -112,7 +112,7 @@ Phase 11 最终全量仓库测试（包含冻结的 v1–v3 测试与 v4）：
 pnpm test
 → Test Files 80 passed | 7 skipped (87)
 → Tests 463 passed | 36 skipped (499)
-→ 160.22s
+→ 160.97s
 ```
 
 旧测试通过不等于 v4 完成；v4 的独立证据是专项、长期试玩、浏览器与真实模型调用。
@@ -122,11 +122,11 @@ pnpm test
 ```text
 pnpm test:e2e --config playwright.v4.config.ts
 → Running 1 test using 1 worker
-→ ✓ register, give birth, read a concrete log and inspect the map (4.6s)
-→ 1 passed (9.9s total)
+→ ✓ register, give birth, read a concrete log and inspect the map (9.1s)
+→ 1 passed (12.6s total)
 ```
 
-`pnpm build` 同时通过（Vite production bundle，3.26s）。
+`pnpm build` 同时通过（Vite production bundle，2.95s）。
 
 该流程使用独立 `living_world_e2e` 数据库，实际：
 

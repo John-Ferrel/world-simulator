@@ -3352,6 +3352,12 @@ export const WORK_COMMERCE_KERNELS: PlotKernel[] = [
             reason: '参加罢工并加入工会',
           },
           {
+            type: 'organization_funds',
+            organizationId: '$union',
+            amount: -18,
+            reason: 'strike relief paid from the union fund',
+          },
+          {
             type: 'role',
             personId: '$subject',
             role: 'striker',

@@ -1006,6 +1006,12 @@ function conditionPasses(
       }).length;
       return size > capacity === condition.value;
     }
+    case 'skill': {
+      const value = subject.life?.skills?.[condition.skill] ?? 0;
+      if (typeof condition.min === 'number' && value < condition.min) return false;
+      if (typeof condition.max === 'number' && value > condition.max) return false;
+      return true;
+    }
     case 'health':
       if (typeof condition.min === 'number' && subject.health.vitality < condition.min) {
         return false;

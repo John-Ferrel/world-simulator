@@ -584,6 +584,7 @@ export type SceneCondition =
   | { kind: 'householdSize'; min?: number; max?: number }
   | { kind: 'overcrowded'; value: boolean }
   | { kind: 'health'; min?: number; max?: number }
+  | { kind: 'skill'; skill: keyof PersonLife['skills']; min?: number; max?: number }
   | { kind: 'education'; in: Person['education']['status'][] }
   | { kind: 'employment'; employed: boolean }
   | { kind: 'placeKind'; in: Place['kind'][] }
