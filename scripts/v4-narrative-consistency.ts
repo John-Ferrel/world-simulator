@@ -109,7 +109,7 @@ const output = {
     'Keyword matching can miss paraphrases and can flag metaphors. Use this as a review queue, not an automatic literary verdict.',
 };
 mkdirSync('docs/v4', { recursive: true });
-writeFileSync('docs/v4/phase-12-consistency.json', `${JSON.stringify(output, null, 2)}\n`);
+writeFileSync('docs/v4/phase-13-consistency.json', `${JSON.stringify(output, null, 2)}\n`);
 console.log(
   JSON.stringify(
     {

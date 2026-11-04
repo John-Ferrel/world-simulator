@@ -201,6 +201,21 @@ export type V4AdvanceDiagnostics = {
     skippedByMilieu: number;
     cacheHit: boolean;
   };
+  /** Phase 13 scheduling counters. Candidate pools are per person-year; draws
+   * are ordinary encounter attempts that reached the source-specific selector. */
+  scheduling?: {
+    candidatePool: { base: number; composed: number };
+    ordinary: {
+      draws: { base: number; composed: number };
+      ratePass: { base: number; composed: number };
+      preparedPass: { base: number; composed: number };
+      selected: { base: number; composed: number };
+    };
+    resolved: { base: number; composed: number };
+    blocked: { base: number; composed: number };
+    paths: Record<string, number>;
+    blockedReasons: Record<string, number>;
+  };
   warnings: V4Warning[];
   timings?: Record<string, number>;
 };
@@ -407,6 +422,19 @@ export function advanceV4Year(
       foodShortageMonths: 0,
       overcrowdedMonths: 0,
     },
+    scheduling: {
+      candidatePool: { base: 0, composed: 0 },
+      ordinary: {
+        draws: { base: 0, composed: 0 },
+        ratePass: { base: 0, composed: 0 },
+        preparedPass: { base: 0, composed: 0 },
+        selected: { base: 0, composed: 0 },
+      },
+      resolved: { base: 0, composed: 0 },
+      blocked: { base: 0, composed: 0 },
+      paths: {},
+      blockedReasons: {},
+    },
     warnings: [],
   };
 
@@ -444,7 +472,7 @@ export function advanceV4Year(
   const composed = normalized.composition?.compile(draft, target);
   if (composed) diagnostics.composition = composed.stats;
   const definitions = usableDefinitions(
-    composed ? [...scenes, ...composed.scenes] : scenes,
+    composed ? [...balanceBaseRates(scenes), ...composed.scenes] : balanceBaseRates(scenes),
     diagnostics,
   ).filter((definition) => !(draft.macro && definition.tags?.includes('baseline_mortality')));
   context.definitions = definitions;
@@ -674,6 +702,19 @@ export function auditCandidatePools(
       foodShortageMonths: 0,
       overcrowdedMonths: 0,
     },
+    scheduling: {
+      candidatePool: { base: 0, composed: 0 },
+      ordinary: {
+        draws: { base: 0, composed: 0 },
+        ratePass: { base: 0, composed: 0 },
+        preparedPass: { base: 0, composed: 0 },
+        selected: { base: 0, composed: 0 },
+      },
+      resolved: { base: 0, composed: 0 },
+      blocked: { base: 0, composed: 0 },
+      paths: {},
+      blockedReasons: {},
+    },
     warnings: [],
   };
   const composed = composition?.compile(world, date);
@@ -688,7 +729,7 @@ export function auditCandidatePools(
     }
   }
   const definitions = usableDefinitions(
-    composed ? [...scenes, ...composed.scenes] : scenes,
+    composed ? [...balanceBaseRates(scenes), ...composed.scenes] : balanceBaseRates(scenes),
     diagnostics,
   );
   const allTasks = [...tasks, ...(composed?.tasks ?? [])];
@@ -794,7 +835,7 @@ function normalizeOptions(options: V4AdvanceOptions): NormalizedOptions {
       typeof options.maxAgencyActorsPerYear === 'number' &&
       Number.isFinite(options.maxAgencyActorsPerYear)
         ? Math.max(0, Math.min(400, Math.floor(options.maxAgencyActorsPerYear)))
-        : 48,
+        : 96,
     materializePopulation: options.materializePopulation !== false,
     statisticalModel: options.statisticalModel !== false,
     maxOrdinaryEventsPerPerson:
@@ -826,6 +867,14 @@ function warnContext(
   extra?: { personId?: Id; eventId?: Id; sceneId?: string },
 ): void {
   warn(context.diagnostics, code, message, extra);
+}
+
+function definitionSource(definition: { id: string; packId?: string }): 'base' | 'composed' {
+  return definition.packId === 'composition' || definition.id.includes('::') ? 'composed' : 'base';
+}
+
+function bumpRecord(record: Record<string, number>, key: string): void {
+  record[key] = (record[key] ?? 0) + 1;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -904,6 +953,34 @@ function sameDate(a: WorldDate, b: WorldDate): boolean {
 function aliveAt(person: Person, date: WorldDate): boolean {
   if (!person.died) return true;
   return monthIndex(person.died) > monthIndex(date);
+}
+
+const MAX_BASE_NON_ONCE_RATE = 0.12;
+
+/**
+ * High-rate legacy scenes were authored when the library was small. A 0.35–0.55
+ * rate on a repeatable scene can drown every composed recipe for the same
+ * person. Cap repeatable base scenes; once-per-person milestones keep their
+ * authored rate because they cannot repeat.
+ */
+const BALANCED_PACKS = ['vienna-', 'generated-', 'major-', 'p9-', 'p10-', 'phase'];
+
+function balanceBaseRates(definitions: SceneDefinition[]): SceneDefinition[] {
+  return definitions.map((definition) => {
+    if (
+      definition.packId === 'composition' ||
+      definition.oncePerPerson === true ||
+      definition.tags?.includes('lifecycle') ||
+      !BALANCED_PACKS.some((prefix) => definition.packId.startsWith(prefix))
+    ) {
+      return definition;
+    }
+    const rate = definition.rate;
+    if (typeof rate !== 'number' || rate <= MAX_BASE_NON_ONCE_RATE || rate >= 1) {
+      return definition;
+    }
+    return { ...definition, rate: MAX_BASE_NON_ONCE_RATE };
+  });
 }
 
 function usableDefinitions(
@@ -1196,6 +1273,9 @@ function conditionPasses(
           condition.sameHousehold &&
           world.persons[otherId]!.householdId !== subject.householdId
         ) {
+          return false;
+        }
+        if (condition.partnerSex && world.persons[otherId]!.sex !== condition.partnerSex) {
           return false;
         }
         if (typeof condition.minTrust !== 'number') return true;
@@ -2042,7 +2122,8 @@ function castSceneRoles(
           definition.tags.includes('marriage') ||
           definition.tags.includes('wedding') ||
           definition.id.includes('courtship') ||
-          definition.id.includes('family-formation'));
+          definition.id.includes('family-formation') ||
+          definition.id.includes('same-sex'));
       candidates = roleCandidates(context, subject, requirement, allowNewPartner).filter((id) =>
         candidateFits(context.world, subject, id, requirement, date),
       );
@@ -2383,6 +2464,12 @@ function selectNarration(
   date: WorldDate,
 ): string {
   const key = outcome.narrationKey ?? outcome.id;
+  const mainText = interpolateSceneText(outcome.immediateText, context.world, subject, roles, date);
+  // Decisive outcomes keep the authored causal text; atmospheric variants are
+  // for ordinary texture, not for replacing the one paragraph that must carry
+  // the consequence.
+  if ((outcome.significance ?? 0) >= 0.7) return mainText;
+  const minimumVariantLength = Math.max(70, Math.floor(mainText.length * 0.72));
   const variants = (definition.narration ?? [])
     .filter(
       (variant) =>
@@ -2398,9 +2485,11 @@ function selectNarration(
       variant,
       text: interpolateSceneText(variant.text, context.world, subject, roles, date),
     }))
-    .filter((entry) => !/\{[a-zA-Z_][a-zA-Z0-9_]*\}/.test(entry.text));
-  if (variants.length === 0)
-    return interpolateSceneText(outcome.immediateText, context.world, subject, roles, date);
+    .filter(
+      (entry) =>
+        !/\{[a-zA-Z_][a-zA-Z0-9_]*\}/.test(entry.text) && entry.text.length >= minimumVariantLength,
+    );
+  if (variants.length === 0) return mainText;
   const picked =
     variants[
       Math.floor(
@@ -2466,7 +2555,10 @@ export function interpolateSceneText(
     school: subject.education.placeId
       ? world.places[subject.education.placeId]?.name
       : Object.values(world.places).find((place) => place.kind === 'school')?.name,
-    workplace: subject.employment ? world.places[subject.employment.workplaceId]?.name : undefined,
+    workplace: subject.employment
+      ? (world.places[subject.employment.workplaceId]?.name ??
+        world.places[subject.locationId]?.name)
+      : undefined,
     age: String(ageAt(subject, date)),
     year: String(date.year),
   };
@@ -3403,7 +3495,10 @@ function chooseContentTask(
     if (!sceneEligible(context, definition, person, date)) continue;
     const score = taskUtility(context.world, person, definition, date);
     if (score <= floor) continue;
-    ranked.push({ definition, weight: score, score });
+    // New composed tasks should compete on their authored utility, not be
+    // permanently drowned by the larger Phase 8/9 base task pool.
+    const weight = score * (definition.packId === 'composition' ? 1.25 : 1);
+    ranked.push({ definition, weight, score });
   }
   if (ranked.length === 0) return undefined;
   // Casting every task is the dominant cost in a large pool. Draw a weighted
@@ -3863,9 +3958,12 @@ function drawWeighted(sampler: WeightedSampler, rng: () => number): IndexedScene
 
 type CandidateSet = {
   all: IndexedScene[];
+  base: IndexedScene[];
+  composed: IndexedScene[];
   milestones: IndexedScene[];
   lifecycle: IndexedScene[];
-  sampler: WeightedSampler;
+  baseSampler: WeightedSampler;
+  composedSampler: WeightedSampler;
 };
 
 /**
@@ -3954,14 +4052,35 @@ function pickOrdinaryCandidate(
     const entry = drawWeighted(sampler, rng);
     if (!entry) return undefined;
     const definition = entry.definition;
+    const source = definitionSource(definition);
+    const scheduling = context.diagnostics.scheduling;
+    if (scheduling) scheduling.ordinary.draws[source] += 1;
     if (used.has(definition.id)) continue;
     if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
     if (!indexedSceneFits(context.world, entry, subject, date)) continue;
     if (!ratePasses(context, entry, subject, date, 1, personSeed)) continue;
+    if (scheduling) scheduling.ordinary.ratePass[source] += 1;
     if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
+    if (scheduling) scheduling.ordinary.preparedPass[source] += 1;
     return { definition, weight: Math.max(0, definition.weight ?? 1) };
   }
   return undefined;
+}
+
+function chooseEncounterSource(
+  seed: string,
+  candidateSet: CandidateSet,
+  subject: Person,
+  date: WorldDate,
+  ordinal: number,
+): 'base' | 'composed' {
+  if (candidateSet.base.length === 0) return 'composed';
+  if (candidateSet.composed.length === 0) return 'base';
+  const rng = seededRng(seed, 'encounter-source', subject.id, date.year, ordinal);
+  return rng() <
+    candidateSet.base.length / (candidateSet.base.length + candidateSet.composed.length)
+    ? 'base'
+    : 'composed';
 }
 
 function runEventYear(
@@ -3980,11 +4099,16 @@ function runEventYear(
     const all = (index.all.get(stage) ?? []).filter((entry) =>
       indexedSceneFits(context.world, entry, subject, context.target),
     );
+    const base = all.filter((entry) => definitionSource(entry.definition) === 'base');
+    const composed = all.filter((entry) => definitionSource(entry.definition) === 'composed');
     const candidateSet: CandidateSet = {
       all,
+      base,
+      composed,
       milestones: all.filter((entry) => entry.definition.oncePerPerson === true),
       lifecycle: all.filter((entry) => entry.definition.tags.includes('lifecycle')),
-      sampler: buildWeightedSampler(all),
+      baseSampler: buildWeightedSampler(base),
+      composedSampler: buildWeightedSampler(composed),
     };
     candidateSetCache.set(key, candidateSet);
     return candidateSet;
@@ -4000,6 +4124,12 @@ function runEventYear(
       ? Math.max(context.options.maxOrdinaryEventsPerPerson, 6)
       : context.options.maxOrdinaryEventsPerPerson;
     let candidateSet = candidateSetFor(subject);
+    if (context.diagnostics.scheduling) {
+      const scheduling = context.diagnostics.scheduling;
+      for (const entry of candidateSet.all) {
+        scheduling.candidatePool[definitionSource(entry.definition)] += 1;
+      }
+    }
     // Once-per-person milestones (school entry, first apprenticeship, a
     // historical epidemic) must not be crowded out by weighted ordinary
     // events. Resolve at most one milestone first, then fill with ordinary
@@ -4095,12 +4225,22 @@ function runEventYear(
     // recipe library grows; the final pick is still weighted by scene weight.
     while (ordinary < ordinaryCap) {
       if (!subject || subject.died) break;
+      const source = chooseEncounterSource(
+        context.world.seed,
+        candidateSet,
+        subject,
+        date,
+        ordinary,
+      );
+      const sourceEntries = source === 'base' ? candidateSet.base : candidateSet.composed;
+      const sourceSampler =
+        source === 'base' ? candidateSet.baseSampler : candidateSet.composedSampler;
       let chosen: { definition: SceneDefinition; weight: number } | undefined;
-      if (candidateSet.all.length > EXACT_ORDINARY_SCAN_LIMIT) {
+      if (sourceEntries.length > EXACT_ORDINARY_SCAN_LIMIT) {
         chosen = pickOrdinaryCandidate(
           context,
-          candidateSet.all,
-          candidateSet.sampler,
+          sourceEntries,
+          sourceSampler,
           subject,
           date,
           used,
@@ -4109,13 +4249,16 @@ function runEventYear(
         );
       } else {
         const candidates: { definition: SceneDefinition; weight: number }[] = [];
-        for (const entry of candidateSet.all) {
+        for (const entry of sourceEntries) {
           const definition = entry.definition;
           if (used.has(definition.id)) continue;
           if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
           if (!indexedSceneFits(context.world, entry, subject, date)) continue;
           if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
           if (!ratePasses(context, entry, subject, date, 1, personSeed)) continue;
+          if (context.diagnostics.scheduling) {
+            context.diagnostics.scheduling.ordinary.ratePass[definitionSource(definition)] += 1;
+          }
           candidates.push({ definition, weight: Math.max(0, definition.weight ?? 1) });
         }
         chosen = weightedPick(
@@ -4123,7 +4266,56 @@ function runEventYear(
           seededRng(context.world.seed, 'event-choice', subject.id, date.year, String(ordinary)),
         );
       }
+      // If the preferred source has nothing eligible, try the other source before
+      // giving up. This keeps base-only and composed-only lives playable.
+      if (!chosen) {
+        const fallbackSource = source === 'base' ? 'composed' : 'base';
+        const fallbackEntries =
+          fallbackSource === 'base' ? candidateSet.base : candidateSet.composed;
+        const fallbackSampler =
+          fallbackSource === 'base' ? candidateSet.baseSampler : candidateSet.composedSampler;
+        if (fallbackEntries.length > 0) {
+          if (fallbackEntries.length > EXACT_ORDINARY_SCAN_LIMIT) {
+            chosen = pickOrdinaryCandidate(
+              context,
+              fallbackEntries,
+              fallbackSampler,
+              subject,
+              date,
+              used,
+              ordinary,
+              personSeed,
+            );
+          } else {
+            const candidates: { definition: SceneDefinition; weight: number }[] = [];
+            for (const entry of fallbackEntries) {
+              const definition = entry.definition;
+              if (used.has(definition.id)) continue;
+              if (definition.triggerMode === 'fact' || definition.triggerMode === 'action')
+                continue;
+              if (!indexedSceneFits(context.world, entry, subject, date)) continue;
+              if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
+              if (!ratePasses(context, entry, subject, date, 1, personSeed)) continue;
+              candidates.push({ definition, weight: Math.max(0, definition.weight ?? 1) });
+            }
+            chosen = weightedPick(
+              candidates,
+              seededRng(
+                context.world.seed,
+                'event-choice-fallback',
+                subject.id,
+                date.year,
+                String(ordinary),
+              ),
+            );
+          }
+        }
+      }
       if (!chosen) break;
+      if (context.diagnostics.scheduling) {
+        const chosenSource = definitionSource(chosen.definition);
+        context.diagnostics.scheduling.ordinary.selected[chosenSource] += 1;
+      }
       used.add(chosen.definition.id);
       const cast = castSceneRoles(context, chosen.definition, subject, date);
       if (cast.missing.length > 0) {
@@ -4166,7 +4358,6 @@ function runEventYear(
       ordinary += 1;
       resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
       subject = context.world.persons[personId];
-      candidateSet = candidateSetFor(subject);
     }
   }
 }
@@ -4179,6 +4370,11 @@ function recordBlocked(
   reason: string,
   date: WorldDate,
 ): void {
+  const scheduling = context.diagnostics.scheduling;
+  if (scheduling) {
+    scheduling.blocked[definitionSource(definition)] += 1;
+    bumpRecord(scheduling.blockedReasons, reason.split(':')[0] ?? reason);
+  }
   const instance: SceneInstance = {
     id: nextSceneId(context),
     sceneId: definition.id,
@@ -4440,9 +4636,21 @@ function resolveScene(
       roleIds: roles,
       fundingOrganizationIds: fundingOrganizations(context.world, subject, roles),
     },
-    true,
+    // An outcome that authored effects must not persist a story whose effects
+    // all failed. Effectless test/fixture scenes may still commit for scheduling
+    // tests, but real content cannot silently become an empty fact.
+    outcome.effects.length === 0,
   );
   if (!event) return undefined;
+  if (context.diagnostics.scheduling) {
+    const source = definitionSource(definition);
+    context.diagnostics.scheduling.resolved[source] += 1;
+    const taskDomain = (definition as TaskDefinition).task?.domain;
+    bumpRecord(
+      context.diagnostics.scheduling.paths,
+      taskDomain ? `${source}:task:${taskDomain}` : `${source}:scene`,
+    );
+  }
 
   // A birth effect creates the child inside the scene commit. Record the
   // child's own birth fact after the parent event exists, so its cause chain
@@ -4560,12 +4768,22 @@ function commitEvent(
 
   const knownEventIds = eventIdsFor(context);
   const causes = [...new Set(draft.causes ?? [])].filter((cause) => knownEventIds.has(cause));
-  const participants = draft.participants.filter(
-    (participant) =>
-      participant &&
-      typeof participant.personId === 'string' &&
-      Boolean(context.world.persons[participant.personId]),
+  const dyingIds = new Set(
+    applied
+      .filter(
+        (effect): effect is Extract<EventEffect, { type: 'death' }> => effect.type === 'death',
+      )
+      .map((effect) => effect.personId),
   );
+  const participants = draft.participants.filter((participant) => {
+    if (!participant || typeof participant.personId !== 'string') return false;
+    const person = context.world.persons[participant.personId];
+    if (!person) return false;
+    // A corpse may appear only in the event that records that death. Stale
+    // scheduled/followup scenes must not keep casting a dead participant.
+    if (person.died && !dyingIds.has(person.id)) return false;
+    return true;
+  });
   const event: EventFact = {
     id: identity.id,
     date: { ...draft.date },
@@ -4615,6 +4833,9 @@ function commitEvent(
   context.world.events.push(event);
   knownEventIds.add(event.id);
   rememberEventMonth(context, event.subjectId, event.date);
+  for (const participant of event.participants) {
+    rememberEventMonth(context, participant.personId, event.date);
+  }
   scheduleFactTriggers(context, event, draft.triggerDepth ?? 0);
   context.world.historyMeta.sequence = identity.sequence;
   context.world.historyMeta.lastEventId = event.id;
@@ -4871,9 +5092,17 @@ function applyCash(
 
   if (amount < 0) {
     const debit = roundMoney(Math.min(household.cash, -amount));
-    if (debit <= 0) return undefined;
-    household.cash = roundMoney(household.cash - debit);
-    return { ...effect, amount: -debit };
+    const shortfall = roundMoney(-amount - debit);
+    if (debit > 0) household.cash = roundMoney(household.cash - debit);
+    // Necessary costs do not vanish because the purse is empty. The unpaid
+    // remainder becomes household debt, and the committed effect keeps the full
+    // authored cost so narration and audit agree on the price.
+    if (shortfall > 0) household.debt = roundMoney(household.debt + shortfall);
+    return {
+      ...effect,
+      amount: -amount,
+      reason: shortfall > 0 ? `${effect.reason}（其中${shortfall}克朗记入债务）` : effect.reason,
+    };
   }
 
   // Positive cash first draws on concrete funding organizations (an employer or
@@ -6093,9 +6322,14 @@ function lastEventMonthFor(context: EngineContext, personId: Id): WorldDate | un
   if (!context.lastEventMonths) {
     const months = new Map<Id, WorldDate>();
     for (const event of context.world.events) {
-      const current = months.get(event.subjectId);
-      if (!current || monthIndex(event.date) > monthIndex(current)) {
-        months.set(event.subjectId, event.date);
+      for (const personId of new Set([
+        event.subjectId,
+        ...event.participants.map((participant) => participant.personId),
+      ])) {
+        const current = months.get(personId);
+        if (!current || monthIndex(event.date) > monthIndex(current)) {
+          months.set(personId, event.date);
+        }
       }
     }
     context.lastEventMonths = months;

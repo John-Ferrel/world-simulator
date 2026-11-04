@@ -337,11 +337,15 @@ function buildExcerpt(
   world: WorldState,
   events: EventFact[],
   personId: string,
-  kind: 'short_lived_child' | 'long_lived_adult' | 'working_adult',
+  kind: 'short_lived_child' | 'long_lived_adult' | 'working_adult' | 'oldest_lived' | 'parent_life',
   selectionBasis: string,
 ) {
   const person = world.persons[personId];
-  const personal = sortedByDate(personalEvents(events, personId));
+  const allPersonal = sortedByDate(personalEvents(events, personId));
+  const subjectOnly = allPersonal.filter((event) => event.subjectId === personId);
+  // A life excerpt should centre the named person. Participant-only events are
+  // used only when there are too few subject events, and are labelled below.
+  const personal = subjectOnly.length >= 15 ? subjectOnly : allPersonal;
   const died = person?.died;
   const afterDeath = (event: EventFact) =>
     Boolean(died && event.date.year * 12 + event.date.month > died.year * 12 + died.month);
@@ -375,6 +379,7 @@ function buildExcerpt(
       title: event.title ?? null,
       text: event.immediateText,
       participants: event.participants.map((participant) => participant.personId),
+      subjectIsFocal: event.subjectId === personId,
       composed: parseComposedAction(event.action) ?? null,
       trace: event.trace ?? null,
       effects: event.effects.map((effect) => effect.type),
@@ -435,6 +440,19 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
   const yearly: { year: number; events: number; deaths: number; persons: number; alive: number }[] =
     [];
   const warnings = new Map<string, number>();
+  const schedulingAudit = {
+    candidatePool: { base: 0, composed: 0 },
+    ordinary: {
+      draws: { base: 0, composed: 0 },
+      ratePass: { base: 0, composed: 0 },
+      preparedPass: { base: 0, composed: 0 },
+      selected: { base: 0, composed: 0 },
+    },
+    resolved: { base: 0, composed: 0 },
+    blocked: { base: 0, composed: 0 },
+    paths: {} as Record<string, number>,
+    blockedReasons: {} as Record<string, number>,
+  };
   let stopReason: 'horizon' | 'world_not_running' = 'horizon';
   let yearsRun = 0;
   let allFocalDeadAtYear: number | null = null;
@@ -468,6 +486,24 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
     yearsRun += 1;
     for (const warning of result.diagnostics.warnings) {
       warnings.set(warning.code, (warnings.get(warning.code) ?? 0) + 1);
+    }
+    const scheduling = result.diagnostics.scheduling;
+    if (scheduling) {
+      for (const key of ['candidatePool', 'resolved', 'blocked'] as const) {
+        schedulingAudit[key].base += scheduling[key].base;
+        schedulingAudit[key].composed += scheduling[key].composed;
+      }
+      for (const key of ['draws', 'ratePass', 'preparedPass', 'selected'] as const) {
+        schedulingAudit.ordinary[key].base += scheduling.ordinary[key].base;
+        schedulingAudit.ordinary[key].composed += scheduling.ordinary[key].composed;
+      }
+      for (const [reason, count] of Object.entries(scheduling.blockedReasons)) {
+        schedulingAudit.blockedReasons[reason] =
+          (schedulingAudit.blockedReasons[reason] ?? 0) + count;
+      }
+      for (const [pathKey, count] of Object.entries(scheduling.paths ?? {})) {
+        schedulingAudit.paths[pathKey] = (schedulingAudit.paths[pathKey] ?? 0) + count;
+      }
     }
     const alive = Object.values(world.persons).filter((person) => !person.died).length;
     for (const household of Object.values(world.households)) {
@@ -642,6 +678,15 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
       person && event.date.year * 12 + event.date.month < person.born.year * 12 + person.born.month,
     );
   });
+  const eventsAfterParticipantDeath = runEvents.filter((event) =>
+    event.participants.some((participant) => {
+      const person = world.persons[participant.personId];
+      return Boolean(
+        person?.died &&
+        event.date.year * 12 + event.date.month > person.died.year * 12 + person.died.month,
+      );
+    }),
+  );
 
   const focalLives = focalIds.map((personId) =>
     focalLifeReport(world, allEvents, personId, sceneByFamilyAction),
@@ -731,10 +776,56 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
         ? 'focal adult with the most recorded employment/apprenticeship facts'
         : 'no employment fact was recorded; showing the focal adult with the most events';
 
+  const usedExcerptIds = new Set([shortSource.life.id, longSource.life.id, workingSource.life.id]);
+  const remainingCandidates = focalCandidates.filter(
+    (candidate) => !usedExcerptIds.has(candidate.life.id),
+  );
+  const oldestSource = [...remainingCandidates].sort(
+    (a, b) => (b.life.age ?? 0) - (a.life.age ?? 0) || b.life.events - a.life.events,
+  )[0];
+  const birthCounts = new Map<string, number>();
+  for (const event of allEvents) {
+    if (!event.effects.some((effect) => effect.type === 'birth')) continue;
+    for (const id of new Set([
+      event.subjectId,
+      ...event.participants.map((participant) => participant.personId),
+    ])) {
+      birthCounts.set(id, (birthCounts.get(id) ?? 0) + 1);
+    }
+  }
+  const parentSource = [...remainingCandidates]
+    .filter((candidate) => candidate.life.id !== oldestSource?.life.id)
+    .sort(
+      (a, b) =>
+        (birthCounts.get(b.life.id) ?? 0) - (birthCounts.get(a.life.id) ?? 0) ||
+        b.life.events - a.life.events,
+    )[0];
   const excerpts = [
     buildExcerpt(world, allEvents, shortSource.life.id, 'short_lived_child', shortBasis),
     buildExcerpt(world, allEvents, longSource.life.id, 'long_lived_adult', longBasis),
     buildExcerpt(world, allEvents, workingSource.life.id, 'working_adult', workingBasis),
+    ...(oldestSource
+      ? [
+          buildExcerpt(
+            world,
+            allEvents,
+            oldestSource.life.id,
+            'oldest_lived',
+            'oldest remaining focal person after the first three selections; not necessarily the oldest in the world',
+          ),
+        ]
+      : []),
+    ...(parentSource
+      ? [
+          buildExcerpt(
+            world,
+            allEvents,
+            parentSource.life.id,
+            'parent_life',
+            'remaining focal person with the most recorded births/children',
+          ),
+        ]
+      : []),
   ];
 
   const report = {
@@ -833,6 +924,7 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
     excerpts,
     textAudit: text,
     compositionAudit,
+    schedulingAudit,
     anomalies: {
       anyLivingHouseholdOver12:
         overfullLivingHouseholdObservations > 0 || overfullLivingHouseholds.length > 0,
@@ -889,6 +981,14 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
       })),
       anyEventBeforeSubjectBirth: eventsBeforeSubjectBirth.length > 0,
       eventsBeforeSubjectBirth: eventsBeforeSubjectBirth.length,
+      anyEventAfterParticipantDeath: eventsAfterParticipantDeath.length > 0,
+      eventsAfterParticipantDeath: eventsAfterParticipantDeath.length,
+      eventsAfterParticipantDeathSamples: eventsAfterParticipantDeath.slice(0, 8).map((event) => ({
+        eventId: event.id,
+        action: event.action,
+        date: event.date,
+        participants: event.participants.map((participant) => participant.personId),
+      })),
       eventsBeforeSubjectBirthSamples: eventsBeforeSubjectBirth.slice(0, 20).map((event) => ({
         eventId: event.id,
         year: event.date.year,

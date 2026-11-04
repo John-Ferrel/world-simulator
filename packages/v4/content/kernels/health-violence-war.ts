@@ -6782,7 +6782,7 @@ export const HEALTH_VIOLENCE_WAR_KERNELS: PlotKernel[] = [
       {
         id: 'rescue-too-late',
         weight: 0.35,
-        text: '梁木塌下来时，里面已经没有声音。{subject}和{worker}扒了半个钟头，只拖出一只烧焦的箱子；消防队来后，把围观的人赶开，登记了{subject}的名字。消防队走后，没人敢去碰那只箱子。烧焦的箱子被留在院子里。',
+        text: '{subject}撞开阁楼门，烟先滚出来，{neighbor}倒在门后，手指还扣着门槛。{subject}和{worker}拽着{neighbor}的腋下往外拖，拖到楼梯口时人已经没气；梁木跟着塌下，只压住一只烧焦的箱子。消防队赶开围观的人，登记了{subject}的名字，{neighbor}的名字写在另一张纸上。{subject}的袖口烧穿，去诊所包扎花了三克朗，那只箱子留在院子里，谁也没再碰。',
         effects: [
           {
             type: 'death',

@@ -6,20 +6,12 @@
     "min": 3,
     "max": 6
   },
-  "tags": [
-    "childhood",
-    "family",
-    "home",
-    "street"
-  ],
+  "tags": ["childhood", "family", "home", "street"],
   "baseRate": 0.45,
   "conditions": [
     {
       "kind": "placeKind",
-      "in": [
-        "home",
-        "street"
-      ]
+      "in": ["home", "street"]
     }
   ],
   "nodes": [
@@ -31,9 +23,7 @@
       "conditions": [
         {
           "kind": "placeKind",
-          "in": [
-            "home"
-          ]
+          "in": ["home"]
         },
         {
           "kind": "health",
@@ -67,7 +57,7 @@
         {
           "id": "arm-bruise",
           "weight": 2,
-          "text": "{subject}在{residence}没有灯的楼梯上踩空，滚下三级，右小臂磕在铁扶手末端，肿起一块青紫。{mother}把他抱回屋里，用湿冷毛巾敷上，又用旧布条裹了两圈。当天夜里孩子哭醒两次，第二天照样下楼玩。",
+          "text": "{subject}在{residence}没有灯的楼梯上踩空，滚下三级，右小臂磕在铁扶手末端，肿起一块青紫。{mother}把{subject}抱回屋里，用湿冷毛巾敷上，又用旧布条裹了两圈。当天夜里{subject}哭醒两次，第二天照样下楼玩。",
           "effects": [
             {
               "type": "health",
@@ -93,19 +83,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-early-childhood.stairwell-fall.arm-bruise.alt1",
               "key": "arm-bruise",
-              "text": "黑楼梯间的第三级缺了灯罩。{subject}一脚踩空，滚到平台，右小臂磕在铁扶手的弯头上。{mother}听见哭声冲出来，用湿毛巾敷那块青紫，再用旧布条缠两圈。",
-              "tone": [
-                "dry"
-              ]
+              "text": "楼梯间的灯罩空着，第三级踏板比别处高。{subject}一脚踩空，滚到平台，右小臂磕在铁扶手的弯头上。{mother}听见哭声跑出来，把{subject}抱回屋，用冷水毛巾敷那块青紫，再用旧布条缠了两圈。夜里{subject}哭醒两次。",
+              "tone": ["dry"]
+            },
+            {
+              "id": "vienna-early-childhood.stairwell-fall.arm-bruise.alt2",
+              "key": "arm-bruise",
+              "text": "黑楼梯间只有门缝透进来的一点光。{subject}踩空时伸手去抓扶手，手臂先撞在铁端上，整个人滚下三级。{mother}把{subject}抱到灶边，拿湿冷毛巾按住肿起的地方，又撕了一条旧布缠紧。第二天{subject}举着胳膊下楼，照样去院子里玩。",
+              "tone": ["tender"]
             }
           ]
         },
         {
           "id": "neighbor-carries",
           "weight": 1,
-          "text": "{neighbor}拎着煤桶上楼，正撞见{subject}摔在平台上，膝盖破了皮。她把煤桶一放，单手把孩子夹到自家门口，用温水冲掉灰土。{mother}赶来时，孩子正坐在她家厨房凳上啃一块干面包。",
+          "text": "{neighbor}拎着煤桶上楼，正撞见{subject}摔在平台上，膝盖破了皮。{neighbor}把煤桶一放，单手把{subject}夹到自家门口，用温水冲掉灰土。{mother}赶来时，{subject}正坐在{neighbor}家厨房凳上啃一块干面包。",
           "effects": [
             {
               "type": "health",
@@ -130,19 +124,17 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-early-childhood.stairwell-fall.neighbor-carries.alt1",
               "key": "neighbor-carries",
-              "text": "{neighbor}拎煤上楼，看见{subject}坐在平台上捂着膝盖。她放下煤桶，把孩子夹到厨房间，用温水冲掉伤口里的灰。{mother}赶到时，孩子已经在啃面包。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{neighbor}的煤桶磕在楼梯转角，煤块滚了一地。{subject}坐在平台上，膝盖渗出血珠。{neighbor}把桶一放，夹起{subject}进了自家门，用温水冲伤口，又拿一块干面包塞过来。{mother}赶来时，{subject}正坐在厨房凳上啃面包。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "landlord-complaint",
           "weight": 1,
-          "text": "摔伤之后两天，房东女人在门厅拦住{mother}，说这楼的楼梯间不许孩子嬉闹，铁扶手磕坏要赔。{mother}把裹着布条的孩子往身后一拉，回了句“灯都没有，谁看得见台阶”，房东女人把话记在账本边上，说下回修灯的钱从房租里算。",
+          "text": "摔伤之后两天，房东女人在门厅拦住{mother}，楼里的{neighbor}正提着菜篮站在门边。房东女人说楼梯间不许孩子嬉闹，铁扶手磕坏要赔。{mother}把裹着布条的{subject}往身后一拉，回了句“灯都没有，谁看得见台阶”。房东女人把话记在房租本边上，说下回修灯的钱从房租里扣。",
           "effects": [
             {
               "type": "relation",
@@ -166,16 +158,6 @@
               "add": true,
               "flag": "stairs_accident_noted"
             }
-          ],
-          "narration": [
-            {
-              "id": "default",
-              "key": "landlord-complaint",
-              "text": "{mother}被房东女人堵在门厅：楼梯间不许孩子跑，扶手的漆也要赔。她把裹着布条的{subject}拉到身后，指出楼道里连盏灯都没有。房东把这话记在账本边上。",
-              "tone": [
-                "dry"
-              ]
-            }
           ]
         }
       ]
@@ -188,9 +170,7 @@
       "conditions": [
         {
           "kind": "placeKind",
-          "in": [
-            "street"
-          ]
+          "in": ["street"]
         },
         {
           "kind": "householdSize",
@@ -224,7 +204,7 @@
         {
           "id": "counts-correctly",
           "weight": 2,
-          "text": "{mother}把五 Kreuzer 和一只铁皮罐塞到{subject}手里，让他去巷口奶铺打半升牛奶。孩子一路贴着墙走，罐子抱在胸前，回来时牛奶一滴没洒，找的零钱也捏在指缝里。{mother}数过钱，把罐子搁到灶上。",
+          "text": "{mother}把五克鲁泽和一只铁皮罐塞到{subject}手里，让去巷口奶铺打半升牛奶。{subject}一路贴着墙走，罐子抱在胸前，回来时牛奶一滴没洒，找的零钱也捏在指缝里。{mother}数过钱，把罐子搁到灶上。",
           "effects": [
             {
               "type": "food",
@@ -250,19 +230,17 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-early-childhood.market-errand.counts-correctly.alt1",
               "key": "counts-correctly",
-              "text": "五 Kreuzer 和一只铁皮罐交到{subject}手里。他贴着墙走到巷口奶铺，罐子抱在胸前，回来时奶面还在晃，一滴没洒。{mother}数过找的零钱，把罐子搁上灶。",
-              "tone": [
-                "dry"
-              ]
+              "text": "铁皮罐的提手有点松，{subject}用两只手托着底。奶铺的女人舀了半升牛奶，找零时一枚一枚数清楚。{subject}贴着墙根往回走，过门槛时停了一下，罐口没晃。到家{mother}先数钱，再把罐子放上灶。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "spills-and-cries",
           "weight": 1,
-          "text": "半路上{subject}被一条窜出的狗吓了一跳，铁皮罐脱手，牛奶泼在石板缝里。他蹲在湿处哭，{neighbor}从门口出来，拿自己的罐子分了小半罐给他。回家后{mother}看了看湿透的前襟，没骂，只把罐底剩下的一点倒进锅里。",
+          "text": "半路上{subject}被一条窜出的狗吓了一跳，铁皮罐脱手，牛奶泼在石板缝里。{subject}蹲在湿处哭，{neighbor}从门口出来，拿自己的罐子分了小半罐。回家后{mother}看了看湿透的前襟，没骂，只把罐底剩下的一点倒进锅里。",
           "effects": [
             {
               "type": "food",
@@ -287,19 +265,17 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-early-childhood.market-errand.spills-and-cries.alt1",
               "key": "spills-and-cries",
-              "text": "一条狗窜出来，{subject}手一松，铁皮罐扣在石板缝上，牛奶流进沟里。他蹲在湿处哭。{neighbor}从门口出来，拿自己的罐子分了小半罐给他。{mother}看湿透的前襟，没骂。",
-              "tone": [
-                "dry"
-              ]
+              "text": "狗从门洞里蹿出来，{subject}往后一退，铁皮罐磕在石阶上，牛奶顺着石板缝流。{subject}蹲下去，手在湿处乱摸。{neighbor}端着自己的罐子出来，倒出小半罐，说先拿回去。到家{mother}看见前襟湿透，只把罐底剩的一点倒进锅里。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "keeps-the-coin",
           "weight": 1,
-          "text": "奶铺的女人找零时多给了一枚 Kreuzer。{subject}把它攥在手心里没说，回家路上在糖果摊前站了很久，最后买了两颗硬糖，一颗含在嘴里，一颗藏进枕头。{mother}当晚洗枕头套时摸到糖纸，问出来，没收了剩下的半颗。",
+          "text": "奶铺的女人找零时多给了一枚克鲁泽。{subject}把它攥在手心里没说，回家路上在糖果摊前站了很久，最后买了两颗硬糖，一颗含在嘴里，一颗藏进枕头。{mother}当晚洗枕头套时摸到糖纸，问出来，没收了剩下的半颗。",
           "effects": [
             {
               "type": "flag",
@@ -326,12 +302,10 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-early-childhood.market-errand.keeps-the-coin.alt1",
               "key": "keeps-the-coin",
-              "text": "奶铺多找了一枚 Kreuzer。{subject}攥在手心里，在糖果摊前站了很久，买了两颗硬糖，一颗当场含掉，一颗塞进枕头。{mother}洗枕套时摸到糖纸。",
-              "tone": [
-                "dry"
-              ]
+              "text": "找零的铜板里多了一枚克鲁泽。{subject}的拇指把它压在手心，走出奶铺才敢看。糖果摊的玻璃罐里装着红绿硬糖，{subject}挑了两颗。一颗当场含了，另一颗用糖纸包好，塞进枕头套。晚上{mother}换枕套，摸到硬纸响。",
+              "tone": ["dry"]
             }
           ]
         }
@@ -345,9 +319,7 @@
       "conditions": [
         {
           "kind": "placeKind",
-          "in": [
-            "street"
-          ]
+          "in": ["street"]
         }
       ],
       "roles": [
@@ -377,7 +349,7 @@
         {
           "id": "kicked-ball",
           "weight": 1,
-          "text": "{subject}在院子里拿石子摆圈，一颗滚到巷口，正打在作坊学徒{worker}刚擦过的靴子上。学徒抬脚把石子踢回，石子擦着孩子的耳朵飞过，撞在门框上。{mother}从窗户探出半个身子，骂了一句，学徒耸耸肩进了作坊。",
+          "text": "{subject}在院子里拿石子摆圈，一颗滚到巷口，正打在作坊学徒{worker}刚擦过的靴子上。{worker}抬脚把石子踢回，石子擦着{subject}的耳朵飞过，撞在门框上。楼上有人推开窗骂了一句，{worker}耸耸肩进了作坊。",
           "effects": [
             {
               "type": "mood",
@@ -397,19 +369,17 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-early-childhood.courtyard-games.kicked-ball.alt1",
               "key": "kicked-ball",
-              "text": "石子滚到巷口，打在学徒{worker}刚擦过的靴子上。他抬脚把石子踢回来，石子擦着{subject}的耳朵撞上门框。{mother}从窗户探出身骂了一句，学徒耸耸肩进了作坊。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}把石子一颗颗排成圈，最后一颗没摆稳，滚出院子，撞在{worker}的靴尖。靴面刚擦过，留了一道白印。{worker}抬脚一踢，石子擦着{subject}的耳朵飞过去，砸在门框上。{subject}贴着墙站住，耳朵嗡嗡响。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "taught-to-play",
           "weight": 2,
-          "text": "学徒{worker}午休时蹲在院子里，用粉笔在地上画格子，教{subject}玩跳房子，还把自己的旧纽扣当筹码。孩子输了三次，第四次踩着格线跳完一圈。{worker}拍了下他的后脑勺，说下回别踩线。",
+          "text": "学徒{worker}午休时蹲在院子里，用粉笔在地上画格子，教{subject}玩跳房子，还把自己的旧纽扣当筹码。{subject}输了三次，第四次踩着格线跳完一圈。{worker}拍了下{subject}的后脑勺，说下回别踩线。",
           "effects": [
             {
               "type": "skill",
@@ -435,19 +405,17 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-early-childhood.courtyard-games.taught-to-play.alt1",
               "key": "taught-to-play",
-              "text": "午休时{worker}蹲在院子里，用粉笔画出格子，把旧纽扣当筹码。{subject}连输三次，第四次踩着线跳完一整圈。{worker}拍了下他的后脑勺：下回别踩线。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{worker}把粉笔头在地上磨尖，画了六个格子，又从口袋里摸出三颗旧纽扣。{subject}第一次跳就踩线，纽扣输了两颗。第四次{subject}把裙角提起来，一格一格跳完。{worker}拍了下{subject}的后脑勺，说“这回没踩”。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "caught-by-mother",
           "weight": 1,
-          "text": "{subject}跟着院子里几个大孩子钻进作坊堆放刨花的角落，被{mother}从窗口看见。她下楼揪着孩子的后领拖回家，进门先打了两下手心，说那地方都是铁钉和锯末，扎进去要烂。孩子把手藏在背后，掌心红了一下午。",
+          "text": "{subject}跟着院子里几个大孩子钻进作坊堆放刨花的角落，被{mother}从窗口看见。{mother}下楼揪着{subject}的后领拖回家，进门先打了两下手心，说那地方都是铁钉和锯末，扎进去要烂。{subject}把手藏在背后，掌心红了一下午。",
           "effects": [
             {
               "type": "health",
@@ -473,12 +441,10 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-early-childhood.courtyard-games.caught-by-mother.alt1",
               "key": "caught-by-mother",
-              "text": "{subject}跟着大孩子钻进堆放刨花的角落。{mother}从窗口看见，下楼揪着他后领拖回家，进门打了两下手心：那地方都是铁钉和锯末。孩子把手藏在背后，掌心红了一下午。",
-              "tone": [
-                "dry"
-              ]
+              "text": "刨花堆得比{subject}的膝盖还高，几个大孩子往里钻，{subject}跟在最后。{mother}在二楼窗口喊了一声，没人应，{mother}下楼推开作坊的门，揪住{subject}的后领。回家后{subject}摊开手，挨了两下，掌心立刻红起来。",
+              "tone": ["dry"]
             }
           ]
         }
@@ -492,9 +458,7 @@
       "conditions": [
         {
           "kind": "placeKind",
-          "in": [
-            "home"
-          ]
+          "in": ["home"]
         },
         {
           "kind": "health",
@@ -528,7 +492,7 @@
         {
           "id": "doctor-bill",
           "weight": 1,
-          "text": "{subject}夜里烧到说胡话，{mother}用湿布轮换敷额头，撑到天亮还是去请了区里的医生。医生听了听背，留下几包药粉，收了一 Gulden 诊金。{father}当天的工钱还没领，{mother}从围裙内袋里数出硬币，一枚一枚放在桌上。三天后孩子退了烧。",
+          "text": "{subject}夜里烧到说胡话，{mother}用湿布轮换敷额头，撑到天亮还是去请了区里的医生。医生听了听背，留下几包药粉，收了一古尔登诊金。家里的工钱还没领，{mother}从围裙内袋里数出硬币，一枚一枚放在桌上。三天后{subject}退了烧。",
           "effects": [
             {
               "type": "cash",
@@ -551,19 +515,17 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-early-childhood.fever-night.doctor-bill.alt1",
               "key": "doctor-bill",
-              "text": "{subject}夜里烧到说胡话。{mother}轮换湿布敷了一夜，天亮去请区里的医生。医生听了听背上，留下几包药粉，收一 Gulden。{father}的工钱还没领，{mother}从围裙内袋里数出硬币，一枚一枚放在桌上。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}烧得嘴唇发干，{mother}把湿布敷上去，凉了再换，撑到窗外发白才去请医生。医生把听诊器贴在{subject}背上，留下三包药粉，收了一古尔登。{mother}从围裙内袋里摸出硬币，一枚一枚排在桌上，差一点不够。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "home-remedy",
           "weight": 2,
-          "text": "{subject}半夜烧起来，{mother}没有请医生，用醋和水擦孩子的手心脚心，又煮了接骨木汁，一勺一勺喂下去。她在床边坐到鸡叫，把炉子压小，用旧大衣把床脚那头堵严。两天后热度自己退了，孩子嘴唇上留下一层干皮。",
+          "text": "{subject}半夜烧起来，{mother}没有请医生，用醋和水擦{subject}的手心脚心，又煮了接骨木汁，一勺一勺喂下去。{mother}在床边坐到鸡叫，把炉子压小，用旧大衣把床脚那头堵严。两天后热度自己退了，{subject}嘴唇上留下一层干皮。",
           "effects": [
             {
               "type": "health",
@@ -588,19 +550,17 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-early-childhood.fever-night.home-remedy.alt1",
               "key": "home-remedy",
-              "text": "半夜烧起来，{mother}用醋水擦{subject}的手心脚心，煮接骨木汁一勺一勺喂。她坐在床边到鸡叫，把炉子压小，用旧大衣堵住床脚。两天后热度自己退了，孩子嘴唇上留了一层干皮。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}烧得翻来覆去，{mother}把醋倒进温水，用布蘸着擦手心、脚心，又去灶间煮接骨木汁。勺子送到嘴边，{subject}偏头躲，{mother}就等一会儿再喂。鸡叫时炉火压小，床脚用旧大衣堵住。两天后热度退了，嘴唇起了一层干皮。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "father-absent",
           "weight": 1,
-          "text": "烧了一夜，{father}在酒馆没回来。{mother}一手抱着{subject}一手去楼下打水，桶差点脱手。第二天{father}进门时，孩子已经把药吐在被子上，{mother}只把湿被单丢进他怀里，没说话。",
+          "text": "{subject}烧了一夜，{father}在酒馆没回来。{mother}一手抱着{subject}一手去楼下打水，桶差点脱手。第二天{father}进门时，{subject}已经把药吐在被子上，{mother}只把湿被单丢进{father}怀里，没说话。",
           "effects": [
             {
               "type": "health",
@@ -626,12 +586,10 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-early-childhood.fever-night.father-absent.alt1",
               "key": "father-absent",
-              "text": "{subject}烧了一夜，{father}在酒馆没回来。{mother}一手抱孩子一手下楼打水，桶差点脱手。第二天{father}进门，孩子刚把药吐在被子上，她只把湿被单丢进他怀里。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}烧到半夜，床上只有{mother}一个人守着。水缸见了底，{mother}一手抱{subject}，一手提桶下楼，桶沿在楼梯上磕了一下，水泼出来打湿鞋面。天亮时{father}推门进来，{mother}把沾着药味的湿被单团起来，塞进{father}怀里。",
+              "tone": ["dry"]
             }
           ]
         }

@@ -464,7 +464,7 @@ export const CIVIC_CULTURE_MIGRATION_KERNELS: PlotKernel[] = [
       {
         id: 'civic-strike-no',
         weight: 0.35,
-        text: '{subjectPronoun}算了算家里的房租和母亲的药钱，在表决时把手放在膝盖上。{delegate}看见了，没有点名，只把反对票数念了两遍；第二天，工头把{subjectPronoun}的工位调到了机器最响的那一头。下班时，工头在门口记下{subjectPronoun}的工号。',
+        text: '轮到{subject}表决时，{subjectPronoun}把双手放在膝盖上，没有举。散会后{delegate}没有点名，只把反对票数念了两遍，念到第二遍时看了{subject}一眼。第二天，工头把{subject}的工位调到机器最响的那一头；下班时又在门口记下{subject}的工号。{subject}知道这不算处分，可耳朵一直响到回家。',
         effects: [
           flag('voted_against_strike', '在罢工表决中投了反对票'),
           link('delegate', 'colleague', { trust: -0.05 }, '代表记住了{subjectPronoun}的反对票'),

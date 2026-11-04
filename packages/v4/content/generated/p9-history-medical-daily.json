@@ -6,15 +6,7 @@
     "min": 22,
     "max": 70
   },
-  "tags": [
-    "health",
-    "medical",
-    "public_health",
-    "family",
-    "pharmacy",
-    "sanitation",
-    "daily"
-  ],
+  "tags": ["health", "medical", "public_health", "family", "pharmacy", "sanitation", "daily"],
   "baseRate": 0.2,
   "conditions": [
     {
@@ -69,7 +61,7 @@
         {
           "id": "queue-until-noon",
           "weight": 1,
-          "text": "{subject}在诊所门口从五点半站到十一点，膝盖发僵，终于用最后四十赫勒付了挂号费。门房{clerk}撕下转诊单，叫{subject}去综合医院排队，药费还得另算。",
+          "text": "{subject}在诊所门口从五点半站到十一点，膝盖发僵，终于用最后四十赫勒付了挂号费。门房撕下转诊单，叫{subject}去综合医院排队，药费还得另算；队伍拐过街角时天还黑着，{subject}数着前面二十三个后脑勺，记住了综合医院药房下午才开窗口。",
           "effects": [
             {
               "type": "cash",
@@ -96,27 +88,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.clinic-queue.queue-until-noon.alt1",
               "key": "queue-until-noon",
-              "text": "队伍拐过街角时天还黑着，{subject}数着前面二十三个人的后脑勺。门房每喊一个号码，就有人从墙根弹起来。付挂号费时铜币在木柜台上一枚枚滚开，{clerk}头也不抬，只把转诊单从玻璃窗口推出来。",
-              "tone": [
-                "dry"
-              ]
+              "text": "门房每喊一个号码，就有人从墙根弹起来。付挂号费时铜币在木柜台上一枚枚滚开，门房头也不抬，只把转诊单从玻璃窗口推出来。",
+              "tone": ["bureaucratic"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.clinic-queue.queue-until-noon.alt2",
               "key": "queue-until-noon",
-              "text": "到中午{subject}才挪进诊室，外套肩头被雨打湿一片。医生听了听胸口，写两行字便叫下一个。{clerk}把转诊单塞过来时补了一句，综合医院药房下午两点开窗口，去晚了又得等一天。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "十一点才挪进诊室，{subject}的外套肩头被雨打湿一片。医生听了听胸口，写两行字便叫下一个；转诊单塞过来时补了一句，综合医院药房下午两点开窗口，去晚了又得等一天。",
+              "tone": ["clinical"]
             }
           ]
         },
         {
           "id": "give-place-to-mother",
           "weight": 1,
-          "text": "{subject}把靠前的位置让给抱孩子的{neighbor}，自己去街角药房买了退烧药。夜里烧得更厉害，听见隔壁孩子哭声低了些，自己的额头却烫得像炉盖。",
+          "text": "{subject}把靠前的位置让给抱孩子的{neighbor}，自己去街角药房买了六十赫勒的退烧药。夜里烧得更厉害，{subject}的额头烫得像炉盖，听见隔壁孩子哭声低了些，只能拿湿布一遍遍敷着，心里明白这一让耽误了自己的诊治。",
           "effects": [
             {
               "type": "cash",
@@ -141,27 +129,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.clinic-queue.give-place-to-mother.alt1",
               "key": "give-place-to-mother",
-              "text": "那女人怀里的孩子脸烧得通红，{subject}往后退了半步，把用粉笔写的号码塞给她。药房伙计收了六十赫勒，给一瓶褐色药水。回家路上{subject}一阵阵发冷，到夜里反而烧得更高，只能拿湿布敷额头。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{neighbor}怀里的孩子脸烧得通红，{subject}往后退了半步，把用粉笔写的号码塞进{neighbor}手里。药房伙计收了六十赫勒，给一瓶褐色药水；回家路上{subject}一阵阵发冷。",
+              "tone": ["tender"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.clinic-queue.give-place-to-mother.alt2",
               "key": "give-place-to-mother",
-              "text": "{neighbor}抱着孩子连声道谢时，{subject}已经弯着腰在咳。药房玻璃瓶上贴着褪色标签，喝下去满嘴甘草味。后半夜{subject}听见自己牙齿打颤，炉子早灭了，水壶底结了一圈白垢。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{neighbor}抱着孩子连声道谢时，{subject}已经弯着腰在咳。药房玻璃瓶上贴着褪色标签，喝下去满嘴甘草味；后半夜{subject}听见自己牙齿打颤，炉子早灭了。",
+              "tone": ["clinical"]
             }
           ]
         },
         {
           "id": "quarrel-with-clerk",
           "weight": 1,
-          "text": "{subject}和门房{clerk}为号码顺序争起来，被推到街边，帽子滚进水沟。傍晚回来时窗口已经关了，长椅上空空荡荡，只剩一张踩脏的挂号单。",
+          "text": "{subject}和门房为号码顺序争起来，被推到街边，帽子滚进水沟。傍晚回来时窗口已经关了，长椅上空空荡荡，只剩一张踩脏的挂号单；{subject}在湿冷街头耗了一天，咳嗽更深，诊所门口的人也都记住了这张吵红的脸。",
           "effects": [
             {
               "type": "mood",
@@ -184,20 +168,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.clinic-queue.quarrel-with-clerk.alt1",
               "key": "quarrel-with-clerk",
-              "text": "{subject}指着墙上粉笔写的号码，说{clerk}把二十一号喊了两遍。门房把本子一合，说爱等不等。推搡间{subject}的帽子滚进街沟，捞上来时吸饱了菜叶和泥水，再抬头窗口已经拉下铁帘。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}指着墙上粉笔写的号码，说二十一号被喊了两遍。门房把本子一合，说爱等不等；推搡间帽子滚进街沟，捞上来时吸饱了菜叶和泥水。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.clinic-queue.quarrel-with-clerk.alt2",
               "key": "quarrel-with-clerk",
-              "text": "争吵只用了半分钟。{clerk}抬手指向街角的面包房，说那儿暖和。{subject}在附近转了三条街，回来时诊所门房正在上锁，长椅上落着别人丢下的面包纸和一根断鞋带。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "争吵只用了半分钟。门房抬手指向街角的面包房，说那儿暖和；{subject}在附近转了三条街，回来时诊所正在上锁，长椅上落着别人丢下的面包纸。",
+              "tone": ["bureaucratic"]
             }
           ]
         }
@@ -216,9 +196,7 @@
         },
         {
           "kind": "placeKind",
-          "in": [
-            "home"
-          ]
+          "in": ["home"]
         },
         {
           "kind": "health",
@@ -253,7 +231,7 @@
         {
           "id": "fetch-doctor-half-fee",
           "weight": 1,
-          "text": "{subject}踩着没到小腿的雪去敲{doctor}的门，先付一半出诊费，医生答应天亮前到。回来时鞋里灌满雪水，{neighbor}的额头已经烫得不敢碰。",
+          "text": "{subject}踩着没到小腿的雪去敲{doctor}的门，先付一半出诊费一克朗五十赫勒，医生答应天亮前到。回来时鞋里灌满雪水，脚趾冻得发麻，{neighbor}的额头已经烫得不敢碰；三克朗的出诊费还差一半，{subject}把它记在门框上。",
           "effects": [
             {
               "type": "cash",
@@ -278,27 +256,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.house-call.fetch-doctor-half-fee.alt1",
               "key": "fetch-doctor-half-fee",
-              "text": "雪把电车轨道埋了一半，{subject}沿着墙根走，风从领口灌进去。{doctor}开门时披着睡袍，听完只问出诊费带了多少。三克朗的出诊费先付一克朗五十赫勒，他收了钱，答应天亮前一定到。",
-              "tone": [
-                "dry"
-              ]
+              "text": "雪把电车轨道埋了一半，{subject}沿着墙根走，风从领口灌进去。{doctor}开门时披着睡袍，听完只问出诊费带了多少；收下一克朗五十赫勒，答应天亮前一定到。",
+              "tone": ["clinical"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.house-call.fetch-doctor-half-fee.alt2",
               "key": "fetch-doctor-half-fee",
-              "text": "医生家的门铃冻住了，{subject}用拳头捶了七八下。{doctor}在门里问清地址，把听诊器放进皮包。回来的路上{subject}数着口袋里剩下的铜币，进门时{neighbor}的呼吸又急又浅，湿布已经捂不凉。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "医生家的门铃冻住了，{subject}用拳头捶了七八下。回来的路上{subject}数着口袋里剩下的铜币，进门时{neighbor}的呼吸又急又浅，湿布已经捂不凉。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "carry-child-hospital",
           "weight": 1,
-          "text": "{subject}用毯子裹起{neighbor}，背到综合医院急诊走廊。长椅上挤满人，等到窗户发白，孩子的烧退了些，{subject}的胳膊却抖得端不住水杯。",
+          "text": "{subject}用毯子裹住{neighbor}，搀着往综合医院急诊走，走到半路干脆背起来。长椅上挤满人，等到窗户发白，{neighbor}的烧退了些，{subject}的胳膊却抖得端不住水杯；雪灌进后领，鞋底磨得只剩一层布，这一夜把两个人的人情结结实实绑在了一起。",
           "effects": [
             {
               "type": "health",
@@ -323,27 +297,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.house-call.carry-child-hospital.alt1",
               "key": "carry-child-hospital",
-              "text": "雪灌进后领，{subject}把{neighbor}往上颠了颠，毯子角扫过结冰的路面。急诊走廊的煤气灯整夜亮着，值班护士给了半杯温水。天亮时孩子额头出了汗，{subject}的胳膊却抖得端不稳杯子。",
-              "tone": [
-                "dry"
-              ]
+              "text": "雪灌进后领，{subject}把{neighbor}往上颠了颠，毯子角扫过结冰的路面。急诊走廊的煤气灯整夜亮着，值班护士给了半杯温水；天亮时{neighbor}额头出了汗。",
+              "tone": ["tender"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.house-call.carry-child-hospital.alt2",
               "key": "carry-child-hospital",
-              "text": "从家到医院走了四十分钟，{subject}的鞋底磨得只剩一层布。急诊门口有人抽烟，烟味混着石炭酸，孩子趴在{subject}肩上哼哼。等到窗外发白，护士叫进去量了体温，说暂时稳住了。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "从家到医院走了四十分钟，{subject}的鞋底磨得只剩一层布。急诊门口有人抽烟，烟味混着石炭酸；等到窗外发白，护士叫进去量了体温，说暂时稳住了。",
+              "tone": ["clinical"]
             }
           ]
         },
         {
           "id": "wait-with-wet-cloth",
           "weight": 1,
-          "text": "{subject}用湿布和半瓶退烧药熬到天亮，煤都添进了炉子。{doctor}来时只在门口站了站，留一张饮食单，说继续观察，出诊费免了。",
+          "text": "{subject}用湿布和半瓶退烧药熬到天亮，炉子多烧了一筐煤，锅里的粥也多添了两把面，口粮下去一截。{doctor}来时只在门口站了站，留一张饮食单，说继续观察，出诊费免了。{subject}整夜没合眼，{neighbor}的烧慢慢退下去；桌上多了一张纸，炉边少了一筐煤。",
           "effects": [
             {
               "type": "food",
@@ -368,20 +338,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.house-call.wait-with-wet-cloth.alt1",
               "key": "wait-with-wet-cloth",
-              "text": "炉子里的煤一块块塌下去，{subject}把湿布换了七八回。孩子抽了一阵，后来慢慢睡沉。{doctor}天亮后进门，没脱大衣，看了看眼睑，在纸上写下“稀粥、温水、静卧”，说药不用再加。",
-              "tone": [
-                "dry"
-              ]
+              "text": "炉子里的煤一块块塌下去，{subject}把湿布换了七八回。{neighbor}抽了一阵，后来慢慢睡沉；{doctor}天亮后进门，没脱大衣，看了看眼睑，在纸上写下“稀粥、温水、静卧”。",
+              "tone": ["clinical"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.house-call.wait-with-wet-cloth.alt2",
               "key": "wait-with-wet-cloth",
-              "text": "退烧药水只剩半瓶，{subject}按药房标签倒了两次。后半夜孩子睁开眼要水喝，{subject}把铜壶里最后一点温水倒进杯子。医生来时雪已经停了，只在门垫上蹭了蹭靴底，留下饮食单便走。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "退烧药水只剩半瓶，{subject}按药房标签倒了两次。后半夜{neighbor}睁开眼要水喝，{subject}把铜壶里最后一点温水倒进杯子；医生来时雪已经停了，只在门垫上蹭了蹭靴底。",
+              "tone": ["tender"]
             }
           ]
         }
@@ -435,7 +401,7 @@
         {
           "id": "buy-last-bottle",
           "weight": 1,
-          "text": "{subject}把最后一瓶止咳药水买下，{worker}按处方在瓶签上画了两道，说分两次服。药钱八十五赫勒记在{subject}的账本上，旁边写着欠煤店三十赫勒。",
+          "text": "{subject}把最后一瓶止咳药水买下，八十五赫勒，{worker}按处方在瓶签上画了两道，说分两次服。药钱记在账本上，旁边写着欠煤店三十赫勒；当天夜里咳嗽轻了些，{subject}也记住了下批药水不知何时到、进口药要贵三倍。",
           "effects": [
             {
               "type": "cash",
@@ -462,27 +428,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.pharmacy-shortage.buy-last-bottle.alt1",
               "key": "buy-last-bottle",
-              "text": "药房货架空了一排，{worker}把褐色瓶子放在柜台上，瓶塞上还沾着蜡。{subject}数出八十五赫勒，铜币里混着一枚磨平的十赫勒。药剂师用蘸水笔在瓶签背面写“分两次”，墨水洇开一个小点。",
-              "tone": [
-                "dry"
-              ]
+              "text": "药房货架空了一排，{worker}把褐色瓶子放在柜台上，瓶塞上还沾着蜡。{subject}数出八十五赫勒，铜币里混着一枚磨平的十赫勒；药剂师用蘸水笔在瓶签背面写“分两次”。",
+              "tone": ["clinical"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.pharmacy-shortage.buy-last-bottle.alt2",
               "key": "buy-last-bottle",
-              "text": "柜台另一边摆着进口药，标价两克朗四十赫勒，{subject}只看了一眼。{worker}把最后一瓶国产药水推过来，说草药包也能顶事，但起效慢。回家路上{subject}把瓶子揣在怀里，怕冻裂。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "柜台另一边摆着进口药，标价两克朗四十赫勒，{subject}只看了一眼。{worker}把最后一瓶国产药水推过来，说草药包也能顶事，但起效慢；回家路上{subject}把瓶子揣在怀里，怕冻裂。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "herbs-and-soup",
           "weight": 1,
-          "text": "{subject}听{worker}的话改用草药和热汤，省下的钱买了两块煤。{neighbor}送来一把干薄荷，说煮水喝能压咳嗽，{subject}的喉咙却仍旧发痒。",
+          "text": "{subject}听{worker}的话改用草药和热汤，草药三十赫勒，省下的钱买了两块煤。{neighbor}送来一把干薄荷，说煮水喝能压咳嗽；{subject}多煮了一锅汤，第二天的面包省下半块，喉咙仍旧发痒，却比空着肚子咳要好受。",
           "effects": [
             {
               "type": "cash",
@@ -505,27 +467,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.pharmacy-shortage.herbs-and-soup.alt1",
               "key": "herbs-and-soup",
-              "text": "{worker}从抽屉里称了一包款冬和薄荷，用灰纸包成方包，收三十赫勒。{subject}回家把药包丢进沸水，满屋都是苦味。省下的铜币换了两块煤，炉子烧旺时{neighbor}端来一碗面汤。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{worker}从抽屉里称了一包款冬和薄荷，用灰纸包成方包，收三十赫勒。{subject}回家把药包丢进沸水，满屋都是苦味；省下的铜币换了两块煤，炉子烧旺时{neighbor}端来一碗面汤。",
+              "tone": ["tender"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.pharmacy-shortage.herbs-and-soup.alt2",
               "key": "herbs-and-soup",
-              "text": "药剂师说止咳药水断货，草药剂一样能喝。{subject}看着他把干叶碾碎，纸包用细麻绳扎紧。当天下午{subject}煮了一锅薄荷水，{neighbor}隔着门问是不是在熬药，说楼道里全是苦香。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "药剂师说止咳药水断货，草药剂一样能喝。{subject}看着{worker}把干叶碾碎，纸包用细麻绳扎紧；当天下午{subject}煮了一锅薄荷水，{neighbor}隔着门问是不是在熬药。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "hospital-pharmacy-queue",
           "weight": 1,
-          "text": "{subject}拿着处方去综合医院药房排队，直到傍晚才领到替代药。玻璃窗口里的修女说原方缺货，给了另一种白色药片，嘱咐饭后再服。",
+          "text": "{subject}拿着处方去综合医院药房排队，直到傍晚才领到替代药。玻璃窗口里的修女说原方缺货，给了六粒白色药片，嘱咐饭后再服，没有收钱。{subject}站了一天，腿肿了，咳嗽却松了些；也记住了这条不要钱、只要耐性的路。",
           "effects": [
             {
               "type": "health",
@@ -552,20 +510,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.pharmacy-shortage.hospital-pharmacy-queue.alt1",
               "key": "hospital-pharmacy-queue",
-              "text": "医院药房的窗口只开一掌宽，{subject}把处方从铁栅下塞进去。前面的人拿着瓶瓶罐罐慢慢挪，队伍里有人蹲在地上啃面包。傍晚修女叫到名字，给了一小包白色药片，说止咳水断货，这个一样吃。",
-              "tone": [
-                "dry"
-              ]
+              "text": "医院药房的窗口只开一掌宽，{subject}把处方从铁栅下塞进去。前面的人拿着瓶瓶罐罐慢慢挪，队伍里有人蹲在地上啃面包；傍晚修女叫到名字，给了一小包白色药片。",
+              "tone": ["bureaucratic"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.pharmacy-shortage.hospital-pharmacy-queue.alt2",
               "key": "hospital-pharmacy-queue",
-              "text": "{subject}在医院走廊站到腿肿，药房窗口的灯亮了又灭。轮到时修女看了看处方，说原方缺货，转身从铁柜里数出六粒药片，用纸包好，又在纸角写了“饭后”。出门时天已经擦黑。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{subject}在医院走廊站到腿肿，药房窗口的灯亮了又灭。轮到时修女看了看处方，说原方缺货，转身从铁柜里数出六粒药片，用纸包好，又在纸角写了“饭后”。",
+              "tone": ["clinical"]
             }
           ]
         }
@@ -620,7 +574,7 @@
         {
           "id": "sign-for-surgery",
           "weight": 1,
-          "text": "{subject}在手术同意书上签了字，四处借钱交上押金。{patient}被推进病房时攥着{subject}的袖口，{doctor}说术后要看头三天。",
+          "text": "{subject}在手术同意书上签了字，四处借钱，煤店老板、同楼裁缝、车间工友各凑一点，才把十八克朗押金交齐。{patient}被推进病房时攥着{subject}的袖口，{doctor}说术后要看头三天；{subject}把借款名字写在费用单背面，字迹比签名还密。",
           "effects": [
             {
               "type": "cash",
@@ -645,27 +599,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.patient-family.sign-for-surgery.alt1",
               "key": "sign-for-surgery",
-              "text": "同意书上的字又小又密，{subject}在长椅上看了两遍才签。押金要十八克朗，{subject}把借款名字写在费用单背面：煤店老板、同楼的裁缝、车间的工友。{doctor}收好单据，说术后头三天最要紧。",
-              "tone": [
-                "dry"
-              ]
+              "text": "同意书上的字又小又密，{subject}在长椅上看了两遍才签。押金要十八克朗，{subject}把借款名字写在费用单背面；{doctor}收好单据，说术后头三天最要紧。",
+              "tone": ["clinical"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.patient-family.sign-for-surgery.alt2",
               "key": "sign-for-surgery",
-              "text": "病房外暖气片咣咣响，{subject}攥着笔，笔尖在纸上停了好一会儿。{patient}从门缝里伸出手来，{subject}握住那只手，瘦得只剩骨头。押金凑到一半时，{doctor}还是点了头，让先把人推进去。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "病房外暖气片咣咣响，{subject}攥着笔，笔尖在纸上停了好一会儿。{patient}从门缝里伸出手来，{subject}握住那只手，瘦得只剩骨头；押金凑到一半时，{doctor}还是点了头。",
+              "tone": ["tender"]
             }
           ]
         },
         {
           "id": "take-patient-home",
           "weight": 1,
-          "text": "{subject}把{patient}接回家，按{doctor}的单子换药，夜里守在床边。炉子不敢灭，纱布和药膏摊在桌上，孩子睡在隔壁。",
+          "text": "{subject}把{patient}接回家，按{doctor}的单子换药，纱布、药膏和额外煤块一共两克朗二十赫勒。夜里{subject}守在床边，炉子不敢灭，纱布揭下来时手直抖；{patient}要坐起来喘气，{subject}就把枕头垫高，自己连着几夜没睡整觉。",
           "effects": [
             {
               "type": "health",
@@ -688,27 +638,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.patient-family.take-patient-home.alt1",
               "key": "take-patient-home",
-              "text": "{doctor}把换药步骤写在处方纸背面，{subject}照着做，纱布揭下来时手直抖。{patient}夜里要坐起来喘气，{subject}就把枕头垫高，煤一块块往炉子里添，不敢让屋子凉下去。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{doctor}把换药步骤写在处方纸背面，{subject}照着做，纱布揭下来时手直抖。{patient}夜里要坐起来喘气，{subject}就把枕头垫高，煤一块块往炉子里添。",
+              "tone": ["tender"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.patient-family.take-patient-home.alt2",
               "key": "take-patient-home",
-              "text": "出院时用毯子裹着{patient}，{subject}叫了一辆单马出租，花掉六十赫勒。家里孩子已经把床让出来，桌上的药膏和纱布按{doctor}的单子排好。{subject}守到后半夜，听见窗外送牛奶的车轱辘响。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "出院时用毯子裹着{patient}，{subject}叫了一辆单马出租，花掉六十赫勒。家里孩子已经把床让出来，桌上的药膏和纱布按{doctor}的单子排好；{subject}守到后半夜。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "dispute-bill",
           "weight": 1,
-          "text": "{subject}和{doctor}争起费用，要求逐项看明细。最后只付了药费，{patient}留在观察室，{subject}回家时手里攥着一张揉皱的账单。",
+          "text": "{subject}和{doctor}争起费用，要求逐项看明细。包扎费、诊查费、观察室床位费一项项问过去，最后只付了药费三克朗五十赫勒；{patient}留在观察室，治疗暂缓，{subject}回家时手里攥着一张揉皱的账单，病房外的人也都记住了这场争执。",
           "effects": [
             {
               "type": "cash",
@@ -731,20 +677,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.patient-family.dispute-bill.alt1",
               "key": "dispute-bill",
-              "text": "{subject}把费用单摊在长椅上，一项项问{doctor}：包扎费、诊查费、观察室床位费。医生用指节敲了敲纸面，说这是医院定的。最后{subject}只付了药费三克朗五十赫勒，{patient}留在观察室，护士给了一杯水。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}把费用单摊在长椅上，一项项问{doctor}。医生用指节敲了敲纸面，说这是医院定的；最后{subject}只付了药费三克朗五十赫勒，{patient}留在观察室，护士给了一杯水。",
+              "tone": ["bureaucratic"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.patient-family.dispute-bill.alt2",
               "key": "dispute-bill",
-              "text": "账单上的字像一串小钉子，{subject}看了半天，问为什么纱布要另算。{doctor}把笔帽扣上，说可以去找院方。{subject}没再吵，数出药费推过去，{patient}在观察室的长椅上侧躺着，没人换药。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "账单上的字像一串小钉子，{subject}看了半天，问为什么纱布要另算。{doctor}把笔帽扣上，说可以去找院方；{subject}没再吵，数出药费推过去，{patient}在观察室的长椅上侧躺着。",
+              "tone": ["clinical"]
             }
           ]
         }
@@ -763,9 +705,7 @@
         },
         {
           "kind": "placeKind",
-          "in": [
-            "home"
-          ]
+          "in": ["home"]
         }
       ],
       "roles": [
@@ -804,7 +744,7 @@
         {
           "id": "go-to-municipal-office",
           "weight": 1,
-          "text": "{subject}陪{neighbor}去市政办事处，要求重新验尸，并写下药粉的来路。办事员{clerk}翻着本子，说会转给卫生局，但得等。",
+          "text": "{subject}陪{neighbor}去市政办事处，要求重新验尸，并写下药粉的来路。办事员翻着本子，说死亡证明写的是心力衰竭，可死者前一天拿过一包白色药粉；说会转给卫生局，但得等。{subject}把药包的事又说了一遍，出门时天已经黑了，回信还没有日子。",
           "effects": [
             {
               "type": "mood",
@@ -833,27 +773,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.suspicious-death.go-to-municipal-office.alt1",
               "key": "go-to-municipal-office",
-              "text": "市政办事处里点着煤气灯，{clerk}翻开死亡登记本，{subject}站在{neighbor}旁边，把药粉的事又说了一遍。办事员用吸水纸按了按墨迹，说验尸要卫生局批，先回去等信。",
-              "tone": [
-                "dry"
-              ]
+              "text": "市政办事处里点着煤气灯，办事员翻开死亡登记本。{subject}站在{neighbor}旁边，把药粉的事又说了一遍；办事员用吸水纸按了按墨迹，说验尸要卫生局批，先回去等信。",
+              "tone": ["bureaucratic"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.suspicious-death.go-to-municipal-office.alt2",
               "key": "go-to-municipal-office",
-              "text": "{neighbor}说话时声音发紧，{subject}替她把药包的事补全。{clerk}从抽屉里抽出一张空白表格，慢慢问死者姓名、住址、最后一次看医生的日子。窗外有人在铲雪，铁锹刮着石板。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{neighbor}说话时声音发紧，{subject}替其把药包的事补全。办事员从抽屉里抽出一张空白表格，慢慢问死者姓名、住址、最后一次看医生的日子；窗外有人在铲雪。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "accept-doctor-story",
           "weight": 1,
-          "text": "{subject}接受{doctor}的说法，帮{neighbor}凑钱办葬礼，顺手把药包扔进炉子。纸包烧起来一股焦甜味，{subject}没再多问。",
+          "text": "{subject}接受{doctor}的说法，帮{neighbor}凑了一克朗二十赫勒的棺材钱，顺手把药包扔进炉子。纸包烧起来一股焦甜味，{subject}吸进一口烟，喉咙发涩；炉门关上后，屋里再没人提那包白色粉末。",
           "effects": [
             {
               "type": "cash",
@@ -878,27 +814,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.suspicious-death.accept-doctor-story.alt1",
               "key": "accept-doctor-story",
-              "text": "{doctor}把死亡证明折好递给{neighbor}，说别折腾了。{subject}从口袋里摸出一克朗二十赫勒，放在桌上凑棺材钱。回家后把药包丢进炉子，纸边发蓝，烧出一股焦甜味，像烧糊的糖。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{doctor}把死亡证明折好递给{neighbor}，说别折腾了。{subject}从口袋里摸出一克朗二十赫勒，放在桌上凑棺材钱；回家后把药包丢进炉子，纸边发蓝，烧出一股焦甜味。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.suspicious-death.accept-doctor-story.alt2",
               "key": "accept-doctor-story",
-              "text": "楼里的女人都来劝{neighbor}，说人死不能复生。{subject}把药包从桌角拿起来，纸包上没写字，只有药房火漆印。炉门一开，火苗舔着纸角，{subject}把炉门关上，没再说什么。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "楼里的女人都来劝{neighbor}，说人死不能复生。{subject}把药包从桌角拿起来，纸包上没写字，只有药房火漆印；炉门一开，火苗舔着纸角，{subject}把炉门关上。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "ask-pharmacy",
           "weight": 1,
-          "text": "{subject}拿着药包去药房追问处方，被药剂师赶出来，只抄到半个名字。纸上写的像“施特凡”又像“施托尔”，墨迹被水洇开。",
+          "text": "{subject}拿着药包去药房追问处方，被药剂师赶出来，只抄到半个名字。纸上写的像“施特凡”又像“施托尔”，墨迹被水洇开；{subject}在门口站了一会儿，把纸角折好，心里那点疑问没有落地，药房的人却已经记住了这张脸。",
           "effects": [
             {
               "type": "mood",
@@ -925,20 +857,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.suspicious-death.ask-pharmacy.alt1",
               "key": "ask-pharmacy",
-              "text": "{subject}把药包拍在柜台上，问这是谁开的方子。药剂师看了一眼火漆印，说处方存根不能给外人看，叫{subject}出去。推搡间{subject}瞥见存根上半个名字，像“施特凡”，又像“施托尔”。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}把药包拍在柜台上，问这是谁开的方子。药剂师看了一眼火漆印，说处方存根不能给外人看，叫{subject}出去；推搡间{subject}瞥见存根上半个名字。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.suspicious-death.ask-pharmacy.alt2",
               "key": "ask-pharmacy",
-              "text": "药房伙计把手一横，说没有处方存根不能查。{subject}退到门口，从门玻璃反光里看见药剂师把本子合上。回家路上{subject}在纸角记下那半个名字，墨水被雪水洇开，转眼糊成一团。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "药房伙计把手一横，说没有处方存根不能查。{subject}退到门口，从门玻璃反光里看见药剂师把本子合上；回家路上{subject}在纸角记下那半个名字，墨水被雪水洇开。",
+              "tone": ["clinical"]
             }
           ]
         }
@@ -957,9 +885,7 @@
         },
         {
           "kind": "placeKind",
-          "in": [
-            "home"
-          ]
+          "in": ["home"]
         },
         {
           "kind": "overcrowded",
@@ -994,7 +920,7 @@
         {
           "id": "sign-and-demand-repair",
           "weight": 1,
-          "text": "{subject}带头指出堵住的下水道，在巡查记录上签名，要求房东限期修理。{official}把下水道口画在本子上，{neighbor}在旁边连连点头。",
+          "text": "{subject}带头指出堵住的下水道，在巡查记录上签名，要求房东限期修理。{official}把下水道口画在本子上，写下“垃圾箱无盖”，说会通知房东，限期两周；{neighbor}在旁边连连点头，院子里的人第一次觉得这桩事有了个日子。",
           "effects": [
             {
               "type": "reputation",
@@ -1023,27 +949,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.sanitation-inspection.sign-and-demand-repair.alt1",
               "key": "sign-and-demand-repair",
-              "text": "{official}蹲在下水道口闻了闻，用铅笔在本子上画了个圈。{subject}指着墙根渗出的黑水，说去年就堵了，看门人只拿木板盖着。{neighbor}把湿衣服往旁边挪，让巡查员看墙皮上的霉斑。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{official}蹲在下水道口闻了闻，用铅笔在本子上画了个圈。{subject}指着墙根渗出的黑水，说去年就堵了，看门人只拿木板盖着；{neighbor}把湿衣服往旁边挪。",
+              "tone": ["bureaucratic"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.sanitation-inspection.sign-and-demand-repair.alt2",
               "key": "sign-and-demand-repair",
-              "text": "签字时{subject}把笔握得很紧，在“住户意见”一栏写了“下水道堵塞，垃圾箱无盖”。{official}念了一遍，说会转给房东，限期两周。{neighbor}凑过来看，问要不要按手印。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "签字时{subject}把笔握得很紧，在“住户意见”一栏写了“下水道堵塞，垃圾箱无盖”。{official}念了一遍，说会转给房东；{neighbor}凑过来看，问要不要按手印。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "sign-only-own-household",
           "weight": 1,
-          "text": "{subject}替不识字的{neighbor}读了表，只签自己那一户，不愿替别人出头。{official}走后，走廊里有人嘀咕，说{subject}太会算计。",
+          "text": "{subject}替不识字的{neighbor}读了表，只签自己那一户，不愿替别人出头。{official}走后，走廊里有人嘀咕，说{subject}太会算计；{subject}记住了表上“代签人负责”那行小字，也记住了几扇当着自己面关上的门。",
           "effects": [
             {
               "type": "reputation",
@@ -1072,27 +994,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.sanitation-inspection.sign-only-own-household.alt1",
               "key": "sign-only-own-household",
-              "text": "{neighbor}把表格递过来，说眼神不济。{subject}一行行念完，在自家那栏签了名，把笔放下。{official}问还有谁家没签，走廊里静了一会儿，有人把门关上了。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{neighbor}把表格递过来，说眼神不济。{subject}一行行念完，在自家那栏签了名，把笔放下；{official}问还有谁家没签，走廊里静了一会儿，有人把门关上了。",
+              "tone": ["bureaucratic"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.sanitation-inspection.sign-only-own-household.alt2",
               "key": "sign-only-own-household",
-              "text": "表格上要写每户人数和厕所使用情况，{subject}念到“代签人负责”时停住了。{neighbor}等了一会儿，自己按了个手印。巡查员走后，楼梯口有人说{subject}认得字反倒更精。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "表格上要写每户人数和厕所使用情况，{subject}念到“代签人负责”时停住了。{neighbor}等了一会儿，自己按了个手印；巡查员走后，楼梯口有人说{subject}认得字反倒更精。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "move-garbage-with-janitor",
           "weight": 1,
-          "text": "{subject}和看门人一起把垃圾挪到后院，巡查员走后一切照旧。垃圾箱盖还是没盖上，墙根的湿痕第二天又洇出来。",
+          "text": "{subject}和{neighbor}一起把垃圾挪到后院，巡查员走后一切照旧。垃圾箱盖还是没盖上，墙根的湿痕第二天又洇出来，比先前更宽；{subject}搬完在围裙上擦手，吸进一肚子灰尘和霉味，知道下周复查不过是再来画一个勾。",
           "effects": [
             {
               "type": "health",
@@ -1117,20 +1035,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-history-medical-daily.sanitation-inspection.move-garbage-with-janitor.alt1",
               "key": "move-garbage-with-janitor",
-              "text": "看门人拎着铁桶，{subject}抬另一头，把垃圾挪到后院墙根。{official}在本子上画了个勾，说下周再来复查。人一走，看门人把木板重新盖上下水道口，垃圾箱盖还是歪在一边。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{neighbor}拎着铁桶，{subject}抬另一头，把垃圾挪到后院墙根。{official}在本子上画了个勾，说下周再来复查；人一走，看门人把木板重新盖上下水道口。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-history-medical-daily.sanitation-inspection.move-garbage-with-janitor.alt2",
               "key": "move-garbage-with-janitor",
-              "text": "垃圾里有烂菜叶和碎煤渣，{subject}搬完在围裙上擦手。{neighbor}端来一盆水，说好歹应付过去了。第二天早上墙根又洇出一片深色水印，比先前还宽了一指。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "垃圾里有烂菜叶和碎煤渣，{subject}搬完在围裙上擦手。{neighbor}端来一盆水，说好歹应付过去了；第二天早上墙根又洇出一片深色水印。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }

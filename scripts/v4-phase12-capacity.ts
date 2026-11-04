@@ -407,5 +407,5 @@ const output = {
     'Every counted situation passed the real engine stage, age, region, role-cast and outcome-condition checks. This is candidate capacity, not committed events and not a naive product.',
 };
 mkdirSync('docs/v4', { recursive: true });
-writeFileSync('docs/v4/phase-12-capacity.json', `${JSON.stringify(output, null, 2)}\n`);
+writeFileSync('docs/v4/phase-13-capacity.json', `${JSON.stringify(output, null, 2)}\n`);
 console.log(JSON.stringify({ elapsedMs: elapsed, results, totals }, null, 2));

@@ -1,0 +1,245 @@
+{
+  "phase": 13,
+  "generatedAt": "2026-11-04",
+  "source": "docs/v4/playtest.json (generatedAt 2026-11-04T11:11:03.373Z, seed vienna-1912-vertical-slice)",
+  "method": "Ten text-only replacements for the weakest outcomes in docs/v4/phase-13-critique.md. All existing {tokens} are preserved; a few replacements add a role token ({neighbor}, {partner}, {foreman}, {worker}) that already exists in the scene cast. Replacements introduce no new effect types, do not change the recorded effects, and are 80-220 non-whitespace characters. They are editorial proposals; no content file was modified.",
+  "rewrites": [
+    {
+      "id": "R1",
+      "title": "冲进烟里把人拖出来",
+      "eventId": "evt:world-vienna-1912:020389",
+      "action": "kernel-crisis.task-rescue-neighbor::ctx-vienna-postwar-1945::milieu-tenement/rescue-too-late",
+      "sceneId": "kernel-crisis.task-rescue-neighbor::ctx-vienna-postwar-1945::milieu-tenement",
+      "kernelId": "kernel-crisis.task-rescue-neighbor",
+      "outcomeId": "rescue-too-late",
+      "path": "composed_task",
+      "originalSource": "composed outcome.text",
+      "original": "梁木塌下来时，里面已经没有声音。{subject}和{worker}扒了半个钟头，只拖出一只烧焦的箱子；消防队来后，把围观的人赶开，登记了{subject}的名字。消防队走后，没人敢去碰那只箱子。烧焦的箱子被留在院子里。",
+      "replacement": "{subject}撞开阁楼门，烟先滚出来，{neighbor}倒在门后，手指还扣着门槛。{subject}和{worker}拽着{neighbor}的腋下往外拖，拖到楼梯口时人已经没气；梁木跟着塌下，只压住一只烧焦的箱子。消防队赶开围观的人，登记了{subject}的名字，{neighbor}的名字写在另一张纸上。{subject}的袖口烧穿，去诊所包扎花了三克朗，那只箱子留在院子里，谁也没再碰。",
+      "length": {
+        "nonWhitespace": 200,
+        "han": 111
+      },
+      "effectTypesPreserved": [
+        "death",
+        "health",
+        "condition",
+        "role",
+        "cash",
+        "relation"
+      ],
+      "reason": "原文的死亡效果属于{neighbor}，但正文从未出现{neighbor}，且标题承诺的“把人拖出来”没有发生；在Mitzi的十五条里，她的死亡场景里没有Mitzi。改写把{neighbor}放到门后、把失败救援写完整，并让-3克朗的诊费可见。"
+    },
+    {
+      "id": "R2",
+      "title": "举手表决以前",
+      "eventId": "evt:world-vienna-1912:008072",
+      "action": "kernel-civic.strike-vote::ctx-vienna-postwar-1945::milieu-printshop/civic-strike-no",
+      "sceneId": "kernel-civic.strike-vote::ctx-vienna-postwar-1945::milieu-printshop",
+      "kernelId": "kernel-civic.strike-vote",
+      "outcomeId": "civic-strike-no",
+      "path": "composed",
+      "originalSource": "composed outcome.text",
+      "original": "{subjectPronoun}算了算家里的房租和母亲的药钱，在表决时把手放在膝盖上。{delegate}看见了，没有点名，只把反对票数念了两遍；第二天，工头把{subjectPronoun}的工位调到了机器最响的那一头。下班时，工头在门口记下{subjectPronoun}的工号。",
+      "replacement": "轮到{subject}表决时，{subjectPronoun}把双手放在膝盖上，没有举。散会后{delegate}没有点名，只把反对票数念了两遍，念到第二遍时看了{subject}一眼。第二天，工头把{subject}的工位调到机器最响的那一头；下班时又在门口记下{subject}的工号。{subject}知道这不算处分，可耳朵一直响到回家。",
+      "length": {
+        "nonWhitespace": 172,
+        "han": 90
+      },
+      "effectTypesPreserved": [
+        "reputation",
+        "knowledge"
+      ],
+      "reason": "原文以“他”开头，在Mitzi的人生里读成Mitzi，实际主体是Otto Hofer 2；改写把{subject}放回句首，保留代表不点名、工头调工位、记工号的全套机制，并把“反对者不会被点名但工位会变”的知识效果落到人物意识里。"
+    },
+    {
+      "id": "R3",
+      "title": "租约上的第十三条",
+      "eventId": "evt:world-vienna-1912:004649",
+      "action": "r2-law.rent-contract::ctx-vienna-authoritarian-1934::milieu-tenement/signed-with-repair-clause",
+      "sceneId": "r2-law.rent-contract::ctx-vienna-authoritarian-1934::milieu-tenement",
+      "kernelId": "r2-law.rent-contract",
+      "outcomeId": "signed-with-repair-clause",
+      "path": "composed",
+      "originalSource": "composed outcome.text",
+      "original": "{landlord}把租约摊在桌上，第十三条写着“小修由房客自理”。{subject}问屋顶漏雨算不算小修，{landlord}说看漏多大。{neighbor}在旁边插嘴，说去年冬天水从三楼一直滴到院子里；{landlord}把笔递过来，让{subject}先签，再谈漏雨。",
+      "replacement": "{landlord}把租约摊在桌上，第十三条写着“小修由房客自理”，旁边一栏是六克朗的钥匙押金。{subject}问屋顶漏雨算不算小修，{landlord}说看漏多大。{neighbor}在旁边插嘴，说去年冬天水从三楼一直滴到院子里；{landlord}把笔递过来，说签了才给钥匙。{subject}数出六克朗，在第十三条下面签了名。",
+      "length": {
+        "nonWhitespace": 167,
+        "han": 96
+      },
+      "effectTypesPreserved": [
+        "cash",
+        "flag",
+        "relation",
+        "knowledge"
+      ],
+      "reason": "原文记录cash -6，但正文没有出现任何金额，签字的经济代价不可见；改写把六克朗钥匙押金放进租约同一栏，保留第十三条的知识、与房东的冷淡关系和签字旗标。"
+    },
+    {
+      "id": "R4",
+      "title": "曝光十二秒",
+      "eventId": "evt:world-vienna-1912:008461",
+      "action": "r1-cul.photography-studio::ctx-vienna-postwar-1945::milieu-tenement/eyes-closed",
+      "sceneId": "r1-cul.photography-studio::ctx-vienna-postwar-1945::milieu-tenement",
+      "kernelId": "r1-cul.photography-studio",
+      "outcomeId": "eyes-closed",
+      "path": "composed",
+      "originalSource": "composed outcome.text",
+      "original": "{photographer}让{subject}别眨眼，数到十二。镁粉一闪，{sitter}在快门声里轻轻咳了一下；底片洗出来，{subject}的眼睛是闭的，{sitter}的手却清楚得能看见指节上的墨。",
+      "replacement": "{photographer}收了{subject}两克朗，让{subject}坐在白布前别眨眼，数到十二。镁粉一闪，{sitter}在快门声里轻轻咳了一下；{photographer}没说话，把底片夹进暗袋。三天后取片，{subject}的眼睛是闭的，{sitter}的手却清楚得能看见指节上的墨。{photographer}说这张不能挂橱窗，{subject}还是把它夹进了账本。",
+      "length": {
+        "nonWhitespace": 191,
+        "han": 85
+      },
+      "effectTypesPreserved": [
+        "cash",
+        "flag",
+        "relation",
+        "knowledge"
+      ],
+      "reason": "原文记录cash -2，但两克朗的照相钱不在正文；改写把收费、等待、取片和闭眼旗标串成一条完整因果链，保留摄影师的关系效果和“被摄者咳嗽”的知识。"
+    },
+    {
+      "id": "R5",
+      "title": "日记本上的小铜锁",
+      "eventId": "evt:world-vienna-1912:001820",
+      "action": "r2-leisure.diary-snoop::ctx-klosterneuburg-rural-1912::milieu-tenement/confronted-the-family",
+      "sceneId": "r2-leisure.diary-snoop::ctx-klosterneuburg-rural-1912::milieu-tenement",
+      "kernelId": "r2-leisure.diary-snoop",
+      "outcomeId": "confronted-the-family",
+      "path": "composed",
+      "originalSource": "composed outcome.text",
+      "original": "{subject}把本子摊在{parent}面前，翻到多出来的那一行字：今天什么都没发生。{parent}说只是担心，{subject}说担心不是理由。{sibling}在门口说不是自己写的，{parent}让{subjectPronoun}闭嘴。那天晚饭，桌上只有刀叉的声音。",
+      "replacement": "{subject}把日记本摊在{parent}面前，小铜锁还挂在搭扣上，锁鼻却被撬歪了。{subject}翻到多出来的那一行字：今天什么都没发生。{parent}说只是担心，{subject}说担心不是理由。{sibling}在门口说不是自己写的，{parent}让{subjectPronoun}闭嘴。那天晚饭，桌上只有刀叉的声音，{subject}把撬坏的锁放在桌角，谁也没去碰。",
+      "length": {
+        "nonWhitespace": 192,
+        "han": 94
+      },
+      "effectTypesPreserved": [
+        "mood",
+        "condition",
+        "flag",
+        "relation",
+        "relation",
+        "relation"
+      ],
+      "reason": "标题是“日记本上的小铜锁”，正文却没有锁；改写把被撬的锁作为物证放回场景，保留mood -0.12、family_distrust、confronted_family_over_diary以及与父母/手足的rival关系。"
+    },
+    {
+      "id": "R6",
+      "title": "橱窗里的帽子",
+      "eventId": "evt:world-vienna-1912:003826",
+      "action": "r1-cul.fashion-purchase::ctx-vienna-reform-1930::milieu-tenement/ruined-by-rain",
+      "sceneId": "r1-cul.fashion-purchase::ctx-vienna-reform-1930::milieu-tenement",
+      "kernelId": "r1-cul.fashion-purchase",
+      "outcomeId": "ruined-by-rain",
+      "path": "composed",
+      "originalSource": "composed outcome.text",
+      "original": "{subject}买了帽子，第一次戴出去就下雨。帽檐塌下来，像一只湿透的鸟；{partner}把自己的旧帽换给{subject}，说这顶经得起雨。{subject}把新帽子晾在炉边，第二天缩了一圈，再也戴不上。",
+      "replacement": "{subject}在橱窗前站了三个下午，最后数出十二克朗，把帽子捧回家。第一次戴出去就下雨，帽檐塌下来，像一只湿透的鸟；{partner}把自己的旧毡帽换给{subject}，说这顶经得起雨。{subject}把新帽子晾在炉边，第二天缩了一圈，再也戴不上，十二克朗只剩下一圈硬边。",
+      "length": {
+        "nonWhitespace": 140,
+        "han": 92
+      },
+      "effectTypesPreserved": [
+        "cash",
+        "mood",
+        "condition",
+        "flag",
+        "relation"
+      ],
+      "reason": "原文记录cash -12，但十二克朗的价格和“攒了三个下午”的代价都不在正文，帽子只是一场雨；改写把价格放回购买动作，末尾用“十二克朗只剩下一圈硬边”让损失可感，保留ruined_hat、partner关系和旗标。"
+    },
+    {
+      "id": "R7",
+      "title": "没有回音的信",
+      "eventId": "evt:world-vienna-1912:004121",
+      "action": "vienna-courtship-courtyard.letter-answer/mother-opened-letter",
+      "sceneId": "vienna-courtship-courtyard.letter-answer",
+      "kernelId": null,
+      "outcomeId": "mother-opened-letter",
+      "path": "base",
+      "originalSource": "base narration alt1",
+      "original": "洗衣房的碱水味顺着楼梯上来。{neighbor}说的时候压低了声音，眼睛却往{subject}身后的门看，像在确认还有谁在听。",
+      "replacement": "回信没有到{subject}手里。{partner}的母亲先拆了它，连信封上的邮戳一起摊在洗衣房的桌上，说有人写字来缠自家孩子。话传到院子里时已经添了油，{neighbor}隔着栏杆把原话学了一遍，说得很难听；{partner}再见到{subject}时，眼睛先往母亲那边看。{subject}站在水桶边，知道这封信已经被拆成了两家的脸面。",
+      "length": {
+        "nonWhitespace": 170,
+        "han": 104
+      },
+      "effectTypesPreserved": [
+        "reputation",
+        "mood",
+        "relation",
+        "relation"
+      ],
+      "reason": "原文是narration变体，只有碱水味和压低的嗓音，没有信、没有母亲、没有回音；动作明明是“母亲拆信”，因果全在画外。改写回到主文本的因果链，保留reputation -0.06、mood -0.08和与{partner}的负向关系。"
+    },
+    {
+      "id": "R8",
+      "title": "更衣室里的罢工传闻",
+      "eventId": "evt:world-vienna-1912:005748",
+      "action": "p9-work-transport.strike-rumor/strike-rumor-tell-foreman",
+      "sceneId": "p9-work-transport.strike-rumor",
+      "kernelId": null,
+      "outcomeId": "strike-rumor-tell-foreman",
+      "path": "base",
+      "originalSource": "base narration default",
+      "original": "粉笔字写在柜门正中间，字迹压得很重。{subject}用袖子擦，擦不干净，只留下灰白的一层。车间的汽笛响起来，谁也没过来帮他。",
+      "replacement": "第二天清早，{subject}在门房把活动室的事跟{foreman}说了一遍。{foreman}没表态，只把烟头在鞋底按灭。中午之后，更衣室里没人再跟{subject}搭话，柜门上不知谁用粉笔写了“告密的”。{worker}从{subject}身边过去，肩膀蹭了一下，没停；{subject}用袖子擦那两个字，擦不干净，只留下灰白的一层。",
+      "length": {
+        "nonWhitespace": 169,
+        "han": 92
+      },
+      "effectTypesPreserved": [
+        "reputation",
+        "relation"
+      ],
+      "reason": "原文只有“告密”的后果，没有告密动作和工头；主文本有门房告发，却被narration替换掉。改写把告发、工头的冷淡、工友的疏远和粉笔字串成因果链，保留已记录的reputation -0.08与工头关系；工友的疏远是可见的社会后果，不是新增效果。"
+    },
+    {
+      "id": "R9",
+      "title": "晾衣绳上的争执",
+      "eventId": "evt:world-vienna-1912:010122",
+      "action": "vienna-tenement-neighbors.laundry_line_dispute/compromise_split_line",
+      "sceneId": "vienna-tenement-neighbors.laundry_line_dispute",
+      "kernelId": null,
+      "outcomeId": "compromise_split_line",
+      "path": "base",
+      "originalSource": "base narration default",
+      "original": "湿床单对折，木夹子排开衬衫。两人各自扯紧绳子的一头，谁也没看谁，但第二天都点了头。",
+      "replacement": "{subject}把洗好的床单搭上院子里的公用晾衣绳，占了整条。{neighbor}抱着一盆湿衣服下来，说自家孩子明天要穿干净衬衫上学。两人在绳子两头扯了一阵，最后{subject}把床单对折，腾出一半，{neighbor}用木夹子把衬衫一件件排上去。谁也没道歉，但第二天见面都点了头。",
+      "length": {
+        "nonWhitespace": 143,
+        "han": 95
+      },
+      "effectTypesPreserved": [
+        "relation",
+        "mood"
+      ],
+      "reason": "这是全库重复次数最高的文本（113次），没有名字、没有争执原因、没有让步机制，只有“第二天都点了头”的结果；改写把公用晾衣绳、孩子上学的衬衫和一人让一半的具体妥协写出来，保留relation/mood。"
+    },
+    {
+      "id": "R10",
+      "title": "铅字落地",
+      "eventId": "evt:world-vienna-1912:002520",
+      "action": "vienna-apprentice-printshop.lead-type-drop/lead-type-drop.scolded",
+      "sceneId": "vienna-apprentice-printshop.lead-type-drop",
+      "kernelId": null,
+      "outcomeId": "lead-type-drop.scolded",
+      "path": "base",
+      "originalSource": "base narration default",
+      "original": "{subject}在{workplace}碰翻一整盘8点铅字，字块滚了一地。{employer}敲着桌沿骂人，扣下两个克朗。{worker}蹲在过道里帮忙捡字，只说了一句“下次用两只手托底”。",
+      "replacement": "{subject}在{workplace}碰翻一整盘8点铅字，字块滚了一地。{employer}从玻璃隔间出来，用尺子敲着桌沿骂了五分钟，说这两个克朗月底从工钱里扣，账房把罚单压在玻璃板下。{worker}蹲在过道里帮忙捡字，只说了一句“下次用两只手托底”。",
+      "length": {
+        "nonWhitespace": 129,
+        "han": 80
+      },
+      "effectTypesPreserved": [
+        "relation",
+        "relation"
+      ],
+      "reason": "原文写“扣下两个克朗”，但该事件只记录了两条relation，没有cash效果；改写把罚款改成月底结算的欠账，既保留威胁和羞辱，又不让正文声称一个未提交的现金变化；同时保留与{worker}的同事关系。"
+    }
+  ]
+}

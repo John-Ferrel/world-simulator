@@ -6,15 +6,7 @@
     "min": 18,
     "max": 45
   },
-  "tags": [
-    "adulthood",
-    "family",
-    "social",
-    "marriage",
-    "care",
-    "inheritance",
-    "task"
-  ],
+  "tags": ["adulthood", "family", "social", "marriage", "care", "inheritance", "task"],
   "baseRate": 0.5,
   "conditions": [
     {
@@ -26,19 +18,11 @@
   "kind": "task",
   "task": {
     "domain": "family",
-    "goals": [
-      "family",
-      "belonging"
-    ],
-    "needs": [
-      "belonging",
-      "care"
-    ],
+    "goals": ["family", "belonging"],
+    "needs": ["belonging", "care"],
     "baseUtility": 1.3,
     "risk": 0.25,
-    "skills": [
-      "social"
-    ]
+    "skills": ["social"]
   },
   "nodes": [
     {
@@ -86,16 +70,12 @@
           "maxAge": 70
         }
       ],
-      "tags": [
-        "proposal",
-        "marriage",
-        "parents"
-      ],
+      "tags": ["proposal", "marriage", "parents"],
       "outcomes": [
         {
           "id": "propose-marriage.accepted",
           "weight": 1,
-          "text": "对方的父亲在厨房桌边坐下，掰着手指问清每周工钱和房租，又让来者报出每月能拿出的数目。他点头同意，婚期定在秋天。点心留下，那瓶酒被推回来，说等办事那天再开。",
+          "text": "对方的父亲在厨房桌边坐下，掰着手指问清每周工钱和房租，又让{subject}报出每月能拿出的数目。他点头同意，婚期定在秋天。点心留下，那瓶酒被推回来，说等办事那天再开。",
           "effects": [
             {
               "type": "cash",
@@ -124,25 +104,21 @@
             {
               "id": "default",
               "key": "propose-marriage.accepted",
-              "text": "来者坐在维也纳十区那间朝天井的厨房里，外套袖口洗得发白。对方的父亲上过夜班，眼下还带着青黑，问完工钱和房租，把烟斗在桌沿敲了两下，说秋天吧。母亲把点心碟子往中间推了推，酒瓶却仍立在门边。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}坐在维也纳十区那间朝天井的厨房里，外套袖口洗得发白。对方的父亲上过夜班，眼下还带着青黑，问完工钱和房租，把烟斗在桌沿敲了两下，说秋天吧。母亲把点心碟子往中间推了推，酒瓶却仍立在门边。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "propose-marriage.accepted",
-              "text": "对方母亲烧的水在炉子上响。来者把每月能拿出两克朗半的话又说了一遍，父亲算了算房租和煤钱，点了头。{partner} 在门后没出声，只把围裙带子绕在手指上。点心留下，酒被推到来者脚边，说办事那天再喝。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "对方母亲烧的水在炉子上响。{subject}把每月能拿出两克朗半的话又说了一遍，父亲算了算房租和煤钱，点了头。{partner} 在门后没出声，只把围裙带子绕在手指上。点心留下，酒被推到{subject}脚边，说办事那天再喝。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "propose-marriage.refused",
           "weight": 1,
-          "text": "对方的母亲问清来者家里还住着几口人，脸色沉下来，说一间房挤不下新媳妇。父亲没接那瓶酒，只说来者家里人口多，再等等。来者把点心留在桌上，下楼时听见门在背后合上。",
+          "text": "对方的母亲问清{subject}家里还住着几口人，脸色沉下来，说一间房挤不下新媳妇。父亲没接那瓶酒，只说{subject}家里人口多，再等等。{subject}把点心留在桌上，下楼时听见门在背后合上。",
           "effects": [
             {
               "type": "cash",
@@ -162,32 +138,28 @@
               "b": "$parent",
               "kind": "kin",
               "trust": -0.1,
-              "reason": "对方母亲嫌来者家里人口多"
+              "reason": "对方母亲嫌{subject}家里人口多"
             }
           ],
           "narration": [
             {
               "id": "default",
               "key": "propose-marriage.refused",
-              "text": "母亲把水壶从炉上提开，问来者家里几口人、睡几间房。听完就不作声了，拿抹布擦桌面。父亲把酒瓶推回去，说来者是个好小伙，可一间房挤不下新媳妇，再等等。来者下楼，楼梯间的煤油灯灭了。",
-              "tone": [
-                "dry"
-              ]
+              "text": "母亲把水壶从炉上提开，问{subject}家里几口人、睡几间房。听完就不作声了，拿抹布擦桌面。父亲把酒瓶推回去，说{subject}是个好小伙，可一间房挤不下新媳妇，再等等。{subject}下楼，楼梯间的煤油灯灭了。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "propose-marriage.refused",
-              "text": "点心碟子没人动。母亲提到邻居家女儿嫁过去就睡厨房，父亲咳了一声，说人口多不是坏事，可也得看时候。{partner} 去端水，再回来时眼睛红着。来者把外套扣子扣好，说改天再来，酒没留下。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "点心碟子没人动。母亲提到邻居家女儿嫁过去就睡厨房，父亲咳了一声，说人口多不是坏事，可也得看时候。{partner} 去端水，再回来时眼睛红着。{subject}把外套扣子扣好，说改天再来，酒没留下。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "propose-marriage.wait",
           "weight": 1,
-          "text": "对方的父亲让来者先找到固定工作，说零工不算数。来者把招工条摊在桌上，父亲看了一遍，说下个月再来。{partner} 送到楼梯口，说再等等。来者把酒提回去，点心留下了。",
+          "text": "对方的父亲让{subject}先找到固定工作，说零工不算数。{subject}把招工条摊在桌上，父亲看了一遍，说下个月再来。{partner} 送到楼梯口，说再等等。{subject}把酒提回去，点心留下了。",
           "effects": [
             {
               "type": "cash",
@@ -213,37 +185,25 @@
             {
               "id": "default",
               "key": "propose-marriage.wait",
-              "text": "父亲把招工条凑到窗边看，说零工不算数，下个月再来。来者把酒提回去，点心留在桌上。{partner} 跟到楼梯口，手扶着栏杆，说再等等。走廊里有人家在煎洋葱，气味一直跟到街上。",
-              "tone": [
-                "dry"
-              ]
+              "text": "父亲把招工条凑到窗边看，说零工不算数，下个月再来。{subject}把酒提回去，点心留在桌上。{partner} 跟到楼梯口，手扶着栏杆，说再等等。走廊里有人家在煎洋葱，气味一直跟到街上。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "propose-marriage.wait",
-              "text": "父亲问完工钱，把烟斗在鞋底磕了磕，说先有个固定差事再谈婚期。来者把招工条展开，纸角还沾着面粉，父亲看了一眼，说下个月再说。{partner} 送下楼时没说话，只把来者的外套领子翻正。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "父亲问完工钱，把烟斗在鞋底磕了磕，说先有个固定差事再谈婚期。{subject}把招工条展开，纸角还沾着面粉，父亲看了一眼，说下个月再说。{partner} 送下楼时没说话，只把{subject}的外套领子翻正。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "family",
-        "goals": [
-          "family",
-          "belonging"
-        ],
-        "needs": [
-          "belonging",
-          "status"
-        ],
+        "goals": ["family", "belonging"],
+        "needs": ["belonging", "status"],
         "baseUtility": 1.5,
         "risk": 0.35,
-        "skills": [
-          "social"
-        ]
+        "skills": ["social"]
       }
     },
     {
@@ -298,16 +258,12 @@
           "maxAge": 60
         }
       ],
-      "tags": [
-        "household",
-        "rent",
-        "cohabitation"
-      ],
+      "tags": ["household", "rent", "cohabitation"],
       "outcomes": [
         {
           "id": "share-household.signed",
           "weight": 1,
-          "text": "房东在租约上只写了来者的名字，每月房租九克朗，押金一个月。两人把另一方的木箱和床架从厂里宿舍搬来，邻居老太太在门口看着，说这间房朝院子，冬天不冷。当晚两人在炉边数工钱，房租一人一半。",
+          "text": "房东在租约上只写了{subject}的名字，每月房租九克朗，押金一个月。两人把另一方的木箱和床架从厂里宿舍搬来，邻居老太太在门口看着，说这间房朝院子，冬天不冷。当晚两人在炉边数工钱，房租一人一半。",
           "effects": [
             {
               "type": "cash",
@@ -334,18 +290,14 @@
             {
               "id": "default",
               "key": "share-household.signed",
-              "text": "房东把租约铺在窗台上，只写来者一个人的名字，说夫妻才租，先这么写。每月九克朗，押金一个月。两人把床架从厂里宿舍抬过两条街，木箱磕在楼梯角，邻居老太太扶着门说朝院子好，冬天不冷。",
-              "tone": [
-                "dry"
-              ]
+              "text": "房东把租约铺在窗台上，只写{subject}一个人的名字，说夫妻才租，先这么写。每月九克朗，押金一个月。两人把床架从厂里宿舍抬过两条街，木箱磕在楼梯角，邻居老太太扶着门说朝院子好，冬天不冷。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "share-household.signed",
-              "text": "房间在二层，窗朝院子，墙上有旧报纸糊过的痕迹。来者数出九克朗放在房东手心，又把押金单折好塞进证件夹。{partner} 把床架靠墙立好，说今晚就住下。两人在炉边把工钱分成两份，各自收起。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "房间在二层，窗朝院子，墙上有旧报纸糊过的痕迹。{subject}数出九克朗放在房东手心，又把押金单折好塞进证件夹。{partner} 把床架靠墙立好，说今晚就住下。两人在炉边把工钱分成两份，各自收起。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -384,24 +336,20 @@
               "id": "default",
               "key": "share-household.guarantor",
               "text": "房东把钥匙在手里掂了掂，说单身工人搬进搬出太随意，要个担保人。工头在厂门口签了字，笔尖戳破纸。两人多付一个月押金，六克朗，房东才把钥匙交出来。租约末尾添了一行：欠租一个月即走。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "share-household.guarantor",
-              "text": "工头把担保书看了两遍，说别给他添麻烦。押金交了六克朗，来者数钱时手指发凉。房东收了钱，把租约折好，说夫妻合住才长久。{partner} 把木箱拖进屋，轮子在石阶上响了一路。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "工头把担保书看了两遍，说别给他添麻烦。押金交了六克朗，{subject}数钱时手指发凉。房东收了钱，把租约折好，说夫妻合住才长久。{partner} 把木箱拖进屋，轮子在石阶上响了一路。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "share-household.delayed",
           "weight": 1,
-          "text": "厂里不放另一方出宿舍，说未婚工人必须住集体房，搬走要扣半个月工钱。两人只能每星期在公园见一次，合住的事拖到年底。房东把房子租给了别人，来者把押金单退回。",
+          "text": "厂里不放另一方出宿舍，说未婚工人必须住集体房，搬走要扣半个月工钱。两人只能每星期在公园见一次，合住的事拖到年底。房东把房子租给了别人，{subject}把押金单退回。",
           "effects": [
             {
               "type": "mood",
@@ -422,38 +370,25 @@
             {
               "id": "default",
               "key": "share-household.delayed",
-              "text": "宿舍管理员说要搬走得扣半个月工钱，未婚工人不许外宿。两人在公园长椅上坐着，把租约草稿叠成纸船。房东等了两周，把房子租给一对鞋匠夫妻。来者把押金单退回来，纸边已经磨毛。",
-              "tone": [
-                "dry"
-              ]
+              "text": "宿舍管理员说要搬走得扣半个月工钱，未婚工人不许外宿。两人在公园长椅上坐着，把租约草稿叠成纸船。房东等了两周，把房子租给一对鞋匠夫妻。{subject}把押金单退回来，纸边已经磨毛。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "share-household.delayed",
-              "text": "厂里说集体宿舍是规矩，搬出去要罚半个月工钱。{partner} 在宿舍门口站了一会儿，把铺盖卷又提回去。两人约好每星期天在公园见，合住的事等到年底。来者去房东那里取回押金单，房东正给新租客量门框。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "厂里说集体宿舍是规矩，搬出去要罚半个月工钱。{partner} 在宿舍门口站了一会儿，把铺盖卷又提回去。两人约好每星期天在公园见，合住的事等到年底。{subject}去房东那里取回押金单，房东正给新租客量门框。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "family",
-        "goals": [
-          "family",
-          "belonging"
-        ],
-        "needs": [
-          "autonomy",
-          "belonging"
-        ],
+        "goals": ["family", "belonging"],
+        "needs": ["autonomy", "belonging"],
         "baseUtility": 1.35,
         "risk": 0.3,
-        "skills": [
-          "social",
-          "numeracy"
-        ]
+        "skills": ["social", "numeracy"]
       }
     },
     {
@@ -509,16 +444,12 @@
           "maxAge": 65
         }
       ],
-      "tags": [
-        "quarrel",
-        "reconciliation",
-        "household_money"
-      ],
+      "tags": ["quarrel", "reconciliation", "household_money"],
       "outcomes": [
         {
           "id": "reconcile-quarrel.ledger",
           "weight": 1,
-          "text": "来者把弟弟叫到楼梯间，要回借出去的一半钱，两克朗。晚上在厨房桌上摊开账本，把房租、煤钱和伙食费一笔笔写清。两人约定以后超过两克朗要先说。伴侣没抬头，只把账本翻到新的一页。",
+          "text": "{subject}把弟弟叫到楼梯间，要回借出去的一半钱，两克朗。晚上在厨房桌上摊开账本，把房租、煤钱和伙食费一笔笔写清。两人约定以后超过两克朗要先说。伴侣没抬头，只把账本翻到新的一页。",
           "effects": [
             {
               "type": "cash",
@@ -546,25 +477,21 @@
             {
               "id": "default",
               "key": "reconcile-quarrel.ledger",
-              "text": "来者在楼梯间堵住弟弟，要回两克朗。晚上把账本摊在厨房桌上，铅笔头用牙咬尖，房租四克朗、煤钱一克朗二十赫勒，一笔笔写。伴侣起初背对着，后来把账本翻过去，指着伙食费那栏说这里写错了。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}在楼梯间堵住弟弟，要回两克朗。晚上把账本摊在厨房桌上，铅笔头用牙咬尖，房租四克朗、煤钱一克朗二十赫勒，一笔笔写。伴侣起初背对着，后来把账本翻过去，指着伙食费那栏说这里写错了。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "reconcile-quarrel.ledger",
-              "text": "弟弟把钱掏出来时嘴里嘟囔，来者没接话。厨房桌上摊着旧账本，炉子上的水壶响了也没人动。两人约定以后超过两克朗要先说，伴侣嗯了一声，把账本合上，又打开，在封底写下日期。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "弟弟把钱掏出来时嘴里嘟囔，{subject}没接话。厨房桌上摊着旧账本，炉子上的水壶响了也没人动。两人约定以后超过两克朗要先说，伴侣嗯了一声，把账本合上，又打开，在封底写下日期。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "reconcile-quarrel.mother-in-law",
           "weight": 1,
-          "text": "来者请来伴侣的母亲，三个人坐到半夜。母亲把借给弟弟的钱说成一家人的帮衬，伴侣不肯松口，说要搬回娘家住一段。母亲走时把带来的菜留下，门关上后两人还是各睡一边。",
+          "text": "{subject}请来伴侣的母亲，三个人坐到半夜。母亲把借给弟弟的钱说成一家人的帮衬，伴侣不肯松口，说要搬回娘家住一段。母亲走时把带来的菜留下，门关上后两人还是各睡一边。",
           "effects": [
             {
               "type": "mood",
@@ -592,24 +519,20 @@
               "id": "default",
               "key": "reconcile-quarrel.mother-in-law",
               "text": "母亲坐在厨房唯一的椅子上，把借出去的钱说成一家人的帮衬。伴侣靠在炉边，说不是钱的事，是交房租那天才知道。三个人坐到钟敲十一下，母亲把菜篮留下走了。门关上，两人各自拉过被子。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "reconcile-quarrel.mother-in-law",
-              "text": "母亲带来一罐酸菜，边摆碗边说兄弟之间借钱不算错。伴侣把碗推开，说要搬回娘家住一段。来者没拦住。母亲走时在门口回头看了一眼，酸菜留在桌上，夜里谁也没热。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "母亲带来一罐酸菜，边摆碗边说兄弟之间借钱不算错。伴侣把碗推开，说要搬回娘家住一段。{subject}没拦住。母亲走时在门口回头看了一眼，酸菜留在桌上，夜里谁也没热。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "reconcile-quarrel.separate-budgets",
           "weight": 1,
-          "text": "两人没有和好，但把房租和伙食费分开算。来者付房租，伴侣管伙食，煤钱对半。厨房桌上多了一个铁皮盒，各放各的硬币。夜里还是背对背，可第二天早上有人把咖啡煮上了。",
+          "text": "两人没有和好，但把房租和伙食费分开算。{subject}付房租，伴侣管伙食，煤钱对半。厨房桌上多了一个铁皮盒，各放各的硬币。夜里还是背对背，可第二天早上有人把咖啡煮上了。",
           "effects": [
             {
               "type": "mood",
@@ -637,37 +560,25 @@
             {
               "id": "default",
               "key": "reconcile-quarrel.separate-budgets",
-              "text": "来者把房租四克朗放在房东的信封里，伴侣把伙食钱放进铁皮盒。煤钱对半，谁买谁记。夜里还是背对背，可第二天早上炉子上煮了咖啡，两只杯子并排放着。账本翻到新页，各写各的。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}把房租四克朗放在房东的信封里，伴侣把伙食钱放进铁皮盒。煤钱对半，谁买谁记。夜里还是背对背，可第二天早上炉子上煮了咖啡，两只杯子并排放着。账本翻到新页，各写各的。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "reconcile-quarrel.separate-budgets",
-              "text": "铁皮盒是饼干盒改的，盖上用刀刻了两道线。来者放房租，伴侣放伙食，谁也不查谁。厨房里安静了几天，但咖啡有人煮了，面包也切好了。账本最后一页写着：煤钱各半。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "铁皮盒是饼干盒改的，盖上用刀刻了两道线。{subject}放房租，伴侣放伙食，谁也不查谁。厨房里安静了几天，但咖啡有人煮了，面包也切好了。账本最后一页写着：煤钱各半。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "social",
-        "goals": [
-          "family",
-          "belonging"
-        ],
-        "needs": [
-          "belonging",
-          "safety"
-        ],
+        "goals": ["family", "belonging"],
+        "needs": ["belonging", "safety"],
         "baseUtility": 1.25,
         "risk": 0.25,
-        "skills": [
-          "social"
-        ]
+        "skills": ["social"]
       }
     },
     {
@@ -716,16 +627,12 @@
           "maxAge": 50
         }
       ],
-      "tags": [
-        "childcare",
-        "work",
-        "family"
-      ],
+      "tags": ["childcare", "work", "family"],
       "outcomes": [
         {
           "id": "arrange-childcare.neighbor",
           "weight": 1,
-          "text": "来者把孩子托给邻居老太太，每周付一克朗，早晨六点送去，晚上六点接回。老太太用旧围裙兜着孩子坐在窗边。第三夜孩子还是哭醒，来者抱着他在屋里走，天亮前打了个盹。",
+          "text": "{subject}把孩子托给邻居老太太，每周付一克朗，早晨六点送去，晚上六点接回。老太太用旧围裙兜着孩子坐在窗边。第三夜孩子还是哭醒，{subject}抱着他在屋里走，天亮前打了个盹。",
           "effects": [
             {
               "type": "cash",
@@ -745,32 +652,28 @@
               "type": "health",
               "personId": "$subject",
               "amount": -0.03,
-              "reason": "孩子夜里哭醒，来者睡眠不足"
+              "reason": "孩子夜里哭醒，{subject}睡眠不足"
             }
           ],
           "narration": [
             {
               "id": "default",
               "key": "arrange-childcare.neighbor",
-              "text": "老太太接过孩子，用旧围裙兜着坐在窗边，说一克朗一周，六点送来六点接。来者数出硬币，把奶瓶放在她灶台边。第三夜孩子还是哭醒，来者抱着他在屋里走，天亮前靠着床沿打了个盹。",
-              "tone": [
-                "dry"
-              ]
+              "text": "老太太接过孩子，用旧围裙兜着坐在窗边，说一克朗一周，六点送来六点接。{subject}数出硬币，把奶瓶放在她灶台边。第三夜孩子还是哭醒，{subject}抱着他在屋里走，天亮前靠着床沿打了个盹。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "arrange-childcare.neighbor",
-              "text": "邻居老太太的屋里有一股樟脑味，她把孩子放在膝上颠了颠，说先试一星期。来者每周付一克朗，早晨把孩子裹好送过去，晚上接回来时孩子手里攥着老太太给的干面包皮。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "邻居老太太的屋里有一股樟脑味，她把孩子放在膝上颠了颠，说先试一星期。{subject}每周付一克朗，早晨把孩子裹好送过去，晚上接回来时孩子手里攥着老太太给的干面包皮。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "arrange-childcare.sister",
           "weight": 1,
-          "text": "姐姐把孩子接去城外住一个月，说那边有院子，空气好。一个月后送回来，孩子会叫人了，可看见来者就往姐姐身后躲。姐姐在门口站了一会儿，说下个月还能来住。来者把孩子抱进屋，他哭了半宿。",
+          "text": "姐姐把孩子接去城外住一个月，说那边有院子，空气好。一个月后送回来，孩子会叫人了，可看见{subject}就往姐姐身后躲。姐姐在门口站了一会儿，说下个月还能来住。{subject}把孩子抱进屋，他哭了半宿。",
           "effects": [
             {
               "type": "mood",
@@ -791,25 +694,21 @@
             {
               "id": "default",
               "key": "arrange-childcare.sister",
-              "text": "姐姐把孩子裹在披肩里抱上电车，说城外有院子，一个月就送回来。来者站在站台上看车走远。一个月后孩子会叫人了，可看见来者就往姐姐身后躲。来者把孩子抱进屋，他哭了半宿。",
-              "tone": [
-                "dry"
-              ]
+              "text": "姐姐把孩子裹在披肩里抱上电车，说城外有院子，一个月就送回来。{subject}站在站台上看车走远。一个月后孩子会叫人了，可看见{subject}就往姐姐身后躲。{subject}把孩子抱进屋，他哭了半宿。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "arrange-childcare.sister",
-              "text": "姐姐家在多瑙河对岸，院子里晾着床单。孩子在那里住了一个月，回来时脸圆了些，手里攥着一块河边的白石子。可他站在门口不肯叫来者，姐姐蹲下来哄，来者把行李提进屋，听见身后孩子叫了一声姨。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "姐姐家在多瑙河对岸，院子里晾着床单。孩子在那里住了一个月，回来时脸圆了些，手里攥着一块河边的白石子。可他站在门口不肯叫{subject}，姐姐蹲下来哄，{subject}把行李提进屋，听见身后孩子叫了一声姨。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "arrange-childcare.quit-job",
           "weight": 1,
-          "text": "来者辞掉半天工，自己看孩子。家里少了一份工钱，晚饭从两顿改成一顿，土豆和面包皮煮成一锅。伴侣没说什么，只把煤钱数了两遍。来者夜里等孩子睡了，在窗边替人缝补袜子换几个赫勒。",
+          "text": "{subject}辞掉半天工，自己看孩子。家里少了一份工钱，晚饭从两顿改成一顿，土豆和面包皮煮成一锅。伴侣没说什么，只把煤钱数了两遍。{subject}夜里等孩子睡了，在窗边替人缝补袜子换几个赫勒。",
           "effects": [
             {
               "type": "cash",
@@ -834,37 +733,25 @@
             {
               "id": "default",
               "key": "arrange-childcare.quit-job",
-              "text": "来者把半天工的工钱单交回去，换回自己看孩子。晚饭从两顿并成一顿，土豆和面包皮煮一锅，伴侣把煤钱数了两遍。孩子睡下后，来者在窗边缝袜子，一枚针扎了手指，她含住指头继续缝。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}把半天工的工钱单交回去，换回自己看孩子。晚饭从两顿并成一顿，土豆和面包皮煮一锅，伴侣把煤钱数了两遍。孩子睡下后，{subject}在窗边缝袜子，一枚针扎了手指，她含住指头继续缝。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "arrange-childcare.quit-job",
-              "text": "厂里说半天工没了就没了，来者没再争。厨房里少了一只面包，晚饭只有一锅糊糊。伴侣把勺子放下，说来年春天再说。夜里来者替邻居补袜子，三个赫勒一双，缝到灯芯烧短。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "厂里说半天工没了就没了，{subject}没再争。厨房里少了一只面包，晚饭只有一锅糊糊。伴侣把勺子放下，说来年春天再说。夜里{subject}替邻居补袜子，三个赫勒一双，缝到灯芯烧短。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "family",
-        "goals": [
-          "family",
-          "care"
-        ],
-        "needs": [
-          "care",
-          "cash"
-        ],
+        "goals": ["family", "care"],
+        "needs": ["care", "cash"],
         "baseUtility": 1.45,
         "risk": 0.2,
-        "skills": [
-          "social"
-        ]
+        "skills": ["social"]
       }
     },
     {
@@ -914,16 +801,12 @@
           "maxAge": 75
         }
       ],
-      "tags": [
-        "inheritance",
-        "appeal",
-        "siblings"
-      ],
+      "tags": ["inheritance", "appeal", "siblings"],
       "outcomes": [
         {
           "id": "appeal-inheritance.half",
           "weight": 1,
-          "text": "办事处承认父亲最后一年写的信，存款分了一半给来者，四十二克朗。签字时兄弟把笔按得很重，出了门就往另一头走。来者把怀表留给兄弟，兄弟没回头。",
+          "text": "办事处承认父亲最后一年写的信，存款分了一半给{subject}，四十二克朗。签字时兄弟把笔按得很重，出了门就往另一头走。{subject}把怀表留给兄弟，兄弟没回头。",
           "effects": [
             {
               "type": "cash",
@@ -949,25 +832,21 @@
             {
               "id": "default",
               "key": "appeal-inheritance.half",
-              "text": "办事处的职员把信读了第二遍，在清单上添了来者的名字。存款八十四克朗，一人四十二。兄弟签完字把笔按在纸上，出了门就往另一头走。来者把怀表留在桌上，说这个给你，兄弟没回头。",
-              "tone": [
-                "dry"
-              ]
+              "text": "办事处的职员把信读了第二遍，在清单上添了{subject}的名字。存款八十四克朗，一人四十二。兄弟签完字把笔按在纸上，出了门就往另一头走。{subject}把怀表留在桌上，说这个给你，兄弟没回头。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "appeal-inheritance.half",
-              "text": "二楼办事处里很冷，职员把信纸对着窗光照了照，说笔迹没错。四十二克朗用纸包好。兄弟在走廊里把纸包接过去，数了一遍，说以后各过各的。来者把父亲的信收进证件夹。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "二楼办事处里很冷，职员把信纸对着窗光照了照，说笔迹没错。四十二克朗用纸包好。兄弟在走廊里把纸包接过去，数了一遍，说以后各过各的。{subject}把父亲的信收进证件夹。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "appeal-inheritance.court",
           "weight": 1,
-          "text": "兄弟说信是伪造的，办事处让两人自己去法院。来者在办事处楼下问过律师，诉讼费要三十克朗，家里拿不出。兄弟把清单折好放进口袋，说等法院传票。来者站在楼梯口，把信又读了一遍。",
+          "text": "兄弟说信是伪造的，办事处让两人自己去法院。{subject}在办事处楼下问过律师，诉讼费要三十克朗，家里拿不出。兄弟把清单折好放进口袋，说等法院传票。{subject}站在楼梯口，把信又读了一遍。",
           "effects": [
             {
               "type": "mood",
@@ -998,25 +877,21 @@
             {
               "id": "default",
               "key": "appeal-inheritance.court",
-              "text": "兄弟把信推回来，说笔迹不对，办事处的人把清单合上，让两人去法院。来者在楼下问过律师，诉讼费三十克朗。她把信按在胸口站了一会儿，楼梯间的灯一闪一闪，兄弟已经走到街对面。",
-              "tone": [
-                "dry"
-              ]
+              "text": "兄弟把信推回来，说笔迹不对，办事处的人把清单合上，让两人去法院。{subject}在楼下问过律师，诉讼费三十克朗。她把信按在胸口站了一会儿，楼梯间的灯一闪一闪，兄弟已经走到街对面。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "appeal-inheritance.court",
-              "text": "职员把信翻过来看背面，说私人纠纷不归这里管，去法院。律师的写字间在隔壁楼，开价三十克朗。来者数了数证件夹里的钱，差得远。兄弟在门口说，那就等传票。来者把信收好，下楼时鞋跟磕在石阶上。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "职员把信翻过来看背面，说私人纠纷不归这里管，去法院。律师的写字间在隔壁楼，开价三十克朗。{subject}数了数证件夹里的钱，差得远。兄弟在门口说，那就等传票。{subject}把信收好，下楼时鞋跟磕在石阶上。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "appeal-inheritance.watch",
           "weight": 1,
-          "text": "来者放弃存款，只拿走母亲的怀表。兄弟答应替父亲还清欠杂货店的十一克朗。办事处的人在清单上注了一笔，两人在走廊里站了一会儿，兄弟说下个月去上坟。来者把怀表上弦，表针走得很响。",
+          "text": "{subject}放弃存款，只拿走母亲的怀表。兄弟答应替父亲还清欠杂货店的十一克朗。办事处的人在清单上注了一笔，两人在走廊里站了一会儿，兄弟说下个月去上坟。{subject}把怀表上弦，表针走得很响。",
           "effects": [
             {
               "type": "relation",
@@ -1037,38 +912,25 @@
             {
               "id": "default",
               "key": "appeal-inheritance.watch",
-              "text": "来者把清单推回去，说存款不要了，只拿母亲的怀表。兄弟愣了愣，说杂货店那十一克朗他替父亲还。办事处的人在纸角注了一笔。两人在走廊里站了一会儿，兄弟说下个月去上坟，来者把表上了弦。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}把清单推回去，说存款不要了，只拿母亲的怀表。兄弟愣了愣，说杂货店那十一克朗他替父亲还。办事处的人在纸角注了一笔。两人在走廊里站了一会儿，兄弟说下个月去上坟，{subject}把表上了弦。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "appeal-inheritance.watch",
-              "text": "怀表是母亲陪嫁，表盖上有道划痕。来者用指甲把表盖擦亮，说这个就够。兄弟把欠杂货店的账认下来，十一克朗。两人下楼时兄弟走在前面，到门口停了一下，说下个月一起去。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "怀表是母亲陪嫁，表盖上有道划痕。{subject}用指甲把表盖擦亮，说这个就够。兄弟把欠杂货店的账认下来，十一克朗。两人下楼时兄弟走在前面，到门口停了一下，说下个月一起去。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "family",
-        "goals": [
-          "family",
-          "status"
-        ],
-        "needs": [
-          "cash",
-          "status"
-        ],
+        "goals": ["family", "status"],
+        "needs": ["cash", "status"],
         "baseUtility": 1.2,
         "risk": 0.4,
-        "skills": [
-          "literacy",
-          "social"
-        ]
+        "skills": ["literacy", "social"]
       }
     },
     {
@@ -1118,16 +980,12 @@
           "maxAge": 65
         }
       ],
-      "tags": [
-        "missing_kin",
-        "search",
-        "migration"
-      ],
+      "tags": ["missing_kin", "search", "migration"],
       "outcomes": [
         {
           "id": "find-missing-kin.postcard",
           "weight": 1,
-          "text": "旅店老板记得哥哥跟一批工人去了鲁尔，说走时还欠两晚房钱。来者在红十字会表格上填了地址，写信过去。两个月后收到一张明信片，背面只有一行字：还活着，在矿上，别寄钱。",
+          "text": "旅店老板记得哥哥跟一批工人去了鲁尔，说走时还欠两晚房钱。{subject}在红十字会表格上填了地址，写信过去。两个月后收到一张明信片，背面只有一行字：还活着，在矿上，别寄钱。",
           "effects": [
             {
               "type": "mood",
@@ -1156,25 +1014,21 @@
             {
               "id": "default",
               "key": "find-missing-kin.postcard",
-              "text": "旅店老板在柜台后想了想，说那批工人去了鲁尔，哥哥还欠两晚房钱。来者在红十字会表格上一笔一划填地址，又贴了邮票。两个月后明信片到了，背面只有一行铅笔字：还活着，在矿上，别寄钱。",
-              "tone": [
-                "dry"
-              ]
+              "text": "旅店老板在柜台后想了想，说那批工人去了鲁尔，哥哥还欠两晚房钱。{subject}在红十字会表格上一笔一划填地址，又贴了邮票。两个月后明信片到了，背面只有一行铅笔字：还活着，在矿上，别寄钱。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "find-missing-kin.postcard",
-              "text": "问询表要出生日期和最后通信地址，来者写到一半停了笔，把哥哥的信从证件夹里翻出来照着抄。寄出去后每天看门房有没有信。两个月后明信片送到，画面是鲁尔河，背面铅笔字被雨水洇过。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "问询表要出生日期和最后通信地址，{subject}写到一半停了笔，把哥哥的信从证件夹里翻出来照着抄。寄出去后每天看门房有没有信。两个月后明信片送到，画面是鲁尔河，背面铅笔字被雨水洇过。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "find-missing-kin.missing-list",
           "weight": 1,
-          "text": "警察局把哥哥列进失踪名册，给了一张编号条。来者在办事处遇到另一个找丈夫的女人，两人结伴跑了两处收容所，都摇头。回家路上女人说下星期还去。来者把编号条压在钟座下面。",
+          "text": "警察局把哥哥列进失踪名册，给了一张编号条。{subject}在办事处遇到另一个找丈夫的女人，两人结伴跑了两处收容所，都摇头。回家路上女人说下星期还去。{subject}把编号条压在钟座下面。",
           "effects": [
             {
               "type": "mood",
@@ -1202,25 +1056,21 @@
             {
               "id": "default",
               "key": "find-missing-kin.missing-list",
-              "text": "警察局的桌子后面的人把哥哥的名字写进名册，撕下一张编号条。来者在走廊里碰到一个女人，她找丈夫，手里也捏着一张条子。两人跑了两处收容所，登记簿翻到最后一页也没有。",
-              "tone": [
-                "dry"
-              ]
+              "text": "警察局的桌子后面的人把哥哥的名字写进名册，撕下一张编号条。{subject}在走廊里碰到一个女人，她找丈夫，手里也捏着一张条子。两人跑了两处收容所，登记簿翻到最后一页也没有。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "find-missing-kin.missing-list",
-              "text": "失踪名册的纸很薄，办事员用钢笔一戳就洇开。来者把编号条收进证夹，出门时有个女人问她是不是也找人。两人结伴去收容所，门房说名单上没这个人。回家路上女人说下星期还去，来者点头。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "失踪名册的纸很薄，办事员用钢笔一戳就洇开。{subject}把编号条收进证夹，出门时有个女人问她是不是也找人。两人结伴去收容所，门房说名单上没这个人。回家路上女人说下星期还去，{subject}点头。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "find-missing-kin.toolbox",
           "weight": 1,
-          "text": "来者花光路费，在哥哥最后住过的旅店仓库里只找到一个工具箱。老板说人搬走时没带走，欠的房钱拿工具抵。来者把刨子和凿子卖给旧货商，换回三克朗，够买一张回维也纳的车票。",
+          "text": "{subject}花光路费，在哥哥最后住过的旅店仓库里只找到一个工具箱。老板说人搬走时没带走，欠的房钱拿工具抵。{subject}把刨子和凿子卖给旧货商，换回三克朗，够买一张回维也纳的车票。",
           "effects": [
             {
               "type": "cash",
@@ -1245,38 +1095,25 @@
             {
               "id": "default",
               "key": "find-missing-kin.toolbox",
-              "text": "旅店老板把仓库门打开，工具箱靠在墙角，刨刃上还有木屑。老板说人走时没带，欠的房钱拿工具抵。来者在旧货商那里把刨子和凿子卖了，换了三克朗，刚够一张回维也纳的车票。",
-              "tone": [
-                "dry"
-              ]
+              "text": "旅店老板把仓库门打开，工具箱靠在墙角，刨刃上还有木屑。老板说人走时没带，欠的房钱拿工具抵。{subject}在旧货商那里把刨子和凿子卖了，换了三克朗，刚够一张回维也纳的车票。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "find-missing-kin.toolbox",
-              "text": "仓库里一股潮味。来者蹲下把工具箱打开，凿子用油布包着，刨子柄上缠着哥哥自己的麻绳。老板说人搬走两个月了。来者把工具卖给旧货商，三克朗，买票时数了两遍。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "仓库里一股潮味。{subject}蹲下把工具箱打开，凿子用油布包着，刨子柄上缠着哥哥自己的麻绳。老板说人搬走两个月了。{subject}把工具卖给旧货商，三克朗，买票时数了两遍。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "family",
-        "goals": [
-          "family",
-          "belonging"
-        ],
-        "needs": [
-          "belonging",
-          "safety"
-        ],
+        "goals": ["family", "belonging"],
+        "needs": ["belonging", "safety"],
         "baseUtility": 1.3,
         "risk": 0.3,
-        "skills": [
-          "social",
-          "literacy"
-        ]
+        "skills": ["social", "literacy"]
       }
     }
   ]

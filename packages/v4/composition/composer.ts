@@ -129,6 +129,13 @@ function personConditions(when: KernelVariantWhen | undefined): SceneCondition[]
     conditions.push({ kind: 'hasRelation', relationKind: when.relationKind as never });
   }
   if (when.sex) conditions.push({ kind: 'sex', in: [when.sex] });
+  if (when.health) {
+    conditions.push({
+      kind: 'health',
+      ...(when.health.min !== undefined ? { min: when.health.min } : {}),
+      ...(when.health.max !== undefined ? { max: when.health.max } : {}),
+    });
+  }
   return conditions;
 }
 
@@ -351,7 +358,7 @@ function compileKernel(
   }
   const scene: SceneDefinition = {
     ...base,
-    rate: Math.max(0, (kernel.baseRate ?? 0.08) * (variant?.rateMultiplier ?? 1)),
+    rate: Math.max(0, (kernel.baseRate ?? 0.12) * (variant?.rateMultiplier ?? 1)),
     outcomes,
   };
   return { scene, trace };

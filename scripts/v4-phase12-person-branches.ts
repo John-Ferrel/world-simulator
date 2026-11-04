@@ -99,7 +99,7 @@ const output = {
     'Outcome policy is a controlled probe, not a gameplay default. EventFacts and effects are real engine output.',
 };
 mkdirSync('docs/v4', { recursive: true });
-writeFileSync('docs/v4/phase-12-person-branches.json', `${JSON.stringify(output, null, 2)}\n`);
+writeFileSync('docs/v4/phase-13-person-branches.json', `${JSON.stringify(output, null, 2)}\n`);
 console.log(
   JSON.stringify(
     {

@@ -17,6 +17,7 @@ export const BATCH1_CHILDHOOD_EDUCATION: PlotKernel[] = recipes([
     stage: 'infancy',
     ages: [0, 2],
     tags: ['foundling', 'infancy', 'institution', 'wet_nurse', 'abandonment'],
+    conditions: [{ kind: 'notHasRelation', relationKind: 'kin' }],
     contexts: ['urban', 'crisis', 'postwar', 'medical'],
     milieus: ['hospital', 'home', 'poverty', 'care'],
     roles: {

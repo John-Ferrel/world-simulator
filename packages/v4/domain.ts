@@ -625,6 +625,8 @@ export type SceneCondition =
       minTrust?: number;
       /** Only count a partner who actually shares the subject's household. */
       sameHousehold?: boolean;
+      /** Require the other person in the relation to have this sex. */
+      partnerSex?: Person['sex'];
     }
   | { kind: 'notHasRelation'; relationKind: Relation['kind']; sameHousehold?: boolean }
   | { kind: 'worldYear'; min?: number; max?: number }
@@ -749,6 +751,8 @@ export type TaskDomain =
   | 'social'
   | 'daily'
   | 'culture'
+  | 'commerce'
+  | 'craft'
   | 'health'
   | 'politics'
   | 'history'

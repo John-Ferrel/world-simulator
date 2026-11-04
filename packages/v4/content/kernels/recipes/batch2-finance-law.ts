@@ -1669,7 +1669,7 @@ export const BATCH2_FINANCE_LAW: PlotKernel[] = recipes([
       {
         id: 'signed-with-repair-clause',
         w: 0.4,
-        text: '{landlord}把租约摊在桌上，第十三条写着“小修由房客自理”。{subject}问屋顶漏雨算不算小修，{landlord}说看漏多大。{neighbor}在旁边插嘴，说去年冬天水从三楼一直滴到院子里；{landlord}把笔递过来，让{subject}先签，再谈漏雨。',
+        text: '{landlord}把租约摊在桌上，第十三条写着“小修由房客自理”，旁边一栏是六克朗的钥匙押金。{subject}问屋顶漏雨算不算小修，{landlord}说看漏多大。{neighbor}在旁边插嘴，说去年冬天水从三楼一直滴到院子里；{landlord}把笔递过来，说签了才给钥匙。{subject}数出六克朗，在第十三条下面签了名。',
         significance: 0.72,
         fx: {
           cash: -6,

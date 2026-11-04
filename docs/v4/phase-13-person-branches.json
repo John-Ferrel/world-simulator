@@ -1,0 +1,171 @@
+{
+  "generatedAt": "2026-11-04T12:43:40.955Z",
+  "kernelId": "r1-work.market-stall-allotment",
+  "title": "棚下的第三个摊位",
+  "branchConditions": [
+    {
+      "outcomeId": "bought-the-middle-place",
+      "when": {
+        "minCash": 6
+      }
+    },
+    {
+      "outcomeId": "pushed-the-cart-to-the-corner",
+      "when": {
+        "maxCash": 3
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "householdCash": 0,
+      "compiledScenes": 4,
+      "events": 12,
+      "outcomes": [
+        {
+          "outcomeId": "pushed-the-cart-to-the-corner",
+          "count": 12
+        }
+      ],
+      "sample": [
+        {
+          "action": "r1-work.market-stall-allotment::ctx-vienna-1912::milieu-tenement/pushed-the-cart-to-the-corner",
+          "text": "Gustav Berg说今年的摊位排满了，收了Alois Lechner两克朗的巷口管理费，才往墙外指了指。Alois Lechner把秤放上独轮车，Emil Weiss路过，问要不要把自家门廊借给他摆一上午，条件是替她看两小时孩子。秤盘在风里晃，绳子磨得发白，Alois Lechner看了看天，把车把转向巷口。",
+          "effects": [
+            {
+              "type": "cash",
+              "amount": 2
+            },
+            {
+              "type": "flag",
+              "flag": "denied_market_stall"
+            },
+            {
+              "type": "role",
+              "role": "pushcart_vendor"
+            },
+            {
+              "type": "relation"
+            }
+          ]
+        },
+        {
+          "action": "r1-work.market-stall-allotment::ctx-vienna-1912::milieu-tenement/pushed-the-cart-to-the-corner",
+          "text": "Gustav Berg说今年的摊位排满了，收了Berta Weiss两克朗的巷口管理费，才往墙外指了指。Berta Weiss把秤放上独轮车，Hermann Kral路过，问要不要把自家门廊借给她摆一上午，条件是替她看两小时孩子。秤盘在风里晃，绳子磨得发白，Berta Weiss看了看天，把车把转向巷口。",
+          "effects": [
+            {
+              "type": "cash",
+              "amount": 2
+            },
+            {
+              "type": "flag",
+              "flag": "denied_market_stall"
+            },
+            {
+              "type": "role",
+              "role": "pushcart_vendor"
+            },
+            {
+              "type": "relation"
+            }
+          ]
+        },
+        {
+          "action": "r1-work.market-stall-allotment::ctx-vienna-1912::milieu-tenement/pushed-the-cart-to-the-corner",
+          "text": "Friedrich Hofer说今年的摊位排满了，收了Ferdinand Winter两克朗的巷口管理费，才往墙外指了指。Ferdinand Winter把秤放上独轮车，Helene Winter路过，问要不要把自家门廊借给他摆一上午，条件是替她看两小时孩子。秤盘在风里晃，绳子磨得发白，Ferdinand Winter看了看天，把车把转向巷口。",
+          "effects": [
+            {
+              "type": "cash",
+              "amount": 2
+            },
+            {
+              "type": "flag",
+              "flag": "denied_market_stall"
+            },
+            {
+              "type": "role",
+              "role": "pushcart_vendor"
+            },
+            {
+              "type": "relation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "householdCash": 100,
+      "compiledScenes": 4,
+      "events": 12,
+      "outcomes": [
+        {
+          "outcomeId": "bought-the-middle-place",
+          "count": 12
+        }
+      ],
+      "sample": [
+        {
+          "action": "r1-work.market-stall-allotment::ctx-vienna-1912::milieu-tenement/bought-the-middle-place",
+          "text": "Alois Lechner把五克朗折成小方块，压在Gustav Berg的登记簿下面。Gustav Berg没有抬头，只把粉笔往中间挪了半尺。第二天Alois Lechner的摊子到了棚中央，Josef Bauer的苹果墙被挤到排水沟边，有几只果子滚进了泥里。旁边卖菜的妇人把秤往远处挪了挪，Josef Bauer弯腰捡苹果时低声骂了一句；Gustav Berg装作没听见，只把粉笔头碾碎在鞋底。",
+          "effects": [
+            {
+              "type": "cash",
+              "amount": 5
+            },
+            {
+              "type": "reputation"
+            },
+            {
+              "type": "flag",
+              "flag": "bribed_market_master"
+            },
+            {
+              "type": "relation"
+            }
+          ]
+        },
+        {
+          "action": "r1-work.market-stall-allotment::ctx-vienna-1912::milieu-tenement/bought-the-middle-place",
+          "text": "Berta Weiss把五克朗折成小方块，压在Gustav Berg的登记簿下面。Gustav Berg没有抬头，只把粉笔往中间挪了半尺。第二天Berta Weiss的摊子到了棚中央，Josef Bauer的苹果墙被挤到排水沟边，有几只果子滚进了泥里。旁边卖菜的妇人把秤往远处挪了挪，Josef Bauer弯腰捡苹果时低声骂了一句；Gustav Berg装作没听见，只把粉笔头碾碎在鞋底。",
+          "effects": [
+            {
+              "type": "cash",
+              "amount": 5
+            },
+            {
+              "type": "reputation"
+            },
+            {
+              "type": "flag",
+              "flag": "bribed_market_master"
+            },
+            {
+              "type": "relation"
+            }
+          ]
+        },
+        {
+          "action": "r1-work.market-stall-allotment::ctx-vienna-1912::milieu-tenement/bought-the-middle-place",
+          "text": "Ferdinand Winter把五克朗折成小方块，压在Friedrich Hofer的登记簿下面。Friedrich Hofer没有抬头，只把粉笔往中间挪了半尺。第二天Ferdinand Winter的摊子到了棚中央，Otto Winter的苹果墙被挤到排水沟边，有几只果子滚进了泥里。旁边卖菜的妇人把秤往远处挪了挪，Otto Winter弯腰捡苹果时低声骂了一句；Friedrich Hofer装作没听见，只把粉笔头碾碎在鞋底。",
+          "effects": [
+            {
+              "type": "cash",
+              "amount": 5
+            },
+            {
+              "type": "reputation"
+            },
+            {
+              "type": "flag",
+              "flag": "bribed_market_master"
+            },
+            {
+              "type": "relation"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "note": "Outcome policy is a controlled probe, not a gameplay default. EventFacts and effects are real engine output."
+}

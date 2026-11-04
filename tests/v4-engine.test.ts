@@ -384,7 +384,9 @@ describe('v4 annual engine', () => {
     expect(result.diagnostics.warnings.some((warning) => warning.code === 'unfunded_cash')).toBe(
       true,
     );
-    expect(result.events[0]!.effects.some((effect) => effect.type === 'cash')).toBe(false);
+    // An authored outcome whose only effect is rejected must not be persisted
+    // as an empty fact just to preserve the story.
+    expect(result.events).toHaveLength(0);
     assertWorldV4(result.world);
   });
 

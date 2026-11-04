@@ -17,6 +17,12 @@ import { BATCH3_CRIME_JUSTICE } from '../packages/v4/content/kernels/recipes/bat
 import { BATCH3_MIGRATION_REFUGEE } from '../packages/v4/content/kernels/recipes/batch3-migration-refugee.js';
 import { BATCH3_CHILD_ADOLESCENT_2 } from '../packages/v4/content/kernels/recipes/batch3-child-adolescent-2.js';
 import { BATCH3_WORK_INDUSTRY_2 } from '../packages/v4/content/kernels/recipes/batch3-work-industry-2.js';
+import { BATCH13_EDUCATION_TASKS } from '../packages/v4/content/kernels/recipes/batch13-education-tasks.js';
+import { BATCH13_WORK_TASKS } from '../packages/v4/content/kernels/recipes/batch13-work-tasks.js';
+import { BATCH13_FAMILY_SOCIAL_TASKS } from '../packages/v4/content/kernels/recipes/batch13-family-social-tasks.js';
+import { BATCH13_CIVIC_HEALTH_TASKS } from '../packages/v4/content/kernels/recipes/batch13-civic-health-tasks.js';
+import { BATCH13_MAJOR_TURNS_EVENTS } from '../packages/v4/content/kernels/recipes/batch13-major-turns-events.js';
+import { BATCH13_RELATIONSHIP_EVENTS } from '../packages/v4/content/kernels/recipes/batch13-relationship-events.js';
 
 const BATCHES = [
   BATCH1_CHILDHOOD_EDUCATION,
@@ -36,6 +42,12 @@ const BATCHES = [
   BATCH3_MIGRATION_REFUGEE,
   BATCH3_CHILD_ADOLESCENT_2,
   BATCH3_WORK_INDUSTRY_2,
+  BATCH13_EDUCATION_TASKS,
+  BATCH13_WORK_TASKS,
+  BATCH13_FAMILY_SOCIAL_TASKS,
+  BATCH13_CIVIC_HEALTH_TASKS,
+  BATCH13_MAJOR_TURNS_EVENTS,
+  BATCH13_RELATIONSHIP_EVENTS,
 ];
 
 function variantsOf(kernel: (typeof KERNEL_LIBRARY)[number]) {
@@ -48,16 +60,16 @@ function outcomesOf(kernel: (typeof KERNEL_LIBRARY)[number]) {
 
 describe('Phase 12 recipe library', () => {
   it('keeps the first parallel batches complete and independently valid', () => {
-    expect(BATCHES).toHaveLength(17);
+    expect(BATCHES).toHaveLength(23);
     for (const batch of BATCHES) expect(batch.length).toBe(50);
   });
 
   it('has a substantially larger executable library with world and person branches', () => {
-    expect(KERNEL_LIBRARY.length).toBeGreaterThanOrEqual(1000);
+    expect(KERNEL_LIBRARY.length).toBeGreaterThanOrEqual(1300);
     expect(new Set(KERNEL_LIBRARY.map((kernel) => kernel.id)).size).toBe(KERNEL_LIBRARY.length);
     expect(new Set(KERNEL_LIBRARY.map((kernel) => kernel.domain)).size).toBeGreaterThanOrEqual(12);
     const variants = KERNEL_LIBRARY.flatMap(variantsOf);
-    expect(variants.length).toBeGreaterThanOrEqual(700);
+    expect(variants.length).toBeGreaterThanOrEqual(900);
     expect(
       variants.filter(
         (variant) =>
@@ -68,11 +80,20 @@ describe('Phase 12 recipe library', () => {
       ).length,
     ).toBeGreaterThanOrEqual(20);
     const personBranches = KERNEL_LIBRARY.flatMap(outcomesOf).filter((outcome) => outcome.when);
-    expect(personBranches.length).toBeGreaterThanOrEqual(650);
+    expect(personBranches.length).toBeGreaterThanOrEqual(1000);
     const branchKinds = new Set(
       personBranches.flatMap((outcome) => Object.keys(outcome.when ?? {})),
     );
-    expect(branchKinds.size).toBeGreaterThanOrEqual(6);
+    expect(branchKinds.size).toBeGreaterThanOrEqual(8);
+    const phase13Tasks = KERNEL_LIBRARY.filter(
+      (kernel) => kernel.kind === 'task' && kernel.id.startsWith('r13-'),
+    );
+    expect(phase13Tasks.length).toBeGreaterThanOrEqual(200);
+    for (const kernel of phase13Tasks) {
+      expect(kernel.task, kernel.id).toBeDefined();
+      expect(kernel.task!.goals.length, kernel.id).toBeGreaterThan(0);
+      expect(kernel.task!.baseUtility, kernel.id).toBeGreaterThan(0);
+    }
   });
 
   it('does not duplicate titles or exact outcome text across the library', () => {

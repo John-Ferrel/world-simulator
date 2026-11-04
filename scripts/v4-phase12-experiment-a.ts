@@ -192,7 +192,7 @@ const output = {
   note: 'Forced rate is an experimental control, not a gameplay tuning value. Events and effects are real engine output.',
 };
 mkdirSync('docs/v4', { recursive: true });
-writeFileSync('docs/v4/phase-12-experiment-a.json', `${JSON.stringify(output, null, 2)}\n`);
+writeFileSync('docs/v4/phase-13-experiment-a.json', `${JSON.stringify(output, null, 2)}\n`);
 console.log(
   JSON.stringify(
     {

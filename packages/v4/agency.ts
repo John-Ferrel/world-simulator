@@ -1210,8 +1210,10 @@ export function agencyActorIds(world: WorldState, date: WorldDate, ordinaryLimit
       (person) =>
         !person.died &&
         !ids.has(person.id) &&
-        ageAt(person, date) >= 16 &&
-        ageAt(person, date) <= 75 &&
+        // Children can actively seek school help, friends or chores; they are
+        // not limited to passive family events.
+        ageAt(person, date) >= 6 &&
+        ageAt(person, date) <= 80 &&
         person.provenance.kind !== 'materialized_population',
     )
     .sort((a, b) => a.id.localeCompare(b.id));

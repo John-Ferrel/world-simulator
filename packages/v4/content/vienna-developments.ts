@@ -30,7 +30,7 @@ export const VIENNA_DEVELOPMENT_SCENES: SceneDefinition[] = [
     ],
     tags: ['development', 'social_movement', 'organization', 'politics'],
     rate: 0.35,
-    cooldownYears: 2,
+    cooldownYears: 4,
     outcomes: [
       {
         id: 'join-and-carry',
@@ -122,7 +122,7 @@ export const VIENNA_DEVELOPMENT_SCENES: SceneDefinition[] = [
     ],
     tags: ['development', 'social_movement', 'organization', 'meeting'],
     rate: 0.4,
-    cooldownYears: 1,
+    cooldownYears: 2,
     outcomes: [
       {
         id: 'speak-and-organize',
@@ -207,7 +207,7 @@ export const VIENNA_DEVELOPMENT_SCENES: SceneDefinition[] = [
     ],
     tags: ['development', 'social_movement', 'organization', 'consequence'],
     rate: 0.2,
-    cooldownYears: 3,
+    cooldownYears: 4,
     outcomes: [
       {
         id: 'keep-the-list',

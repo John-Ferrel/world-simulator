@@ -6,20 +6,12 @@
     "min": 5,
     "max": 11
   },
-  "tags": [
-    "childhood",
-    "street",
-    "social",
-    "home"
-  ],
+  "tags": ["childhood", "street", "social", "home"],
   "baseRate": 0.5,
   "conditions": [
     {
       "kind": "placeKind",
-      "in": [
-        "home",
-        "street"
-      ]
+      "in": ["home", "street"]
     }
   ],
   "nodes": [
@@ -55,7 +47,7 @@
         {
           "id": "hoop-win",
           "weight": 1,
-          "text": "{subject}在{place}用铁环从街上一个更大的孩子那里赢来三颗彩色玻璃弹珠，街上一个更大的孩子不服气地踢了一脚墙根。",
+          "text": "{subject}用铁钩推着铁环，从石板路这头冲到那头，铁环撞在墙根又弹回来。{neighbor}输了，从口袋里摸出三颗彩色玻璃弹珠，一颗颗按进{subject}手心，抬脚踢了下墙根的碎砖。",
           "effects": [
             {
               "type": "relation",
@@ -82,28 +74,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-childhood-street.hoop.hoop-win.alt1",
               "key": "hoop-win",
-              "text": "{subject}的铁环在石板缝上弹了一下，还是先滚到了巷口的排水沟边。街上一个更大的孩子把三颗玻璃弹珠拍进{subject}手心，说下次要赢回去。",
-              "tone": [
-                "dry",
-                "warm"
-              ]
+              "text": "铁环在石板缝上颠了一下，{subject}用钩子一拨，抢先绕过煤车。{neighbor}跟在后面，铁环倒在地上转了两圈。三颗玻璃弹珠从{neighbor}的口袋里摸出来，有一颗还带着体温。{neighbor}把弹珠按进{subject}手心，转身踢了一脚墙根。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "vienna-childhood-street.hoop.hoop-win.alt2",
               "key": "hoop-win",
-              "text": "围观的孩子数着数，{subject}的环一直没倒。街上一个更大的孩子蹲下捡起自己的铁钩，把弹珠推过来时嘴里嘟囔着巷子太窄。",
-              "tone": [
-                "dry"
-              ]
+              "text": "巷子窄，两个孩子并排推着铁环，铁环撞在一起叮当作响。{subject}的钩子先绕过最后一块界石。{neighbor}不服，说再比一次，手却已经伸进口袋，摸出三颗彩色弹珠。{subject}把弹珠举到眼前看，{neighbor}在旁边踢墙，踢得鞋尖发白。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "hoop-lose",
           "weight": 1,
-          "text": "{subject}的铁环撞上煤车掉落的煤块，街上一个更大的孩子捡起滚到脚边的铁环，{subject}得用一颗石弹子换回来。",
+          "text": "{subject}的铁环撞上煤车掉落的煤块，歪进路边水沟。{neighbor}捡起滚到脚边的铁环，{subject}只得用一颗石弹子换回来。追铁环时膝盖在石板上一擦，破了一层皮。",
           "effects": [
             {
               "type": "relation",
@@ -131,27 +118,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-childhood-street.hoop.hoop-lose.alt1",
               "key": "hoop-lose",
-              "text": "铁环撞上煤块歪进垃圾堆，{subject}膝盖磕在石板沿上。街上一个更大的孩子把铁环举高，直到{subject}从口袋里摸出一颗灰色石弹子。",
-              "tone": [
-                "dry"
-              ]
+              "text": "煤车刚过去，路心还留着几块碎煤。{subject}的铁环撞上去，弹到水沟边。{neighbor}先一步把铁环踩住，说要拿一颗石弹子来换。{subject}蹲下去掏口袋，膝盖在石板棱上蹭掉一块皮，换回铁环时裤腿已经渗出血点；{subject}没再争，只记住{neighbor}踩铁环的那只脚。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "vienna-childhood-street.hoop.hoop-lose.alt2",
               "key": "hoop-lose",
-              "text": "街上一个更大的孩子的铁环先滚过了线。{subject}蹲在排水沟边用袖子擦膝盖上的土，把一颗石弹子扔给街上一个更大的孩子才拿回自己的铁环。",
-              "tone": [
-                "dry"
-              ]
+              "text": "铁环滚进沟沿，{subject}扑过去抓，膝盖先着了地。{neighbor}把铁环拎起来，在手里转了一圈，说不能白捡。{subject}摸出一颗石弹子递过去，{neighbor}这才松手。回家路上{subject}一瘸一拐，裤膝上沾着石屑和血，经过{neighbor}家门口时特意绕到街对面。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "hoop-mother-call",
           "weight": 1,
-          "text": "母亲从二楼窗户探出身喊{subject}回家，铁环还卡在街上一个更大的孩子脚边，{subject}答应第二天把铁钩借给对方。",
+          "text": "二楼窗户里有人探出身喊{subject}回家，铁环还卡在{neighbor}脚边。{subject}应了一声，跟{neighbor}说好明天把铁钩借给对方，才弯腰去抽铁环。{neighbor}把脚挪开，又用鞋尖把铁环拨正。",
           "effects": [
             {
               "type": "relation",
@@ -180,21 +163,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-childhood-street.hoop.hoop-mother-call.alt1",
               "key": "hoop-mother-call",
-              "text": "母亲的喊声从晾衣绳的床单后面传下来。{subject}把铁钩塞给街上一个更大的孩子，说好明天晌午还在排水沟边见。",
-              "tone": [
-                "dry"
-              ]
+              "text": "二楼窗口有人喊了一声，{subject}抬头应着，脚却没动。铁环卡在{neighbor}的鞋边，{neighbor}说要再玩一圈。{subject}把铁钩递过去，说明天借你。{neighbor}这才挪开脚，用鞋尖把铁环拨到{subject}面前。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "vienna-childhood-street.hoop.hoop-mother-call.alt2",
               "key": "hoop-mother-call",
-              "text": "窗玻璃被母亲敲了三下。{subject}跑到楼梯口又折回来，把铁钩挂在街上一个更大的孩子的栅栏上，喊了一句明天带石弹子来。",
-              "tone": [
-                "dry",
-                "warm"
-              ]
+              "text": "窗户上的玻璃响了一下，有人探出头，让{subject}立刻回家。铁环还在{neighbor}脚边，{subject}蹲下去抽，抽不动。{neighbor}说除非明天把铁钩带来。{subject}点头，{neighbor}把脚一抬，铁环滚到{subject}手边，上面沾了一层鞋底灰。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
@@ -239,7 +217,7 @@
         {
           "id": "errand-ok",
           "weight": 1,
-          "text": "{subject}攥着母亲给的铜板在纳旭市场买回一磅土豆和一小包盐，路上没让土豆滚出围裙。",
+          "text": "{subject}攥着{mother}给的十五克鲁泽去纳旭市场，买了一磅土豆和一小包盐。土豆在围裙兜里滚来滚去，{subject}用手按住，一路没让一颗掉出来。回家{mother}数了找回的铜板，把土豆倒进木盆。",
           "effects": [
             {
               "type": "food",
@@ -265,28 +243,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-childhood-street.market-errand.errand-ok.alt1",
               "key": "errand-ok",
-              "text": "土豆从围裙兜里滚到市场台阶上，{subject}用下巴抵住围裙才没让它们继续跑。回家时母亲正把汤锅从炉子上端下来。",
-              "tone": [
-                "dry",
-                "warm"
-              ]
+              "text": "市场里的菜摊一字排开，{subject}把十五克鲁泽排在掌心，先买了土豆，又去盐摊上要了一小包。摊主用旧报纸把盐裹好，{subject}把它塞进围裙内袋，土豆兜在身前。回家时{mother}接过铜板一枚枚数，土豆一颗没少。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "vienna-childhood-street.market-errand.errand-ok.alt2",
               "key": "errand-ok",
-              "text": "卖土豆的女人多塞了一颗小洋葱，说{subject}数铜板数得清楚。母亲把洋葱切成四瓣扔进汤里，没问多出来的是哪来的。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}在土豆摊前蹲了很久，挑了一磅没有芽眼的。付完钱，手里只剩几个铜板，又去买了盐。围裙兜太浅，{subject}用下巴压住布边，走两步就低头看一眼。到家{mother}把土豆倒进盆里，盐包放在灶台边。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "errand-lost-coin",
           "weight": 1,
-          "text": "{subject}在菜摊前蹲下捡滚落的土豆时，一枚铜板从指缝滑进排水格栅，母亲晚上数钱时少了三枚克鲁泽。",
+          "text": "{subject}蹲下捡滚落的土豆，一枚十克鲁泽的铜板从指缝滑进排水格栅。{subject}趴在地上伸手去够，只摸到冷水和菜叶。晚上{mother}把找回的钱数了三遍，少了三十克鲁泽，问清后没骂，只把灯芯拧小。",
           "effects": [
             {
               "type": "cash",
@@ -312,27 +285,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-childhood-street.market-errand.errand-lost-coin.alt1",
               "key": "errand-lost-coin",
-              "text": "铜板在格栅上转了两圈就不见了。{subject}趴在地上看黑乎乎的排水沟，卖菜的女人说别看了，回家跟你妈说清楚。",
-              "tone": [
-                "dry"
-              ]
+              "text": "土豆从围裙里滚出来，{subject}蹲下去追，手心一松，三枚十克鲁泽的铜板叮叮当当掉在石板路上。两枚捡回来了，最后一枚滚进排水格栅，在铁条下转了个圈。{subject}趴下去够，指甲刮在铁条上。回家{mother}数完钱，脸色沉下来，{subject}站在桌边不敢动。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "vienna-childhood-street.market-errand.errand-lost-coin.alt2",
               "key": "errand-lost-coin",
-              "text": "母亲把围裙口袋翻过来抖了抖，三枚克鲁泽的缺口对不上。{subject}盯着地板缝，听见母亲说明天土豆少买半磅。",
-              "tone": [
-                "dry"
-              ]
+              "text": "菜摊前的地面是湿的。{subject}弯腰捡土豆时，一枚铜板从指缝里滑出去，顺着水沟格栅掉了下去。{subject}把剩下的钱摊在柜台上，让摊主帮忙数，还是少了三十克鲁泽。晚上{mother}把钱一枚枚排开，问了三遍怎么少的，{subject}每答一次，声音就低一点。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "errand-bullied",
           "weight": 1,
-          "text": "两个大孩子堵在市场拱廊下，把{subject}的围裙带子系在柱子上，街上一个更大的孩子路过时用削土豆的小刀割开了结。",
+          "text": "两个大孩子把{subject}堵在市场拱廊下，把围裙带子系在柱子上。{subject}挣了一下，肩膀撞在石柱上。{neighbor}提着菜篮路过，从袖口抽出削土豆的小刀，一下割开了结。",
           "effects": [
             {
               "type": "relation",
@@ -360,21 +329,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-childhood-street.market-errand.errand-bullied.alt1",
               "key": "errand-bullied",
-              "text": "围裙带子被系在拱廊柱上，{subject}的土豆撒了一地。街上一个更大的孩子从人群里挤过来，小刀一挑，结就松了。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}被推到拱廊柱子边，围裙带子绕了两圈，系在铁环上。{subject}一挣，肩膀撞上石柱，整条胳膊麻了一下。{neighbor}提着菜篮过来，把篮子往地上一放，从怀里摸出削土豆的小刀，挑开绳结，没跟那两个孩子说一句话。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "vienna-childhood-street.market-errand.errand-bullied.alt2",
               "key": "errand-bullied",
-              "text": "大孩子笑着走开，{subject}蹲着捡土豆，肩膀火辣辣的。街上一个更大的孩子把最后一颗土豆踢回围裙里，说以后走肉铺那条巷子。",
-              "tone": [
-                "dry",
-                "warm"
-              ]
+              "text": "市场拱廊下晒不到太阳，{subject}却被堵出一头汗。带子越挣越紧，肩膀在柱子上磕了一下。{neighbor}从人群里挤过来，先看了看{subject}的肩，又看了看柱子上的结，拿出小刀割断。两个大孩子骂了一句，{neighbor}把{subject}拉到菜篮后面。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
@@ -411,7 +375,7 @@
         {
           "id": "fever-recover",
           "weight": 2,
-          "text": "{subject}在公共洗衣房等母亲时染上热病，邻居用湿布敷额头三天，烧退后嘴唇还脱着皮。",
+          "text": "{subject}在公共洗衣房等{mother}，坐在湿板凳上睡着了。热病从那天夜里烧起来，{mother}用湿布敷了三天额头。烧退后{subject}的嘴唇脱了一层皮，{mother}的指关节也被碱水泡得开裂。",
           "effects": [
             {
               "type": "health",
@@ -439,28 +403,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-childhood-street.washhouse-fever.fever-recover.alt1",
               "key": "fever-recover",
-              "text": "洗衣房的蒸汽让{subject}昏昏沉沉，回家路上就开始打颤。母亲把湿布叠成条敷在额头上，第三天清早{subject}才说要喝水。",
-              "tone": [
-                "dry",
-                "sad"
-              ]
+              "text": "洗衣房里全是蒸汽和碱水味。{subject}靠在墙边等{mother}，湿衣服堆在脚边。夜里{subject}开始发烧，{mother}把湿布叠成长条，敷在额头，凉了再换。三天后热度退下去，{subject}的嘴唇起了一层白皮，{mother}的手指也裂了口子。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "vienna-childhood-street.washhouse-fever.fever-recover.alt2",
               "key": "fever-recover",
-              "text": "邻居轮流端来凉水和旧布，{subject}的烧在第三个晚上退了。母亲用指头碰了碰孩子的嘴唇，皮一碰就往下掉。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}在洗衣房的长凳上睡着，醒来时喉咙像塞了棉花。{mother}把最后的干净布巾浸了凉水，敷在{subject}额头上，整夜换了七八回。第四天{subject}能坐起来喝粥，下嘴唇脱下一小片皮，{mother}用指尖替{subject}拈掉。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "fever-scarlet",
           "weight": 1,
-          "text": "热病在洗衣房那条巷子传开，{subject}被隔在阁楼小屋里，医生来看过一次，母亲把攒着买煤的铜板付了诊费。",
+          "text": "热病在洗衣房那条巷子里传开，{subject}被隔在阁楼小屋，门上挂了块红布。医生来看过一次，说别让孩子下楼。{mother}把攒着买煤的一克朗二十赫勒数出来，付了诊费，又去借了一只便盆。",
           "effects": [
             {
               "type": "health",
@@ -485,21 +444,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-childhood-street.washhouse-fever.fever-scarlet.alt1",
               "key": "fever-scarlet",
-              "text": "医生把听诊器贴在{subject}胸口时，母亲站在门口绞围裙。诊费掏空了煤钱，阁楼门板上多了一张红纸条。",
-              "tone": [
-                "dry",
-                "sad"
-              ]
+              "text": "巷子里一家接一家地病倒。{subject}烧到说胡话，{mother}把阁楼小屋腾出来，在门把手上系了块红布。医生隔着门看了{subject}的喉咙，留下药粉，收下一克朗二十赫勒。{mother}把家里留着买煤的钱数了两遍，刚好够。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "vienna-childhood-street.washhouse-fever.fever-scarlet.alt2",
               "key": "fever-scarlet",
-              "text": "巷子里已经有人家把小孩送去医院。母亲把{subject}挪到阁楼，每天从门缝递进去一碗汤，红纸条贴了十天。",
-              "tone": [
-                "dry"
-              ]
+              "text": "阁楼的窗子被{mother}用布堵了一半，说是怕风。{subject}躺在草垫上，听见楼下有人问“你家孩子怎么样了”，{mother}压低声音回话。医生来了一趟，站在门口没进屋，诊费是一克朗二十赫勒。此后七天，{subject}的碗和水壶都放在门外。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
@@ -537,7 +491,7 @@
         {
           "id": "card-trade",
           "weight": 1,
-          "text": "{subject}用三张攒下的烟画跟街上一个更大的孩子换来一张印着皇帝像的卡，街上一个更大的孩子转身又用这张卡跟杂货店老板换了块糖。",
+          "text": "{subject}蹲在烟草店门口，用三张攒下的烟画跟{neighbor}换了一张印着皇帝像的卡。{neighbor}接过三张，转身就进杂货铺，用皇帝像换了块糖。{subject}追到柜台边，只看见糖纸在{neighbor}手里发亮。",
           "effects": [
             {
               "type": "mood",
@@ -557,27 +511,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-childhood-street.cigarette-card.card-trade.alt1",
               "key": "card-trade",
-              "text": "烟草店门口的玻璃柜里摆着一排烟画。{subject}把三张积攒的风景卡推过去，街上一个更大的孩子从口袋里摸出皇帝像，交易在排水沟边完成。",
-              "tone": [
-                "dry"
-              ]
+              "text": "烟草店门口的石阶上摆着一排烟画。{subject}把三张皱巴巴的卡摊开，{neighbor}挑了挑，从口袋里摸出一张皇帝像。交换完，{neighbor}转身进了杂货铺，把皇帝像往柜台上一拍，换了一块糖。{subject}站在门外，手里还留着卡片的油墨味。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "vienna-childhood-street.cigarette-card.card-trade.alt2",
               "key": "card-trade",
-              "text": "{subject}把卡放进衬衣口袋按了按。回头看见街上一个更大的孩子站在杂货店柜台前，皇帝像已经换成了嘴里含着的糖块。",
-              "tone": [
-                "dry"
-              ]
+              "text": "“三张换一张。”{neighbor}把皇帝像在{subject}眼前晃了晃。{subject}数出三张攒了半年的烟画，一张张递过去。皇帝像到手还没捂热，{neighbor}已经推开杂货铺的门，用同一张卡换了糖。{subject}把卡举到光下看，觉得皇帝的脸有点歪。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "card-stolen",
           "weight": 1,
-          "text": "一个穿背带裤的男孩撞了{subject}一下，烟画卡从指缝里飞出去，街上一个更大的孩子追到巷口只扯下对方一截袖子布条。",
+          "text": "一个穿背带裤的男孩撞了{subject}一下，烟画卡从指缝里飞出去。{subject}追到巷口摔了一跤，手掌在石板上擦破。{neighbor}从后面赶上来，一直追到拐角，只扯下对方一截袖子布条。",
           "effects": [
             {
               "type": "mood",
@@ -605,27 +555,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-childhood-street.cigarette-card.card-stolen.alt1",
               "key": "card-stolen",
-              "text": "背带裤男孩撞过来时，{subject}正把卡举高对着光看。卡片飞出去，街上一个更大的孩子追出十几步，只抓回一截扯断的袖子布条。",
-              "tone": [
-                "dry"
-              ]
+              "text": "巷口有人跑过来，肩膀撞在{subject}的胳膊上。烟画卡脱手，被风卷到路中间。{subject}追了两步，鞋底在湿石板上打滑，手掌先着地。{neighbor}从后面追上去，在拐角抓住那男孩的袖子，布条撕下来一截，人还是跑了。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "vienna-childhood-street.cigarette-card.card-stolen.alt2",
               "key": "card-stolen",
-              "text": "巷口拐角太窄，{subject}摔在石子路上，手掌蹭出血珠。街上一个更大的孩子蹲下来把布条塞进口袋，说认得那个背带裤上的补丁。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}正低头看卡上的皇帝胡子，一个穿背带裤的男孩从侧面撞过来。卡飞出去，落在马车辙里。{subject}扑过去捡，手掌被碎石划开一道口子。{neighbor}追到巷子尽头，只抓下一块袖布。回来时{subject}还蹲在地上，把沾泥的卡往袖子上擦。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "card-gift",
           "weight": 1,
-          "text": "烟草店老板见{subject}连着几天趴在柜台前看，把一张揉皱的风景烟画从柜台底下摸出来塞过来，说拿去吧别挡着门。",
+          "text": "{subject}连着几天趴在烟草店柜台前看烟画，每次都把门口的烟蒂踢到墙边，{neighbor}今天把一张揉皱的风景卡从柜台底下摸出来，塞进{subject}手里，说“拿去吧，别挡着门”。{subject}把卡抹平，又把自己多出来的一张递给{neighbor}看。",
           "effects": [
             {
               "type": "mood",
@@ -651,21 +597,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-childhood-street.cigarette-card.card-gift.alt1",
               "key": "card-gift",
-              "text": "老板用两根手指夹着烟画晃了晃，{subject}伸手接时他又缩回去，最后笑着拍在孩子掌心上。街上一个更大的孩子凑过来看卡片角上的折痕。",
-              "tone": [
-                "warm"
-              ]
+              "text": "{subject}每天放学都在柜台前站一会儿，看玻璃板底下压着的烟画，顺手把歪了的报纸摞齐。{neighbor}擦完柜台，从抽屉最里面摸出一张揉皱的风景卡，边角还沾着烟丝，塞过来时说了句“别挡着门”。{subject}把卡夹进课本，第二天带了一张重复的来给{neighbor}看。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "vienna-childhood-street.cigarette-card.card-gift.alt2",
               "key": "card-gift",
-              "text": "烟画上印着一座桥和一条河。{subject}把它对着烟草店橱窗的光看，街上一个更大的孩子在旁边说背面有号码，可以拿去跟人换。",
-              "tone": [
-                "dry",
-                "warm"
-              ]
+              "text": "烟草店的门铃响一次，{subject}就往柜台边挪一步。{neighbor}终于从柜台底下抽出一张风景卡，用手掌抹了抹，还是皱的。“拿去吧。”{neighbor}说完就去招呼别的客人。{subject}把卡举到鼻子前闻，一股烟草味，回家路上把多出来的一张卡分给{neighbor}看。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }

@@ -134,7 +134,7 @@ export const BATCH1_HEALTH_CRIME: PlotKernel[] = recipes([
       {
         id: 'sanatorium-waitlist',
         w: 0.38,
-        text: '医生把X光片夹上灯箱，说肺尖有一块雾，像冬天窗上的哈气。疗养院床位要等四个月，先开一张证明；{foreman}看了证明，把工钱结到月底，说岗位不能空着等人。{subject}把证明折成四折，塞进内衣口袋。',
+        text: '医生把X光片夹上灯箱，说肺尖有一块雾，像冬天窗上的哈气。诊费四克朗，疗养院床位还要等四个月，先开一张证明；{foreman}看了证明，把工钱结到月底，说岗位不能空着等人。{subject}把证明折成四折，塞进内衣口袋。',
         significance: 0.86,
         fx: {
           health: -0.06,

@@ -6,11 +6,7 @@
     "min": 18,
     "max": 75
   },
-  "tags": [
-    "health",
-    "family",
-    "home"
-  ],
+  "tags": ["health", "family", "home"],
   "baseRate": 0.28,
   "conditions": [
     {
@@ -64,7 +60,7 @@
         {
           "id": "call-doctor",
           "weight": 1,
-          "text": "{subject}在夜里发现{child}额头滚烫，用湿布敷额，天亮前去请街角的医生。医生开了药粉，收了诊费，{child}的烧在午后退了一些。",
+          "text": "{subject}在夜里发现{child}额头滚烫，湿布换了几回，天亮前敲开街角医生的门。医生开了药粉，收下三克朗诊费；午后的烧退了一些，{child}开始要水喝，{subject}却像被抽走了半条命，坐在床边直打盹。",
           "effects": [
             {
               "type": "health",
@@ -87,27 +83,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.child-fever.call-doctor.alt1",
               "key": "call-doctor",
-              "text": "{subject}摸到{child}滚烫的额头，湿布换了几回，天蒙蒙亮时敲开医生家门。药粉花了几个铜板，午后孩子出了汗。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}摸到{child}滚烫的额头，天蒙蒙亮时敲开医生家门。三克朗诊费从抽屉里数出去，换回几包药粉；午后孩子出了汗，湿透的布搭在椅背上。",
+              "tone": ["clinical"]
             },
             {
-              "id": "partner-absent",
+              "id": "vienna-illness-household.child-fever.call-doctor.alt2",
               "key": "call-doctor",
-              "text": "夜里{child}哭醒，{subject}独自用湿布敷额，熬到街上有人扫雪，才去请医生。诊费从抽屉里数出去，孩子的烧慢慢退了。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "夜里{child}哭醒，{subject}独自用湿布敷额，熬到街上有人扫雪才去请医生。医生进门时靴底带着雪泥，听完胸口说无大碍；那三克朗花得心疼，却换回一条稳下来的呼吸。",
+              "tone": ["tender"]
             }
           ]
         },
         {
           "id": "home-remedy",
           "weight": 1,
-          "text": "{subject}用湿布和兑水的醋给{child}擦身，整夜守在床边。天亮时烧退了些，{subject}却因为缺了半日工被扣了工钱。",
+          "text": "{subject}用湿布和兑水的醋给{child}擦身，整夜守在床边。天亮时烧退了些，{subject}却因为缺了半日工被扣掉一克朗五十赫勒；{child}睡稳了，{subject}的眼皮却肿着，上工时手指还在抖。",
           "effects": [
             {
               "type": "health",
@@ -130,27 +122,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.child-fever.home-remedy.alt1",
               "key": "home-remedy",
-              "text": "{subject}没去请医生，用湿布和醋水给{child}擦身，守到窗纸发白。孩子退了烧，{subject}上工时却迟了半日。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}没去请医生，用湿布和醋水给{child}擦身，守到窗纸发白。孩子退了烧，{subject}上工时却迟了半日，工头在工票背面记了一笔。",
+              "tone": ["dry"]
             },
             {
-              "id": "neighbor-help",
+              "id": "vienna-illness-household.child-fever.home-remedy.alt2",
               "key": "home-remedy",
-              "text": "{neighbor}过来看了一眼，教{subject}用湿布敷额。{child}天亮时安静睡了，{subject}却耽误了半日活计，工钱被扣。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "邻居过来看了一眼，教{subject}用湿布敷额。{child}天亮时安静睡了，{subject}却耽误半日活计；一克朗五十赫勒的工钱没了，床边的醋味却留了一整天。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "neighbor-help-night",
           "weight": 1,
-          "text": "{neighbor}听见孩子哭，端来一壶热水和几片退烧药，替{subject}守了半宿。{child}的烧在清晨退了，{subject}给{neighbor}送去半块面包。",
+          "text": "邻居听见孩子哭，端来一壶热水和几片退烧药，替{subject}守了半宿。{child}的烧在清晨退了，{subject}给邻居送去半块面包，折合一克朗的吃食；两家门口从此多了一句招呼，也多了一份欠着的人情。",
           "effects": [
             {
               "type": "health",
@@ -175,20 +163,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.child-fever.neighbor-help-night.alt1",
               "key": "neighbor-help-night",
-              "text": "{neighbor}听见动静，端来热水和药片，替{subject}守了半宿。天亮{child}退了烧，{subject}把半块面包送了过去。",
-              "tone": [
-                "dry"
-              ]
+              "text": "邻居听见动静，端来热水和药片，替{subject}守了半宿。天亮{child}退了烧，{subject}把半块面包送过去，对方推了两下，还是收下了。",
+              "tone": ["tender"]
             },
             {
-              "id": "partner-away",
+              "id": "vienna-illness-household.child-fever.neighbor-help-night.alt2",
               "key": "neighbor-help-night",
-              "text": "{subject}正没主意，{neighbor}敲门进来，带了热水和退烧药。孩子清晨安静下来，{subject}切了半块面包还这份人情。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "{subject}正没主意，邻居敲门进来，带了热水和退烧药。孩子清晨安静下来，{subject}切了半块面包还这份人情；楼道里有人问起，邻居只说孩子没事了。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
@@ -212,14 +196,15 @@
           "kind": "parent",
           "required": true,
           "minAge": 45,
-          "maxAge": 90
+          "maxAge": 90,
+          "sex": "female"
         }
       ],
       "outcomes": [
         {
           "id": "stay-home-care",
           "weight": 1,
-          "text": "{subject}向工头请了三天假，在家给{mother}换药、煮粥。工钱少了，但{mother}的腿肿消了些。",
+          "text": "{subject}向工头请了三天假，在家给{mother}换药、煮粥。三天工钱少了四克朗，{mother}的腿肿却消了些，能扶着床沿坐起来；{subject}把药布晾在炉边，心里明白这四克朗换的是母亲少受的一层罪。",
           "effects": [
             {
               "type": "cash",
@@ -245,27 +230,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.mother-falls.stay-home-care.alt1",
               "key": "stay-home-care",
-              "text": "{subject}跟工头请了三天假，在灶上熬粥，给{mother}换药。工钱少了一截，母亲的腿却慢慢消了肿。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}跟工头请了三天假，在灶上熬粥，给{mother}换药。工钱少了一截，母亲的腿却慢慢消了肿；夜里{subject}把椅子拼在床边，听见母亲呼吸平稳才合眼。",
+              "tone": ["tender"]
             },
             {
-              "id": "tight-room",
+              "id": "vienna-illness-household.mother-falls.stay-home-care.alt2",
               "key": "stay-home-care",
-              "text": "屋里只有一张床，{subject}把椅子拼在床边守了三夜，给{mother}敷药换布。请假扣的工钱让人心疼，但腿伤见好。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "屋里只有一张床，{subject}把椅子拼在床边守了三夜，给{mother}敷药换布。请假扣的工钱让人心疼，但腿伤见好；第四天早上，{mother}自己端起了粥碗。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "hire-care",
           "weight": 1,
-          "text": "{subject}托人请了巷尾的看护妇，每天来两回给{mother}擦洗换药。看护费不便宜，{subject}晚上多接了一份缝补的活。",
+          "text": "{subject}托人请了巷尾的看护妇，每天来两回给{mother}擦洗换药，六克朗花得清清楚楚。看护费不便宜，{subject}晚上多接了一份缝补的活，手指被针扎了几回；{mother}的腿伤有人料理，{subject}却连着几夜睡不够。",
           "effects": [
             {
               "type": "cash",
@@ -288,27 +269,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.mother-falls.hire-care.alt1",
               "key": "hire-care",
-              "text": "{subject}托人请来巷尾的看护妇，每天两回给{mother}换药擦身。看护费从积蓄里出，{subject}夜里多缝了几件活。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}托人请来巷尾的看护妇，每天两回给{mother}换药擦身。六克朗从积蓄里出，{subject}夜里多缝了几件活，灯芯剪得只剩一点。",
+              "tone": ["dry"]
             },
             {
-              "id": "neighbor-referral",
+              "id": "vienna-illness-household.mother-falls.hire-care.alt2",
               "key": "hire-care",
-              "text": "经街坊介绍，{subject}雇了看护妇照看{mother}。钱花得心疼，但母亲的腿伤有人料理，{subject}晚上替人缝补补上开销。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "经街坊介绍，{subject}雇了看护妇照看{mother}。钱花得心疼，但母亲的腿伤有人料理；{subject}晚上替人缝补补上开销，针脚比平日密。",
+              "tone": ["tender"]
             }
           ]
         },
         {
           "id": "mother-returns-to-work",
           "weight": 1,
-          "text": "{mother}只歇了两天就拄着扫帚去帮人洗衣。{subject}劝不住，晚上发现她的腿又肿了。",
+          "text": "{mother}只歇了两天就拄着扫帚去帮人洗衣，晚上带回一克朗零钱。{subject}劝不住，夜里看见她卷起裤腿，膝盖肿得发亮；那点工钱抵不上药钱，{subject}把硬币收进抽屉，没再说什么。",
           "effects": [
             {
               "type": "health",
@@ -331,20 +308,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.mother-falls.mother-returns-to-work.alt1",
               "key": "mother-returns-to-work",
-              "text": "{mother}歇了两天就拄着扫帚去洗衣，{subject}拦不住。晚上看她卷起裤腿，膝盖肿得发亮。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{mother}歇了两天就拄着扫帚去洗衣，{subject}拦不住。晚上看她卷起裤腿，膝盖肿得发亮；一克朗硬币放在桌上，谁也没去数。",
+              "tone": ["dry"]
             },
             {
-              "id": "small-wage",
+              "id": "vienna-illness-household.mother-falls.mother-returns-to-work.alt2",
               "key": "mother-returns-to-work",
-              "text": "{mother}不肯躺着，第三天就去帮人洗衣挣几个铜板。{subject}晚上发现她的腿又肿了，那点工钱抵不上药钱。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "{mother}不肯躺着，第三天就去帮人洗衣挣回一克朗。{subject}晚上发现她的腿又肿了，那点工钱抵不上药钱；炉边的药布还没干，又得重新煮。",
+              "tone": ["tender"]
             }
           ]
         }
@@ -388,7 +361,7 @@
         {
           "id": "sanatorium-referral",
           "weight": 1,
-          "text": "{subject}咳了两个月，在市立诊所拍片后被告知肺尖有阴影，须去疗养院。手续和路费花去一笔钱，{neighbor}替{subject}照看屋子。",
+          "text": "{subject}咳了两个月，在市立诊所拍片后被告知肺尖有阴影，须去疗养院。手续和路费一共八克朗，{subject}把能借的都借了；邻居答应隔天来看屋子。进疗养院后，夜里咳得轻了些，{subject}才把行李从床边挪到柜子顶上。",
           "effects": [
             {
               "type": "cash",
@@ -413,27 +386,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.tuberculosis-worry.sanatorium-referral.alt1",
               "key": "sanatorium-referral",
-              "text": "{subject}咳了两个月，诊所拍片后叫他去疗养院。手续和火车票花去一笔钱，{neighbor}答应隔天来看屋子。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}咳了两个月，诊所拍片后叫去疗养院。八克朗手续和火车票凑得艰难；邻居答应隔天来看屋子，临走还往包里塞了一块面包。",
+              "tone": ["clinical"]
             },
             {
-              "id": "partner-packs",
+              "id": "vienna-illness-household.tuberculosis-worry.sanatorium-referral.alt2",
               "key": "sanatorium-referral",
-              "text": "拍片结果压在{subject}手里，肺尖有阴影。去疗养院的手续和路费凑得艰难，{neighbor}来帮着收拾了行李。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "拍片结果压在{subject}手里，肺尖有阴影。去疗养院的手续和路费一共八克朗，邻居来帮着收拾行李；{subject}把钥匙交出去时，手指在门框上停了一下。",
+              "tone": ["tender"]
             }
           ]
         },
         {
           "id": "keep-working",
           "weight": 1,
-          "text": "{subject}不理会咳嗽，照样上工，夜里咳得更凶。{partner}把窗户开了条缝，{subject}却嫌冷。工钱没少，身体却一天天沉下去。",
+          "text": "{subject}不理会咳嗽，照样上工，夜里咳得更凶，胸口像拉着一把钝锯。{partner}把窗户开了条缝，夜里背对着{subject}睡；工钱没少，还多挣了两克朗，身体却一天天沉下去，走楼梯要在转角歇一歇。",
           "effects": [
             {
               "type": "health",
@@ -458,27 +427,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.tuberculosis-worry.keep-working.alt1",
               "key": "keep-working",
-              "text": "{subject}把咳嗽压在嗓子里照样上工，夜里咳得更凶。{partner}开了条窗缝，{subject}只说冷。工钱没短，人却见瘦。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}把咳嗽压在嗓子里照样上工，夜里咳得更凶。{partner}开了条窗缝，{subject}只说冷；两克朗多挣的工钱放在桌上，人却见瘦。",
+              "tone": ["dry"]
             },
             {
-              "id": "neighbor-warns",
+              "id": "vienna-illness-household.tuberculosis-worry.keep-working.alt2",
               "key": "keep-working",
-              "text": "{neighbor}说这咳法不对劲，{subject}摆摆手继续上工。夜里咳得床板发颤，{partner}把窗户开了条缝。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "邻居说这咳法不对劲，{subject}摆摆手继续上工。夜里咳得床板发颤，{partner}把窗户开了条缝；{subject}把被子拉到下巴，听见楼下有人收工回来。",
+              "tone": ["clinical"]
             }
           ]
         },
         {
           "id": "home-quarantine",
           "weight": 1,
-          "text": "{subject}借了块布帘把床隔开，白天开窗，晚上用热水熏。{partner}搬到灶间睡，{subject}的咳嗽慢慢轻了，但家里少了些热乎气。",
+          "text": "{subject}借了块布帘把床隔开，白天开窗，晚上用热水熏。{partner}搬到灶间睡，咳嗽慢慢轻了，家里却少了些热乎气；两人隔着布帘说话，话越说越短，最后只剩一句“水开了”。",
           "effects": [
             {
               "type": "health",
@@ -503,20 +468,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.tuberculosis-worry.home-quarantine.alt1",
               "key": "home-quarantine",
-              "text": "{subject}借布帘把床隔开，白天开窗，晚上热水熏。{partner}搬到灶间睡，咳嗽轻了些，屋里却安静得发闷。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}借布帘把床隔开，白天开窗，晚上热水熏。{partner}搬到灶间睡，咳嗽轻了些，屋里却安静得发闷；布帘上印着一排褪色的花。",
+              "tone": ["dry"]
             },
             {
-              "id": "curtain-divided",
+              "id": "vienna-illness-household.tuberculosis-worry.home-quarantine.alt2",
               "key": "home-quarantine",
-              "text": "怕过人，{subject}自己隔出半间屋，{partner}在灶间搭了铺。咳嗽慢慢少了，夫妻间的话也少了。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "怕过人，{subject}自己隔出半间屋，{partner}在灶间搭了铺。咳嗽慢慢少了，夫妻间的话也少了；夜里两人隔着布帘翻身，谁也没先开口。",
+              "tone": ["tender"]
             }
           ]
         }
@@ -561,7 +522,7 @@
         {
           "id": "take-to-hospital",
           "weight": 1,
-          "text": "{worker}在冲床里压了手指，{subject}和几个人把{worker}送到医院。{employer}派人送来两块钱，说算工钱里的部分，{worker}的手指保住了，却再也伸不直。",
+          "text": "{worker}在冲床里压了手指，{subject}和几个人把{worker}送到医院。{employer}派人送来两克朗，说算工钱里的部分；{worker}的手指保住了，却再也伸不直，{subject}在厂里得了句“够义气”，也知道这名声换不回一根好指头。",
           "effects": [
             {
               "type": "cash",
@@ -592,27 +553,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.wage-earner-injury.take-to-hospital.alt1",
               "key": "take-to-hospital",
-              "text": "{worker}的指头被冲床压住，{subject}扶着他一路走到医院。{employer}派人送来两块钱，指头保住了，却弯不回去。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{worker}的指头被冲床压住，{subject}扶着一路走到医院。{employer}派人送来两克朗，指头保住了，却弯不回去；{worker}盯着自己的手，半天没说一句话。",
+              "tone": ["clinical"]
             },
             {
-              "id": "foreman-pays",
+              "id": "vienna-illness-household.wage-earner-injury.take-to-hospital.alt2",
               "key": "take-to-hospital",
-              "text": "冲床咬住{worker}的手指，{subject}用围裙裹住他的手送医。{employer}给了两块钱作补贴，那根手指从此伸不直。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "冲床咬住{worker}的手指，{subject}用围裙裹住伤手送医。{employer}给了两克朗作补贴，那根手指从此伸不直；车间里的人看{subject}的眼神多了几分敬重。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "walk-home",
           "weight": 1,
-          "text": "{subject}把{worker}扶回{worker}家的地下室，用干净布条裹住伤指。{worker}的家人千恩万谢，{subject}却担心明天怎么向{employer}交代。",
+          "text": "{subject}把{worker}扶回地下室，用干净布条裹住伤指。{worker}的家人千恩万谢，端来热水；{subject}却惦记着明天怎么向{employer}交代，回去的路上一直在算耽误了几个钟头，伤口只经简单包扎，肿得发亮。",
           "effects": [
             {
               "type": "relation",
@@ -638,27 +595,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.wage-earner-injury.walk-home.alt1",
               "key": "walk-home",
-              "text": "{subject}把{worker}扶回地下室，用干净布条裹住伤指。他家里人连声道谢，{subject}心里却盘算明天怎么跟{employer}说。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}把{worker}扶回地下室，用干净布条裹住伤指。家里人连声道谢，{subject}心里却盘算明天怎么跟{employer}说；布条很快洇出一点红。",
+              "tone": ["dry"]
             },
             {
-              "id": "family-thanks",
+              "id": "vienna-illness-household.wage-earner-injury.walk-home.alt2",
               "key": "walk-home",
-              "text": "没去医院，{subject}送{worker}回地下室，布条裹了伤指。他妻子端来热水，{subject}却惦记着耽误的工时。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "没去医院，{subject}送{worker}回地下室，布条裹了伤指。妻子端来热水，{subject}却惦记着耽误的工时；临走时{worker}用另一只手碰了碰{subject}的胳膊。",
+              "tone": ["tender"]
             }
           ]
         },
         {
           "id": "report-unsafe",
           "weight": 1,
-          "text": "{subject}和几个工友去找{employer}，要求修冲床的护板。{employer}骂了几句，还是叫人来钉了块木板。{worker}的手指没能全好，但总算有了个说法。",
+          "text": "{subject}和几个工友去找{employer}，要求修冲床的护板。{employer}骂了几句，还是叫人来钉了块木板；{worker}的手指没能全好，却怪{subject}多事，怕厂里记名，此后在车间里绕着{subject}走。护板是钉上了，人情却凉了一层。",
           "effects": [
             {
               "type": "relation",
@@ -687,20 +640,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "vienna-illness-household.wage-earner-injury.report-unsafe.alt1",
               "key": "report-unsafe",
-              "text": "{subject}带着几个工友找{employer}，要求修冲床护板。挨了一顿骂，木板还是钉上了。{worker}的指头没能全好，总算有个说法。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}带着几个工友找{employer}，要求修冲床护板。挨了一顿骂，木板还是钉上了；{worker}的指头没能全好，却在食堂里避开{subject}的目光。",
+              "tone": ["dry"]
             },
             {
-              "id": "small-win",
+              "id": "vienna-illness-household.wage-earner-injury.report-unsafe.alt2",
               "key": "report-unsafe",
-              "text": "{subject}和工友围住{employer}，指着冲床说这机器要修。{employer}骂完还是叫人来钉护板。{worker}的手没全好，厂里却多了块木板。",
-              "tone": [
-                "matter_of_fact"
-              ]
+              "text": "{subject}和工友围住{employer}，指着冲床说这机器要修。{employer}骂完还是叫人来钉护板；{worker}的手没全好，厂里却多了块木板，{subject}也多了个“爱出头”的名声。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }

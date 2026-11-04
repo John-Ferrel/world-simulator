@@ -315,6 +315,17 @@ function displayAge(person: { born: Date4; died?: Date4; age?: number }, worldDa
     : ageAtDate(person, worldDate);
 }
 
+function lifeChapter(age: number): string {
+  if (age < 6) return '幼年';
+  if (age < 12) return '童年';
+  if (age < 18) return '少年';
+  if (age < 25) return '青年';
+  if (age < 35) return '成年';
+  if (age < 50) return '中年';
+  if (age < 65) return '晚年';
+  return '老年';
+}
+
 function lifeSpanText(person: Pick<PersonSummary, 'born' | 'died'>): string {
   return `${shortDate(person.born)} — ${person.died ? shortDate(person.died) : '至今'}`;
 }
@@ -1622,6 +1633,10 @@ function LogPane({
                 {newYear && (
                   <div className="year-divider">
                     <span>{event.date.year}</span>
+                    <small>
+                      {event.date.year - person.born.year} 岁 ·{' '}
+                      {lifeChapter(event.date.year - person.born.year)}
+                    </small>
                   </div>
                 )}
                 <LogEntry

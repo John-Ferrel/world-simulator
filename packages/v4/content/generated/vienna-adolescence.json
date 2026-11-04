@@ -6,13 +6,7 @@
     "min": 12,
     "max": 17
   },
-  "tags": [
-    "adolescence",
-    "school",
-    "work",
-    "family",
-    "social"
-  ],
+  "tags": ["adolescence", "school", "work", "family", "social"],
   "baseRate": 0.32,
   "conditions": [
     {
@@ -62,7 +56,7 @@
         {
           "id": "apprenticeship-accepted",
           "weight": 2,
-          "text": "{subject}跟着{mother}走进{workplace}，{employer}让{subject}推了十分钟刨子，木花落了一地，当场收下当学徒，讲好每周一先交三天的饭钱。",
+          "text": "{subject}跟着{mother}走进{workplace}，{employer}让{subject}推了十分钟刨子，木花落了一地。{employer}当场收下这个学徒，先数出三克朗饭钱，说好周一上工，迟到一刻钟就扣半天。",
           "effects": [
             {
               "type": "cash",
@@ -94,27 +88,23 @@
           ],
           "narration": [
             {
-              "id": "accepted-a",
+              "id": "vienna-adolescence.workshop-apprentice.apprenticeship-accepted.alt1",
               "key": "apprenticeship-accepted",
-              "text": "{subject}跟着{mother}走进{workplace}，{employer}让{subject}推了十分钟刨子，木花落了一地，当场收下当学徒，讲好每周一先交三天的饭钱。",
-              "tone": [
-                "dry"
-              ]
+              "text": "作坊里全是松木味。{employer}把一块方木夹进台钳，让{subject}推刨子。{subject}推了十分钟，木花卷到脚背上，刨面总算平了。{employer}用拇指摸了摸，收下{subject}，从钱盒里数出三克朗，说是头一周的饭钱。{mother}在门口把围裙攥得很紧。",
+              "tone": ["dry"]
             },
             {
-              "id": "accepted-b",
+              "id": "vienna-adolescence.workshop-apprentice.apprenticeship-accepted.alt2",
               "key": "apprenticeship-accepted",
-              "text": "{employer}用拇指蹭了蹭{subject}推刨时压出的木纹，点头说留下，{mother}从手帕里数出三枚硬币放在工作台上。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{employer}先看{subject}的手，又让{subject}推两下刨子试试。{subject}用力过猛，刨刀啃进木头，{employer}皱眉，让再来一遍。第二遍木花薄而匀。{employer}说“留下”，当面点了三克朗给{mother}，算头一周饭钱，又指了指墙上的钟，说迟到一刻钟扣半天。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "apprenticeship-rejected",
           "weight": 1,
-          "text": "{employer}看了看{subject}的手掌，说太薄，推不了硬木，让{mother}领回去。{subject}在门口站了一会儿，听见里面刨子又响起来。",
+          "text": "{employer}看了看{subject}的手掌，说太薄，推不了硬木，让{mother}领回去。{subject}在门口站了一会儿，听见里面刨子又响起来，木花从门缝里卷出来。{mother}把带来的布包重新系好，没说话。",
           "effects": [
             {
               "type": "mood",
@@ -140,20 +130,16 @@
           ],
           "narration": [
             {
-              "id": "rejected-a",
+              "id": "vienna-adolescence.workshop-apprentice.apprenticeship-rejected.alt1",
               "key": "apprenticeship-rejected",
-              "text": "{employer}看了看{subject}的手掌，说太薄，推不了硬木，让{mother}领回去。{subject}在门口站了一会儿，听见里面刨子又响起来。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{employer}捏了捏{subject}的虎口，又让{subject}张开手指，说骨节还没长开，推硬木会伤手。{mother}想再问一句，{employer}已经转身去搬木料。{subject}退到门槛外，听见刨子重新响起来，木花从门缝里卷到脚边。",
+              "tone": ["dry"]
             },
             {
-              "id": "rejected-b",
+              "id": "vienna-adolescence.workshop-apprentice.apprenticeship-rejected.alt2",
               "key": "apprenticeship-rejected",
-              "text": "{employer}把{subject}推好的木条翻过来看了一眼，说歪了，学徒名额已经满了，{mother}把手里攥着的三枚硬币又放回手帕。",
-              "tone": [
-                "dry"
-              ]
+              "text": "“太小，手也薄。”{employer}说完，把{subject}推过的木板翻过来，指着上面一道啃痕。{mother}把布包往肩上提了提，说打扰了。{subject}在门口多站了一会儿，直到里面的刨子声把话头盖过去，才跟着{mother}下楼。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
@@ -195,7 +181,7 @@
         {
           "id": "sew-it-yourself",
           "weight": 2,
-          "text": "{subject}把哥哥留下的灰外套摊在厨房桌上，自己用粗线把腋下的裂口缝上，针脚歪歪扭扭。{father}看了一眼，没说话，把自己那碗汤推过去半碗。",
+          "text": "{subject}把哥哥留下的灰外套摊在厨房桌上，用粗线把腋下的裂口缝上，针脚歪歪扭扭，袖口还留着哥哥的名字布条。{father}看了一眼，没说话，把自己那碗汤推过去半碗。",
           "effects": [
             {
               "type": "skill",
@@ -222,27 +208,23 @@
           ],
           "narration": [
             {
-              "id": "sew-a",
+              "id": "vienna-adolescence.brothers-torn-jacket.sew-it-yourself.alt1",
               "key": "sew-it-yourself",
-              "text": "{subject}把哥哥留下的灰外套摊在厨房桌上，自己用粗线把腋下的裂口缝上，针脚歪歪扭扭。{father}看了一眼，没说话，把自己那碗汤推过去半碗。",
-              "tone": [
-                "dry"
-              ]
+              "text": "外套腋下裂了一道口子，里布翻出来。{subject}把袖口套在桌角上撑开，穿针时试了三次才引上线。针脚一针长一针短，像蜈蚣。{father}端着汤进来，站在桌边看了一会儿，把碗往{subject}那边推了推，自己只留了半碗。",
+              "tone": ["dry"]
             },
             {
-              "id": "sew-b",
+              "id": "vienna-adolescence.brothers-torn-jacket.sew-it-yourself.alt2",
               "key": "sew-it-yourself",
-              "text": "{subject}坐在窗边借着最后一点天光补外套，线用完三次又接上。{father}把煤油灯往{subject}那边挪了挪，说下个月再买线。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}在厨房找到一截粗线，颜色和外套差了一截。缝到一半，线打结，{subject}用牙咬断，重新来。{father}坐在对面，没问外套的事，只把汤碗推过来，说“先吃”。{subject}把最后一针打完，汤面已经结了一层薄皮。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "sell-the-coat",
           "weight": 1,
-          "text": "{subject}把外套拿到巷口的旧货贩子那里，换回两个铜板，藏在鞋垫底下。晚上{father}发现外套不见了，盯着空衣钩看了很久。",
+          "text": "{subject}把外套拿到巷口的旧货贩子那里，换回两个克朗，藏在鞋垫底下。晚上{father}发现衣钩空了，盯着看了很久，问{subject}外套去哪了。{subject}说不知道，鞋里的硬币硌着脚心。",
           "effects": [
             {
               "type": "cash",
@@ -268,20 +250,16 @@
           ],
           "narration": [
             {
-              "id": "sell-a",
+              "id": "vienna-adolescence.brothers-torn-jacket.sell-the-coat.alt1",
               "key": "sell-the-coat",
-              "text": "{subject}把外套拿到巷口的旧货贩子那里，换回两个铜板，藏在鞋垫底下。晚上{father}发现外套不见了，盯着空衣钩看了很久。",
-              "tone": [
-                "dry"
-              ]
+              "text": "旧货贩子把外套翻过来看了看里布，伸出两个手指。{subject}接过两枚克朗，塞进鞋垫底下，走回家时脚心一直硌着。晚上{father}站在门后，手搭在空衣钩上，问外套呢。{subject}说不知道，声音比平时高了一点。",
+              "tone": ["dry"]
             },
             {
-              "id": "sell-b",
+              "id": "vienna-adolescence.brothers-torn-jacket.sell-the-coat.alt2",
               "key": "sell-the-coat",
-              "text": "{subject}把灰外套叠好塞给旧货贩子，贩子捏了捏袖口，只肯给两个铜板。{father}晚饭时问外套去哪了，{subject}说晾在外面忘了收。",
-              "tone": [
-                "dry"
-              ]
+              "text": "巷口的风把外套下摆吹起来。旧货贩子闻了闻领子，说给两克朗。{subject}把钱卷进袜筒，回家前在楼梯口站了一会儿。{father}发现衣钩空了，问了三遍，{subject}都说没看见，脚趾在鞋里把硬币越踩越紧。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
@@ -326,7 +304,7 @@
         {
           "id": "stay-in-school",
           "weight": 1,
-          "text": "{teacher}在放学后把{subject}留在教室里，指着算术本上最后一道题说，再念一年，也许能进商业学校。{father}在门外听完，把帽檐压低了半指。",
+          "text": "{teacher}在放学后把{subject}留在教室里，指着算术本上最后一道题说，再念一年，也许能进商业学校。{father}在门外听完，把帽檐压低了半指，什么也没说。",
           "effects": [
             {
               "type": "education",
@@ -353,27 +331,23 @@
           ],
           "narration": [
             {
-              "id": "school-a",
+              "id": "vienna-adolescence.school-or-brickworks.stay-in-school.alt1",
               "key": "stay-in-school",
-              "text": "{teacher}在放学后把{subject}留在教室里，指着算术本上最后一道题说，再念一年，也许能进商业学校。{father}在门外听完，把帽檐压低了半指。",
-              "tone": [
-                "dry"
-              ]
+              "text": "教室里只剩炉子噼啪响。{teacher}把算术本翻到最后一页，指着那道应用题，说再念一年，商业学校可以考。{subject}用铅笔在边上重算了一遍。门外有脚步声，{father}站在走廊里，帽檐压低半指，听完才走。",
+              "tone": ["dry"]
             },
             {
-              "id": "school-b",
+              "id": "vienna-adolescence.school-or-brickworks.stay-in-school.alt2",
               "key": "stay-in-school",
-              "text": "{teacher}用粉笔在黑板角落写下商业学校的报名费，{subject}盯着那个数字。{father}最后说，再念一年，砖厂不会跑。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{teacher}没有催{subject}回家，把黑板上的题擦了，又写了一道更长的。{subject}算到一半，{teacher}说“再念一年”。门外的{father}把帽子摘下来又戴上，帽檐压得比刚才低。{subject}看见门缝里的影子，铅笔停了一下。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "go-to-brickworks",
           "weight": 2,
-          "text": "{father}把{subject}的算术本合上，说下周一跟着街尾的工头去砖厂。{teacher}在门口拦住{subject}，递来一张抄着夜校地址的纸条，{subject}把它折进鞋垫。",
+          "text": "{father}把{subject}的算术本合上，说下周一跟着街尾的工头去砖厂。{teacher}在门口拦住{subject}，递来一张抄着夜校地址的纸条，{subject}把它折进鞋垫。砖厂头一周发了四克朗，晚上脱鞋时脚底全是红砖末。",
           "effects": [
             {
               "type": "role",
@@ -422,20 +396,16 @@
           ],
           "narration": [
             {
-              "id": "brick-a",
+              "id": "vienna-adolescence.school-or-brickworks.go-to-brickworks.alt1",
               "key": "go-to-brickworks",
-              "text": "{father}把{subject}的算术本合上，说下周一跟着街尾的工头去砖厂。{teacher}在门口拦住{subject}，递来一张抄着夜校地址的纸条，{subject}把它折进鞋垫。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{father}把算术本合上，说家里等钱，下周一去砖厂。{subject}没争。放学时{teacher}在门口等着，塞来一张纸条，上面抄着六区夜校的地址。{subject}把纸条折小，塞进鞋垫。砖厂第一周结四克朗，{subject}搬砖搬到手指发抖，晚上脱鞋，袜底全是红砖末。",
+              "tone": ["dry"]
             },
             {
-              "id": "brick-b",
+              "id": "vienna-adolescence.school-or-brickworks.go-to-brickworks.alt2",
               "key": "go-to-brickworks",
-              "text": "{father}带{subject}去砖厂，工头掀开{subject}的袖口看了看胳膊，说行。{teacher}的夜校纸条被汗水洇软，{subject}把它贴在砖垛上晾干。",
-              "tone": [
-                "dry"
-              ]
+              "text": "“下周一，跟街尾的工头走。”{father}说完就把算术本推到桌角。{subject}知道再争也没用。{teacher}在门口拦住{subject}，把一张夜校地址塞过来，说晚上可以去。{subject}把纸条折进鞋垫，第二天就去了砖厂。头一周四克朗，搬砖搬得腰直不起来，纸条在鞋里磨得发毛。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
@@ -477,7 +447,7 @@
         {
           "id": "caught-and-returned",
           "weight": 2,
-          "text": "{subject}刚把面包房后门筐里的半个黑面包塞进怀里，{neighbor}就从晾衣绳后面走出来，一言不发地伸手。{subject}把面包放回去，手背上被{neighbor}用指节敲了两下。",
+          "text": "{subject}刚把面包房后门筐里的半个黑面包塞进怀里，{neighbor}就从晾衣绳后面走出来，一言不发地伸手。{subject}把面包放回筐里，手背上挨了两下指节。",
           "effects": [
             {
               "type": "reputation",
@@ -503,27 +473,23 @@
           ],
           "narration": [
             {
-              "id": "caught-a",
+              "id": "vienna-adolescence.stolen-roll.caught-and-returned.alt1",
               "key": "caught-and-returned",
-              "text": "{subject}刚把面包房后门筐里的半个黑面包塞进怀里，{neighbor}就从晾衣绳后面走出来，一言不发地伸手。{subject}把面包放回去，手背上被{neighbor}用指节敲了两下。",
-              "tone": [
-                "tense"
-              ]
+              "text": "面包房后门的筐里堆着隔夜面包。{subject}拿起半个黑面包，刚要往怀里塞，{neighbor}从晾衣绳后面绕出来，手一伸，掌心朝上。{subject}把面包放回去，{neighbor}用指节在{subject}手背上敲了两下，声音不大，巷口的人都听见了。",
+              "tone": ["dry"]
             },
             {
-              "id": "caught-b",
+              "id": "vienna-adolescence.stolen-roll.caught-and-returned.alt2",
               "key": "caught-and-returned",
-              "text": "{neighbor}拎着{subject}的后领子把面包从怀里掏出来，放回筐里，说下回就告诉面包师。{subject}空着手回家，晚饭时盯着碗底。",
-              "tone": [
-                "tense"
-              ]
+              "text": "{subject}的手刚碰到面包皮，身后就有人清了清嗓子。{neighbor}站在晾衣绳下，手里还捏着夹子，什么也没问，只把手伸过来。{subject}把面包放回筐里，手背挨了两下，面包筐的盖子被{neighbor}合上，发出一声闷响。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "share-the-roll",
           "weight": 1,
-          "text": "{neighbor}看见{subject}蹲在面包房后门，没喊人，从自己篮子里掰下半个面包递过去，说别让面包师看见。{subject}吃完把面包皮留给了{neighbor}的狗。",
+          "text": "{neighbor}看见{subject}蹲在面包房后门，没喊人，从自己篮子里掰下半个面包递过去，说别让面包师看见。{subject}咬了两口，把剩下的用纸包好带回家，面包皮留给了{neighbor}的狗。",
           "effects": [
             {
               "type": "food",
@@ -543,20 +509,16 @@
           ],
           "narration": [
             {
-              "id": "share-a",
+              "id": "vienna-adolescence.stolen-roll.share-the-roll.alt1",
               "key": "share-the-roll",
-              "text": "{neighbor}看见{subject}蹲在面包房后门，没喊人，从自己篮子里掰下半个面包递过去，说别让面包师看见。{subject}吃完把面包皮留给了{neighbor}的狗。",
-              "tone": [
-                "warm"
-              ]
+              "text": "{subject}蹲在面包房后门的台阶上，手指抠着筐沿。{neighbor}提着篮子过来，脚步很轻，掰下半个黑面包塞进{subject}手里，说“别让里面的人看见”。{subject}咬了两口，把剩下的包进纸里，回家放在桌上。",
+              "tone": ["dry"]
             },
             {
-              "id": "share-b",
+              "id": "vienna-adolescence.stolen-roll.share-the-roll.alt2",
               "key": "share-the-roll",
-              "text": "{neighbor}把{subject}拉到楼梯间，从篮子里摸出半个面包，说以后饿了就敲她家门，别在面包房后门转。{subject}把面包分了一半带回家。",
-              "tone": [
-                "warm"
-              ]
+              "text": "面包房后门的灯灭了。{subject}正要走，{neighbor}从巷子那头过来，篮子用布盖着。{neighbor}掀开布角，掰了半个面包，什么也没问。{subject}吃完把面包皮撕下来，蹲下喂了{neighbor}的狗，狗尾巴扫在{subject}的鞋面上。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }

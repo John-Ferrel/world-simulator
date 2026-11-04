@@ -87,6 +87,8 @@ export type KernelVariantWhen = {
   relationKind?: string;
   /** Restrict the branch to one sex; compiled into a SceneCondition. */
   sex?: 'female' | 'male';
+  /** Health/vitality window; compiled into a SceneCondition. */
+  health?: { min?: number; max?: number };
 };
 
 export type KernelOutcome = {

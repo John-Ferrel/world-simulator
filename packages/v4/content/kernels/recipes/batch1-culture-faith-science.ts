@@ -1115,7 +1115,7 @@ export const BATCH1_CULTURE_FAITH_SCIENCE: PlotKernel[] = recipes([
       {
         id: 'eyes-closed',
         w: 0.4,
-        text: '{photographer}让{subject}别眨眼，数到十二。镁粉一闪，{sitter}在快门声里轻轻咳了一下；底片洗出来，{subject}的眼睛是闭的，{sitter}的手却清楚得能看见指节上的墨。',
+        text: '{photographer}收了{subject}两克朗，让{subject}坐在白布前别眨眼，数到十二。镁粉一闪，{sitter}在快门声里轻轻咳了一下；{photographer}没说话，把底片夹进暗袋。三天后取片，{subject}的眼睛是闭的，{sitter}的手却清楚得能看见指节上的墨。{photographer}说这张不能挂橱窗，{subject}还是把它夹进了账本。',
         significance: 0.6,
         fx: {
           cash: -2,
@@ -2793,7 +2793,7 @@ export const BATCH1_CULTURE_FAITH_SCIENCE: PlotKernel[] = recipes([
       {
         id: 'ruined-by-rain',
         w: 0.35,
-        text: '{subject}买了帽子，第一次戴出去就下雨。帽檐塌下来，像一只湿透的鸟；{partner}把自己的旧帽换给{subject}，说这顶经得起雨。{subject}把新帽子晾在炉边，第二天缩了一圈，再也戴不上。',
+        text: '{subject}在橱窗前站了三个下午，最后数出十二克朗，把帽子捧回家。第一次戴出去就下雨，帽檐塌下来，像一只湿透的鸟；{partner}把自己的旧毡帽换给{subject}，说这顶经得起雨。{subject}把新帽子晾在炉边，第二天缩了一圈，再也戴不上，十二克朗只剩下一圈硬边。',
         significance: 0.72,
         fx: {
           cash: -12,

@@ -4734,7 +4734,7 @@ export const BATCH2_DOMESTIC_LEISURE: PlotKernel[] = recipes([
       {
         id: 'confronted-the-family',
         w: 0.3,
-        text: '{subject}把本子摊在{parent}面前，翻到多出来的那一行字：今天什么都没发生。{parent}说只是担心，{subject}说担心不是理由。{sibling}在门口说不是自己写的，{parent}让{subjectPronoun}闭嘴。那天晚饭，桌上只有刀叉的声音。',
+        text: '{subject}把日记本摊在{parent}面前，小铜锁还挂在搭扣上，锁鼻却被撬歪了。{subject}翻到多出来的那一行字：今天什么都没发生。{parent}说只是担心，{subject}说担心不是理由。{sibling}在门口说不是自己写的，{parent}让{subjectPronoun}闭嘴。那天晚饭，桌上只有刀叉的声音，{subject}把撬坏的锁放在桌角，谁也没去碰。',
         significance: 0.8,
         fx: {
           relation: [

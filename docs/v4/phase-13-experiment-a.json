@@ -1,0 +1,678 @@
+{
+  "generatedAt": "2026-11-04T12:43:38.917Z",
+  "kernelId": "kernel-civic.leaflet-night",
+  "title": "油墨未干的传单",
+  "variants": [
+    {
+      "id": "civic-leaflet-war",
+      "when": {
+        "contextTags": [
+          "war"
+        ],
+        "processKinds": [
+          "war_mobilization"
+        ]
+      }
+    }
+  ],
+  "outcomesWithBranches": [],
+  "scenarios": [
+    {
+      "label": "peace-1912",
+      "year": 1912,
+      "compiledScenes": 5,
+      "variantIds": [
+        "base"
+      ],
+      "sceneIds": [
+        "kernel-civic.leaflet-night::ctx-klosterneuburg-rural-1912::milieu-shop",
+        "kernel-civic.leaflet-night::ctx-vienna-1912::milieu-printshop",
+        "kernel-civic.leaflet-night::ctx-vienna-1912::milieu-factory",
+        "kernel-civic.leaflet-night::ctx-vienna-1912::milieu-shop",
+        "kernel-civic.leaflet-night::ctx-vienna-1912::milieu-union"
+      ],
+      "events": 3,
+      "outcomeCounts": [
+        {
+          "outcomeId": "civic-leaflet-police",
+          "count": 3
+        }
+      ],
+      "samples": [
+        {
+          "id": "evt:world-vienna-1912:000001",
+          "action": "kernel-civic.leaflet-night::ctx-vienna-1912::milieu-printshop/civic-leaflet-police",
+          "date": {
+            "year": 1913,
+            "month": 6
+          },
+          "subjectId": "person-alois-lechner",
+          "trace": {
+            "mechanism": {
+              "sceneId": "kernel-civic.leaflet-night::ctx-vienna-1912::milieu-printshop",
+              "outcomeId": "civic-leaflet-police",
+              "kernelId": "kernel-civic.leaflet-night",
+              "contextId": "ctx-vienna-1912",
+              "milieuId": "milieu-printshop"
+            },
+            "place": {
+              "id": "place-wien-leopoldstadt-lechner-flat",
+              "name": "Lechner-Wohnung, Leopoldstadt",
+              "kind": "home"
+            },
+            "subject": {
+              "id": "person-alois-lechner",
+              "name": "Alois Lechner",
+              "age": 36,
+              "occupation": "Buchdrucker (Maschinensetzer)",
+              "roles": [
+                "printer",
+                "union_member",
+                "union_secretary",
+                "father"
+              ]
+            },
+            "participants": [
+              {
+                "personId": "person-alois-lechner",
+                "role": "subject",
+                "name": "Alois Lechner",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-josef-bauer",
+                "role": "printer",
+                "name": "Josef Bauer",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-gustav-berg",
+                "role": "policeman",
+                "name": "Gustav Berg",
+                "organizationId": "org-wien-landwehr"
+              }
+            ],
+            "effects": [
+              {
+                "type": "condition",
+                "description": "出现状况 under_police_observation：巡警记下了他的姓名和住址"
+              },
+              {
+                "type": "flag",
+                "description": "记录 leaflet_seen_by_police：巡警看过他携带的传单"
+              },
+              {
+                "type": "relation",
+                "description": "与 person-gustav-berg 建立 acquaintance 关系：在巷口被巡警盘问"
+              },
+              {
+                "type": "reputation",
+                "description": "名誉 -0.03：名字被巡警写进笔记本"
+              },
+              {
+                "type": "knowledge",
+                "description": "获知“巡警会记下携带传单者的住址，印刷所也可能被盯上”（置信度 0.7）"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "condition"
+            },
+            {
+              "type": "flag",
+              "flag": "leaflet_seen_by_police"
+            },
+            {
+              "type": "relation"
+            },
+            {
+              "type": "reputation"
+            },
+            {
+              "type": "knowledge",
+              "proposition": "巡警会记下携带传单者的住址，印刷所也可能被盯上"
+            }
+          ],
+          "immediateText": "巡警在巷口拦住他，问他怀里那包纸是什么。他说是包面包的旧纸；巡警抽出一张，对着路灯读了两行，又放回去，把他的名字和住址写进小本子。第二天，排字房的人轮流问那张纸是谁招来的；他没有承认，只把围裙上的油墨又擦了一遍，回家时绕开了有巡警的街口。"
+        },
+        {
+          "id": "evt:world-vienna-1912:000002",
+          "action": "kernel-civic.leaflet-night::ctx-vienna-1912::milieu-printshop/civic-leaflet-police",
+          "date": {
+            "year": 1913,
+            "month": 2
+          },
+          "subjectId": "person-josef-bauer",
+          "trace": {
+            "mechanism": {
+              "sceneId": "kernel-civic.leaflet-night::ctx-vienna-1912::milieu-printshop",
+              "outcomeId": "civic-leaflet-police",
+              "kernelId": "kernel-civic.leaflet-night",
+              "contextId": "ctx-vienna-1912",
+              "milieuId": "milieu-printshop"
+            },
+            "place": {
+              "id": "place-wien-leopoldstadt-bauer-flat",
+              "name": "Bauer-Wohnung, Leopoldstadt",
+              "kind": "home"
+            },
+            "subject": {
+              "id": "person-josef-bauer",
+              "name": "Josef Bauer",
+              "age": 38,
+              "occupation": "Buchdrucker (Handsetzer)",
+              "roles": [
+                "printer",
+                "father",
+                "husband",
+                "breadwinner"
+              ]
+            },
+            "participants": [
+              {
+                "personId": "person-josef-bauer",
+                "role": "subject",
+                "name": "Josef Bauer",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-otto-winter",
+                "role": "printer",
+                "name": "Otto Winter",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-friedrich-hofer",
+                "role": "policeman",
+                "name": "Friedrich Hofer",
+                "organizationId": "org-wien-magistrat"
+              }
+            ],
+            "effects": [
+              {
+                "type": "condition",
+                "description": "出现状况 under_police_observation：巡警记下了他的姓名和住址"
+              },
+              {
+                "type": "flag",
+                "description": "记录 leaflet_seen_by_police：巡警看过他携带的传单"
+              },
+              {
+                "type": "relation",
+                "description": "与 person-friedrich-hofer 建立 acquaintance 关系：在巷口被巡警盘问"
+              },
+              {
+                "type": "reputation",
+                "description": "名誉 -0.03：名字被巡警写进笔记本"
+              },
+              {
+                "type": "knowledge",
+                "description": "获知“巡警会记下携带传单者的住址，印刷所也可能被盯上”（置信度 0.7）"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "condition"
+            },
+            {
+              "type": "flag",
+              "flag": "leaflet_seen_by_police"
+            },
+            {
+              "type": "relation"
+            },
+            {
+              "type": "reputation"
+            },
+            {
+              "type": "knowledge",
+              "proposition": "巡警会记下携带传单者的住址，印刷所也可能被盯上"
+            }
+          ],
+          "immediateText": "巡警在巷口拦住他，问他怀里那包纸是什么。他说是包面包的旧纸；巡警抽出一张，对着路灯读了两行，又放回去，把他的名字和住址写进小本子。第二天，排字房的人轮流问那张纸是谁招来的；他没有承认，只把围裙上的油墨又擦了一遍，回家时绕开了有巡警的街口。"
+        },
+        {
+          "id": "evt:world-vienna-1912:000003",
+          "action": "kernel-civic.leaflet-night::ctx-vienna-1912::milieu-printshop/civic-leaflet-police",
+          "date": {
+            "year": 1913,
+            "month": 10
+          },
+          "subjectId": "person-otto-winter",
+          "trace": {
+            "mechanism": {
+              "sceneId": "kernel-civic.leaflet-night::ctx-vienna-1912::milieu-printshop",
+              "outcomeId": "civic-leaflet-police",
+              "kernelId": "kernel-civic.leaflet-night",
+              "contextId": "ctx-vienna-1912",
+              "milieuId": "milieu-printshop"
+            },
+            "place": {
+              "id": "place-wien-innere-stadt-winter-flat",
+              "name": "Winter-Wohnung, Innere Stadt",
+              "kind": "home"
+            },
+            "subject": {
+              "id": "person-otto-winter",
+              "name": "Otto Winter",
+              "age": 25,
+              "occupation": "Faktor",
+              "roles": [
+                "son",
+                "factor"
+              ]
+            },
+            "participants": [
+              {
+                "personId": "person-otto-winter",
+                "role": "subject",
+                "name": "Otto Winter",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-josef-bauer",
+                "role": "printer",
+                "name": "Josef Bauer",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-friedrich-hofer",
+                "role": "policeman",
+                "name": "Friedrich Hofer",
+                "organizationId": "org-wien-magistrat"
+              }
+            ],
+            "effects": [
+              {
+                "type": "condition",
+                "description": "出现状况 under_police_observation：巡警记下了他的姓名和住址"
+              },
+              {
+                "type": "flag",
+                "description": "记录 leaflet_seen_by_police：巡警看过他携带的传单"
+              },
+              {
+                "type": "relation",
+                "description": "与 person-friedrich-hofer 建立 acquaintance 关系：在巷口被巡警盘问"
+              },
+              {
+                "type": "reputation",
+                "description": "名誉 -0.03：名字被巡警写进笔记本"
+              },
+              {
+                "type": "knowledge",
+                "description": "获知“巡警会记下携带传单者的住址，印刷所也可能被盯上”（置信度 0.7）"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "condition"
+            },
+            {
+              "type": "flag",
+              "flag": "leaflet_seen_by_police"
+            },
+            {
+              "type": "relation"
+            },
+            {
+              "type": "reputation"
+            },
+            {
+              "type": "knowledge",
+              "proposition": "巡警会记下携带传单者的住址，印刷所也可能被盯上"
+            }
+          ],
+          "immediateText": "巡警在巷口拦住他，问他怀里那包纸是什么。他说是包面包的旧纸；巡警抽出一张，对着路灯读了两行，又放回去，把他的名字和住址写进小本子。第二天，排字房的人轮流问那张纸是谁招来的；他没有承认，只把围裙上的油墨又擦了一遍，回家时绕开了有巡警的街口。"
+        }
+      ]
+    },
+    {
+      "label": "war-1915",
+      "year": 1915,
+      "compiledScenes": 3,
+      "variantIds": [
+        "civic-leaflet-war",
+        "base"
+      ],
+      "sceneIds": [
+        "kernel-civic.leaflet-night::ctx-vienna-war-1915::milieu-printshop::civic-leaflet-war",
+        "kernel-civic.leaflet-night::ctx-vienna-war-1915::milieu-factory::civic-leaflet-war",
+        "kernel-civic.leaflet-night::ctx-klosterneuburg-rural-1912::milieu-shop"
+      ],
+      "events": 3,
+      "outcomeCounts": [
+        {
+          "outcomeId": "civic-leaflet-war-ration",
+          "count": 3
+        }
+      ],
+      "samples": [
+        {
+          "id": "evt:world-vienna-1912:000001",
+          "action": "kernel-civic.leaflet-night::ctx-vienna-war-1915::milieu-factory::civic-leaflet-war/civic-leaflet-war-ration",
+          "date": {
+            "year": 1916,
+            "month": 12
+          },
+          "subjectId": "person-alois-lechner",
+          "trace": {
+            "mechanism": {
+              "sceneId": "kernel-civic.leaflet-night::ctx-vienna-war-1915::milieu-factory::civic-leaflet-war",
+              "outcomeId": "civic-leaflet-war-ration",
+              "kernelId": "kernel-civic.leaflet-night",
+              "contextId": "ctx-vienna-war-1915",
+              "milieuId": "milieu-factory",
+              "variantId": "civic-leaflet-war"
+            },
+            "place": {
+              "id": "place-wien-leopoldstadt-lechner-flat",
+              "name": "Lechner-Wohnung, Leopoldstadt",
+              "kind": "home"
+            },
+            "subject": {
+              "id": "person-alois-lechner",
+              "name": "Alois Lechner",
+              "age": 39,
+              "occupation": "Buchdrucker (Maschinensetzer)",
+              "roles": [
+                "printer",
+                "union_member",
+                "union_secretary",
+                "father"
+              ]
+            },
+            "participants": [
+              {
+                "personId": "person-alois-lechner",
+                "role": "subject",
+                "name": "Alois Lechner",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-josef-bauer",
+                "role": "printer",
+                "name": "Josef Bauer",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-gustav-berg",
+                "role": "policeman",
+                "name": "Gustav Berg",
+                "organizationId": "org-wien-landwehr"
+              },
+              {
+                "personId": "person-friedrich-hofer",
+                "role": "rationOfficer",
+                "name": "Friedrich Hofer",
+                "organizationId": "org-wien-magistrat"
+              }
+            ],
+            "effects": [
+              {
+                "type": "flag",
+                "description": "记录 printed_ration_leaflet：印了一版质疑配给减量的号外"
+              },
+              {
+                "type": "relation",
+                "description": "与 person-friedrich-hofer 建立 acquaintance 关系：在配给告示前与官员照面"
+              },
+              {
+                "type": "relation",
+                "description": "与 person-josef-bauer 建立 colleague 关系：排字工冒险放慢机器配合他"
+              },
+              {
+                "type": "cash",
+                "description": "现金 2 克朗：买纸和油墨"
+              },
+              {
+                "type": "knowledge",
+                "description": "获知“配给站按周发面包卡，减量告示由配给官盖章”（置信度 0.85）"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "flag",
+              "flag": "printed_ration_leaflet"
+            },
+            {
+              "type": "relation"
+            },
+            {
+              "type": "relation"
+            },
+            {
+              "type": "cash",
+              "amount": 2
+            },
+            {
+              "type": "knowledge",
+              "proposition": "配给站按周发面包卡，减量告示由配给官盖章"
+            }
+          ],
+          "immediateText": "配给办公室把面包分量又减了一成，Friedrich Hofer在告示上盖了章。他连夜排了一版号外，只印配给表和一句“先问为什么”，Josef Bauer把机器踩得比平时慢，怕声音传到街上。他把号外折成四折，塞进装面包票的铁盒。"
+        },
+        {
+          "id": "evt:world-vienna-1912:000002",
+          "action": "kernel-civic.leaflet-night::ctx-vienna-war-1915::milieu-printshop::civic-leaflet-war/civic-leaflet-war-ration",
+          "date": {
+            "year": 1916,
+            "month": 3
+          },
+          "subjectId": "person-josef-bauer",
+          "trace": {
+            "mechanism": {
+              "sceneId": "kernel-civic.leaflet-night::ctx-vienna-war-1915::milieu-printshop::civic-leaflet-war",
+              "outcomeId": "civic-leaflet-war-ration",
+              "kernelId": "kernel-civic.leaflet-night",
+              "contextId": "ctx-vienna-war-1915",
+              "milieuId": "milieu-printshop",
+              "variantId": "civic-leaflet-war"
+            },
+            "place": {
+              "id": "place-wien-leopoldstadt-bauer-flat",
+              "name": "Bauer-Wohnung, Leopoldstadt",
+              "kind": "home"
+            },
+            "subject": {
+              "id": "person-josef-bauer",
+              "name": "Josef Bauer",
+              "age": 41,
+              "occupation": "Buchdrucker (Handsetzer)",
+              "roles": [
+                "printer",
+                "father",
+                "husband",
+                "breadwinner"
+              ]
+            },
+            "participants": [
+              {
+                "personId": "person-josef-bauer",
+                "role": "subject",
+                "name": "Josef Bauer",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-alois-lechner",
+                "role": "printer",
+                "name": "Alois Lechner",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-friedrich-hofer",
+                "role": "policeman",
+                "name": "Friedrich Hofer",
+                "organizationId": "org-wien-magistrat"
+              },
+              {
+                "personId": "person-gustav-berg",
+                "role": "rationOfficer",
+                "name": "Gustav Berg",
+                "organizationId": "org-wien-landwehr"
+              }
+            ],
+            "effects": [
+              {
+                "type": "flag",
+                "description": "记录 printed_ration_leaflet：印了一版质疑配给减量的号外"
+              },
+              {
+                "type": "relation",
+                "description": "与 person-gustav-berg 建立 acquaintance 关系：在配给告示前与官员照面"
+              },
+              {
+                "type": "cash",
+                "description": "现金 2 克朗：买纸和油墨"
+              },
+              {
+                "type": "knowledge",
+                "description": "获知“配给站按周发面包卡，减量告示由配给官盖章”（置信度 0.85）"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "flag",
+              "flag": "printed_ration_leaflet"
+            },
+            {
+              "type": "relation"
+            },
+            {
+              "type": "cash",
+              "amount": 2
+            },
+            {
+              "type": "knowledge",
+              "proposition": "配给站按周发面包卡，减量告示由配给官盖章"
+            }
+          ],
+          "immediateText": "配给办公室把面包分量又减了一成，Gustav Berg在告示上盖了章。他连夜排了一版号外，只印配给表和一句“先问为什么”，Alois Lechner把机器踩得比平时慢，怕声音传到街上。他把号外折成四折，塞进装面包票的铁盒。"
+        },
+        {
+          "id": "evt:world-vienna-1912:000003",
+          "action": "kernel-civic.leaflet-night::ctx-vienna-war-1915::milieu-printshop::civic-leaflet-war/civic-leaflet-war-ration",
+          "date": {
+            "year": 1916,
+            "month": 12
+          },
+          "subjectId": "person-otto-winter",
+          "trace": {
+            "mechanism": {
+              "sceneId": "kernel-civic.leaflet-night::ctx-vienna-war-1915::milieu-printshop::civic-leaflet-war",
+              "outcomeId": "civic-leaflet-war-ration",
+              "kernelId": "kernel-civic.leaflet-night",
+              "contextId": "ctx-vienna-war-1915",
+              "milieuId": "milieu-printshop",
+              "variantId": "civic-leaflet-war"
+            },
+            "place": {
+              "id": "place-wien-innere-stadt-winter-flat",
+              "name": "Winter-Wohnung, Innere Stadt",
+              "kind": "home"
+            },
+            "subject": {
+              "id": "person-otto-winter",
+              "name": "Otto Winter",
+              "age": 28,
+              "occupation": "Faktor",
+              "roles": [
+                "son",
+                "factor"
+              ]
+            },
+            "participants": [
+              {
+                "personId": "person-otto-winter",
+                "role": "subject",
+                "name": "Otto Winter",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-alois-lechner",
+                "role": "printer",
+                "name": "Alois Lechner",
+                "organizationId": "org-winter-print"
+              },
+              {
+                "personId": "person-friedrich-hofer",
+                "role": "policeman",
+                "name": "Friedrich Hofer",
+                "organizationId": "org-wien-magistrat"
+              },
+              {
+                "personId": "person-gustav-berg",
+                "role": "rationOfficer",
+                "name": "Gustav Berg",
+                "organizationId": "org-wien-landwehr"
+              }
+            ],
+            "effects": [
+              {
+                "type": "flag",
+                "description": "记录 printed_ration_leaflet：印了一版质疑配给减量的号外"
+              },
+              {
+                "type": "relation",
+                "description": "与 person-gustav-berg 建立 acquaintance 关系：在配给告示前与官员照面"
+              },
+              {
+                "type": "relation",
+                "description": "与 person-alois-lechner 建立 colleague 关系：排字工冒险放慢机器配合他"
+              },
+              {
+                "type": "cash",
+                "description": "现金 2 克朗：买纸和油墨"
+              },
+              {
+                "type": "knowledge",
+                "description": "获知“配给站按周发面包卡，减量告示由配给官盖章”（置信度 0.85）"
+              }
+            ]
+          },
+          "effects": [
+            {
+              "type": "flag",
+              "flag": "printed_ration_leaflet"
+            },
+            {
+              "type": "relation"
+            },
+            {
+              "type": "relation"
+            },
+            {
+              "type": "cash",
+              "amount": 2
+            },
+            {
+              "type": "knowledge",
+              "proposition": "配给站按周发面包卡，减量告示由配给官盖章"
+            }
+          ],
+          "immediateText": "配给办公室把面包分量又减了一成，Gustav Berg在告示上盖了章。他连夜排了一版号外，只印配给表和一句“先问为什么”，Alois Lechner把机器踩得比平时慢，怕声音传到街上。他把号外折成四折，塞进装面包票的铁盒。"
+        }
+      ]
+    },
+    {
+      "label": "reform-1930",
+      "year": 1930,
+      "compiledScenes": 1,
+      "variantIds": [
+        "base"
+      ],
+      "sceneIds": [
+        "kernel-civic.leaflet-night::ctx-klosterneuburg-rural-1912::milieu-shop"
+      ],
+      "events": 0,
+      "outcomeCounts": [],
+      "samples": []
+    }
+  ],
+  "note": "Forced rate is an experimental control, not a gameplay tuning value. Events and effects are real engine output."
+}

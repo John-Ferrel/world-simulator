@@ -3477,7 +3477,7 @@ export const BATCH3_CHILD_ADOLESCENT_2: PlotKernel[] = recipes([
       {
         id: 'hostel',
         w: 0.3,
-        text: '教会办的宿舍给{subject}一张床，条件是一周唱两次晚祷。床板很硬，但被子是干的。他学会了在熄灯前把工服叠好，也学会了听钟声，而不是听{parent}的脚步声。周末他把脏衣服带回家，{parent}在门口接过去，没有问住宿的事。',
+        text: '教会办的宿舍给{subject}一张床，条件是一周唱两次晚祷。床板很硬，但被子是干的。{subjectPronoun}学会了在熄灯前把工服叠好，也学会了听钟声，而不是听{parent}的脚步声。周末{subjectPronoun}把脏衣服带回家，{parent}在门口接过去，没有问住宿的事。',
         significance: 0.72,
         fx: {
           move: ['@home', 'moved into a church hostel'],

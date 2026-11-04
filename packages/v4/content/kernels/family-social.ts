@@ -51,13 +51,7 @@ const HOME_MILIEUS = [
   'rural',
 ];
 
-const HOME_AND_WORK_MILIEUS = [
-  ...HOME_MILIEUS,
-  'work',
-  'shop',
-  'market',
-  'factory',
-];
+const HOME_AND_WORK_MILIEUS = [...HOME_MILIEUS, 'work', 'shop', 'market', 'factory'];
 
 const SCHOOL_MILIEUS = ['school', 'home', 'family', 'neighbor', 'poverty', 'everyday'];
 const CARE_MILIEUS = [...HOME_MILIEUS, 'care', 'hospital', 'health'];
@@ -193,9 +187,7 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         id: 'first-meeting-war-queue',
         when: { contextTags: ['war'] },
         title: '配给队里的孩子',
-        roles: [
-          { key: 'warden', kind: 'neighbor', required: true, minAge: 30, maxAge: 70 },
-        ],
+        roles: [{ key: 'warden', kind: 'neighbor', required: true, minAge: 30, maxAge: 70 }],
         outcomes: [
           {
             id: 'first-meeting.queue-alliance',
@@ -739,7 +731,8 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         key: 'partner',
         kind: 'partner',
         required: true,
-        minAge: 18, maxAge: 40,
+        minAge: 18,
+        maxAge: 40,
         sex: 'opposite',
       },
       { key: 'elder', kind: 'neighbor', required: true, minAge: 40, maxAge: 75 },
@@ -853,7 +846,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.12,
             reason: 'the engagement continued while housing remained unsettled',
           },
-          { type: 'role', personId: '$subject', role: 'waiting_fiancee', add: true, reason: 'waited for housing before the wedding' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'waiting_fiancee',
+            add: true,
+            reason: 'waited for housing before the wedding',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -953,8 +952,20 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
           },
           { type: 'role', personId: '$subject', role: 'wife', add: true, reason: 'married' },
           { type: 'role', personId: '$partner', role: 'husband', add: true, reason: 'married' },
-          { type: 'role', personId: '$subject', role: 'married', add: true, reason: 'marriage recorded' },
-          { type: 'role', personId: '$partner', role: 'married', add: true, reason: 'marriage recorded' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'married',
+            add: true,
+            reason: 'marriage recorded',
+          },
+          {
+            type: 'role',
+            personId: '$partner',
+            role: 'married',
+            add: true,
+            reason: 'marriage recorded',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -994,8 +1005,20 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
           },
           { type: 'role', personId: '$subject', role: 'wife', add: true, reason: 'married' },
           { type: 'role', personId: '$partner', role: 'husband', add: true, reason: 'married' },
-          { type: 'role', personId: '$subject', role: 'married', add: true, reason: 'marriage recorded' },
-          { type: 'role', personId: '$partner', role: 'married', add: true, reason: 'marriage recorded' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'married',
+            add: true,
+            reason: 'marriage recorded',
+          },
+          {
+            type: 'role',
+            personId: '$partner',
+            role: 'married',
+            add: true,
+            reason: 'marriage recorded',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -1044,8 +1067,20 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
           },
           { type: 'role', personId: '$subject', role: 'wife', add: true, reason: 'married' },
           { type: 'role', personId: '$partner', role: 'husband', add: true, reason: 'married' },
-          { type: 'role', personId: '$subject', role: 'married', add: true, reason: 'marriage recorded' },
-          { type: 'role', personId: '$partner', role: 'married', add: true, reason: 'marriage recorded' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'married',
+            add: true,
+            reason: 'marriage recorded',
+          },
+          {
+            type: 'role',
+            personId: '$partner',
+            role: 'married',
+            add: true,
+            reason: 'marriage recorded',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -1095,10 +1130,34 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 residenceId: '@home',
                 reason: 'assigned a converted flat by the housing office',
               },
-              { type: 'role', personId: '$subject', role: 'subtenant', add: true, reason: 'registered as a subtenant' },
-              { type: 'role', personId: '$partner', role: 'subtenant', add: true, reason: 'registered as a subtenant' },
-              { type: 'role', personId: '$subject', role: 'married', add: true, reason: 'marriage recorded for the housing office' },
-              { type: 'role', personId: '$partner', role: 'married', add: true, reason: 'marriage recorded for the housing office' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'subtenant',
+                add: true,
+                reason: 'registered as a subtenant',
+              },
+              {
+                type: 'role',
+                personId: '$partner',
+                role: 'subtenant',
+                add: true,
+                reason: 'registered as a subtenant',
+              },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'married',
+                add: true,
+                reason: 'marriage recorded for the housing office',
+              },
+              {
+                type: 'role',
+                personId: '$partner',
+                role: 'married',
+                add: true,
+                reason: 'marriage recorded for the housing office',
+              },
               {
                 type: 'cash',
                 householdId: '$household',
@@ -1150,8 +1209,20 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 residenceId: '@home',
                 reason: 'rented a room in a shared flat',
               },
-              { type: 'role', personId: '$subject', role: 'cohabitant', add: true, reason: 'living together unmarried' },
-              { type: 'role', personId: '$partner', role: 'cohabitant', add: true, reason: 'living together unmarried' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'cohabitant',
+                add: true,
+                reason: 'living together unmarried',
+              },
+              {
+                type: 'role',
+                personId: '$partner',
+                role: 'cohabitant',
+                add: true,
+                reason: 'living together unmarried',
+              },
               {
                 type: 'cash',
                 householdId: '$household',
@@ -1191,10 +1262,34 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 fear: 0.1,
                 reason: 'married just before the partner was sent to the front',
               },
-              { type: 'role', personId: '$subject', role: 'wife', add: true, reason: 'married before mobilisation' },
-              { type: 'role', personId: '$subject', role: 'soldier_wife', add: true, reason: 'husband at the front' },
-              { type: 'role', personId: '$subject', role: 'married', add: true, reason: 'marriage recorded before departure' },
-              { type: 'role', personId: '$partner', role: 'married', add: true, reason: 'marriage recorded before departure' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'wife',
+                add: true,
+                reason: 'married before mobilisation',
+              },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'soldier_wife',
+                add: true,
+                reason: 'husband at the front',
+              },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'married',
+                add: true,
+                reason: 'marriage recorded before departure',
+              },
+              {
+                type: 'role',
+                personId: '$partner',
+                role: 'married',
+                add: true,
+                reason: 'marriage recorded before departure',
+              },
               {
                 type: 'cash',
                 householdId: '$household',
@@ -1235,7 +1330,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 obligation: 0.15,
                 reason: 'the wedding papers were unfinished when the partner left',
               },
-              { type: 'role', personId: '$subject', role: 'waiting_fiancee', add: true, reason: 'waiting for the wedding papers' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'waiting_fiancee',
+                add: true,
+                reason: 'waiting for the wedding papers',
+              },
               {
                 type: 'cash',
                 householdId: '$household',
@@ -1291,7 +1392,8 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         key: 'partner',
         kind: 'partner',
         required: true,
-        minAge: 20, maxAge: 50,
+        minAge: 20,
+        maxAge: 50,
         sex: 'opposite',
         sameHousehold: true,
       },
@@ -1330,7 +1432,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             amount: -4,
             reason: 'extra coal and food for the mother-in-law',
           },
-          { type: 'role', personId: '$subject', role: 'caregiver', add: true, reason: 'took in the mother-in-law' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'caregiver',
+            add: true,
+            reason: 'took in the mother-in-law',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -1501,7 +1609,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             amount: -20,
             reason: 'first dowry payment and the engagement visit',
           },
-          { type: 'role', personId: '$subject', role: 'betrothed', add: true, reason: 'betrothed with a dowry contract' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'betrothed',
+            add: true,
+            reason: 'betrothed with a dowry contract',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -1543,7 +1657,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             amount: -3,
             reason: 'coffee and almond cake for the matchmaker',
           },
-          { type: 'role', personId: '$subject', role: 'returned_home', add: true, reason: 'the match was called off' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'returned_home',
+            add: true,
+            reason: 'the match was called off',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -1587,9 +1707,27 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
           },
           { type: 'role', personId: '$subject', role: 'wife', add: true, reason: 'married' },
           { type: 'role', personId: '$partner', role: 'husband', add: true, reason: 'married' },
-          { type: 'role', personId: '$subject', role: 'married', add: true, reason: 'marriage recorded' },
-          { type: 'role', personId: '$partner', role: 'married', add: true, reason: 'marriage recorded' },
-          { type: 'role', personId: '$subject', role: 'shop_assistant', add: true, reason: 'worked the family shop counter' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'married',
+            add: true,
+            reason: 'marriage recorded',
+          },
+          {
+            type: 'role',
+            personId: '$partner',
+            role: 'married',
+            add: true,
+            reason: 'marriage recorded',
+          },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'shop_assistant',
+            add: true,
+            reason: 'worked the family shop counter',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -1639,7 +1777,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 amount: 4,
                 reason: 'wine and produce from the dowry rows',
               },
-              { type: 'role', personId: '$subject', role: 'vine_dowry_wife', add: true, reason: 'married with vineyard rows as dowry' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'vine_dowry_wife',
+                add: true,
+                reason: 'married with vineyard rows as dowry',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -1679,7 +1823,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 amount: -2,
                 reason: 'rewriting the dowry contract after the frost',
               },
-              { type: 'role', personId: '$subject', role: 'betrothed', add: true, reason: 'betrothed with a reduced dowry' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'betrothed',
+                add: true,
+                reason: 'betrothed with a reduced dowry',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -1763,7 +1913,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             add: true,
             reason: 'pregnancy confirmed',
           },
-          { type: 'health', personId: '$subject', amount: -0.02, reason: 'early pregnancy fatigue' },
+          {
+            type: 'health',
+            personId: '$subject',
+            amount: -0.02,
+            reason: 'early pregnancy fatigue',
+          },
           {
             type: 'relation',
             a: '$subject',
@@ -1797,7 +1952,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         weight: 0.35,
         text: '{subject}把恶心说成胃病，继续在车间站满十个小时。午休时她躲在厕所里吐，回来时袖口沾着水；{partner}替她多领了一班夜活，工钱多四克朗。月底，她的腰已经弯不下去，工头只当她吃坏了东西。',
         effects: [
-          { type: 'health', personId: '$subject', amount: -0.05, reason: 'worked long shifts while pregnant' },
+          {
+            type: 'health',
+            personId: '$subject',
+            amount: -0.05,
+            reason: 'worked long shifts while pregnant',
+          },
           {
             type: 'condition',
             personId: '$subject',
@@ -1842,7 +2002,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         weight: 0.2,
         text: '运煤车上掉下一袋，{subject}伸手去扶，回家后腹痛了一夜。{midwife}来看了，说是小产，要卧床三天；{partner}去药房买药，回来时把工票也带回来了，说这个月不干了。{subject}把染脏的床单煮了又煮。',
         effects: [
-          { type: 'health', personId: '$subject', amount: -0.1, reason: 'miscarriage after lifting a coal sack' },
+          {
+            type: 'health',
+            personId: '$subject',
+            amount: -0.1,
+            reason: 'miscarriage after lifting a coal sack',
+          },
           {
             type: 'condition',
             personId: '$subject',
@@ -1911,9 +2076,25 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             weight: 0.6,
             text: '市立母婴诊所的号排到街角，{subject}带着工票和户口纸去登记。护士给她量了体重，发下一瓶铁剂和一张牛奶券；医生在卡片上写“营养不良，需休息”，她把它折好，没给工头看。',
             effects: [
-              { type: 'health', personId: '$subject', amount: 0.02, reason: 'received iron tonic and prenatal advice' },
-              { type: 'food', householdId: '$household', amount: 2, reason: 'milk voucher from the municipal clinic' },
-              { type: 'role', personId: '$subject', role: 'clinic_patient', add: true, reason: 'registered at the municipal maternal clinic' },
+              {
+                type: 'health',
+                personId: '$subject',
+                amount: 0.02,
+                reason: 'received iron tonic and prenatal advice',
+              },
+              {
+                type: 'food',
+                householdId: '$household',
+                amount: 2,
+                reason: 'milk voucher from the municipal clinic',
+              },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'clinic_patient',
+                add: true,
+                reason: 'registered at the municipal maternal clinic',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -1938,7 +2119,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             weight: 0.4,
             text: '诊所的产床满了，护士让{subject}下个月再来。她走到门口，又把号条收进证件夹；{midwife}说不要紧，家里那间屋也能生。{subject}回家把床单洗了，晾在天井里，风把布吹得贴在墙上。',
             effects: [
-              { type: 'health', personId: '$subject', amount: -0.03, reason: 'prenatal visit postponed for lack of beds' },
+              {
+                type: 'health',
+                personId: '$subject',
+                amount: -0.03,
+                reason: 'prenatal visit postponed for lack of beds',
+              },
               {
                 type: 'cash',
                 householdId: '$household',
@@ -2041,7 +2227,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             reason: 'shared a home birth',
           },
           { type: 'role', personId: '$subject', role: 'mother', add: true, reason: 'gave birth' },
-          { type: 'role', personId: '$partner', role: 'father', add: true, reason: 'became a father' },
+          {
+            type: 'role',
+            personId: '$partner',
+            role: 'father',
+            add: true,
+            reason: 'became a father',
+          },
           {
             type: 'role',
             personId: '$subject',
@@ -2094,7 +2286,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             reason: 'shared a hospital birth',
           },
           { type: 'role', personId: '$subject', role: 'mother', add: true, reason: 'gave birth' },
-          { type: 'role', personId: '$partner', role: 'father', add: true, reason: 'became a father' },
+          {
+            type: 'role',
+            personId: '$partner',
+            role: 'father',
+            add: true,
+            reason: 'became a father',
+          },
           {
             type: 'role',
             personId: '$subject',
@@ -2145,7 +2343,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             childSex: 'male',
             reason: 'son born after a long labour',
           },
-          { type: 'health', personId: '$subject', amount: -0.16, reason: 'long childbirth and fever' },
+          {
+            type: 'health',
+            personId: '$subject',
+            amount: -0.16,
+            reason: 'long childbirth and fever',
+          },
           {
             type: 'condition',
             personId: '$subject',
@@ -2163,7 +2366,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             reason: 'shared a difficult birth',
           },
           { type: 'role', personId: '$subject', role: 'mother', add: true, reason: 'gave birth' },
-          { type: 'role', personId: '$partner', role: 'father', add: true, reason: 'became a father' },
+          {
+            type: 'role',
+            personId: '$partner',
+            role: 'father',
+            add: true,
+            reason: 'became a father',
+          },
           {
             type: 'role',
             personId: '$subject',
@@ -2200,9 +2409,7 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         id: 'childbirth-war',
         when: { contextTags: ['war'] },
         title: '地窖里的产床',
-        roles: [
-          { key: 'neighbor', kind: 'neighbor', required: true, minAge: 25, maxAge: 65 },
-        ],
+        roles: [{ key: 'neighbor', kind: 'neighbor', required: true, minAge: 25, maxAge: 65 }],
         outcomes: [
           {
             id: 'childbirth.midwife-alone',
@@ -2215,9 +2422,26 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 childSex: 'male',
                 reason: 'son born while the doctor was with the army',
               },
-              { type: 'health', personId: '$subject', amount: -0.12, reason: 'birth without a doctor' },
-              { type: 'role', personId: '$subject', role: 'mother', add: true, reason: 'gave birth' },
-              { type: 'role', personId: '$partner', role: 'father', add: true, reason: 'became a father' },
+              {
+                type: 'health',
+                personId: '$subject',
+                amount: -0.12,
+                reason: 'birth without a doctor',
+              },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'mother',
+                add: true,
+                reason: 'gave birth',
+              },
+              {
+                type: 'role',
+                personId: '$partner',
+                role: 'father',
+                add: true,
+                reason: 'became a father',
+              },
               {
                 type: 'role',
                 personId: '$subject',
@@ -2269,8 +2493,20 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 obligation: 0.08,
                 reason: 'the neighbour helped deliver the child',
               },
-              { type: 'role', personId: '$subject', role: 'mother', add: true, reason: 'gave birth' },
-              { type: 'role', personId: '$neighbor', role: 'lay_midwife', add: true, reason: 'assisted at the birth' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'mother',
+                add: true,
+                reason: 'gave birth',
+              },
+              {
+                type: 'role',
+                personId: '$neighbor',
+                role: 'lay_midwife',
+                add: true,
+                reason: 'assisted at the birth',
+              },
               {
                 type: 'role',
                 personId: '$subject',
@@ -2332,7 +2568,8 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         key: 'partner',
         kind: 'partner',
         required: true,
-        minAge: 22, maxAge: 55,
+        minAge: 22,
+        maxAge: 55,
         sex: 'opposite',
         sameHousehold: true,
       },
@@ -2345,7 +2582,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         weight: 0.4,
         text: '孩子咳了三天，{neighbor}从药房带回一包退热粉。{subject}把窗帘拉上，怕光刺着他的眼睛；{partner}半夜去排队请医生，医生只隔着门看了一眼，说按时喂药。第四天，孩子出了汗，{subject}把湿透的衬衫换下来，才发现自己一直没脱鞋。',
         effects: [
-          { type: 'health', personId: '$child', amount: 0.04, reason: 'the fever broke after nursing' },
+          {
+            type: 'health',
+            personId: '$child',
+            amount: 0.04,
+            reason: 'the fever broke after nursing',
+          },
           {
             type: 'condition',
             personId: '$child',
@@ -2397,7 +2639,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             cause: 'diphtheria',
             reason: 'died at home during a diphtheria attack',
           },
-          { type: 'health', personId: '$subject', amount: -0.05, reason: 'sleepless nursing and grief' },
+          {
+            type: 'health',
+            personId: '$subject',
+            amount: -0.05,
+            reason: 'sleepless nursing and grief',
+          },
           {
             type: 'relation',
             a: '$subject',
@@ -2443,7 +2690,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             locationId: '@hospital',
             reason: 'admitted to the isolation ward',
           },
-          { type: 'health', personId: '$child', amount: 0.02, reason: 'hospital care for the illness' },
+          {
+            type: 'health',
+            personId: '$child',
+            amount: 0.02,
+            reason: 'hospital care for the illness',
+          },
           {
             type: 'relation',
             a: '$child',
@@ -2533,7 +2785,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             respect: 0.02,
             reason: 'the brother repaid the loan after a confrontation',
           },
-          { type: 'role', personId: '$subject', role: 'creditor', add: true, reason: 'called in a family loan' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'creditor',
+            add: true,
+            reason: 'called in a family loan',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -2671,7 +2929,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 obligation: 0.15,
                 reason: 'supported the brother after his building site closed',
               },
-              { type: 'role', personId: '$subject', role: 'supporter', add: true, reason: 'supported an unemployed sibling' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'supporter',
+                add: true,
+                reason: 'supported an unemployed sibling',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -2763,7 +3027,8 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         key: 'partner',
         kind: 'partner',
         required: true,
-        minAge: 22, maxAge: 55,
+        minAge: 22,
+        maxAge: 55,
         sex: 'opposite',
         sameHousehold: true,
       },
@@ -2800,7 +3065,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             kind: 'partner',
             reason: 'the marriage broke down and the couple separated',
           },
-          { type: 'role', personId: '$subject', role: 'separated', add: true, reason: 'separated from the partner' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'separated',
+            add: true,
+            reason: 'separated from the partner',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -2844,7 +3115,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             kind: 'partner',
             reason: 'the partner left without returning',
           },
-          { type: 'role', personId: '$subject', role: 'deserted', add: true, reason: 'left behind without notice' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'deserted',
+            add: true,
+            reason: 'left behind without notice',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -2884,7 +3161,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.05,
             reason: 'the couple inquired about a legal separation',
           },
-          { type: 'role', personId: '$subject', role: 'separated_unofficially', add: true, reason: 'no legal separation was available' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'separated_unofficially',
+            add: true,
+            reason: 'no legal separation was available',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -2939,7 +3222,8 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         key: 'partner',
         kind: 'partner',
         required: true,
-        minAge: 30, maxAge: 70,
+        minAge: 30,
+        maxAge: 70,
         sex: 'opposite',
         sameHousehold: true,
       },
@@ -2973,7 +3257,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.04,
             reason: 'the brother-in-law took the tools and coat',
           },
-          { type: 'role', personId: '$subject', role: 'widowed', add: true, reason: 'the partner died' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'widowed',
+            add: true,
+            reason: 'the partner died',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -3016,7 +3306,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.05,
             reason: 'the in-law claimed half of the compensation',
           },
-          { type: 'role', personId: '$subject', role: 'widowed', add: true, reason: 'the partner died at work' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'widowed',
+            add: true,
+            reason: 'the partner died at work',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -3067,7 +3363,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             trust: -0.05,
             reason: 'the in-law refused to accept the death certificate',
           },
-          { type: 'role', personId: '$subject', role: 'widow_of_missing', add: true, reason: 'the partner was declared dead' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'widow_of_missing',
+            add: true,
+            reason: 'the partner was declared dead',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -3121,7 +3423,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 add: true,
                 reason: 'the partner was reported missing',
               },
-              { type: 'health', personId: '$subject', amount: -0.03, reason: 'anxiety and extra washing work' },
+              {
+                type: 'health',
+                personId: '$subject',
+                amount: -0.03,
+                reason: 'anxiety and extra washing work',
+              },
               {
                 type: 'cash',
                 householdId: '$household',
@@ -3173,7 +3480,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 obligation: 0.06,
                 reason: 'the in-law offered to pay half the funeral',
               },
-              { type: 'role', personId: '$subject', role: 'widowed', add: true, reason: 'the partner was killed in action' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'widowed',
+                add: true,
+                reason: 'the partner was killed in action',
+              },
               {
                 type: 'cash',
                 householdId: '$household',
@@ -3653,7 +3966,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         weight: 0.35,
         text: '洗衣日，{neighbor}把铜锅坐在{subject}的火眼上，水开时溢出来，浇灭了另一边的火。{subject}伸手去端锅，手背烫红了一片；{neighbor}把锅端开，去药房买回一小盒烫伤膏。回来时，铜锅被刷干净放在门口。',
         effects: [
-          { type: 'health', personId: '$subject', amount: -0.03, reason: 'scalded hand at the shared stove' },
+          {
+            type: 'health',
+            personId: '$subject',
+            amount: -0.03,
+            reason: 'scalded hand at the shared stove',
+          },
           {
             type: 'condition',
             personId: '$subject',
@@ -4001,7 +4319,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.05,
             reason: 'the subject found a photograph of the parent’s earlier family',
           },
-          { type: 'health', personId: '$subject', amount: -0.01, reason: 'the discovery unsettled the household' },
+          {
+            type: 'health',
+            personId: '$subject',
+            amount: -0.01,
+            reason: 'the discovery unsettled the household',
+          },
           {
             type: 'role',
             personId: '$subject',
@@ -4231,7 +4554,8 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         key: 'partner',
         kind: 'partner',
         required: true,
-        minAge: 18, maxAge: 60,
+        minAge: 18,
+        maxAge: 60,
         sex: 'opposite',
         sameHousehold: true,
       },
@@ -4243,7 +4567,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         weight: 0.4,
         text: '争吵从厨房移到门口，{partner}把椅子摔在地上，{subject}的手臂撞到门框，留下两块淤青。{subject}没有哭，抓了外套和证件去敲{neighbor}的门；{neighbor}让她在屋里坐到天亮，第二天陪她去办事处问了分居的手续。',
         effects: [
-          { type: 'health', personId: '$subject', amount: -0.04, reason: 'injured arm during a violent quarrel' },
+          {
+            type: 'health',
+            personId: '$subject',
+            amount: -0.04,
+            reason: 'injured arm during a violent quarrel',
+          },
           {
             type: 'condition',
             personId: '$subject',
@@ -4295,7 +4624,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         weight: 0.35,
         text: '{neighbor}听见隔壁的响动，带着门房来敲门；{partner}开门时说只是搬家具。{neighbor}看见{subject}嘴角的血，还是去街角叫了巡警。巡警记下名字，罚了{partner}十克朗，说下次再有人报警就带去分局。',
         effects: [
-          { type: 'health', personId: '$subject', amount: -0.03, reason: 'split lip after the quarrel' },
+          {
+            type: 'health',
+            personId: '$subject',
+            amount: -0.03,
+            reason: 'split lip after the quarrel',
+          },
           {
             type: 'condition',
             personId: '$subject',
@@ -4454,7 +4788,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             amount: -2,
             reason: 'coffee and a small gift for the matchmaker',
           },
-          { type: 'role', personId: '$subject', role: 'courtship_started', add: true, reason: 'began a formal courtship' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'courtship_started',
+            add: true,
+            reason: 'began a formal courtship',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -4495,7 +4835,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             amount: -1,
             reason: 'soap and thread gloves left at the shop counter',
           },
-          { type: 'role', personId: '$subject', role: 'refused_courtship', add: true, reason: 'the courtship was refused' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'refused_courtship',
+            add: true,
+            reason: 'the courtship was refused',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -4527,7 +4873,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             amount: 3,
             reason: 'extra night shifts taken to secure a fixed job',
           },
-          { type: 'role', personId: '$subject', role: 'courting_worker', add: true, reason: 'worked extra shifts to meet the family’s condition' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'courting_worker',
+            add: true,
+            reason: 'worked extra shifts to meet the family’s condition',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -4575,7 +4927,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 amount: 2,
                 reason: 'harvest wages from the afternoon in the vineyard',
               },
-              { type: 'role', personId: '$subject', role: 'harvest_courtship', add: true, reason: 'courted during the harvest' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'harvest_courtship',
+                add: true,
+                reason: 'courted during the harvest',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -4609,7 +4967,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 obligation: 0.03,
                 reason: 'the subject would not commit to living on the vineyard',
               },
-              { type: 'role', personId: '$subject', role: 'seasonal_suitor', add: true, reason: 'courtship tied to vineyard labour' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'seasonal_suitor',
+                add: true,
+                reason: 'courtship tied to vineyard labour',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -4742,7 +5106,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.08,
             reason: 'the proposal was deferred until the subject had a steady job',
           },
-          { type: 'role', personId: '$subject', role: 'waiting_suitor', add: true, reason: 'waited for a fixed job before the wedding' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'waiting_suitor',
+            add: true,
+            reason: 'waited for a fixed job before the wedding',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -4791,7 +5161,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             trust: -0.08,
             reason: 'the elder rejected the match over housing',
           },
-          { type: 'role', personId: '$subject', role: 'refused_suitor', add: true, reason: 'the proposal was refused' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'refused_suitor',
+            add: true,
+            reason: 'the proposal was refused',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -4830,8 +5206,20 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 fear: 0.1,
                 reason: 'engaged just before the partner’s mobilisation',
               },
-              { type: 'role', personId: '$subject', role: 'engaged', add: true, reason: 'engaged before departure' },
-              { type: 'role', personId: '$partner', role: 'engaged', add: true, reason: 'engaged before departure' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'engaged',
+                add: true,
+                reason: 'engaged before departure',
+              },
+              {
+                type: 'role',
+                personId: '$partner',
+                role: 'engaged',
+                add: true,
+                reason: 'engaged before departure',
+              },
               {
                 type: 'cash',
                 householdId: '$household',
@@ -4873,7 +5261,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 fear: 0.05,
                 reason: 'the family refused to bind a daughter to a soldier',
               },
-              { type: 'role', personId: '$subject', role: 'refused_suitor', add: true, reason: 'the wartime proposal was refused' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'refused_suitor',
+                add: true,
+                reason: 'the wartime proposal was refused',
+              },
               {
                 type: 'cash',
                 householdId: '$household',
@@ -4964,8 +5358,20 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.08,
             reason: 'set up a shared room under one lease',
           },
-          { type: 'role', personId: '$subject', role: 'cohabitant', add: true, reason: 'living together' },
-          { type: 'role', personId: '$partner', role: 'cohabitant', add: true, reason: 'living together' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'cohabitant',
+            add: true,
+            reason: 'living together',
+          },
+          {
+            type: 'role',
+            personId: '$partner',
+            role: 'cohabitant',
+            add: true,
+            reason: 'living together',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -5011,7 +5417,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             amount: -1,
             reason: 'tram fare and a wasted afternoon',
           },
-          { type: 'role', personId: '$subject', role: 'would_be_cohabitant', add: true, reason: 'tried to rent a room together' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'would_be_cohabitant',
+            add: true,
+            reason: 'tried to rent a room together',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -5058,8 +5470,20 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.08,
             reason: 'shared a rear room and kitchen with another family',
           },
-          { type: 'role', personId: '$subject', role: 'subtenant', add: true, reason: 'subtenant in a shared flat' },
-          { type: 'role', personId: '$partner', role: 'subtenant', add: true, reason: 'subtenant in a shared flat' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'subtenant',
+            add: true,
+            reason: 'subtenant in a shared flat',
+          },
+          {
+            type: 'role',
+            personId: '$partner',
+            role: 'subtenant',
+            add: true,
+            reason: 'subtenant in a shared flat',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -5109,7 +5533,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 obligation: 0.12,
                 reason: 'the couple registered as siblings to get housing',
               },
-              { type: 'role', personId: '$subject', role: 'subtenant', add: true, reason: 'registered subtenant' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'subtenant',
+                add: true,
+                reason: 'registered subtenant',
+              },
               {
                 type: 'cash',
                 householdId: '$household',
@@ -5167,7 +5597,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 obligation: 0.1,
                 reason: 'pooled pawned goods to pay the key money',
               },
-              { type: 'role', personId: '$subject', role: 'cohabitant', add: true, reason: 'living together in a rear room' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'cohabitant',
+                add: true,
+                reason: 'living together in a rear room',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -5211,7 +5647,14 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
     ],
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 28, maxAge: 50 },
-      { key: 'child', kind: 'neighbor', required: true, minAge: 6, maxAge: 13, sameHousehold: true },
+      {
+        key: 'child',
+        kind: 'neighbor',
+        required: true,
+        minAge: 6,
+        maxAge: 13,
+        sameHousehold: true,
+      },
       { key: 'teacher', kind: 'teacher', required: true, minAge: 20, maxAge: 70 },
     ],
     outcomes: [
@@ -5241,7 +5684,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             trust: 0.04,
             reason: 'the teacher enrolled the child',
           },
-          { type: 'role', personId: '$child', role: 'schoolchild', add: true, reason: 'started primary school' },
+          {
+            type: 'role',
+            personId: '$child',
+            role: 'schoolchild',
+            add: true,
+            reason: 'started primary school',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -5287,7 +5736,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             trust: -0.06,
             reason: 'the teacher opposed taking the child out of school',
           },
-          { type: 'role', personId: '$child', role: 'child_worker', add: true, reason: 'worked at the market instead of school' },
+          {
+            type: 'role',
+            personId: '$child',
+            role: 'child_worker',
+            add: true,
+            reason: 'worked at the market instead of school',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -5334,7 +5789,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             respect: 0.05,
             reason: 'the teacher recommended the child for the examination',
           },
-          { type: 'role', personId: '$child', role: 'scholarship_candidate', add: true, reason: 'sat a secondary school examination' },
+          {
+            type: 'role',
+            personId: '$child',
+            role: 'scholarship_candidate',
+            add: true,
+            reason: 'sat a secondary school examination',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -5387,7 +5848,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 trust: -0.04,
                 reason: 'the teacher pressed for the unpaid school fees',
               },
-              { type: 'role', personId: '$child', role: 'child_worker', add: true, reason: 'left school during the crisis' },
+              {
+                type: 'role',
+                personId: '$child',
+                role: 'child_worker',
+                add: true,
+                reason: 'left school during the crisis',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -5433,7 +5900,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 trust: -0.06,
                 reason: 'the teacher warned about the child’s absences',
               },
-              { type: 'role', personId: '$child', role: 'market_boy', add: true, reason: 'worked morning hours at the market' },
+              {
+                type: 'role',
+                personId: '$child',
+                role: 'market_boy',
+                add: true,
+                reason: 'worked morning hours at the market',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -5498,7 +5971,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             locationId: '@home',
             reason: 'brought the sick parent home',
           },
-          { type: 'health', personId: '$parent', amount: 0.02, reason: 'regular nursing and clean linen' },
+          {
+            type: 'health',
+            personId: '$parent',
+            amount: 0.02,
+            reason: 'regular nursing and clean linen',
+          },
           {
             type: 'relation',
             a: '$subject',
@@ -5514,7 +5992,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             amount: -6,
             reason: 'medicine, extra coal and three days of lost wages',
           },
-          { type: 'role', personId: '$subject', role: 'caregiver', add: true, reason: 'nursed a sick parent' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'caregiver',
+            add: true,
+            reason: 'nursed a sick parent',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -5564,7 +6048,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.05,
             reason: 'the neighbour nursed the parent during the day',
           },
-          { type: 'role', personId: '$nurse', role: 'paid_carer', add: true, reason: 'paid day nurse' },
+          {
+            type: 'role',
+            personId: '$nurse',
+            role: 'paid_carer',
+            add: true,
+            reason: 'paid day nurse',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -5586,7 +6076,12 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             locationId: '@hospital',
             reason: 'admitted to the municipal hospital',
           },
-          { type: 'health', personId: '$parent', amount: 0.04, reason: 'hospital treatment and supervision' },
+          {
+            type: 'health',
+            personId: '$parent',
+            amount: 0.04,
+            reason: 'hospital treatment and supervision',
+          },
           {
             type: 'relation',
             a: '$subject',
@@ -5602,7 +6097,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             amount: -14,
             reason: 'hospital deposit and ward fees',
           },
-          { type: 'role', personId: '$parent', role: 'hospital_patient', add: true, reason: 'admitted to hospital' },
+          {
+            type: 'role',
+            personId: '$parent',
+            role: 'hospital_patient',
+            add: true,
+            reason: 'admitted to hospital',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -5646,14 +6147,25 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 locationId: '@home',
                 reason: 'sent home to free hospital beds',
               },
-              { type: 'health', personId: '$parent', amount: -0.04, reason: 'nursing at home without hospital equipment' },
+              {
+                type: 'health',
+                personId: '$parent',
+                amount: -0.04,
+                reason: 'nursing at home without hospital equipment',
+              },
               {
                 type: 'cash',
                 householdId: '$household',
                 amount: -4,
                 reason: 'medicine and extra coal for the sickroom',
               },
-              { type: 'role', personId: '$subject', role: 'caregiver', add: true, reason: 'nursed the parent after the hospital closed its beds' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'caregiver',
+                add: true,
+                reason: 'nursed the parent after the hospital closed its beds',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -5707,7 +6219,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 trust: 0.04,
                 reason: 'the parent recovered at home',
               },
-              { type: 'role', personId: '$nurse', role: 'paid_in_food', add: true, reason: 'nursed for bread and coal tickets' },
+              {
+                type: 'role',
+                personId: '$nurse',
+                role: 'paid_in_food',
+                add: true,
+                reason: 'nursed for bread and coal tickets',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -5782,7 +6300,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.05,
             reason: 'divided the inheritance equally at the district office',
           },
-          { type: 'role', personId: '$subject', role: 'heir', add: true, reason: 'accepted an equal inheritance share' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'heir',
+            add: true,
+            reason: 'accepted an equal inheritance share',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -5823,7 +6347,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             respect: -0.05,
             reason: 'the brother produced an older will',
           },
-          { type: 'role', personId: '$subject', role: 'disputed_heir', add: true, reason: 'the inheritance was contested' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'disputed_heir',
+            add: true,
+            reason: 'the inheritance was contested',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -5858,7 +6388,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.05,
             reason: 'the subject renounced the cash and kept the mother’s watch',
           },
-          { type: 'role', personId: '$subject', role: 'renounced_inheritance', add: true, reason: 'renounced the cash share' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'renounced_inheritance',
+            add: true,
+            reason: 'renounced the cash share',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -5901,7 +6437,17 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
     kind: 'task',
     stage: 'adulthood',
     ageWindow: { min: 22, max: 55 },
-    tags: ['task', 'task:family', 'family', 'housing', 'relatives', 'godparent', 'guardian', 'household', 'care'],
+    tags: [
+      'task',
+      'task:family',
+      'family',
+      'housing',
+      'relatives',
+      'godparent',
+      'guardian',
+      'household',
+      'care',
+    ],
     contexts: SETTLEMENT_CONTEXTS,
     milieus: HOME_MILIEUS,
     conditions: [
@@ -5965,7 +6511,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             amount: -2,
             reason: 'another mouth at the family table',
           },
-          { type: 'role', personId: '$subject', role: 'host', add: true, reason: 'sheltered a relative' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'host',
+            add: true,
+            reason: 'sheltered a relative',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -6012,7 +6564,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             add: true,
             reason: 'acted as the family’s godparent and guardian-like elder',
           },
-          { type: 'role', personId: '$subject', role: 'kinsman_helper', add: true, reason: 'lodged a godparent elsewhere' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'kinsman_helper',
+            add: true,
+            reason: 'lodged a godparent elsewhere',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -6053,7 +6611,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             add: true,
             reason: 'acted as the family’s godparent and guardian-like elder',
           },
-          { type: 'role', personId: '$subject', role: 'refused_kinsman', add: true, reason: 'turned a godparent away' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'refused_kinsman',
+            add: true,
+            reason: 'turned a godparent away',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -6124,7 +6688,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 obligation: 0.06,
                 reason: 'worked the harvest together',
               },
-              { type: 'role', personId: '$relative', role: 'harvest_hand', add: true, reason: 'seasonal harvest hand' },
+              {
+                type: 'role',
+                personId: '$relative',
+                role: 'harvest_hand',
+                add: true,
+                reason: 'seasonal harvest hand',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -6149,7 +6719,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 obligation: 0.03,
                 reason: 'could not take the relative in during a poor harvest',
               },
-              { type: 'role', personId: '$subject', role: 'refused_kinsman', add: true, reason: 'turned the relative away during a bad harvest' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'refused_kinsman',
+                add: true,
+                reason: 'turned the relative away during a bad harvest',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -6218,7 +6794,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             amount: -2,
             reason: 'meat and coal for the reconciliation supper',
           },
-          { type: 'role', personId: '$subject', role: 'reconciled_relative', add: true, reason: 'reconciled with a relative' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'reconciled_relative',
+            add: true,
+            reason: 'reconciled with a relative',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -6252,7 +6834,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.04,
             reason: 'the relative accepted the food but not the visit',
           },
-          { type: 'role', personId: '$subject', role: 'polite_estrangement', add: true, reason: 'kept a cold peace with the relative' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'polite_estrangement',
+            add: true,
+            reason: 'kept a cold peace with the relative',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -6300,7 +6888,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             trust: 0.06,
             reason: 'the neighbour mediated the family debt',
           },
-          { type: 'role', personId: '$subject', role: 'settled_by_mediator', add: true, reason: 'accepted a mediated repayment plan' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'settled_by_mediator',
+            add: true,
+            reason: 'accepted a mediated repayment plan',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -6360,7 +6954,14 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
         maxAge: 65,
         sex: 'opposite',
       },
-      { key: 'child', kind: 'neighbor', required: true, minAge: 3, maxAge: 16, sameHousehold: true },
+      {
+        key: 'child',
+        kind: 'neighbor',
+        required: true,
+        minAge: 3,
+        maxAge: 16,
+        sameHousehold: true,
+      },
     ],
     outcomes: [
       {
@@ -6392,8 +6993,20 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             householdId: '$household',
             reason: 'moved in after the second marriage',
           },
-          { type: 'role', personId: '$subject', role: 'remarried', add: true, reason: 'remarried after widowhood' },
-          { type: 'role', personId: '$suitor', role: 'step_parent', add: true, reason: 'became a step-parent' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'remarried',
+            add: true,
+            reason: 'remarried after widowhood',
+          },
+          {
+            type: 'role',
+            personId: '$suitor',
+            role: 'step_parent',
+            add: true,
+            reason: 'became a step-parent',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -6433,7 +7046,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             respect: -0.03,
             reason: 'the suitor withdrew because of the children',
           },
-          { type: 'role', personId: '$subject', role: 'widowed', add: true, reason: 'remained widowed after the suitor withdrew' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'widowed',
+            add: true,
+            reason: 'remained widowed after the suitor withdrew',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -6480,8 +7099,20 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             householdId: '$household',
             reason: 'moved in after the shop marriage',
           },
-          { type: 'role', personId: '$subject', role: 'remarried', add: true, reason: 'remarried a shopkeeper' },
-          { type: 'role', personId: '$subject', role: 'shop_manager', add: true, reason: 'took charge of the shop accounts' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'remarried',
+            add: true,
+            reason: 'remarried a shopkeeper',
+          },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'shop_manager',
+            add: true,
+            reason: 'took charge of the shop accounts',
+          },
           {
             type: 'cash',
             householdId: '$household',
@@ -6561,7 +7192,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.15,
             reason: 'lent coal money to a neighbour',
           },
-          { type: 'role', personId: '$subject', role: 'creditor', add: true, reason: 'held a neighbour’s written loan note' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'creditor',
+            add: true,
+            reason: 'held a neighbour’s written loan note',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -6595,7 +7232,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: -0.02,
             reason: 'refused to lend coal money',
           },
-          { type: 'role', personId: '$subject', role: 'refused_lender', add: true, reason: 'refused a neighbour’s loan request' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'refused_lender',
+            add: true,
+            reason: 'refused a neighbour’s loan request',
+          },
           {
             type: 'reputation',
             personId: '$subject',
@@ -6641,7 +7284,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
             obligation: 0.12,
             reason: 'borrowed money instead of lending it',
           },
-          { type: 'role', personId: '$subject', role: 'debtor', add: true, reason: 'owed the neighbour four kronen' },
+          {
+            type: 'role',
+            personId: '$subject',
+            role: 'debtor',
+            add: true,
+            reason: 'owed the neighbour four kronen',
+          },
           {
             type: 'flag',
             personId: '$subject',
@@ -6694,7 +7343,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 obligation: 0.2,
                 reason: 'extended the loan after the neighbour lost work',
               },
-              { type: 'role', personId: '$subject', role: 'patient_creditor', add: true, reason: 'extended a loan without interest' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'patient_creditor',
+                add: true,
+                reason: 'extended a loan without interest',
+              },
               {
                 type: 'flag',
                 personId: '$subject',
@@ -6728,7 +7383,13 @@ export const FAMILY_SOCIAL_KERNELS: PlotKernel[] = [
                 fear: 0.05,
                 reason: 'seized the neighbour’s sewing machine as collateral',
               },
-              { type: 'role', personId: '$subject', role: 'pledge_holder', add: true, reason: 'held a sewing machine as security' },
+              {
+                type: 'role',
+                personId: '$subject',
+                role: 'pledge_holder',
+                add: true,
+                reason: 'held a sewing machine as security',
+              },
               {
                 type: 'reputation',
                 personId: '$subject',

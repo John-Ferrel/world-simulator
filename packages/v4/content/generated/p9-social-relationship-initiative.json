@@ -6,14 +6,7 @@
     "min": 17,
     "max": 45
   },
-  "tags": [
-    "courtship",
-    "friendship",
-    "family",
-    "social",
-    "initiative",
-    "housing"
-  ],
+  "tags": ["courtship", "friendship", "family", "social", "initiative", "housing"],
   "baseRate": 0.1,
   "conditions": [
     {
@@ -25,19 +18,11 @@
   "kind": "task",
   "task": {
     "domain": "social",
-    "goals": [
-      "belonging",
-      "family"
-    ],
-    "needs": [
-      "belonging",
-      "autonomy"
-    ],
+    "goals": ["belonging", "family"],
+    "needs": ["belonging", "autonomy"],
     "baseUtility": 1.2,
     "risk": 0.25,
-    "skills": [
-      "social"
-    ]
+    "skills": ["social"]
   },
   "nodes": [
     {
@@ -119,17 +104,13 @@
               "id": "default",
               "key": "two-gallery-tickets",
               "text": "有人把两张楼座票压在柜台边的玻璃板上，说侧门见。对方低头看了看票根上的排号，把包乐谱的麻绳又绕了一圈，说到时候别迟到。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "two-gallery-tickets",
               "text": "散场时楼座的木栏杆还嗡嗡响，两人跟着人流往下挤。有人问下次还来不来，对方把披肩往上拉了拉，说看情况，先记着这个星期天。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -168,17 +149,13 @@
               "id": "default",
               "key": "walk-instead-of-tickets",
               "text": "水面上有煤驳的油气，对方把围巾压在下巴底下，说天气再冷就不好走了。有人在口袋里摸到那两张硬纸片，最终只摸出了买栗子的硬币。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "walk-instead-of-tickets",
               "text": "走到水闸时天已经暗下来，对方说该回去给炉子添煤了。有人站在桥头看了一会儿水面，把外套内袋里的票根又按平了一次。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -217,35 +194,24 @@
               "id": "default",
               "key": "unsigned-note",
               "text": "巷口的邮筒漆皮已经掉了，投信口有些涩。有人把信封塞进去，听见它落到底的声音，然后快步往回走，围巾一路没扎好。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "unsigned-note",
               "text": "书店的玻璃窗后，对方正把一捆乐谱往架上搬。有人从对街走过没有停，眼睛盯着鞋尖，假装是在数人行道的石缝。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "social",
-        "goals": [
-          "belonging"
-        ],
-        "needs": [
-          "belonging",
-          "autonomy"
-        ],
+        "goals": ["belonging"],
+        "needs": ["belonging", "autonomy"],
         "baseUtility": 1.2,
         "risk": 0.2,
-        "skills": [
-          "social"
-        ]
+        "skills": ["social"]
       }
     },
     {
@@ -292,7 +258,7 @@
         {
           "id": "settle-the-account",
           "weight": 1,
-          "text": "七点刚过，对方照例来买一只 Semmel。有人把紫罗兰往柜台上一放，把上回算错的账一笔一笔说清：借出去的是八克朗，记成了十克朗，是自己记错了。对方听完没马上说话，把零钱数进围裙口袋，最后说中午过来喝碗汤。",
+          "text": "七点刚过，{friend}照例来买一只 Semmel。{subject}把紫罗兰和两只 Semmel 放在柜台上，先付了四十赫勒，又把上回算错的账一笔一笔说清：借出去的是八克朗，记成了十克朗，是自己记错了。{friend}听完没马上说话，把零钱数进围裙口袋，最后说中午过来喝碗汤。",
           "effects": [
             {
               "type": "cash",
@@ -323,18 +289,14 @@
             {
               "id": "default",
               "key": "settle-the-account",
-              "text": "面包店里全是热面团味，柜台后的妇人拿铁夹子夹起 Semmel。有人把话讲得慢，一句是一句，对方一边听一边把围裙上的面粉拍掉，最后伸手接了那束花。",
-              "tone": [
-                "dry"
-              ]
+              "text": "面包店里全是热面团味，柜台后的妇人拿铁夹子夹起两只 Semmel。{subject}把四十赫勒和那束紫罗兰一起推过去，话讲得慢，一句是一句；{friend}一边听一边把围裙上的面粉拍掉，最后伸手接了花。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "settle-the-account",
-              "text": "两个星期不来往，门口碰见时两人都先看别处。这次先开口的人把账本里的一页撕下来摊在柜台上，说数字是自己写错的。对方看了半天，说下回别在酒馆里算账。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "两个星期不来往，门口碰见时{subject}和{friend}都先看别处。这次{subject}先开口，把账本里的一页撕下来摊在柜台上，说数字是自己写错的；{friend}看了半天，说下回别在酒馆里算账。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -373,17 +335,13 @@
               "id": "default",
               "key": "violets-on-the-step",
               "text": "石阶上还有夜里的潮气，花束靠门放着，紫色在灰石头前显得很轻。扫街的人推着车过来，看了花一眼，抬脚从旁边绕过去。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "violets-on-the-step",
               "text": "巷口的风把包装纸吹开一角。对方弯腰把花拾起来，往街上左右看了两回，只看见早班的人流和一辆电车拐过去。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -428,36 +386,24 @@
               "id": "default",
               "key": "semmel-no-words",
               "text": "面包还是温的，纸袋上透出油印子。两人站在门口的台阶上，各自低头嚼，谁也没有先提那八克朗，只谈起街角那家肉铺的价钱。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "semmel-no-words",
               "text": "对方吃完拍了拍手上的碎屑，说星期六老时候。有人点点头，心里清楚账还没清，但两个星期的沉默算是过去了。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "social",
-        "goals": [
-          "belonging",
-          "care"
-        ],
-        "needs": [
-          "belonging",
-          "safety"
-        ],
+        "goals": ["belonging", "care"],
+        "needs": ["belonging", "safety"],
         "baseUtility": 1.15,
         "risk": 0.15,
-        "skills": [
-          "social"
-        ]
+        "skills": ["social"]
       }
     },
     {
@@ -535,17 +481,13 @@
               "id": "default",
               "key": "handcart-and-ten",
               "text": "厨房桌上摊着孩子的作业本和一只没洗的杯子。对方把借条写好，让签字画押，说朋友归朋友，账要清楚。有人把借条折好放进内袋。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "handcart-and-ten",
               "text": "手推车停在楼后的院子里，木板上还有上一回运煤留下的黑印。有人蹲下去转了转轮子，听见轴响，说明天一早先借点机油。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -584,17 +526,13 @@
               "id": "default",
               "key": "only-the-cart",
               "text": "当铺柜台高过人的胸口，伙计把怀表盖翻开看了看，报出数目。有人点头，接过票据和纸币，把外套的扣子重新系好才推门出去。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "only-the-cart",
               "text": "朋友一直送他到巷口，还在说钱不够就讲一声。有人只说够了，回家路上摸了摸空下来的马甲口袋，那地方原来有表链的响动。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -633,37 +571,24 @@
               "id": "default",
               "key": "hire-the-movers",
               "text": "搬运行的两个帮工把床架绑上板车，绳子勒得木头吱响。有人跟在车后走，一路上算着剩下的赫勒，连孩子要的一只小面包都没敢买。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "hire-the-movers",
               "text": "经过印厂友人家门口时，板车正好拐弯。对方在窗后抬了抬手，有人只点了一下头，没停下，绳子在手里攥得很紧。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "social",
-        "goals": [
-          "survival",
-          "belonging"
-        ],
-        "needs": [
-          "cash",
-          "autonomy"
-        ],
+        "goals": ["survival", "belonging"],
+        "needs": ["cash", "autonomy"],
         "baseUtility": 1.3,
         "risk": 0.3,
-        "skills": [
-          "social",
-          "numeracy"
-        ]
+        "skills": ["social", "numeracy"]
       }
     },
     {
@@ -745,17 +670,13 @@
               "id": "default",
               "key": "merge-into-one-room",
               "text": "看门人靠在门框上数了数两张床的位置，说别把走廊堵了。有人把煤箱挪到床尾，膝盖磕了一下箱角，疼得吸了口气，还是笑着说不碍事。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "merge-into-one-room",
               "text": "警察局的窗口前排了一会儿队，报备单填了两遍，地址栏写得工工整整。出门时对方把那张盖了章的纸对折两次，塞进手提包的内层。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -788,17 +709,13 @@
               "id": "default",
               "key": "address-only",
               "text": "房东太太收下报备单的抄件，眼镜往下滑了滑，说随你们，只要房租按时。两人下楼时都没说话，走到街口才商量晚饭在哪吃。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "address-only",
               "text": "朝北的房间里，窗玻璃上的水珠顺着木框往下淌。有人把旧布拧出水来，说过冬前得给窗缝糊上纸，对方应了一声，从抽屉里翻出浆糊。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -837,37 +754,24 @@
               "id": "default",
               "key": "family-says-no",
               "text": "木匠把定金收据推回来，说板子已经开了料，退不了。有人把那张纸折起来，塞进证件夹，和当票放在一起，手指在夹口停了一会儿。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "family-says-no",
               "text": "对方来送信时站在楼梯口，没有进门。话说得很轻，说等一等，等家里松口。楼道里的灯灭了两次，两人谁也没去按开关。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "family",
-        "goals": [
-          "family",
-          "belonging"
-        ],
-        "needs": [
-          "belonging",
-          "autonomy"
-        ],
+        "goals": ["family", "belonging"],
+        "needs": ["belonging", "autonomy"],
         "baseUtility": 1.35,
         "risk": 0.4,
-        "skills": [
-          "social",
-          "numeracy"
-        ]
+        "skills": ["social", "numeracy"]
       }
     },
     {
@@ -964,17 +868,13 @@
               "id": "default",
               "key": "let-them-talk",
               "text": "窗玻璃上蒙着一层水汽，侍者用抹布抹出一条透亮的缝。三只杯子见了底，有人抬手又要了一壶热水，把话题留在原来的地方。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "let-them-talk",
               "text": "缝纫女工说机针断的时候差点扎进手指，印厂老友笑起来说油墨进眼睛更难受。两人互相看了看，又都低头搅咖啡。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -1025,17 +925,13 @@
               "id": "default",
               "key": "overpraise",
               "text": "侍者把点心碟收走时，桌上没人动过那块方糖。有人还想找话说，张了张嘴，看见两人的目光都落在街上的一辆马车上。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "overpraise",
               "text": "话说出口才觉得过了头。老友在桌下用手碰了碰膝盖，女工把杯垫翻过来又翻过去，最后说家里还有活，先走一步。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -1086,36 +982,24 @@
               "id": "default",
               "key": "leave-them-alone",
               "text": "有人把帽子从椅背上取下来，说炉子没封好，得回去看看。走到门口回头看了一眼，两个人已经凑近了些，正说那只断在衣服里的机针。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "leave-them-alone",
               "text": "楼里的煤气灯刚点上，缝纫女工上楼时说了一句挺有意思，语气平常。有人应了一声，没有多问，把钥匙在手里转了一圈。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "social",
-        "goals": [
-          "belonging",
-          "status"
-        ],
-        "needs": [
-          "belonging",
-          "status"
-        ],
+        "goals": ["belonging", "status"],
+        "needs": ["belonging", "status"],
         "baseUtility": 1.15,
         "risk": 0.15,
-        "skills": [
-          "social"
-        ]
+        "skills": ["social"]
       }
     },
     {
@@ -1189,17 +1073,13 @@
               "id": "default",
               "key": "refuse-to-sign",
               "text": "两张旧借条铺在桌面上，纸边已经起毛。有人用手指按住其中一张，说这上面的数目还没清，再添一张就是坑。对方盯着桌角看，没再争，把字据折成四方。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "refuse-to-sign",
               "text": "楼梯间里能听见院子里的水声。对方走的时候没有回头，外套下摆擦过扶手。有人站在门口，把那三张纸按大小叠齐，才关上门。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -1244,17 +1124,13 @@
               "id": "default",
               "key": "pay-small-part",
               "text": "戒酒会门口的告示贴了半年，边角卷起来。有人陪着走到门口，对方说改天再来，拐进旁边的巷子。四克朗换来的字据被折好，放在铁盒底下。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "pay-small-part",
               "text": "夜里母亲咳了两阵，有人起来把炉子拨旺，药瓶已经见了底。桌上那张字据边角发白，看一眼就想起白天巷口那个拐弯的背影。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -1299,36 +1175,24 @@
               "id": "default",
               "key": "settle-at-the-tavern",
               "text": "酒馆的桌面上有烟头烫出的洞，掌柜的把欠条一张张摊开，指头点在总数上。有人把话说得慢，请他把利息和期数讲明白，对方在边上一直低头转杯子。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "settle-at-the-tavern",
               "text": "新写的据纸上担保人一栏留着空白，掌柜的用笔杆敲了敲那处。有人把杯子推过去，说月底来还第一笔，名字就不必写了。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "social",
-        "goals": [
-          "survival",
-          "belonging"
-        ],
-        "needs": [
-          "safety",
-          "autonomy"
-        ],
+        "goals": ["survival", "belonging"],
+        "needs": ["safety", "autonomy"],
         "baseUtility": 1.4,
         "risk": 0.35,
-        "skills": [
-          "social"
-        ]
+        "skills": ["social"]
       }
     }
   ]

@@ -71,7 +71,7 @@ const report = {
 };
 
 mkdirSync('docs/v4', { recursive: true });
-writeFileSync('docs/v4/phase-12-integrity.json', `${JSON.stringify(report, null, 2)}\n`);
+writeFileSync('docs/v4/phase-13-integrity.json', `${JSON.stringify(report, null, 2)}\n`);
 console.log(
   JSON.stringify(
     {

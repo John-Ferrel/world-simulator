@@ -173,7 +173,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'fever-passes',
         weight: 0.45,
         immediateText:
-          '{subject}烧了两夜。{mother}用湿布擦额头，天亮时体温退下去，孩子开始要水喝。',
+          '{subject}烧了两夜，{mother}用湿布擦额头，又换了两回干净床单，煤和肥皂花去两克朗。天亮时体温退下去，孩子开始要水喝；{mother}把湿布搭在椅背上，手还在抖，却先去数了数还剩几块煤。',
         effects: [
           { type: 'health', personId: '$subject', amount: -0.06, reason: 'two nights of fever' },
           { type: 'cash', householdId: '$household', amount: -2, reason: 'clean linen and fuel' },
@@ -183,7 +183,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'doctor-called',
         weight: 0.3,
         immediateText:
-          '{mother}托邻居去请医生。医生在午后进门，听了孩子的胸口，留下药粉和一张账单，收了八克朗。',
+          '{mother}托邻居去请医生。医生在午后进门，听了孩子的胸口，留下药粉和一张账单，收了八克朗；{subject}的烧在傍晚退了些，{mother}把药粉分成小包，账单压在糖罐底下，手指在八克朗那几个字上停了一会儿。',
         effects: [
           { type: 'cash', householdId: '$household', amount: -8, reason: 'doctor visit' },
           { type: 'health', personId: '$subject', amount: 0.02, reason: 'doctor treatment' },
@@ -201,7 +201,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         weight: 0.25,
         conditions: [{ kind: 'health', max: 0.55 }],
         immediateText:
-          '第三个夜里，{subject}的呼吸变浅。{mother}一直抱着孩子坐到天亮，医生来时只摇了摇头。家里拿出四克朗办葬礼。',
+          '第三个夜里，{subject}的呼吸变浅，嘴唇干得起了皮。{mother}一直抱着孩子坐到天亮，医生来时只摇了摇头；家里拿出四克朗办葬礼，{subject}的小衣服被叠好收进箱底，床边的水碗还温着，屋里没人敢去倒。',
         effects: [
           { type: 'health', personId: '$subject', amount: -0.8, reason: 'untreated infant fever' },
           {
@@ -220,6 +220,44 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
           { type: 'cash', householdId: '$household', amount: -4, reason: 'burial' },
         ],
         significance: 0.85,
+      },
+    ],
+    narration: [
+      {
+        id: 'vienna-life-infant-fever.fever-passes.alt1',
+        key: 'fever-passes',
+        text: '湿布换到第七回，{mother}的手背已经冻得发红。天亮时{subject}睁开眼要水，{mother}把杯子凑过去，才发现自己的手抖得比孩子还厉害。',
+        tone: ['tender'],
+      },
+      {
+        id: 'vienna-life-infant-fever.fever-passes.alt2',
+        key: 'fever-passes',
+        text: '两克朗换回一筐煤和一块新肥皂，床单洗到半夜才烘干。{subject}退烧后睡得很沉，{mother}坐在床边数煤块，数到一半就靠在墙上睡着了。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-infant-fever.doctor-called.alt1',
+        key: 'doctor-called',
+        text: '医生把听诊器贴在孩子胸口，听了一会儿，说肺里还干净。八克朗从糖罐里数出去，{mother}把药粉分成六包，每一包都用纸角折紧。',
+        tone: ['clinical'],
+      },
+      {
+        id: 'vienna-life-infant-fever.doctor-called.alt2',
+        key: 'doctor-called',
+        text: '账单压在糖罐底下，{mother}把糖罐挪了挪，怕潮气洇了字。{subject}傍晚退了烧，开始抓{mother}的衣襟；屋里药味很重，八克朗却买回一个能睡着的晚上。',
+        tone: ['tender'],
+      },
+      {
+        id: 'vienna-life-infant-fever.fever-death.alt1',
+        key: 'fever-death',
+        text: '天快亮时，孩子的呼吸轻得听不见。{mother}把耳朵贴过去，又贴了一会儿，才抬头看门口；医生来后只摇了摇头，四克朗的葬礼钱从抽屉最底下拿出来。',
+        tone: ['clinical'],
+      },
+      {
+        id: 'vienna-life-infant-fever.fever-death.alt2',
+        key: 'fever-death',
+        text: '小衣服叠好放进箱底，{mother}把水碗留在床边，谁也没有去倒。{subject}的名字后来只写在一张薄纸上，四克朗换回一小块墓地。',
+        tone: ['dry'],
       },
     ],
     tags: ['infancy', 'illness', 'death', 'baseline_mortality'],
@@ -363,7 +401,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'recites',
         weight: 0.4,
         immediateText:
-          '{teacher}让{subject}站到黑板前背乘法表。孩子背到七乘八时停了一下，还是背完了。放学时手指冻得发红，石板上的字被袖子擦掉一半。',
+          '{teacher}让{subject}站到黑板前背乘法表。孩子背到七乘八时停了一下，还是背完了；放学时手指冻得发红，石板上的字被袖子擦掉一半，{teacher}在名册上给了一个小小的勾，{subject}把石板抱在胸前，一路没舍得放进书包。',
         effects: [
           {
             type: 'education',
@@ -380,7 +418,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'punished',
         weight: 0.35,
         immediateText:
-          '{subject}在课堂上和同桌说话，{teacher}用戒尺打了手心。孩子把红肿的手藏在桌下，放学后不敢让家里人看见。',
+          '{subject}在课堂上和同桌说话，{teacher}用戒尺打了手心。孩子把红肿的手藏在桌下，放学后不敢让家里人看见；此后听见戒尺敲桌沿，{subject}的肩膀就先缩一下，对{teacher}也多了几分怕。',
         effects: [
           { type: 'health', personId: '$subject', amount: -0.02, reason: 'punishment at school' },
           {
@@ -405,7 +443,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'hungry-in-class',
         weight: 0.25,
         immediateText:
-          '{subject}早上只喝了一碗清汤，第二节课时眼前发黑。{teacher}让孩子去走廊坐一会儿，给了半块面包。',
+          '{subject}早上只喝了一碗清汤，第二节课时眼前发黑。{teacher}让孩子去走廊坐一会儿，给了半块面包；{subject}把面包屑拢在手心吃完，胃里还是空的，但看{teacher}的眼神软了些，回到座位时把腰挺直了一点。',
         effects: [
           { type: 'health', personId: '$subject', amount: -0.03, reason: 'went to school hungry' },
           {
@@ -424,6 +462,44 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
             reason: 'teacher gave bread',
           },
         ],
+      },
+    ],
+    narration: [
+      {
+        id: 'vienna-life-school-day.recites.alt1',
+        key: 'recites',
+        text: '七乘八卡在喉咙里，{subject}看见{teacher}的眉毛动了一下，赶紧把答案补上。黑板上的粉笔灰落进袖口，放学时手指已经僵得弯不过来。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-school-day.recites.alt2',
+        key: 'recites',
+        text: '{teacher}在名册上打勾时，笔尖顿了一下。{subject}回到座位，把石板上的字又描了一遍；窗外的雪没有停，教室里却比刚才暖了一点。',
+        tone: ['tender'],
+      },
+      {
+        id: 'vienna-life-school-day.punished.alt1',
+        key: 'punished',
+        text: '戒尺落下来时，{subject}没有躲，只把牙咬紧。掌心慢慢肿起一道红印，{teacher}叫坐下，{subject}把左手塞进袖口，一节课没再拿出来。',
+        tone: ['clinical'],
+      },
+      {
+        id: 'vienna-life-school-day.punished.alt2',
+        key: 'punished',
+        text: '放学路上，{subject}把手揣在口袋里，碰一下就疼。回到家门口，{subject}先把手背在身后，等{mother}转身才敢看；那道红印到晚上还没有消。',
+        tone: ['tender'],
+      },
+      {
+        id: 'vienna-life-school-day.hungry-in-class.alt1',
+        key: 'hungry-in-class',
+        text: '黑板上的字忽然变成一片白，{subject}扶住桌沿才没栽下去。{teacher}让去走廊坐着，过了一会儿递来半块面包；面包很干，{subject}嚼得很慢。',
+        tone: ['tender'],
+      },
+      {
+        id: 'vienna-life-school-day.hungry-in-class.alt2',
+        key: 'hungry-in-class',
+        text: '半块面包用报纸垫着，{teacher}什么也没问。{subject}把面包屑拢在手心，连报纸上的碎屑一起倒进嘴里；回到座位时，肚子还在叫。',
+        tone: ['dry'],
       },
     ],
     tags: ['childhood', 'school', 'hunger'],
@@ -470,7 +546,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'folds-notices',
         weight: 0.55,
         immediateText:
-          '{employer}把一捆教区通告交给{mother}带回家。{subject}放学后在厨房桌上折页到夜里，手指沾满油墨，两周后交回六千张，拿到三克朗二十赫勒。',
+          '{employer}把一捆教区通告交给{mother}带回家。{subject}放学后在厨房桌上折页到夜里，手指沾满油墨，两周后交回六千张，拿到三克朗二十赫勒；钱交给{mother}时，{subject}的指尖已经洗不干净，指甲缝里留着一圈黑；家里从此多了一个能挣几个铜板的孩子。',
         effects: [
           {
             type: 'cash',
@@ -499,7 +575,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'runs-errands',
         weight: 0.3,
         immediateText:
-          '{subject}放学后替{employer}的排字工送校样，穿过两条街，拿到一克朗。回家时天已经黑了，{mother}把饭留在锅里。',
+          '{subject}放学后替{employer}的排字工送校样，穿过两条街，拿到一克朗。回家时天已经黑了，{mother}把饭留在锅里；{subject}的鞋底磨薄，脚后跟起了泡，却把那一克朗捏得平平整整，放进{mother}的围裙口袋；这跑腿的差事从此固定下来，{subject}也算家里一个能挣钱的孩子。',
         effects: [
           { type: 'cash', householdId: '$household', amount: 1, reason: 'running errands' },
           { type: 'health', personId: '$subject', amount: -0.01, reason: 'walking in the cold' },
@@ -516,7 +592,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'refuses-extra-work',
         weight: 0.15,
         immediateText:
-          '{mother}看见{subject}的手被纸边割破，把通告退回印刷厂。厂里的工头说不干有的是人干，{mother}拉着孩子走了。',
+          '{mother}看见{subject}的手被纸边割破，把通告退回印刷厂。厂里的工头说不干有的是人干，{mother}拉着孩子走了；{subject}从此留在家里看弟妹，手上的口子结了痂，{mother}夜里替人缝补补上那点工钱，灯油却多烧了一截。',
         effects: [
           {
             type: 'role',
@@ -534,6 +610,44 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
             reason: 'mother refused extra work',
           },
         ],
+      },
+    ],
+    narration: [
+      {
+        id: 'vienna-life-child-labour.folds-notices.alt1',
+        key: 'folds-notices',
+        text: '厨房桌上的通告摞得比课本高，{subject}一张张对折，再压平。两周后交回六千张，{employer}数了两遍，把三克朗二十赫勒推过来；{mother}接过去，先摸了摸{subject}的手指。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-child-labour.folds-notices.alt2',
+        key: 'folds-notices',
+        text: '油墨沾在指缝里，用肥皂搓了三遍也洗不掉。{subject}把钱放在桌上，三克朗二十赫勒，铜板还带着体温；{mother}没有说话，只把灯芯挑亮了一点。',
+        tone: ['tender'],
+      },
+      {
+        id: 'vienna-life-child-labour.runs-errands.alt1',
+        key: 'runs-errands',
+        text: '校样用绳子扎着，{subject}怕折了角，一直抱在胸前。送到时排字工正在吃饭，接过校样，从口袋里摸出一克朗；{subject}跑回家，饭已经凉了。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-child-labour.runs-errands.alt2',
+        key: 'runs-errands',
+        text: '脚后跟的泡磨破了，{subject}把鞋脱在门口，光脚走进厨房。{mother}把锅里的饭盛出来，{subject}先把一克朗放在桌上，才坐下。',
+        tone: ['tender'],
+      },
+      {
+        id: 'vienna-life-child-labour.refuses-extra-work.alt1',
+        key: 'refuses-extra-work',
+        text: '工头把通告往桌上一推，说不想干就滚。{mother}把{subject}的手翻过来看了看，拉着孩子就走；那捆纸留在柜台上，油墨味跟了一路。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-child-labour.refuses-extra-work.alt2',
+        key: 'refuses-extra-work',
+        text: '手上的口子结痂后发痒，{subject}总想去抠。{mother}夜里替人缝补，针脚密得像一排小字；{subject}坐在旁边看弟妹，听见灯芯噼啪响了一声。',
+        tone: ['tender'],
       },
     ],
     tags: ['childhood', 'labour', 'piecework'],
@@ -682,7 +796,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'adult-recovers',
         weight: 0.5,
         immediateText:
-          '{subject}烧了五天，起床时腿发软，走两步就要扶墙。工作丢了半个月，工头说位子已经有人顶替。',
+          '{subject}烧了五天，起床时腿发软，走两步就要扶墙。工作丢了半个月，工头说位子已经有人顶替；{subject}摸着楼梯扶手慢慢下楼，肺里还像塞着一团湿棉花，咳一声要歇半天，工票也被压在了抽屉最底下。',
         effects: [
           { type: 'health', personId: '$subject', amount: -0.12, reason: 'influenza' },
           { type: 'unemployment', personId: '$subject', reason: 'missed work during influenza' },
@@ -699,7 +813,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'adult-pneumonia',
         weight: 0.3,
         immediateText:
-          '医生在{residence}听了{subject}的肺，说是肺炎，留下药并嘱咐不要出门。家里人轮流守着，账单记在厨房门框上。',
+          '医生在{residence}听了{subject}的肺，说是肺炎，留下药并嘱咐不要出门。家里人轮流守着，账单记在厨房门框上，一共十二克朗；{subject}的胸口像压着一块砖，咳出来的痰带着铁锈色；医生说这肺以后好不全，夜里只能半坐着睡。',
         effects: [
           { type: 'health', personId: '$subject', amount: -0.2, reason: 'influenza pneumonia' },
           { type: 'cash', householdId: '$household', amount: -12, reason: 'doctor and medicine' },
@@ -716,7 +830,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'adult-dies',
         weight: 0.2,
         immediateText:
-          '{subject}在第七天夜里停止呼吸。家里没有钱请第二次医生，邻居帮忙去市政办事处登记，棺材铺的人下午来量了尺寸。',
+          '{subject}在第七天夜里停止呼吸。家里没有钱请第二次医生，邻居帮忙去市政办事处登记；棺材铺的人下午来量了尺寸，葬礼花去二十克朗，{subject}的工票还挂在门后的钉子上，谁也没有去取。',
         effects: [
           { type: 'health', personId: '$subject', amount: -1, reason: 'influenza' },
           {
@@ -728,6 +842,44 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
           { type: 'cash', householdId: '$household', amount: -20, reason: 'burial' },
         ],
         significance: 0.9,
+      },
+    ],
+    narration: [
+      {
+        id: 'vienna-life-flu-1918-adult.adult-recovers.alt1',
+        key: 'adult-recovers',
+        text: '五天里{subject}只记得天花板和送水的手。起床时腿一软，扶住床沿才没跪下；工头托人带话，说位子已经有人顶了。',
+        tone: ['clinical'],
+      },
+      {
+        id: 'vienna-life-flu-1918-adult.adult-recovers.alt2',
+        key: 'adult-recovers',
+        text: '楼梯扶手上有一层灰，{subject}一级一级往下挪，走两步就要停。街上的电车照常响，工厂的汽笛也照常响，只有{subject}的工票被压在了抽屉最底下。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-flu-1918-adult.adult-pneumonia.alt1',
+        key: 'adult-pneumonia',
+        text: '医生把听诊器挪了三个位置，最后停在左边，说这里有杂音。十二克朗的药和诊费记在门框上，家里人轮流守夜；{subject}半坐着睡，背后垫了两只枕头。',
+        tone: ['clinical'],
+      },
+      {
+        id: 'vienna-life-flu-1918-adult.adult-pneumonia.alt2',
+        key: 'adult-pneumonia',
+        text: '痰吐在旧报纸里，带一点铁锈色。{subject}看见家里人把报纸团起来，谁也没有说话；厨房门框上的账单又添了一行，十二克朗，字写得很小。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-flu-1918-adult.adult-dies.alt1',
+        key: 'adult-dies',
+        text: '第七天夜里，{subject}的呼吸一阵比一阵浅。家里人把窗户打开一条缝，天亮时再去摸额头，已经凉了；市政办事处的登记排到下午，棺材铺的人来得更早。',
+        tone: ['clinical'],
+      },
+      {
+        id: 'vienna-life-flu-1918-adult.adult-dies.alt2',
+        key: 'adult-dies',
+        text: '二十克朗的葬礼钱从亲戚家凑来，工票还挂在门后的钉子上。{subject}的旧外套被取下来，口袋里有半张电车票和一枚磨平的铜板。',
+        tone: ['dry'],
       },
     ],
     tags: ['adulthood', 'epidemic', 'death', 'baseline_mortality'],
@@ -865,7 +1017,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'gets-potatoes',
         weight: 0.45,
         immediateText:
-          '{subject}天没亮就到{place}排队，站了四个小时，买到三公斤土豆和一块用纸包着的脂肪。回家时篮子在雪里拖出一道印子。',
+          '{subject}天没亮就到{place}排队，站了四个小时，买到三公斤土豆和一块用纸包着的脂肪，付了三克朗。回家时篮子在雪里拖出一道印子，{subject}的脚趾冻得发麻，但锅里有东西可煮了，晚饭的汤总算能见到油花。',
         effects: [
           {
             type: 'food',
@@ -881,7 +1033,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'sold-out',
         weight: 0.35,
         immediateText:
-          '轮到{subject}时，店员把“今日售完”的木牌挂出来。队伍里有人骂了一句，警察走过来，大家慢慢散开。{subject}空着篮子回家。',
+          '轮到{subject}时，店员把“今日售完”的木牌挂出来。队伍里有人骂了一句，警察走过来，大家慢慢散开；{subject}空着篮子回家，胃里一阵阵发紧，晚饭只喝了盐水汤，夜里饿得睡不着，听见自己的肚子在响。',
         effects: [
           { type: 'health', personId: '$subject', amount: -0.04, reason: 'missed ration' },
           {
@@ -897,11 +1049,49 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'black-market',
         weight: 0.2,
         immediateText:
-          '{subject}在巷口从一个穿军大衣的人手里买了黑市面粉，价格是官价的三倍。面粉里掺着麸皮，回家筛了半天。',
+          '{subject}在巷口从一个穿军大衣的人手里买了黑市面粉，九克朗，价格是官价的三倍。面粉里掺着麸皮，回家筛了半天；{subject}把面粉装进铁罐，没敢让邻居看见，锅里的面包总算有了着落。',
         effects: [
           { type: 'cash', householdId: '$household', amount: -9, reason: 'black-market flour' },
           { type: 'food', householdId: '$household', amount: 6, reason: 'black-market flour' },
         ],
+      },
+    ],
+    narration: [
+      {
+        id: 'vienna-life-food-queue-1916.gets-potatoes.alt1',
+        key: 'gets-potatoes',
+        text: '队伍在雪里挪得很慢，{subject}把篮子换了两只手。轮到窗口时，店员称了三公斤土豆，又从木箱底刮出一块脂肪；三克朗递进去，找回的铜板冻得粘手。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-food-queue-1916.gets-potatoes.alt2',
+        key: 'gets-potatoes',
+        text: '回家路上篮子越来越沉，{subject}在雪里拖出一道印子。进门时脚趾已经没了知觉，{mother}把土豆接过去，先切了一小块脂肪下锅；屋里很快有了油香。',
+        tone: ['tender'],
+      },
+      {
+        id: 'vienna-life-food-queue-1916.sold-out.alt1',
+        key: 'sold-out',
+        text: '木牌挂出来时，队伍里安静了一瞬，随即有人骂出声。警察往这边走了两步，大家慢慢散开；{subject}把空篮子夹在腋下，回头看了一眼关上的窗口。',
+        tone: ['bureaucratic'],
+      },
+      {
+        id: 'vienna-life-food-queue-1916.sold-out.alt2',
+        key: 'sold-out',
+        text: '晚饭只有盐水汤，{subject}把碗底最后一点咸味舔干净。夜里饿得睡不着，听见自己的肚子在响；窗外的雪还在下，配给店门口已经有人开始排明天的队。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-food-queue-1916.black-market.alt1',
+        key: 'black-market',
+        text: '穿军大衣的人把面粉袋夹在腋下，先收了钱才松手。{subject}把九克朗数过去，袋子比看上去轻；回家筛出半碗麸皮，铁罐盖扣得很紧。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-food-queue-1916.black-market.alt2',
+        key: 'black-market',
+        text: '面粉里掺着麸皮，筛子摇到手臂发酸。{subject}把铁罐藏到床底下，邻居来敲门时没有开；锅里的面包烤出来发黑，却比盐水汤顶饿。',
+        tone: ['matter-of-fact'],
       },
     ],
     tags: ['war', 'food', 'shortage'],
@@ -1159,7 +1349,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'crushed-hand',
         weight: 0.45,
         immediateText:
-          '{subject}在换纸时左手被压板夹住。工友关掉机器，厂里的工头拿来急救箱，把伤手包起来送去医院。厂里先垫了医药费，事故报告写的是“操作不慎”。',
+          '{subject}在换纸时左手被压板夹住。工友关掉机器，工头拿来急救箱，把伤手包起来送去医院；厂里先垫了十克朗医药费，事故报告写的是“操作不慎”。{subject}的左手从此握不紧拳，指尖总是凉的，天阴时骨缝里发疼。',
         effects: [
           { type: 'health', personId: '$subject', amount: -0.24, reason: 'crushed left hand' },
           {
@@ -1181,7 +1371,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'dismissed-after-accident',
         weight: 0.35,
         immediateText:
-          '{employer}在事故后第三天通知{subject}不用再来了，说岗位不能一直空着。{subject}拿着医院证明去工会，医院写的诊断被工头压在抽屉里。',
+          '{employer}在事故后第三天通知{subject}不用再来了，说岗位不能一直空着。{subject}拿着医院证明去工会，诊断书被工头压在抽屉里；治伤花去六克朗，{subject}的手还没好，工作先没了，工牌交回去时手指还缠着纱布。',
         effects: [
           { type: 'unemployment', personId: '$subject', reason: 'dismissed after accident' },
           { type: 'health', personId: '$subject', amount: -0.12, reason: 'injury and lost job' },
@@ -1193,7 +1383,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         weight: 0.2,
         conditions: [{ kind: 'health', max: 0.45 }],
         immediateText:
-          '压板落下时{subject}没能把手抽出来。工友把人抬到门口，等救护车到时已经没有了呼吸。{employer}当天下午派人送来抚恤金。',
+          '压板落下时{subject}没能把手抽出来。工友把人抬到门口，等救护车到时已经没有了呼吸；{employer}当天下午派人送来三十克朗抚恤金，车间里的机器停了一个钟头，又响起来，像什么都没有发生过。',
         effects: [
           { type: 'health', personId: '$subject', amount: -1, reason: 'fatal press accident' },
           {
@@ -1205,6 +1395,44 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
           { type: 'cash', householdId: '$household', amount: 30, reason: 'employer death benefit' },
         ],
         significance: 0.9,
+      },
+    ],
+    narration: [
+      {
+        id: 'vienna-life-work-injury.crushed-hand.alt1',
+        key: 'crushed-hand',
+        text: '压板抬起来时，{subject}的左手已经扁了一块。工头把急救箱拎过来，纱布绕了三圈就渗红；十克朗的医药费由厂里先垫，事故报告上写着“操作不慎”。',
+        tone: ['clinical'],
+      },
+      {
+        id: 'vienna-life-work-injury.crushed-hand.alt2',
+        key: 'crushed-hand',
+        text: '医院给{subject}拍了片，说骨头接得回去，筋却难说。回到车间，机器已经重新响了；{subject}试着握拳，指尖凉得像别人的手。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-work-injury.dismissed-after-accident.alt1',
+        key: 'dismissed-after-accident',
+        text: '工头把辞退的话说得很短，眼睛看着机器。{subject}把工牌放在桌上，纱布里还透着一点红；医院证明递过去，工头顺手压进抽屉，说以后再说。',
+        tone: ['bureaucratic'],
+      },
+      {
+        id: 'vienna-life-work-injury.dismissed-after-accident.alt2',
+        key: 'dismissed-after-accident',
+        text: '工会的人看了证明，问有没有目击者。{subject}说当时只有机器响；六克朗治伤钱先记在账上，工作却已经没了。回家路上，{subject}把伤手插在口袋里，怕人看见。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-work-injury.fatal-accident.alt1',
+        key: 'fatal-accident',
+        text: '机器停了一个钟头，工友们站在门口，谁也没有说话。{employer}派人送来三十克朗，钱放在桌上，用一只旧信封压着；下午机器又响了。',
+        tone: ['clinical'],
+      },
+      {
+        id: 'vienna-life-work-injury.fatal-accident.alt2',
+        key: 'fatal-accident',
+        text: '救护车来时，{subject}已经被抬到门口。三十克朗抚恤金交到家里，信封上没有写名字；车间里的考勤牌第二天就换了新名字。',
+        tone: ['dry'],
       },
     ],
     tags: ['adulthood', 'labour', 'injury'],
@@ -1786,7 +2014,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'dies-at-home',
         weight: 0.55,
         immediateText:
-          '{subject}在睡梦中没有醒来。邻居早上来送面包，敲门没人应，找房东开了锁。桌上还放着昨天的药和一杯没喝完的水。',
+          '{subject}在睡梦中没有醒来。邻居早上来送面包，敲门没人应，找房东开了锁；桌上还放着昨天的药和一杯没喝完的水。葬礼花去十五克朗，{subject}的旧外套被邻居叠好，放在椅背上，口袋里有一张过期的药方。',
         effects: [
           {
             type: 'death',
@@ -1802,7 +2030,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'dies-in-hospital',
         weight: 0.3,
         immediateText:
-          '{subject}在家里摔倒后被送到医院。三周后，病房的窗帘拉开时，床上已经换了新的病人。医院把遗物装在一只纸袋里交给邻居。',
+          '{subject}在家里摔倒后被送到医院。三周后，病房的窗帘拉开时，床上已经换了新的病人；医院把遗物装在一只纸袋里交给邻居，住院和葬礼一共二十克朗，纸袋里只有一副眼镜和半块肥皂。',
         effects: [
           {
             type: 'health',
@@ -1824,11 +2052,49 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'survives-another-year',
         weight: 0.3,
         immediateText:
-          '{subject}在医院住了两周又回到家，走路更慢了。邻居把药按早中晚分在小盒里，放在床头。',
+          '{subject}在医院住了两周又回到家，走路更慢了。六克朗的住院费从积蓄里出，邻居把药按早中晚分在小盒里，放在床头；{subject}夜里还是咳，但第二天早上能自己坐到窗边，看楼下的人扫雪。',
         effects: [
           { type: 'health', personId: '$subject', amount: -0.08, reason: 'old age decline' },
           { type: 'cash', householdId: '$household', amount: -6, reason: 'hospital visit' },
         ],
+      },
+    ],
+    narration: [
+      {
+        id: 'vienna-life-death-old-age.dies-at-home.alt1',
+        key: 'dies-at-home',
+        text: '邻居敲了三回门，最后找房东拿钥匙。锁开后，屋里很静，桌上的水还剩半杯；十五克朗的葬礼钱从抽屉里找到，用手帕包着。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-death-old-age.dies-at-home.alt2',
+        key: 'dies-at-home',
+        text: '{subject}的旧外套被叠好放在椅背上，口袋里有一张过期的药方。邻居把窗打开，街上的面包车正好经过；屋里没有别的声响。',
+        tone: ['tender'],
+      },
+      {
+        id: 'vienna-life-death-old-age.dies-in-hospital.alt1',
+        key: 'dies-in-hospital',
+        text: '摔倒时{subject}还够得到桌角，送到医院后就没再清醒。三周后窗帘拉开，床上换了新病人；纸袋里一副眼镜、半块肥皂，二十克朗的账单夹在袋口。',
+        tone: ['clinical'],
+      },
+      {
+        id: 'vienna-life-death-old-age.dies-in-hospital.alt2',
+        key: 'dies-in-hospital',
+        text: '邻居把纸袋拎回家，放在桌上，一时不知道该怎么处理后事。住院和葬礼一共二十克朗；{subject}的眼镜腿是歪的，像还架在鼻梁上。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-death-old-age.survives-another-year.alt1',
+        key: 'survives-another-year',
+        text: '出院时{subject}扶着墙走，六克朗的住院费从手帕里数出去。邻居把药分进三个小盒，早中晚各一格；窗台上的雪化了，水滴到楼下。',
+        tone: ['tender'],
+      },
+      {
+        id: 'vienna-life-death-old-age.survives-another-year.alt2',
+        key: 'survives-another-year',
+        text: '夜里还是会咳，但天亮后{subject}能自己坐到窗边。楼下有人扫雪，铁锹刮着石板；{subject}看了一会儿，把药盒往手边挪了挪。',
+        tone: ['dry'],
       },
     ],
     tags: ['elderhood', 'death', 'baseline_mortality'],
@@ -1867,7 +2133,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'move-to-shared-tenement',
         weight: 0.5,
         immediateText:
-          '{subject}把床架拆开，用绳子捆在借来的手推车上，搬进利奥波德城的合租房。新住处人多、墙薄，但至少每个人有一块能躺下的地方；押金和车钱花掉了八克朗。',
+          '{subject}把床架拆开，用绳子捆在借来的手推车上，搬进利奥波德城的合租房。押金和车钱花掉八克朗；新住处人多、墙薄，但至少每个人有一块能躺下的地方，{subject}的腰在冷风里疼了一路，夜里却第一次不用侧着身睡。',
         effects: [
           {
             type: 'residence',
@@ -1883,7 +2149,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'take-in-a-lodger',
         weight: 0.3,
         immediateText:
-          '{subject}把厨房角落隔出一块，租给一个在附近上工的学徒。每月多四克朗，但煤、水和厕所都要排队；夜里有人咳嗽，孩子睡不踏实。',
+          '{subject}把厨房角落隔出一块，租给一个在附近上工的学徒。每月多四克朗，但煤、水和厕所都要排队；夜里有人咳嗽，{subject}睡不踏实，第二天眼下发青，孩子也在床上翻来覆去，四克朗换来一屋子醒着的人。',
         effects: [
           { type: 'cash', householdId: '$household', amount: 4, reason: 'lodger rent' },
           { type: 'health', personId: '$subject', amount: -0.04, reason: 'overcrowded housing' },
@@ -1900,7 +2166,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
         id: 'apply-for-a-municipal-flat',
         weight: 0.2,
         immediateText:
-          '{subject}去市政办事处登记申请更大的市营住宅。办事员收下表格和两克朗手续费，说前面还有几百户，至少要等两年。',
+          '{subject}去市政办事处登记申请更大的市营住宅。办事员收下表格和两克朗手续费，说前面还有几百户，至少要等两年；{subject}把回执折好，回家路上看见新盖的市营楼房，窗户亮着，门却还进不去。',
         effects: [
           {
             type: 'cash',
@@ -1916,6 +2182,44 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
             reason: 'applied for a municipal flat',
           },
         ],
+      },
+    ],
+    narration: [
+      {
+        id: 'vienna-life-overcrowded-flat.move-to-shared-tenement.alt1',
+        key: 'move-to-shared-tenement',
+        text: '床架绑在手推车上，过石子路时吱呀作响。八克朗付了押金和车钱，{subject}把铺盖搬进合租房；隔壁有人在咳，墙薄得能听见翻身。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-overcrowded-flat.move-to-shared-tenement.alt2',
+        key: 'move-to-shared-tenement',
+        text: '新住处只有一扇小窗，但每个人总算有一块能躺下的地方。{subject}把床架拼好，腰疼得直不起来；夜里第一次不用侧着身睡，却听见整栋楼的呼吸。',
+        tone: ['tender'],
+      },
+      {
+        id: 'vienna-life-overcrowded-flat.take-in-a-lodger.alt1',
+        key: 'take-in-a-lodger',
+        text: '学徒把铺盖卷放在厨房角落，四克朗先付了一个月。夜里学徒咳了两声，{subject}就醒了；煤、水和厕所都要排队，早上出门时谁也没抢到先。',
+        tone: ['dry'],
+      },
+      {
+        id: 'vienna-life-overcrowded-flat.take-in-a-lodger.alt2',
+        key: 'take-in-a-lodger',
+        text: '四克朗放在桌上，{subject}数了一遍，又添进房租的信封。孩子半夜翻来覆去，学徒在厨房里咳嗽；{subject}睁着眼到天亮，眼下青了一圈。',
+        tone: ['matter-of-fact'],
+      },
+      {
+        id: 'vienna-life-overcrowded-flat.apply-for-a-municipal-flat.alt1',
+        key: 'apply-for-a-municipal-flat',
+        text: '办事员把表格翻到最后一页，收了两个克朗，在角上盖了个章。{subject}问要等多久，办事员说前面还有几百户；回执上的号码写得很小。',
+        tone: ['bureaucratic'],
+      },
+      {
+        id: 'vienna-life-overcrowded-flat.apply-for-a-municipal-flat.alt2',
+        key: 'apply-for-a-municipal-flat',
+        text: '回家路上经过新盖的市营楼房，窗户亮着，晾衣绳上挂着床单。{subject}把回执折好放进内袋，两克朗换回一张纸；自己的厨房里还睡着学徒。',
+        tone: ['dry'],
       },
     ],
     tags: ['housing', 'home', 'health', 'family'],

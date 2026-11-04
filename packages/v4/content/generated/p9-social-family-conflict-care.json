@@ -6,14 +6,7 @@
     "min": 18,
     "max": 70
   },
-  "tags": [
-    "family",
-    "care",
-    "siblings",
-    "inheritance",
-    "housing",
-    "money"
-  ],
+  "tags": ["family", "care", "siblings", "inheritance", "housing", "money"],
   "baseRate": 0.2,
   "conditions": [
     {
@@ -67,7 +60,7 @@
         {
           "id": "split-per-head",
           "weight": 1,
-          "text": "{subject}把旧练习本翻到空白一页，用铅笔头写下三人的名字，在每人旁边画一道竖线。十四克朗除以三，每人四克朗六十六赫勒，多出的两赫勒记在公账上。{sibling}盯着自己的那一栏看了半天，从围裙口袋里摸出硬币，一枚一枚摞在糖罐旁边。",
+          "text": "{subject}把旧练习本翻到空白一页，写下母亲、自己和{sibling}的名字。十四克朗的药费单，{subject}和{sibling}各摊五克朗，余下四克朗从母亲的养老金里扣；{subject}把五克朗硬币一枚枚摞在桌沿，{sibling}盯着那一栏看了半天，也从围裙口袋里摸出钱来。",
           "effects": [
             {
               "type": "cash",
@@ -90,27 +83,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.sibling-medicine-bill.split-per-head.alt1",
               "key": "split-per-head",
-              "text": "铅笔在粗纸上划出沙沙声，{sibling}数出四克朗六十六赫勒，剩下的散钱用一块手帕包好放回糖罐。窗外收废品的车已经走远，屋里只剩下硬币碰着桌面的脆响。",
-              "tone": [
-                "dry"
-              ]
+              "text": "铅笔尖钝了，{subject}用指甲把最后一笔划清楚。{sibling}数出五克朗，铜板在桌面上排成窄窄一行；母亲在里屋咳了两声，谁也没有去动糖罐里剩下的零钱。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.sibling-medicine-bill.split-per-head.alt2",
               "key": "split-per-head",
-              "text": "{subject}把练习本推到桌子中央，{sibling}的指尖在那一列数字上停了一下，最后还是把铜币和银币分开摞好。母亲在里屋咳了两声，谁也没有再提上次住院的旧账。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "账算完，{subject}把五克朗推到药费单上，纸角被硬币压出四个圆印。{sibling}没有争，只问了一句下个月还够不够；窗外的收废品车走远了，屋里只剩钱碰着木桌的轻响。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "advance-with-room-claim",
           "weight": 1,
-          "text": "{subject}先把十四克朗整张票子压在药费单上，对{sibling}说这钱不用还，只要求以后母亲那间朝院子的屋子归自己照看，钥匙也归自己管。{sibling}把咖啡杯往桌上一顿，说照看是照看，房契上的名字是另一回事，但药费单总算从糖罐底下抽了出来。",
+          "text": "{subject}把十四克朗的整张票子压在药费单上，说这钱不用还，只要求母亲那间朝院子的屋子以后归自己照看，钥匙也归自己管。{sibling}的咖啡杯在桌上顿了一下，说照看可以，房契上的名字另说；药费单总算从糖罐底下抽了出来，兄妹之间却多了一层账。",
           "effects": [
             {
               "type": "cash",
@@ -140,27 +129,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.sibling-medicine-bill.advance-with-room-claim.alt1",
               "key": "advance-with-room-claim",
-              "text": "{subject}把那张十四克朗的票子铺平，四角用三只咖啡杯压住。{sibling}没有碰那钱，只是伸手把糖罐挪开，露出底下那张皱巴巴的药费单，说先救了急再说别的。",
-              "tone": [
-                "dry"
-              ]
+              "text": "十四克朗在桌上铺平，{subject}用三只咖啡杯压住四角。{sibling}没有碰钱，只把糖罐挪开，露出底下皱巴巴的药费单，说先救了急，钥匙的事以后再讲。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.sibling-medicine-bill.advance-with-room-claim.alt2",
               "key": "advance-with-room-claim",
-              "text": "钥匙在{sibling}指间转了一圈，最后还是落在桌面上。{subject}把钱收进上衣内袋，听见里屋母亲的呼吸声，知道今晚不必再翻糖罐找那张单子。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "钥匙在{sibling}指间转了一圈，落在桌面。{subject}把钱收进上衣内袋，听见里屋母亲的呼吸声，也知道这间朝院子的屋子从此有了两个说法。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "refuse-push-bill",
           "weight": 1,
-          "text": "{subject}把药费单从糖罐底下抽出来，对折，推回桌子中央，说自己上个月的工钱已经贴过煤钱，这回不能再出。{sibling}的脸沉下来，拿起练习本翻得哗哗响，最后把单子重新压回糖罐底下，起身去够挂在门后的外套。三只咖啡杯里剩的渣子凉在桌上。",
+          "text": "{subject}把药费单从糖罐底下抽出来，对折，推回桌子中央，说上个月的工钱已经贴过煤钱，这回一个赫勒也拿不出。{sibling}的脸沉下来，练习本翻得哗哗响，最后把单子重新压回糖罐底下，起身去够门后的外套。三只咖啡杯里的渣子凉在桌上，兄妹这一回把话都说薄了。",
           "effects": [
             {
               "type": "relation",
@@ -183,20 +168,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.sibling-medicine-bill.refuse-push-bill.alt1",
               "key": "refuse-push-bill",
-              "text": "{subject}的指尖碰着那张纸又缩回来，{sibling}一句话没说，只是把外套从钉子上扯下来。门开时楼道里的冷风灌进来，吹得练习本翻过去两页，那些数字还留在纸上。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subject}的指尖碰着那张纸又缩回来。{sibling}一句话没说，把外套从钉子上扯下来，门开时楼道里的冷风灌进来，吹得练习本翻过去两页。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.sibling-medicine-bill.refuse-push-bill.alt2",
               "key": "refuse-push-bill",
-              "text": "糖罐重新压住药费单，{sibling}的脚步声在楼梯间一层层往下。{subject}独自坐着，听见收废品的车又绕回来，铃铛响了两下，屋里却没有谁站起来。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "糖罐重新压住药费单，{sibling}的脚步声一层层往下。{subject}独自坐着，听见收废品的车绕回来，铃铛响了两下，屋里没有谁站起来。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
@@ -215,9 +196,7 @@
         },
         {
           "kind": "placeKind",
-          "in": [
-            "home"
-          ]
+          "in": ["home"]
         },
         {
           "kind": "hasRelation",
@@ -259,7 +238,7 @@
         {
           "id": "shifts-with-sibling",
           "weight": 1,
-          "text": "{subject}和{sibling}把值班时辰定下来：{sibling}守前半夜，{subject}守后半夜，医生嘱咐的静养天数用粉笔写在门后，一共二十一天。夜里煤油灯芯拧小，{subject}把药粉分成小包摆在床头，便盆换水时尽量不碰出响声。头三天两人都熬得眼睛发红，但父亲起身时总有人扶。",
+          "text": "{subject}和{sibling}把值班时辰写在门后的粉笔板上：{sibling}守前半夜，{subject}守后半夜，医生说静养二十一天。煤油灯芯拧小，药粉分成小包摆在床头，便盆换水时尽量不碰出响。二十一天熬下来，{subject}的眼皮肿了，走路发飘，但{parent}每次起身总有人扶。",
           "effects": [
             {
               "type": "health",
@@ -289,27 +268,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.sick-parent-night.shifts-with-sibling.alt1",
               "key": "shifts-with-sibling",
-              "text": "门后的粉笔字一天擦掉一格，{subject}在凌晨三点把药粉倒进半杯温水里，{sibling}蜷在塌了一边的椅子上打盹。便盆里的水倒进楼道尽头的桶，回来时煤油灯已经暗成一个小点。",
-              "tone": [
-                "dry"
-              ]
+              "text": "门后的粉笔字一天擦掉一格。凌晨三点，{subject}把药粉倒进半杯温水，{sibling}蜷在塌了一边的椅子上打盹；便盆倒进楼道尽头的桶，回来时灯已经暗成一个小点。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.sick-parent-night.shifts-with-sibling.alt2",
               "key": "shifts-with-sibling",
-              "text": "{sibling}把钟拨到床头，说前半夜归自己。{subject}合眼没一会儿就被父亲的咳嗽叫醒，摸黑去够便盆，手肘碰翻了半包药粉，只好用手指把粉末拢回纸上。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{sibling}把钟拨到床头，说前半夜归自己。{subject}合眼没一会儿就被{parent}的咳嗽叫醒，摸黑去够便盆，手肘碰翻半包药粉，只好用手指把粉末拢回纸上。",
+              "tone": ["tender"]
             }
           ]
         },
         {
           "id": "hire-neighbor-daycare",
           "weight": 1,
-          "text": "{subject}请楼下的{neighbor}白天来照看父亲，讲好每天管两顿饭，外加十赫勒煤钱。{neighbor}上午来换床单，下午喂药，临走前把便盆提到楼道口。{subject}下工回来先摸煤箱，看还够不够烧，然后在练习本上记下当天给{neighbor}的饭钱和煤钱。",
+          "text": "{subject}请楼下的{neighbor}白天来照看{parent}，先付一周六克朗工钱，讲好每天另管两顿饭，煤钱也从这六克里出。{neighbor}上午换床单，下午喂药，临走把便盆提到楼道口。{subject}下工回来先摸煤箱，再在练习本上记下当天的饭钱和煤钱，看见{parent}的嘴唇不再干裂。",
           "effects": [
             {
               "type": "cash",
@@ -344,27 +319,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.sick-parent-night.hire-neighbor-daycare.alt1",
               "key": "hire-neighbor-daycare",
-              "text": "{neighbor}围裙口袋里装着一小包药粉，进门先看父亲的嘴唇干不干。煤钱放在糖罐旁边，{subject}下工后数出十赫勒，听见{neighbor}说今天咳得比昨天轻些，才去灶上热自己的饭。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{neighbor}围裙口袋里装着一小包药粉，进门先看{parent}的嘴唇干不干。六克朗放在糖罐旁边，{subject}下工后数出饭钱，听见一句“今天咳得轻些”，才去灶上热自己的饭。",
+              "tone": ["tender"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.sick-parent-night.hire-neighbor-daycare.alt2",
               "key": "hire-neighbor-daycare",
-              "text": "楼道里飘着{neighbor}熬的汤味，{subject}把饭钱压在盘子底下。父亲靠在叠高的枕头上，嘴角沾着药粉，{neighbor}用湿布替他擦掉，顺手把煤油灯芯挑亮。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "楼道里飘着{neighbor}熬的汤味，{subject}把饭钱压在盘子底下。{parent}靠在叠高的枕头上，嘴角沾着药粉，{neighbor}用湿布替{parent}擦掉，顺手把灯芯挑亮。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "hospital-deposit",
           "weight": 1,
-          "text": "{subject}跑了一趟医院，把父亲送进病房，先交三克朗押金，又买了一只要用的搪瓷杯和一条旧毛巾。护士收走父亲的便盆，换上一只带刻度的玻璃壶。{subject}回到空了的床边，把塌下去的椅子扶正，才发现自己一整天只喝了一杯咖啡。",
+          "text": "{subject}跑了一趟医院，把{parent}送进病房：押金三克朗，搪瓷杯和旧毛巾一克朗二十赫勒，头三天的药费三克朗八十赫勒，一共八克朗。护士收走便盆，换上带刻度的玻璃壶。{subject}回到空了的床边，把塌下去的椅子扶正，才发现自己一整天只喝了一杯咖啡。",
           "effects": [
             {
               "type": "cash",
@@ -394,20 +365,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.sick-parent-night.hospital-deposit.alt1",
               "key": "hospital-deposit",
-              "text": "医院的走廊比家里亮，{subject}把三克朗押金数了两遍。护士接过搪瓷杯，说探视时间在下午。父亲在病床上抬起手，{subject}握住那只手，指节比在家里更凉。",
-              "tone": [
-                "dry"
-              ]
+              "text": "医院的走廊比家里亮，{subject}把三克朗押金数了两遍，又把剩下的五克朗按药费、杯子、毛巾分开放。护士说探视在下午；{parent}抬起手，指节比在家里更凉。",
+              "tone": ["clinical"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.sick-parent-night.hospital-deposit.alt2",
               "key": "hospital-deposit",
-              "text": "{subject}把旧毛巾叠好放在床头，玻璃壶里的水映出窗外的天。回家路上经过煤店，想买又没买，推开门时看见床边那只便盆还留在原地，才想起今天不用再倒了。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{subject}把旧毛巾叠好放在床头，玻璃壶里的水映出窗外的天。回家经过煤店，想买又没买；推开门看见床边那只便盆还留在原地，才想起今天不用再倒了。",
+              "tone": ["dry"]
             }
           ]
         }
@@ -430,9 +397,7 @@
         },
         {
           "kind": "placeKind",
-          "in": [
-            "home"
-          ]
+          "in": ["home"]
         },
         {
           "kind": "cash",
@@ -466,7 +431,7 @@
         {
           "id": "pay-for-buergerschule",
           "weight": 1,
-          "text": "{subject}把市民学校的书本费和服装费凑齐，一共十二克朗，交到{teacher}手里。回家路上把肉钱减半，晚饭只有扁豆和土豆。{teacher}在成绩单背面写了收据，说孩子若能跟上，明年可以申请减免。煤箱旁边的练习本上多了一页开支。",
+          "text": "{subject}把市民学校的书本费和服装费凑齐，一共十二克朗，交到{teacher}手里。回家路上把肉钱减半，晚饭只有扁豆和土豆。{teacher}在成绩单背面写了收据，把孩子的名字添进市民学校名册，说若能跟上，明年可以申请减免；煤箱旁的账本上多了一页，写着“皮鞋、石板、学费”。",
           "effects": [
             {
               "type": "cash",
@@ -502,27 +467,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.school-fork.pay-for-buergerschule.alt1",
               "key": "pay-for-buergerschule",
-              "text": "{teacher}把十二克朗点完，在一张窄纸条上写了收据。{subject}回家把肉铺的账划掉一半，晚饭时孩子低头吃扁豆，不敢问新衣服什么时候做。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{teacher}把十二克朗点完，在窄纸条上写了收据。{subject}回家把肉铺的账划掉一半；晚饭时孩子低头吃扁豆，不敢问新衣服什么时候做。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.school-fork.pay-for-buergerschule.alt2",
               "key": "pay-for-buergerschule",
-              "text": "服装费里包括一双结实的皮鞋，{subject}在店里让孩子试了两次。回家路上经过煤店，只买了半筐碎煤，孩子拎着书包走在前面，鞋底在石板路上响得清脆。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "服装费里包括一双结实皮鞋，{subject}让孩子在店里试了两次。回家经过煤店，只买半筐碎煤；孩子拎着书包走在前面，鞋底在石板路上响得清脆。",
+              "tone": ["tender"]
             }
           ]
         },
         {
           "id": "apprentice-at-printer",
           "weight": 1,
-          "text": "{subject}在印刷厂的招工窗口替孩子报了学徒，第一年每周带回两克朗工钱。{teacher}在成绩单背面写的推荐话被折进信封，和学徒契约一起锁在抽屉里。孩子第一天回来，袖口沾着油墨，说师傅让他先搬纸。",
+          "text": "{subject}在印刷厂的招工窗口替孩子报了学徒，第一年每周带回两克朗工钱。{teacher}在成绩单背面写的推荐话被折进信封，和学徒契约一起锁在抽屉里。孩子第一天回来，袖口沾着油墨，说师傅让先搬纸；{subject}数着那两克朗，没再提升学的事。",
           "effects": [
             {
               "type": "cash",
@@ -552,27 +513,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.school-fork.apprentice-at-printer.alt1",
               "key": "apprentice-at-printer",
               "text": "学徒契约上盖着印刷厂的章，{subject}按了手印。孩子傍晚回来，指甲缝里嵌着黑油墨，把两克朗放在桌上，说师傅讲明天要早到一个钟头。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.school-fork.apprentice-at-printer.alt2",
               "key": "apprentice-at-printer",
               "text": "{teacher}在街角碰见{subject}，问了两句，听说孩子进了印刷厂，没再说什么。{subject}回家看见孩子把油墨袖子泡在冷水里，盆底沉着一层黑沙。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "ask-for-reduction",
           "weight": 1,
-          "text": "{subject}带着成绩单去学校找{teacher}，问减免和奖学金的事。{teacher}领到办公室，一位{official}翻着册子说可以减一半书本费，但服装费得自己出，答复要等开学前一周。{subject}把两张纸重新折好，回家对母亲说再等几天，桌布底下的决定先不动。",
+          "text": "{subject}带着成绩单去学校找{teacher}，问减免和奖学金。{teacher}领到办公室，一位{official}翻着册子说可以减一半书本费，服装费仍得自己出，答复要等开学前一周。{subject}把两张纸重新折好，回家没有对母亲提准信，只把桌布底下的决定又压了几天。",
           "effects": [
             {
               "type": "mood",
@@ -614,20 +571,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.school-fork.ask-for-reduction.alt1",
               "key": "ask-for-reduction",
-              "text": "{official}用铅笔在册子边上打了个勾，说下周再来问。{subject}走出校门时，{teacher}在身后补了一句：孩子算术不差。回家路上经过印刷厂，听见机器声从窗户里滚出来。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{official}用铅笔在册子边打了个勾，说下周再来问。{subject}走出校门时，{teacher}在身后补了一句：孩子算术不差。回家路上经过印刷厂，机器声从窗里滚出来。",
+              "tone": ["bureaucratic"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.school-fork.ask-for-reduction.alt2",
               "key": "ask-for-reduction",
-              "text": "办公室里的墨水瓶没盖，{subject}闻到一股酸味。{teacher}把成绩单摊在桌上，{official}看了一眼说等开学前一周。母亲在桌布底下摸到那两张纸，问有没有准信，{subject}摇了摇头。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "办公室的墨水瓶没盖，{subject}闻到一股酸味。{teacher}把成绩单摊在桌上，{official}看了一眼说等开学前一周。母亲在桌布底下摸到那两张纸，问有没有准信，{subject}摇了摇头。",
+              "tone": ["dry"]
             }
           ]
         }
@@ -684,7 +637,7 @@
         {
           "id": "sign-away-for-cash",
           "weight": 1,
-          "text": "{subject}在{official}面前签下放弃继承的声明，{parent}从内袋里摸出二十克朗推过来，纸币上还带着体温。{sibling}把房契往自己那边挪了挪。{subject}数也没数就把钱收好，出门时听见公证人办公室的门在背后合上，铜把手凉了一下手心。",
+          "text": "{subject}在{official}面前签下放弃继承的声明，{parent}从内袋里摸出二十克朗推过来，纸币上还带着体温。{sibling}把房契往自己那边挪了挪。{subject}数也没数就把钱收好，出门时听见公证人办公室的门在背后合上，铜把手凉了一下手心，这二十克朗把兄妹之间的话买断了一截。",
           "effects": [
             {
               "type": "cash",
@@ -726,27 +679,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.notary-inheritance.sign-away-for-cash.alt1",
               "key": "sign-away-for-cash",
-              "text": "声明纸上的字很小，{subject}逐行看完才落笔。{parent}把二十克朗折了两折，塞进{subject}手里，说别为这钱跟{sibling}红脸。{sibling}没有抬头，手指一直按在房契的边角上。",
-              "tone": [
-                "dry"
-              ]
+              "text": "声明纸上的字很小，{subject}逐行看完才落笔。{parent}把二十克朗折了两折塞过来，说别为这钱跟{sibling}红脸；{sibling}没有抬头，手指一直按在房契边角上。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.notary-inheritance.sign-away-for-cash.alt2",
               "key": "sign-away-for-cash",
-              "text": "公证人把印泥盒推到桌边，{subject}的拇指按下去，红印落在名字旁边。二十克朗在口袋里硌着腿，出门走下石阶时，{sibling}从身后追上来问了一句什么，{subject}没停步。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "公证人把印泥盒推到桌边，{subject}的拇指按下去，红印落在名字旁边。二十克朗在口袋里硌着腿；走下石阶时，{sibling}从身后追上来问了一句什么，{subject}没有停步。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "demand-accounts-first",
           "weight": 1,
-          "text": "{subject}把修缮账和照护账推到{official}面前，要求先把大哥修屋顶出的八克朗、二姐照顾母亲两年的工钱算清，再谈房子归谁。{parent}的手指在房契上敲了敲，{sibling}翻出另一本旧账，两人在公证人桌上对起数目来。墨水瓶旁边那三把钥匙被挪到一边。",
+          "text": "{subject}把修缮账和照护账推到{official}面前，要求先把大哥修屋顶出的八克朗、二姐照顾母亲两年的工钱算清，再谈房子归谁。{parent}的手指在房契上敲了敲，{sibling}翻出另一本旧账，两人在公证人桌上对起数目。墨水瓶旁那三把钥匙被挪到一边，谁也没去拿。",
           "effects": [
             {
               "type": "mood",
@@ -788,27 +737,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.notary-inheritance.demand-accounts-first.alt1",
               "key": "demand-accounts-first",
               "text": "旧账本摊开，纸页上的铅笔字迹深浅不一。{sibling}念一笔，{subject}就在边上记一笔，{official}的钢笔悬在遗嘱上方没有落。{parent}咳了一声，说屋顶那八克朗是自己看着修的。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["bureaucratic"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.notary-inheritance.demand-accounts-first.alt2",
               "key": "demand-accounts-first",
-              "text": "三把钥匙在桌面上被推来推去，{subject}把照护账里两年的药费和饭钱一笔笔指给{official}看。{sibling}的声音高起来，{parent}伸手按住房契，屋里一时只剩纸页翻动的声音。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "三把钥匙在桌面上被推来推去，{subject}把照护账里两年的药费和饭钱一笔笔指给{official}看。{sibling}的声音高起来，{parent}伸手按住房契，屋里只剩纸页翻动的声音。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "leave-unsigned",
           "weight": 1,
-          "text": "{subject}把文件推回{official}面前，说不签，等{parent}自己改主意。{parent}的嘴角动了动，{sibling}把三把钥匙一把把收进衣袋，金属碰着金属响了几声。{subject}走下公证处的石阶，街对面面包房正在出炉，热气扑到脸上，口袋里一个赫勒也没多。",
+          "text": "{subject}把文件推回{official}面前，说不签，等{parent}自己改主意。{parent}的嘴角动了动，{sibling}把三把钥匙一把把收进衣袋，金属碰着金属响了几声。{subject}走下公证处的石阶，街对面面包房正在出炉，热气扑到脸上，口袋里一个赫勒也没多，房契的事仍旧悬着。",
           "effects": [
             {
               "type": "mood",
@@ -850,20 +795,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.notary-inheritance.leave-unsigned.alt1",
               "key": "leave-unsigned",
-              "text": "{official}把文件收进硬纸夹，{sibling}的钥匙在衣袋里响了一路。{subject}在石阶上站了一会儿，看面包房的伙计把新出炉的面包码上木架，热气从门缝里涌出来。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{official}把文件收进硬纸夹，{sibling}的钥匙在衣袋里响了一路。{subject}在石阶上站了一会儿，看面包房伙计把新出炉的面包码上木架，热气从门缝里涌出来。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.notary-inheritance.leave-unsigned.alt2",
               "key": "leave-unsigned",
-              "text": "{parent}没有追出来。{subject}走过两个街口才把手从口袋里拿出来，指尖还留着房契纸面的粗纹。公证处的窗户在身后暗下去，街上有人推着煤车叫卖。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{parent}没有追出来。{subject}走过两个街口才把手从口袋里拿出来，指尖还留着房契纸面的粗纹；公证处的窗户在身后暗下去，街上有人推着煤车叫卖。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
@@ -921,7 +862,7 @@
         {
           "id": "give-camp-bed-and-board",
           "weight": 1,
-          "text": "{subject}让{kin}睡厨房的行军床，讲好每月收三克朗饭钱，煤钱另算。白天把铺盖卷起来靠在碗柜边，晚上再铺开。看门人再来问时，{subject}把藤箱指给他看，说人住下了，灯油钱也记在账上。",
+          "text": "{subject}让{kin}睡厨房的行军床，讲好每月三克朗饭钱，煤钱另算。白天把铺盖卷起来靠在碗柜边，晚上再铺开；厨房多一个人，面包和煤都下去得快，伙食上短了两克朗。看门人再来问时，{subject}把藤箱指过去，说人住下了，灯油钱也记在账上。",
           "effects": [
             {
               "type": "cash",
@@ -957,27 +898,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.cousin-bed.give-camp-bed-and-board.alt1",
               "key": "give-camp-bed-and-board",
-              "text": "{kin}把藤箱推到行军床底下，箱角露出半截下奥地利的车票。{subject}在练习本上记下三克朗，又画了一道线，写煤钱另计。晚上铺床时，厨房里只剩转身的地方。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{kin}把藤箱推到行军床底下，箱角露出半截下奥地利的车票。{subject}在练习本上记下三克朗，又画一道线写煤钱另计；晚上铺床时，厨房里只剩转身的地方。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.cousin-bed.give-camp-bed-and-board.alt2",
               "key": "give-camp-bed-and-board",
-              "text": "看门人从门缝里探头，{subject}把藤箱上的灰尘拍掉，说这是自家亲戚。{kin}当天就帮着劈引火的木片，行军床白天竖在碗柜旁，晚上放下来时吱呀响了一声。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "看门人从门缝里探头，{subject}把藤箱上的灰拍掉，说这是自家亲戚。{kin}当天就帮着劈引火木片；行军床白天竖在碗柜旁，晚上放下来时吱呀响了一声。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "three-days-only",
           "weight": 1,
-          "text": "{subject}只答应让{kin}住三天，腾出半张床，又托{sibling}去打听便宜的床位。三天里{kin}白天出去找活，傍晚回来坐在行军床边上，藤箱始终没有打开。第三天晚上{sibling}带回消息，说有一处工人宿舍，一周一克朗。",
+          "text": "{subject}只答应让{kin}住三天，腾出半张床，又托{sibling}去打听便宜床位。三天里{kin}白天出去找活，傍晚回来坐在行军床边上，藤箱始终没有打开。第三天晚上{sibling}带回消息，说有一处工人宿舍，一周一克朗；{subject}数出一克朗硬币放在箱盖上，替{kin}垫了第一周。",
           "effects": [
             {
               "type": "cash",
@@ -1012,27 +949,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.cousin-bed.three-days-only.alt1",
               "key": "three-days-only",
-              "text": "第一天晚上{kin}把藤箱立在床头当桌子，吃了一碗面糊。第二天回来时鞋底磨薄了，说工地上只招熟手。第三天{sibling}带回宿舍的地址，{subject}数出一克朗硬币放在箱盖上。",
-              "tone": [
-                "dry"
-              ]
+              "text": "第一晚{kin}把藤箱立在床头当桌子，吃了一碗面糊。第二天回来鞋底磨薄了，说工地上只招熟手；第三天{sibling}带回宿舍地址，{subject}把一克朗硬币放在箱盖上。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.cousin-bed.three-days-only.alt2",
               "key": "three-days-only",
               "text": "行军床在厨房里只铺了三个晚上，{kin}每次都把被子叠得方方正正。临走那天，{subject}把一克朗塞进{kin}的上衣口袋，{sibling}在门口指了去工人宿舍的路。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["tender"]
             }
           ]
         },
         {
           "id": "turn-away-with-fare",
           "weight": 1,
-          "text": "{subject}直说家里腾不出地方，从抽屉里摸出半克朗车费和一块黑面包，塞给{kin}。{kin}的藤箱提手已经磨毛，在门槛上磕了一下。{subject}关上门，听见脚步声沿着楼梯往下，看门人在楼下问了一句，{kin}答得含含糊糊。",
+          "text": "{subject}直说家里腾不出地方，从抽屉里摸出半克朗车费和一块黑面包，塞给{kin}。{kin}的藤箱提手已经磨毛，在门槛上磕了一下。{subject}关上门，听见脚步声沿楼梯往下，看门人在楼下问了一句，{kin}答得含含糊糊；厨房里少了一块面包，也少了一个本该住下的人。",
           "effects": [
             {
               "type": "cash",
@@ -1067,20 +1000,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.cousin-bed.turn-away-with-fare.alt1",
               "key": "turn-away-with-fare",
-              "text": "半克朗在{kin}的手心里搁了一会儿，才被收进衣袋。{subject}把面包掰成两半，递过去时碰到对方粗糙的指节。门合上后，楼道里还留着藤箱磕在栏杆上的回音。",
-              "tone": [
-                "dry"
-              ]
+              "text": "半克朗在{kin}手心里搁了一会儿，才被收进衣袋。{subject}把面包掰成两半，递过去时碰到对方粗糙的指节；门合上后，楼道里还留着藤箱磕在栏杆上的回音。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.cousin-bed.turn-away-with-fare.alt2",
               "key": "turn-away-with-fare",
-              "text": "{kin}没有争辩，只把藤箱换到另一只手上。{subject}站在门后听楼梯间的脚步，一层一层往下，最后被看门人的问话截住。厨房里行军床还卷在墙角，没有铺开。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{kin}没有争辩，只把藤箱换到另一只手上。{subject}站在门后听楼梯间的脚步，一层一层往下，最后被看门人的问话截住；行军床还卷在墙角，没有铺开。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
@@ -1130,7 +1059,7 @@
         {
           "id": "serve-first-talk-later",
           "weight": 1,
-          "text": "{subject}先给{sibling}盛了满满一碗，扁豆和面团结结实实压在勺底，那块熏肉切开分了两份。药费的事一句没提，只问要不要再添点汤。{sibling}吃到一半才开口，说上次说话太冲。桌边多摆的那把椅子，最后有人坐下了。",
+          "text": "{subject}先给{sibling}盛了满满一碗，扁豆和面团结结实实压在勺底，那块熏肉切开分了两份，锅里的吃食折合两克朗。药费的事一句没提，只问要不要再添点汤。{sibling}吃到一半才开口，说上次说话太冲；桌边多摆的那把椅子，最后有人坐下了。",
           "effects": [
             {
               "type": "food",
@@ -1159,27 +1088,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.christmas-soup.serve-first-talk-later.alt1",
               "key": "serve-first-talk-later",
-              "text": "汤勺在锅里搅了两圈，{subject}把熏肉块拨到{sibling}碗里。汤的热气模糊了窗玻璃，街上的圣诞摊子传来铃铛声。{sibling}吃得很慢，碗底最后一点汤也用面包擦干净。",
-              "tone": [
-                "dry"
-              ]
+              "text": "汤勺在锅里搅了两圈，{subject}把熏肉块拨到{sibling}碗里。热气模糊了窗玻璃，街上的圣诞摊子传来铃铛声；{sibling}吃得很慢，碗底最后一点汤也用面包擦干净。",
+              "tone": ["tender"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.christmas-soup.serve-first-talk-later.alt2",
               "key": "serve-first-talk-later",
-              "text": "{subject}把三只碗摆好，多出的那只椅子往里挪了半尺。{sibling}坐下时大衣也没脱，喝到第二口才说了一句天气。炉子上的锅还温着，扁豆在锅底沉成一层。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{subject}把三只碗摆好，多出的椅子往里挪了半尺。{sibling}坐下时大衣也没脱，喝到第二口才说了一句天气；炉子上的锅还温着，扁豆在锅底沉成一层。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "ledger-on-table",
           "weight": 1,
-          "text": "{subject}把旧账本摊在汤锅旁边，翻到药费那一页，说今天得当场算清才肯坐下。{sibling}的勺子停在半空，最后也把本子拉过去，一行行对起数来。汤在炉子上咕嘟着，谁也没先盛，等账算到最后一个赫勒，两人才同时伸手去够勺子。",
+          "text": "{subject}把旧账本摊在汤锅旁边，翻到药费那一页，说今天得当场算清才肯坐下。{sibling}的勺子停在半空，最后也把本子拉过去，一行行对起数来。汤在炉子上咕嘟着，谁也没先盛；等账算到最后一个赫勒，{subject}在页脚写下“结清”，两人才同时伸手去够勺子。",
           "effects": [
             {
               "type": "mood",
@@ -1209,27 +1134,23 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.christmas-soup.ledger-on-table.alt1",
               "key": "ledger-on-table",
-              "text": "账本纸页上还沾着上次的咖啡渍，{subject}用手指点着每一行，{sibling}凑过来看，两人的头几乎碰着。汤锅的咕嘟声盖过了说话声，母亲留下的那把勺子在锅沿上搁着。",
-              "tone": [
-                "dry"
-              ]
+              "text": "账本纸页上还沾着上次的咖啡渍，{subject}用手指点着每一行，{sibling}凑过来看，两人的头几乎碰着。汤锅的咕嘟声盖过说话声，母亲留下的那把勺子在锅沿上搁着。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.christmas-soup.ledger-on-table.alt2",
               "key": "ledger-on-table",
               "text": "{sibling}起初把账本推回来，后来还是拉过去，在药费那栏画了个圈。炉子上的汤熬稠了，{subject}起身搅了一搅，回来时{sibling}已经在页脚写下了总数。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "jam-at-door",
           "weight": 1,
-          "text": "{subject}只送来一罐杏子果酱，没有进门，把罐子放在门槛里边，说了句汤你们先喝。{sibling}在屋里听见了，走到门口时人已经下楼。果酱罐子上没有标签，只裹着一层报纸，瓶口用蜡封着。",
+          "text": "{subject}只送来一罐杏子果酱，没有进门，把罐子放在门槛里边，说了句汤你们先喝。{sibling}在屋里听见了，走到门口时人已经下楼。果酱罐上没有标签，只裹着一层报纸，瓶口用蜡封着；这一罐甜食抵得上一克朗的吃食，却没能把两个人重新按到一张桌上。",
           "effects": [
             {
               "type": "food",
@@ -1258,20 +1179,16 @@
           ],
           "narration": [
             {
-              "id": "default",
+              "id": "p9-social-family-conflict-care.christmas-soup.jam-at-door.alt1",
               "key": "jam-at-door",
-              "text": "果酱罐放在门槛里边，蜡封上留着一道指纹。{subject}走下楼梯时听见门后传来勺碰锅沿的声音，没有回头。楼道里的冷风把报纸吹开一角，露出底下深色的果酱。",
-              "tone": [
-                "dry"
-              ]
+              "text": "果酱罐放在门槛里边，蜡封上留着一道指纹。{subject}走下楼梯时听见门后传来勺碰锅沿的声音，没有回头；楼道的冷风把报纸吹开一角，露出底下深色的果酱。",
+              "tone": ["dry"]
             },
             {
-              "id": "alt",
+              "id": "p9-social-family-conflict-care.christmas-soup.jam-at-door.alt2",
               "key": "jam-at-door",
-              "text": "{sibling}开门时只看见一个背影和门槛边的玻璃罐。罐子还带着外面的凉气，报纸上蹭了一点油。屋里的汤已经盛好，多出的那把椅子仍然空着。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{sibling}开门时只看见一个背影和门槛边的玻璃罐。罐子还带着外面的凉气，报纸上蹭了一点油；屋里的汤已经盛好，多出的那把椅子仍然空着。",
+              "tone": ["tender"]
             }
           ]
         }

@@ -185,5 +185,5 @@ const output = {
     'Eligible situations are actual person×scene×outcome checks, not a naive kernel×context×milieu product. They are candidates, not committed events.',
 };
 mkdirSync('docs/v4', { recursive: true });
-writeFileSync('docs/v4/phase-12-experiment-d.json', `${JSON.stringify(output, null, 2)}\n`);
+writeFileSync('docs/v4/phase-13-experiment-d.json', `${JSON.stringify(output, null, 2)}\n`);
 console.log(JSON.stringify({ elapsedMs: elapsed, results, totals }, null, 2));
