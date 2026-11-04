@@ -293,6 +293,9 @@ type EventDraft = {
   action: string;
   title?: string;
   causes?: Id[];
+  /** Semantic tags authored by the scene; settled effect tags are added too. */
+  tags?: string[];
+  historyRefs?: Id[];
   effects: EventEffect[];
   immediateText: string;
   significance: number;
@@ -308,6 +311,133 @@ type CastResult = {
   roles: Record<Id, Id>;
   missing: string[];
 };
+
+type HistoryEntry = {
+  eventId: Id;
+  action: string;
+  date: WorldDate;
+  tags: string[];
+  significance: number;
+  /** `subject` for the subject's own fact, otherwise the participant role. */
+  role: string;
+  isSubject: boolean;
+  /** Other people present in the incident, for reunion casting. */
+  otherIds: Id[];
+};
+
+type WorldHistoryIndex = {
+  length: number;
+  byPerson: Map<Id, HistoryEntry[]>;
+};
+
+/**
+ * A read-only, lazily rebuilt index of committed facts per person. It is keyed
+ * by the WorldState object, so a cloned annual draft rebuilds once and then
+ * receives every new commit incrementally. This is what lets scenes ask
+ * "has this person already lived through X?" without scanning the full log for
+ * every candidate in every year.
+ */
+const worldHistoryIndexes = new WeakMap<WorldState, WorldHistoryIndex>();
+
+function buildWorldHistoryIndex(world: WorldState): WorldHistoryIndex {
+  const index: WorldHistoryIndex = { length: world.events.length, byPerson: new Map() };
+  for (const event of world.events) addHistoryEntry(index, event);
+  return index;
+}
+
+function addHistoryEntry(index: WorldHistoryIndex, event: EventFact): void {
+  const tags = event.tags ?? [];
+  const add = (personId: Id, role: string, isSubject: boolean) => {
+    const list = index.byPerson.get(personId) ?? [];
+    list.push({
+      eventId: event.id,
+      action: event.action,
+      date: event.date,
+      tags,
+      significance: event.significance,
+      role,
+      isSubject,
+      otherIds: event.participants
+        .map((participant) => participant.personId)
+        .filter((id) => id !== personId),
+    });
+    index.byPerson.set(personId, list);
+  };
+  add(event.subjectId, 'subject', true);
+  for (const participant of event.participants) {
+    if (participant.personId === event.subjectId) continue;
+    add(participant.personId, participant.role, false);
+  }
+}
+
+function historyIndexFor(world: WorldState): WorldHistoryIndex {
+  let index = worldHistoryIndexes.get(world);
+  if (!index || index.length !== world.events.length) {
+    index = buildWorldHistoryIndex(world);
+    worldHistoryIndexes.set(world, index);
+  }
+  return index;
+}
+
+function historyFor(world: WorldState, personId: Id): HistoryEntry[] {
+  return historyIndexFor(world).byPerson.get(personId) ?? [];
+}
+
+function rememberHistory(world: WorldState, event: EventFact): void {
+  const index = worldHistoryIndexes.get(world);
+  if (!index) return;
+  addHistoryEntry(index, event);
+  index.length = world.events.length;
+}
+
+function historyEntriesMatching(
+  world: WorldState,
+  personId: Id,
+  condition: Extract<SceneCondition, { kind: 'history' }>,
+  date: WorldDate,
+): HistoryEntry[] {
+  const minCount = condition.minCount ?? 1;
+  const maxCount = condition.maxCount ?? Number.POSITIVE_INFINITY;
+  const earliest =
+    condition.withinYears !== undefined
+      ? monthIndex(date) - Math.max(0, condition.withinYears) * 12
+      : Number.NEGATIVE_INFINITY;
+  const matches = historyFor(world, personId).filter((entry) => {
+    // The engine dates events inside the completed year while the world clock
+    // sits at the year boundary; committed order, not the event month, is the
+    // reliable notion of "before". A fact in world.events is already past.
+    if (monthIndex(entry.date) < earliest) return false;
+    if (
+      condition.minYearsAgo !== undefined &&
+      date.year - entry.date.year < Math.max(0, condition.minYearsAgo)
+    ) {
+      return false;
+    }
+    if (!entry.isSubject && condition.includeParticipants !== true && !condition.withRole) {
+      return false;
+    }
+    if (condition.actionPrefix && !entry.action.startsWith(condition.actionPrefix)) return false;
+    if (condition.kernelId && !entry.action.startsWith(`${condition.kernelId}::`)) return false;
+    if (condition.outcome && !entry.action.endsWith(`/${condition.outcome}`)) return false;
+    if (condition.tag && !entry.tags.includes(condition.tag)) return false;
+    if (condition.minSignificance !== undefined && entry.significance < condition.minSignificance) {
+      return false;
+    }
+    if (condition.withRole && entry.role !== condition.withRole) return false;
+    return true;
+  });
+  if (matches.length < minCount || matches.length > maxCount) return [];
+  return matches;
+}
+
+function historyPeopleForTag(world: WorldState, personId: Id, tag: string): Set<Id> {
+  const people = new Set<Id>();
+  for (const entry of historyFor(world, personId)) {
+    if (!entry.tags.includes(tag)) continue;
+    for (const otherId of entry.otherIds) people.add(otherId);
+  }
+  return people;
+}
 
 const LIFE_STAGES: readonly SceneStage[] = [
   'infancy',
@@ -378,6 +508,176 @@ const ROLE_KINDS = new Set([
   'organization',
   'historical',
 ]);
+
+/**
+ * Calendar-time partner uniqueness. Commit order already prevents a new partner
+ * while another is active, but two events can be dated in the same year in
+ * either order. Keep the most trusted / most recent bond and close the others
+ * at its start, so no person is simultaneously partnered twice.
+ */
+function repairPartnerUniqueness(world: WorldState, date: WorldDate): void {
+  for (const person of Object.values(world.persons)) {
+    if (person.died) continue;
+    const partners = relationsFor(world, person.id).filter(
+      (relation) =>
+        relation.kind === 'partner' &&
+        relation.end === undefined &&
+        (relation.a === person.id || relation.b === person.id),
+    );
+    if (partners.length <= 1) continue;
+    partners.sort(
+      (a, b) =>
+        b.trust + b.affection - (a.trust + a.affection) ||
+        monthIndex(b.start) - monthIndex(a.start) ||
+        a.id.localeCompare(b.id),
+    );
+    const keep = partners[0]!;
+    const closeAt = monthIndex(keep.start) <= monthIndex(date) ? { ...keep.start } : { ...date };
+    for (const relation of partners.slice(1)) {
+      // Never create a negative interval. If the kept bond starts before the
+      // closed one, close the old bond at least one month after it began.
+      relation.end =
+        monthIndex(closeAt) > monthIndex(relation.start)
+          ? { ...closeAt }
+          : addMonths(relation.start, 1);
+    }
+  }
+  // Repair legacy/end-of-event dates that would make a relation end before it
+  // began. This is a calendar invariant, not a narrative rewrite.
+  for (const relation of Object.values(world.relations)) {
+    if (relation.end && monthIndex(relation.end) < monthIndex(relation.start)) {
+      relation.end = { ...relation.start };
+    }
+  }
+}
+
+/**
+ * A household cannot be left as a flat full of minors when the last adult dies
+ * or moves out. Move each minor to a living guardian, parent, adult sibling or
+ * kin relation with a real household. This is a bounded repair, not a new care
+ * system: if no known adult exists, the child remains visible as an edge case.
+ */
+function repairMinorHouseholds(world: WorldState, date: WorldDate): void {
+  // Build the adult-sibling index once. Scanning all persons for every minor
+  // made the year-end repair O(households × population) on 20k-person runs.
+  const adultsByParent = new Map<Id, Person[]>();
+  for (const person of Object.values(world.persons)) {
+    if (person.died || ageAt(person, date) < 18) continue;
+    for (const parentId of person.parentIds) {
+      const list = adultsByParent.get(parentId) ?? [];
+      list.push(person);
+      adultsByParent.set(parentId, list);
+    }
+  }
+  for (const household of Object.values(world.households).sort((a, b) =>
+    a.id.localeCompare(b.id),
+  )) {
+    const livingMembers = household.memberIds
+      .map((id) => world.persons[id])
+      .filter((person): person is Person => Boolean(person) && !person.died);
+    const minors = livingMembers.filter((person) => ageAt(person, date) < 18);
+    if (minors.length === 0) continue;
+    const hasAdult = livingMembers.some((person) => ageAt(person, date) >= 18);
+    if (hasAdult) continue;
+    for (const minor of minors) {
+      const candidates = new Map<Id, Person>();
+      const add = (id: Id | undefined) => {
+        const person = id ? world.persons[id] : undefined;
+        if (person && !person.died && ageAt(person, date) >= 18) candidates.set(person.id, person);
+      };
+      for (const id of minor.guardianIds) add(id);
+      for (const id of minor.parentIds) add(id);
+      for (const relation of relationsFor(world, minor.id)) {
+        if (relation.end !== undefined) continue;
+        if (relation.kind !== 'kin' && relation.kind !== 'guardian') continue;
+        add(relation.a === minor.id ? relation.b : relation.a);
+      }
+      for (const parentId of minor.parentIds) {
+        for (const sibling of adultsByParent.get(parentId) ?? []) {
+          if (sibling.id === minor.id) continue;
+          add(sibling.id);
+        }
+      }
+      const guardian = [...candidates.values()].sort((a, b) => a.id.localeCompare(b.id))[0];
+      if (!guardian) continue;
+      const target = world.households[guardian.householdId];
+      if (!target) continue;
+      const directGuardian =
+        minor.parentIds.includes(guardian.id) || minor.guardianIds.includes(guardian.id);
+      const targetLiving = livingHouseholdMemberCount(world, target.id);
+      const targetCapacity = householdCapacity(world, target.id);
+      if (targetLiving >= targetCapacity) {
+        // The guardian's flat is full. If the child-only flat has room and the
+        // guardian's household keeps another adult, move the guardian to the
+        // child instead of creating a 14–16 person flat or leaving the minor
+        // alone. This preserves both households' adult coverage.
+        const targetOthers = target.memberIds
+          .map((id) => world.persons[id])
+          .filter(
+            (person): person is Person =>
+              Boolean(person) && person.id !== guardian.id && !person.died,
+          );
+        const targetHasOtherAdult = targetOthers.some((person) => ageAt(person, date) >= 18);
+        const minorHouseLiving = livingHouseholdMemberCount(world, household.id);
+        const minorHouseCapacity = householdCapacity(world, household.id);
+        if (directGuardian && targetHasOtherAdult && minorHouseLiving < minorHouseCapacity) {
+          target.memberIds = target.memberIds.filter((id) => id !== guardian.id);
+          if (!household.memberIds.includes(guardian.id)) household.memberIds.push(guardian.id);
+          guardian.householdId = household.id;
+          guardian.locationId = household.residenceId;
+          if (!household.guardianIds.includes(guardian.id)) household.guardianIds.push(guardian.id);
+          if (!minor.guardianIds.includes(guardian.id)) minor.guardianIds.push(guardian.id);
+          const relationId = `v4-rel-${minor.id}-${guardian.id}-guardian`;
+          if (!world.relations[relationId]) {
+            world.relations[relationId] = {
+              id: relationId,
+              a: minor.id,
+              b: guardian.id,
+              kind: 'guardian',
+              trust: 0.45,
+              affection: 0.4,
+              obligation: 0.65,
+              fear: 0,
+              respect: 0.45,
+              start: { ...date },
+              sharedEventIds: [],
+            };
+            minor.relationshipIds.push(relationId);
+            guardian.relationshipIds.push(relationId);
+          }
+          continue;
+        }
+        if (!directGuardian || targetLiving >= targetCapacity + 1) continue;
+      }
+
+      household.memberIds = household.memberIds.filter((id) => id !== minor.id);
+      if (!target.memberIds.includes(minor.id)) target.memberIds.push(minor.id);
+      minor.householdId = target.id;
+      minor.locationId = target.residenceId;
+      if (!minor.guardianIds.includes(guardian.id)) minor.guardianIds.push(guardian.id);
+      if (!target.guardianIds.includes(guardian.id)) target.guardianIds.push(guardian.id);
+      const relationId = `v4-rel-${minor.id}-${guardian.id}-guardian`;
+      if (!world.relations[relationId]) {
+        const relation: Relation = {
+          id: relationId,
+          a: minor.id,
+          b: guardian.id,
+          kind: 'guardian',
+          trust: 0.45,
+          affection: 0.4,
+          obligation: 0.65,
+          fear: 0,
+          respect: 0.45,
+          start: { ...date },
+          sharedEventIds: [],
+        };
+        world.relations[relationId] = relation;
+        minor.relationshipIds.push(relationId);
+        guardian.relationshipIds.push(relationId);
+      }
+    }
+  }
+}
 
 /**
  * Advance exactly one year (12 months). The input world and definitions are not
@@ -543,7 +843,7 @@ export function advanceV4Year(
   // selected as a scene role.
   reapVitalityZero(context, target);
   if (normalized.eventRuntime) {
-    processScheduledEvents(context, definitions, target);
+    processScheduledEvents(context, [...definitions, ...context.tasks], target);
     runEventYear(context, definitions, target, resolvedCounts);
   } else {
     runScenes(context, definitions, target, resolvedCounts, false);
@@ -625,6 +925,10 @@ export function advanceV4Year(
   diagnostics.scenesResolved = context.newScenes.filter((s) => s.status === 'resolved').length;
   diagnostics.scenesBlocked = context.newScenes.filter((s) => s.status === 'blocked').length;
   diagnostics.eventsCreated = context.newEvents.length;
+  const repairStarted = Date.now();
+  repairPartnerUniqueness(draft, target);
+  repairMinorHouseholds(draft, target);
+  timings.repairs = Date.now() - repairStarted;
 
   assertWorldV4(draft);
   timings.assert = Date.now() - phaseStarted;
@@ -1251,6 +1555,55 @@ function conditionPasses(
         return true;
       });
     }
+    case 'history':
+      return historyEntriesMatching(world, subject.id, condition, date).length > 0;
+    case 'knowledge': {
+      const needle = condition.propositionIncludes?.trim().toLowerCase();
+      const minConfidence = condition.minConfidence ?? 0;
+      return subject.knowledgeIds.some((id) => {
+        const knowledge = world.knowledge[id];
+        if (!knowledge || knowledge.holderId !== subject.id) return false;
+        if (knowledge.confidence < minConfidence) return false;
+        if (!needle) return true;
+        return knowledge.proposition.toLowerCase().includes(needle);
+      });
+    }
+    case 'project':
+      return Object.values(world.projects).some((project) => {
+        if (project.ownerId !== subject.id) {
+          if (!project.participants.some((participant) => participant.personId === subject.id)) {
+            return false;
+          }
+        }
+        if (condition.projectKind !== undefined && project.kind !== condition.projectKind)
+          return false;
+        if (condition.state !== undefined && project.state !== condition.state) return false;
+        if (condition.minStage !== undefined && project.stage < condition.minStage) return false;
+        return true;
+      });
+    case 'relationHistory':
+      return relationsFor(world, subject.id).some((relation) => {
+        if (relation.end !== undefined) return false;
+        if (condition.relationKind && relation.kind !== condition.relationKind) return false;
+        if (
+          condition.minSharedEvents !== undefined &&
+          relation.sharedEventIds.length < condition.minSharedEvents
+        ) {
+          return false;
+        }
+        if (condition.minTrust !== undefined && relation.trust < condition.minTrust) return false;
+        if (condition.minYears !== undefined) {
+          const months = monthIndex(date) - monthIndex(relation.start);
+          if (months < condition.minYears * 12) return false;
+        }
+        if (condition.partnerSex) {
+          const otherId = relation.a === subject.id ? relation.b : relation.a;
+          if (world.persons[otherId]?.sex !== condition.partnerSex) return false;
+        }
+        return true;
+      });
+    case 'hasFlag':
+      return subject.life?.flags.includes(condition.flag) === true;
     case 'hasRelationWith':
       return relationsFor(world, subject.id).some((relation) => {
         if (relation.end !== undefined) return false;
@@ -1602,6 +1955,25 @@ function mergeIds(...lists: (Id[] | undefined)[]): Id[] {
   return result;
 }
 
+/**
+ * Merge role pools without walking a 20k-person location list for every cast.
+ * Each source contributes at most `limit` sampled ids; dedupe happens after.
+ */
+function sampleMergeIds(lists: (Id[] | undefined)[], limit: number, rng: () => number): Id[] {
+  const seen = new Set<Id>();
+  const result: Id[] = [];
+  for (const list of lists) {
+    if (!list || list.length === 0) continue;
+    const sampled = list.length <= limit ? list : sampleIds(list, limit, rng);
+    for (const id of sampled) {
+      if (seen.has(id)) continue;
+      seen.add(id);
+      result.push(id);
+    }
+  }
+  return result.sort();
+}
+
 const sortedPeopleCache = new WeakMap<WorldState, { length: number; people: Id[] }>();
 
 function sortedPeople(world: WorldState): Id[] {
@@ -1752,8 +2124,10 @@ function roleCandidates(
         }
       }
       // A young person looking for a first apprenticeship has no employer
-      // relation yet. Only when an organization kind is explicitly required,
-      // fall back to that open pool (e.g. a printshop taking apprentices).
+      // relation yet. Fall back to the open pool: first the explicitly required
+      // organization kind, then any active employer. Without this, an
+      // employment effect authored against an optional `$employer` token
+      // silently failed while the scene's cash/flag effects still committed.
       if (candidates.size === 0 && requirement.organizationKind !== undefined) {
         for (const id of organizations) {
           const organization = world.organizations[id]!;
@@ -1762,6 +2136,12 @@ function roleCandidates(
             organization.status === 'active'
           )
             candidates.add(id);
+        }
+      }
+      if (candidates.size === 0) {
+        for (const id of organizations) {
+          const organization = world.organizations[id]!;
+          if (organization.status === 'active') candidates.add(id);
         }
       }
       break;
@@ -1774,7 +2154,7 @@ function roleCandidates(
         : undefined;
       const pool = employer
         ? [...employer.memberIds].sort()
-        : mergeIds(index.employed, index.byRole.get('worker'));
+        : sampleMergeIds([index.employed, index.byRole.get('worker')], 48, sampleRng);
       for (const id of pool) {
         if (id === subject.id) continue;
         const person = world.persons[id];
@@ -1785,9 +2165,13 @@ function roleCandidates(
     }
     case 'union_member': {
       const unionOrganizations = new Set(index.organizationsByKind.get('union') ?? []);
-      for (const id of mergeIds(
-        index.unionMembers,
-        ...Array.from(unionOrganizations).map((unionId) => index.byEmployer.get(unionId)),
+      for (const id of sampleMergeIds(
+        [
+          index.unionMembers,
+          ...Array.from(unionOrganizations).map((unionId) => index.byEmployer.get(unionId)),
+        ],
+        48,
+        sampleRng,
       )) {
         if (id === subject.id) continue;
         const person = world.persons[id]!;
@@ -1802,12 +2186,16 @@ function roleCandidates(
       break;
     }
     case 'neighbor': {
-      const samePlace = mergeIds(
-        index.byResidence.get(subject.householdId),
-        index.byLocation.get(subject.locationId),
-        index.byRole.get('neighbor'),
+      const samePlace = sampleMergeIds(
+        [
+          index.byResidence.get(subject.householdId),
+          index.byLocation.get(subject.locationId),
+          index.byRole.get('neighbor'),
+        ],
+        48,
+        sampleRng,
       );
-      for (const id of sample(samePlace)) {
+      for (const id of samePlace) {
         if (id === subject.id) continue;
         const person = world.persons[id]!;
         if (person.died) continue;
@@ -1830,9 +2218,10 @@ function roleCandidates(
       break;
     case 'official': {
       const stateOrgs = index.organizationsByKind.get('state') ?? [];
-      for (const id of mergeIds(
-        index.officials,
-        ...stateOrgs.map((orgId) => index.byEmployer.get(orgId)),
+      for (const id of sampleMergeIds(
+        [index.officials, ...stateOrgs.map((orgId) => index.byEmployer.get(orgId))],
+        48,
+        sampleRng,
       )) {
         if (id === subject.id) continue;
         const person = world.persons[id]!;
@@ -2077,7 +2466,9 @@ function castSceneRoles(
   definition: SceneDefinition,
   subject: Person,
   date: WorldDate,
+  preferredRoles?: Map<string, Id>,
 ): CastResult {
+  const world = context.world;
   const roles: Record<Id, Id> = {};
   const missing: string[] = [];
   const usedPeople = new Set<Id>();
@@ -2103,6 +2494,7 @@ function castSceneRoles(
       requirement.occupation ?? '',
       requirement.organizationKind ?? '',
       requirement.historicalId ?? '',
+      requirement.sharedHistoryTag ?? '',
       subject.locationId,
       requirement.sameHousehold ? subject.householdId : '',
       subject.employment?.organizationId ?? '',
@@ -2153,11 +2545,45 @@ function castSceneRoles(
       const preferred = candidates.filter((id) => activeDevelopmentOrgs.has(id));
       if (preferred.length > 0) candidates = preferred;
     }
+    let linkedHistory: Set<Id> | undefined;
+    if (requirement.sharedHistoryTag) {
+      const linked = historyPeopleForTag(world, subject.id, requirement.sharedHistoryTag);
+      linkedHistory = linked;
+      // Reunions are not limited to people who still hold the old occupational
+      // role. Start from the actual shared history, then apply the normal age,
+      // sex and place constraints.
+      candidates = [...linked].filter(
+        (id) => world.persons[id] && candidateFits(world, subject, id, requirement, date),
+      );
+      if (candidates.length === 0) {
+        if (required) missing.push(requirement.key);
+        continue;
+      }
+    }
     const unused = candidates.filter((id) => !usedPeople.has(id) || requirement.kind === 'subject');
     // Never reuse a named person for two person-roles in one incident.
-    const pool = unused;
+    let pool = unused;
+    // A follow-up explicitly continues a prior incident: keep the same partner,
+    // foreman, mentor or rival when that person still fits the role. Random
+    // re-casting made years-later consequences read like meetings with strangers.
+    const preferredId =
+      requirement.kind === 'subject' ? undefined : preferredRoles?.get(requirement.key);
+    if (
+      preferredId &&
+      preferredId !== subject.id &&
+      (!linkedHistory || linkedHistory.has(preferredId))
+    ) {
+      const preferredPerson = world.persons[preferredId];
+      if (
+        preferredPerson &&
+        !preferredPerson.died &&
+        candidateFits(world, subject, preferredId, requirement, date)
+      ) {
+        pool = [preferredId, ...pool.filter((id) => id !== preferredId)];
+      }
+    }
     if (pool.length === 0) {
-      if (required) {
+      if (required && !requirement.sharedHistoryTag) {
         const materialized = materializeRoleCandidate(
           context,
           subject,
@@ -2185,7 +2611,10 @@ function castSceneRoles(
       date.year,
       date.month,
     );
-    const selected = pool[Math.min(pool.length - 1, Math.floor(rng() * pool.length))]!;
+    const selected =
+      preferredId && pool[0] === preferredId
+        ? preferredId
+        : pool[Math.min(pool.length - 1, Math.floor(rng() * pool.length))]!;
     roles[requirement.key] = selected;
     if (context.world.persons[selected]) usedPeople.add(selected);
   }
@@ -2799,8 +3228,21 @@ function eventTags(event: EventFact): string[] {
   return [...tags];
 }
 
+function semanticEventTags(
+  action: string,
+  effects: EventEffect[],
+  authored: string[] = [],
+): string[] {
+  const tags = new Set<string>(authored);
+  for (const tag of eventTags({ action, effects } as EventFact)) tags.add(tag);
+  return [...tags];
+}
+
 function scheduleFactTriggers(context: EngineContext, event: EventFact, depth: number): void {
   if (depth >= 3) return;
+  // Fact triggers remain effect-derived. Authored semantic tags describe the
+  // content family and are consumed by history conditions, not by the trigger
+  // queue, so a broad tag like `work` cannot schedule half the library.
   const tags = eventTags(event);
   if (tags.length === 0) return;
   const queue = context.world.historyMeta.scheduledEvents ?? [];
@@ -2826,6 +3268,7 @@ function scheduleFactTriggers(context: EngineContext, event: EventFact, depth: n
       sceneId: definition.id,
       subjectId: subject.id,
       due,
+      firstDue: { ...due },
       causeEventId: event.id,
       depth: depth + 1,
       source: 'fact',
@@ -2865,6 +3308,7 @@ function scheduleFollowups(
       sceneId: target.sceneId,
       subjectId: targetPerson.id,
       due,
+      firstDue: { ...due },
       causeEventId: event.id,
       depth: depth + 1,
       source: target.source ?? 'followup',
@@ -2889,62 +3333,94 @@ function processScheduledEvents(
       remaining.push(item);
       continue;
     }
-    const definition = byId.get(item.sceneId);
     const primary = context.world.persons[item.subjectId];
-    if (!definition || !primary || primary.died) continue;
-    const date = item.due;
+    if (!primary || primary.died) continue;
+    // A follow-up authored by a kernel names the kernel, not one compiled
+    // context. Resolve it against the contexts/milieus that are active when the
+    // follow-up is actually due, so a consequence scheduled in 1913 can still
+    // happen in a 1948 context.
+    const exact = byId.get(item.sceneId);
+    const candidates = exact
+      ? [exact]
+      : definitions.filter((definition) => definition.tags?.includes(`kernel:${item.sceneId}`));
+    // A delayed follow-up that missed its original window is retried at the
+    // current year boundary, not at the old month. Otherwise a scene that
+    // became eligible later is forever evaluated at an age/context it has
+    // already left.
+    const date =
+      item.firstDue && monthIndex(item.due) < monthIndex(target) ? { ...target } : item.due;
     const cause = item.causeEventId
       ? context.world.events.find((event) => event.id === item.causeEventId)
       : undefined;
-    const candidateIds = [
-      item.subjectId,
-      ...(cause?.participants.map((participant) => participant.personId) ?? []),
-      ...(context.world.households[primary.householdId]?.memberIds ?? []),
-    ];
-    let subject = primary;
-    if (!sceneEligible(context, definition, subject, date)) {
-      const alternate = [...new Set(candidateIds)]
-        .map((id) => context.world.persons[id])
-        .find(
-          (person): person is Person =>
-            Boolean(person) && !person.died && sceneEligible(context, definition, person, date),
+    const preferredRoles = new Map<string, Id>();
+    if (cause) {
+      preferredRoles.set('subject', cause.subjectId);
+      for (const participant of cause.participants) {
+        if (!preferredRoles.has(participant.role)) {
+          preferredRoles.set(participant.role, participant.personId);
+        }
+      }
+    }
+    let resolved = false;
+    for (const definition of candidates) {
+      const candidateIds = [
+        item.subjectId,
+        ...(cause?.participants.map((participant) => participant.personId) ?? []),
+        ...(context.world.households[primary.householdId]?.memberIds ?? []),
+      ];
+      let subject = primary;
+      if (!sceneEligible(context, definition, subject, date)) {
+        const alternate = [...new Set(candidateIds)]
+          .map((id) => context.world.persons[id])
+          .find(
+            (person): person is Person =>
+              Boolean(person) && !person.died && sceneEligible(context, definition, person, date),
+          );
+        if (!alternate) continue;
+        subject = alternate;
+      }
+      const cast = castSceneRoles(context, definition, subject, date, preferredRoles);
+      if (cast.missing.length > 0) {
+        recordBlocked(
+          context,
+          definition,
+          subject,
+          cast.roles,
+          `scheduled_missing_role:${cast.missing.join(',')}`,
+          date,
         );
-      if (!alternate) {
-        warnContext(context, 'scheduled_event_ineligible', 'scheduled event no longer eligible', {
-          personId: primary.id,
-          sceneId: definition.id,
-        });
         continue;
       }
-      subject = alternate;
-    }
-    const cast = castSceneRoles(context, definition, subject, date);
-    if (cast.missing.length > 0) {
-      recordBlocked(
+      const selection = selectOutcome(context, definition, subject, cast.roles, date);
+      if (!selection) {
+        recordBlocked(context, definition, subject, cast.roles, 'scheduled_no_outcome', date);
+        continue;
+      }
+      resolveScene(
         context,
         definition,
         subject,
         cast.roles,
-        `scheduled_missing_role:${cast.missing.join(',')}`,
+        selection,
         date,
+        item.depth,
+        item.causeEventId,
       );
-      continue;
+      resolved = true;
+      break;
     }
-    const selection = selectOutcome(context, definition, subject, cast.roles, date);
-    if (!selection) {
-      recordBlocked(context, definition, subject, cast.roles, 'scheduled_no_outcome', date);
-      continue;
+    if (resolved) continue;
+    // Keep a due follow-up queued only while the intended context may still
+    // return. Beyond five years it is stale content, not a forthcoming event.
+    const firstDue = item.firstDue ?? item.due;
+    if (monthIndex(target) - monthIndex(firstDue) <= 60) {
+      remaining.push(item);
+    } else {
+      warnContext(context, 'scheduled_event_expired', 'scheduled follow-up expired', {
+        personId: primary.id,
+        sceneId: item.sceneId,
+      });
     }
-    resolveScene(
-      context,
-      definition,
-      subject,
-      cast.roles,
-      selection,
-      date,
-      item.depth,
-      item.causeEventId,
-    );
   }
   const newlyScheduled = (context.world.historyMeta.scheduledEvents ?? []).filter(
     (item) => !initialIds.has(item.id),
@@ -3582,6 +4058,8 @@ function runAgencyYear(context: EngineContext, date: WorldDate, ordinaryLimit: n
         0,
       );
       if (!event) continue;
+      const domain = content.definition.task.domain;
+      const previousFocus = subject.agency?.focus;
       subject.agency = {
         ...(subject.agency ?? {
           goal: content.definition.task.goals[0] ?? 'work',
@@ -3589,8 +4067,15 @@ function runAgencyYear(context: EngineContext, date: WorldDate, ordinaryLimit: n
           since: { ...date },
         }),
         lastAction: { ...date },
-        lastActionKind: `task:${content.definition.task.domain}`,
+        lastActionKind: `task:${domain}`,
         attempts: (subject.agency?.attempts ?? 0) + 1,
+        focus: {
+          domain,
+          taskId: content.definition.id,
+          since:
+            previousFocus?.domain === domain ? (previousFocus.since ?? { ...date }) : { ...date },
+          attempts: previousFocus?.domain === domain ? previousFocus.attempts + 1 : 1,
+        },
       };
       continue;
     }
@@ -4598,6 +5083,20 @@ function resolveScene(
     definition.placeId && context.world.places[definition.placeId]
       ? definition.placeId
       : subject.locationId;
+  const historyRefs = [
+    ...new Set(
+      [...(definition.conditions ?? []), ...(outcome.conditions ?? [])]
+        .filter(
+          (condition): condition is Extract<SceneCondition, { kind: 'history' }> =>
+            condition.kind === 'history',
+        )
+        .flatMap((condition) =>
+          historyEntriesMatching(context.world, subject.id, condition, date).map(
+            (entry) => entry.eventId,
+          ),
+        ),
+    ),
+  ];
   const draft: EventDraft = {
     date: { ...date },
     placeId: draftPlaceId,
@@ -4605,6 +5104,8 @@ function resolveScene(
     participants: buildParticipants(context.world, subject, roles),
     action: `${definition.id}/${outcome.id}`,
     title: definition.title,
+    tags: definition.tags,
+    historyRefs,
     causes: causeEventId ? [causeEventId] : [],
     effects: [
       ...outcome.effects,
@@ -4748,11 +5249,34 @@ function commitEvent(
     roleIds: { ...bindingInput.roleIds },
     fundingOrganizationIds: [...bindingInput.fundingOrganizationIds],
   };
-  const applied: EventEffect[] = [];
-  for (const effect of draft.effects) {
+  // A story about a hiring, a school place, a birth, a move or a death must not
+  // commit if that concrete change failed. Otherwise the prose says "hired"
+  // while the ledger has no job, or "inherited" while no household received
+  // anything. Critical effects are applied before texture effects, so a
+  // rejected core change cannot leak a cash debit, flag or mood change into the
+  // world without a committed fact.
+  const criticalTypes = new Set<EventEffect['type']>([
+    'employment',
+    'unemployment',
+    'education',
+    'birth',
+    'death',
+    'move',
+    'household',
+    'residence',
+    'estate',
+    'organization_membership',
+    'historical_process',
+    'historical_participation',
+  ]);
+  const indexedEffects = draft.effects.map((effect, index) => ({ effect, index }));
+  const criticalEffects = indexedEffects.filter(({ effect }) => criticalTypes.has(effect.type));
+  const textureEffects = indexedEffects.filter(({ effect }) => !criticalTypes.has(effect.type));
+  const appliedByIndex: (EventEffect | undefined)[] = new Array(draft.effects.length);
+  const applyOne = (effect: EventEffect, index: number): void => {
     try {
       const result = applyEffect(context, effect, binding);
-      if (result) applied.push(result);
+      if (result) appliedByIndex[index] = result;
     } catch (error) {
       warnContext(
         context,
@@ -4763,7 +5287,19 @@ function commitEvent(
         },
       );
     }
+  };
+  for (const { effect, index } of criticalEffects) applyOne(effect, index);
+  if (
+    criticalEffects.length > 0 &&
+    !appliedByIndex.some((effect) => effect && criticalTypes.has(effect.type))
+  ) {
+    // Critical effects validate before mutating in the normal path; this early
+    // return prevents a texture effect (cash, flag, mood) from leaking out of a
+    // story the engine refuses to commit.
+    return undefined;
   }
+  for (const { effect, index } of textureEffects) applyOne(effect, index);
+  const applied = appliedByIndex.filter((effect): effect is EventEffect => Boolean(effect));
   if (!force && applied.length === 0) return undefined;
 
   const knownEventIds = eventIdsFor(context);
@@ -4775,15 +5311,20 @@ function commitEvent(
       )
       .map((effect) => effect.personId),
   );
-  const participants = draft.participants.filter((participant) => {
-    if (!participant || typeof participant.personId !== 'string') return false;
-    const person = context.world.persons[participant.personId];
-    if (!person) return false;
-    // A corpse may appear only in the event that records that death. Stale
-    // scheduled/followup scenes must not keep casting a dead participant.
-    if (person.died && !dyingIds.has(person.id)) return false;
-    return true;
-  });
+  const participants = draft.participants
+    .filter((participant) => {
+      if (!participant || typeof participant.personId !== 'string') return false;
+      const person = context.world.persons[participant.personId];
+      if (!person) return false;
+      // A corpse may appear only in the event that records that death. Stale
+      // scheduled/followup scenes must not keep casting a dead participant.
+      if (person.died && !dyingIds.has(person.id)) return false;
+      return true;
+    })
+    .filter(
+      (participant, index, all) =>
+        all.findIndex((other) => other.personId === participant.personId) === index,
+    );
   const event: EventFact = {
     id: identity.id,
     date: { ...draft.date },
@@ -4792,6 +5333,15 @@ function commitEvent(
     participants,
     action: draft.action,
     title: draft.title,
+    tags: semanticEventTags(draft.action, applied, [
+      ...(draft.tags ?? []),
+      ...(draft.provenance.kind === 'project' ? ['project'] : []),
+      ...(draft.provenance.kind === 'interaction' ? ['interaction'] : []),
+      ...(draft.provenance.kind === 'system' && draft.action.startsWith('agency:')
+        ? ['agency', draft.action]
+        : []),
+    ]),
+    historyRefs: draft.historyRefs ? [...new Set(draft.historyRefs)] : undefined,
     causes,
     effects: applied,
     immediateText: draft.immediateText,
@@ -4830,8 +5380,30 @@ function commitEvent(
   for (const date of deathDates) {
     if (monthIndex(date) > monthIndex(event.date)) event.date = { ...date };
   }
+  if (event.trace) {
+    event.trace.causes = causes
+      .map((causeId) => context.world.events.find((candidate) => candidate.id === causeId))
+      .filter((cause): cause is EventFact => Boolean(cause))
+      .map((cause) => ({
+        eventId: cause.id,
+        action: cause.action,
+        date: { ...cause.date },
+      }));
+  }
   context.world.events.push(event);
   knownEventIds.add(event.id);
+  rememberHistory(context.world, event);
+  // Shared incidents become part of every existing relationship between the
+  // subject and the people present, even when the scene did not author a
+  // second relation effect. Later reunion/trust conditions can read this.
+  for (const participant of event.participants) {
+    if (participant.personId === event.subjectId) continue;
+    for (const relation of relationsFor(context.world, event.subjectId)) {
+      const otherId = relation.a === event.subjectId ? relation.b : relation.a;
+      if (otherId !== participant.personId) continue;
+      if (!relation.sharedEventIds.includes(event.id)) relation.sharedEventIds.push(event.id);
+    }
+  }
   rememberEventMonth(context, event.subjectId, event.date);
   for (const participant of event.participants) {
     rememberEventMonth(context, participant.personId, event.date);
@@ -4960,12 +5532,55 @@ function resolveEffectRefs(
     'organizationId',
     'a',
     'b',
+    'heirHouseholdId',
     'holderId',
   ]) {
     if (typeof bound[key] === 'string') {
       const resolved = resolveEffectRef(bound[key], binding, world);
       if (resolved !== undefined) bound[key] = resolved;
     }
+  }
+  // `$workplace` describes the job the subject is about to take, so it cannot
+  // resolve from the subject's current employment. Use the hiring
+  // organization's own place; if even that is absent, applyEmployment rejects
+  // the effect instead of committing a person with a dangling workplace.
+  if (bound.type === 'employment') {
+    let organization =
+      typeof bound.organizationId === 'string'
+        ? world.organizations[bound.organizationId]
+        : undefined;
+    // Some older content names a foreman/master as the "employer" role. The
+    // person is not an organization; use their employer, or the organization
+    // that owns the place where they work.
+    if (!organization && typeof bound.organizationId === 'string') {
+      const person = world.persons[bound.organizationId];
+      if (person?.employment) {
+        organization = world.organizations[person.employment.organizationId];
+      }
+      if (!organization && person) {
+        const workplaceId = person.employment?.workplaceId ?? person.locationId;
+        organization = Object.values(world.organizations)
+          .filter((candidate) => candidate.status === 'active' && candidate.placeId === workplaceId)
+          .sort((a, b) => a.id.localeCompare(b.id))[0];
+      }
+      if (organization) bound.organizationId = organization.id;
+    }
+    if (
+      typeof bound.workplaceId === 'string' &&
+      bound.workplaceId.startsWith('$') &&
+      organization?.placeId
+    ) {
+      bound.workplaceId = organization.placeId;
+    }
+  }
+  // A knowledge source is optional. An uncosted clerk or doctor must not erase
+  // the proposition the subject actually learned.
+  if (
+    bound.type === 'knowledge' &&
+    typeof bound.personId === 'string' &&
+    bound.personId.startsWith('$')
+  ) {
+    delete bound.personId;
   }
   return bound as EventEffect;
 }
@@ -4986,8 +5601,6 @@ function applyEffect(
     'locationId',
     'workplaceId',
     'organizationId',
-    'a',
-    'b',
     'heirHouseholdId',
     'holderId',
     'processId',
@@ -4997,10 +5610,24 @@ function applyEffect(
     return typeof value === 'string' && value.startsWith('$');
   });
   if (unresolved) {
+    // A minor effect aimed at an optional role may legitimately have no target.
+    // Skip it quietly; the scene's concrete major effects still decide whether
+    // the incident can commit.
+    const optionalTargetTypes = new Set<EventEffect['type']>([
+      'health',
+      'mood',
+      'reputation',
+      'skill',
+      'condition',
+      'knowledge',
+      'flag',
+      'food',
+    ]);
+    if (optionalTargetTypes.has(effect.type)) return undefined;
     warnContext(
       context,
       'unresolved_effect_ref',
-      `effect ${effect.type} has unresolved ${String(unresolved)}`,
+      `effect ${effect.type} has unresolved ${String(unresolved)}: ${JSON.stringify(effect).slice(0, 240)}`,
       {
         eventId: binding.eventId,
       },
@@ -5100,7 +5727,7 @@ function applyCash(
     if (shortfall > 0) household.debt = roundMoney(household.debt + shortfall);
     return {
       ...effect,
-      amount: -amount,
+      amount,
       reason: shortfall > 0 ? `${effect.reason}（其中${shortfall}克朗记入债务）` : effect.reason,
     };
   }
@@ -5189,13 +5816,16 @@ function applyHealth(
   binding: EffectBinding,
 ): EventEffect | undefined {
   const person = context.world.persons[effect.personId];
-  if (!person || person.died) {
+  if (!person) {
     warnContext(context, 'effect_on_dead_or_missing', 'health effect skipped', {
       personId: effect.personId,
       eventId: binding.eventId,
     });
     return undefined;
   }
+  // A corpse cannot receive a minor health tweak; this is a normal consequence
+  // of a death earlier in the same incident, not a corrupt reference.
+  if (person.died) return undefined;
   if (typeof effect.amount !== 'number' || !Number.isFinite(effect.amount)) return undefined;
   const before = person.health.vitality;
   // A Phase 3 world reserves final death for the statistical pass or an
@@ -5222,13 +5852,14 @@ function applyCondition(
   binding: EffectBinding,
 ): EventEffect | undefined {
   const person = context.world.persons[effect.personId];
-  if (!person || person.died) {
+  if (!person) {
     warnContext(context, 'effect_on_dead_or_missing', 'condition effect skipped', {
       personId: effect.personId,
       eventId: binding.eventId,
     });
     return undefined;
   }
+  if (person.died) return undefined;
   if (typeof effect.condition !== 'string' || effect.condition.length === 0) return undefined;
   const index = person.health.conditions.indexOf(effect.condition);
   if (effect.add) {
@@ -5587,7 +6218,10 @@ function applyEmployment(
   }
   const organization = context.world.organizations[effect.organizationId];
   if (!organization || organization.status !== 'active') return undefined;
-  if (!context.world.places[effect.workplaceId]) return undefined;
+  const workplaceId = context.world.places[effect.workplaceId]
+    ? effect.workplaceId
+    : organization.placeId;
+  if (!context.world.places[workplaceId]) return undefined;
   if (typeof effect.occupation !== 'string' || effect.occupation.length === 0) return undefined;
   if (typeof effect.wage !== 'number' || !Number.isFinite(effect.wage) || effect.wage < 0) {
     return undefined;
@@ -5612,9 +6246,9 @@ function applyEmployment(
       previousOrganizationId === effect.organizationId && person.employment
         ? person.employment.since
         : { ...binding.date },
-    workplaceId: effect.workplaceId,
+    workplaceId,
   };
-  return { ...effect, wage: person.employment.wage };
+  return { ...effect, workplaceId, wage: person.employment.wage };
 }
 
 function applyUnemployment(
@@ -5638,27 +6272,80 @@ function applyRelation(
   effect: Extract<EventEffect, { type: 'relation' }>,
   binding: EffectBinding,
 ): EventEffect | undefined {
-  const a = context.world.persons[effect.a];
-  const b = context.world.persons[effect.b];
-  if (!a || !b || a.id === b.id) {
-    warnContext(context, 'invalid_relation', 'relation effect references a missing person', {
-      personId: effect.a,
-      eventId: binding.eventId,
-    });
+  // An optional role that was not cast leaves its `$role` token unresolved. The
+  // scene's other effects still commit; this relation is simply absent. Do not
+  // count it as a corrupt relation against a real person.
+  if (effect.a.startsWith('$') || effect.b.startsWith('$')) return undefined;
+  let aId = effect.a;
+  let bId = effect.b;
+  // Legacy content sometimes casts an organization in the `employer` role and
+  // then writes a person relation to it. Use the organization's actual
+  // representative; a relation remains a fact between people.
+  if (!context.world.persons[bId] && context.world.organizations[bId]) {
+    const organization = context.world.organizations[bId]!;
+    const holderId = organization.positions
+      .map((positionId) => context.world.positions[positionId]?.holderId)
+      .find((id): id is Id =>
+        Boolean(id && context.world.persons[id] && !context.world.persons[id]!.died),
+      );
+    const livingMembers = organization.memberIds
+      .filter(
+        (id) =>
+          id !== binding.subjectId && context.world.persons[id] && !context.world.persons[id]!.died,
+      )
+      .map((id) => context.world.persons[id]!);
+    const roleMember = livingMembers.find((person) =>
+      person.roles.some((role) =>
+        ['owner', 'employer', 'master', 'foreman', 'leader', 'director', 'manager'].includes(role),
+      ),
+    );
+    // Do not invent an "employer" out of an arbitrary apprentice or bystander.
+    // Only a position holder or a person carrying an owner/master/foreman-like
+    // role can stand in for the organization in a person-to-person relation.
+    const representative = holderId ?? roleMember?.id;
+    if (!representative) return undefined;
+    bId = representative;
+  }
+  if (!context.world.persons[aId] && context.world.organizations[aId]) {
+    const organization = context.world.organizations[aId]!;
+    const representative =
+      organization.positions
+        .map((positionId) => context.world.positions[positionId]?.holderId)
+        .find((id): id is Id => Boolean(id && context.world.persons[id])) ??
+      organization.memberIds.find((id) => Boolean(context.world.persons[id]));
+    if (!representative) return undefined;
+    aId = representative;
+  }
+  const a = context.world.persons[aId];
+  const b = context.world.persons[bId];
+  // An organization represented by the subject themselves cannot produce a
+  // second person for a relation. This is a no-op, not a corrupt relation.
+  if (a && b && a.id === b.id) return undefined;
+  if (!a || !b) {
+    warnContext(
+      context,
+      'invalid_relation',
+      `relation effect references a missing person (${effect.a}->${effect.b})`,
+      {
+        personId: effect.a,
+        eventId: binding.eventId,
+      },
+    );
     return undefined;
   }
   if (!RELATION_KINDS.includes(effect.kind)) return undefined;
+  const normalized = { ...effect, a: aId, b: bId };
   const undirected = !['employer'].includes(effect.kind);
-  const existing = relationsFor(context.world, effect.a).find(
+  const existing = relationsFor(context.world, aId).find(
     (candidate) =>
       candidate.kind === effect.kind &&
       candidate.end === undefined &&
       (undirected
-        ? (candidate.a === effect.a && candidate.b === effect.b) ||
-          (candidate.a === effect.b && candidate.b === effect.a)
-        : candidate.a === effect.a && candidate.b === effect.b),
+        ? (candidate.a === aId && candidate.b === bId) ||
+          (candidate.a === bId && candidate.b === aId)
+        : candidate.a === aId && candidate.b === bId),
   );
-  const id = existing?.id ?? `rel:${effect.a}:${effect.b}:${effect.kind}`;
+  const id = existing?.id ?? `rel:${aId}:${bId}:${effect.kind}`;
   let relation = existing ?? context.world.relations[id];
   let created = false;
   // Existing bonds survive death (funerals, memory, obligations). Creating a
@@ -5674,10 +6361,7 @@ function applyRelation(
     // and later childbirth has no unambiguous partner role.
     if (hasOtherPartner(a.id) || hasOtherPartner(b.id)) return undefined;
   }
-  if (
-    relation &&
-    (relation.a !== effect.a || relation.b !== effect.b || relation.kind !== effect.kind)
-  ) {
+  if (relation && (relation.a !== aId || relation.b !== bId || relation.kind !== effect.kind)) {
     return undefined;
   }
   if (relation?.end) return undefined;
@@ -5685,8 +6369,8 @@ function applyRelation(
     created = true;
     relation = {
       id,
-      a: effect.a,
-      b: effect.b,
+      a: aId,
+      b: bId,
       kind: effect.kind,
       trust: 0,
       affection: 0,
@@ -5720,7 +6404,7 @@ function applyRelation(
   if (!relation.sharedEventIds.includes(binding.eventId)) {
     relation.sharedEventIds.push(binding.eventId);
   }
-  return { ...effect };
+  return normalized;
 }
 
 function applyRole(
@@ -5978,6 +6662,18 @@ function applyHousehold(
     return undefined;
   }
   const previous = context.world.households[person.householdId];
+  const minor = ageAt(person, binding.date) < 18;
+  const targetHasAdult = household.memberIds.some((id) => {
+    const member = context.world.persons[id];
+    return Boolean(member && !member.died && ageAt(member, binding.date) >= 18);
+  });
+  if (minor && !targetHasAdult) {
+    warnContext(context, 'minor_without_guardian', 'minor household move skipped', {
+      personId: person.id,
+      eventId: binding.eventId,
+    });
+    return undefined;
+  }
   if (previous) previous.memberIds = previous.memberIds.filter((id) => id !== person.id);
   if (!household.memberIds.includes(person.id)) household.memberIds.push(person.id);
   person.householdId = household.id;
@@ -6057,6 +6753,17 @@ function splitOverflowHousehold(
   const members = [mother, ...(father ? [father] : [])].filter(
     (person, index, list) => list.findIndex((candidate) => candidate.id === person.id) === index,
   );
+  // A new household must not consist only of minors. If the parents are young,
+  // bring the mother's living guardian with them; otherwise the split is not a
+  // valid household and the birth/move is refused.
+  const hasAdult = members.some((person) => !person.died && ageAt(person, context.target) >= 18);
+  if (!hasAdult) {
+    const guardian = [...mother.guardianIds, ...mother.parentIds]
+      .map((id) => world.persons[id])
+      .find((person) => person && !person.died && ageAt(person, context.target) >= 18);
+    if (!guardian) return undefined;
+    if (!members.some((person) => person.id === guardian.id)) members.push(guardian);
+  }
   for (const person of members) {
     const previous = world.households[person.householdId];
     if (previous) previous.memberIds = previous.memberIds.filter((entry) => entry !== person.id);
@@ -6493,14 +7200,43 @@ function commitStatisticalDeath(
   cause: DeathCause,
   date: WorldDate,
 ): boolean {
-  const placeName = context.world.places[person.locationId]?.name ?? '维也纳';
+  const household = context.world.households[person.householdId];
+  // A death happens where the person actually lives. `locationId` can be a
+  // workplace or a relative's flat from a recent move; the household residence
+  // is the stable address used by the rest of the economy and housing model.
+  const deathPlaceId = household?.residenceId ?? person.locationId;
+  const placeName = context.world.places[deathPlaceId]?.name ?? '维也纳';
+  const witness = (household?.memberIds ?? [])
+    .map((id) => context.world.persons[id])
+    .filter(
+      (member): member is Person => Boolean(member) && member.id !== person.id && !member.died,
+    )
+    .sort((a, b) => {
+      const partner = (candidate: Person): number =>
+        relationsFor(context.world, person.id).some(
+          (relation) =>
+            relation.kind === 'partner' &&
+            relation.end === undefined &&
+            ((relation.a === person.id && relation.b === candidate.id) ||
+              (relation.a === candidate.id && relation.b === person.id)),
+        )
+          ? 0
+          : candidate.parentIds.some((id) => person.parentIds.includes(id))
+            ? 1
+            : 2;
+      return partner(a) - partner(b) || a.id.localeCompare(b.id);
+    })[0];
+  const deathText = statisticalDeathText(person, cause, date, placeName);
   const event = commitEvent(
     context,
     {
       date: { ...date },
-      placeId: person.locationId,
+      placeId: deathPlaceId,
       subjectId: person.id,
-      participants: [{ personId: person.id, role: 'subject' }],
+      participants: [
+        { personId: person.id, role: 'subject' },
+        ...(witness ? [{ personId: witness.id, role: 'present' }] : []),
+      ],
       action: `statistical_death/${cause}`,
       causes: [],
       effects: [
@@ -6511,7 +7247,7 @@ function commitStatisticalDeath(
           reason: `statistical risk: ${cause}`,
         },
       ],
-      immediateText: statisticalDeathText(person, cause, date, placeName),
+      immediateText: witness ? `${deathText}${witness.name}在场。` : deathText,
       significance: 0.95,
       visibility: 'participants',
       provenance: { kind: 'system', sourceId: `statistics:${cause}` },

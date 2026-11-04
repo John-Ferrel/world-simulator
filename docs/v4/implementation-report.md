@@ -260,3 +260,23 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 验证 | `pnpm test` 83 files/481 pass/36 skip；v4 201 pass；build 3.25s；e2e 1 pass |
 
 未完成：文学样本仅 15 条且零余量；375 births 仍低于 449 deaths，家庭/宏观仍依赖 materialization；20,472 blocked casts；304 unresolved_effect_ref、33 invalid_relation；无生产 PostgreSQL/API 规模验证、无运行时 LLM 叙事、无多城市 world pack。不得把 1,174,428 候选情境称为已执行事件。
+
+## Phase 14（2026-11-05）— Life Continuity & Dramatic Narrative
+
+完整报告：`docs/v4/phase-14-report.md`；机制审计：`phase-14-mechanics-findings.md` / `phase-14-mechanics-critique.md`；文学评审：`phase-14-critique.md`；18 段完整人生：`phase-14-lives.md`；能力人生：`phase-14-special-life.md`。
+
+| 项 | 实测 |
+|---|---|
+| 因果层 | EventFact 语义 tags、`history`/`knowledge`/`project`/`relationHistory`/`hasFlag` 条件、`historyRefs`、`sharedHistoryTag` 选角、composed follow-up（含 Task 目标）、延迟重试、cause 参与者复用 |
+| 目标 | Agency goal history + focus；失业/丧亲/战争/迫害/毕业/奖学金/晋升/出版改变目标 |
+| 内容 | 265 个新 kernel（111 Task + 154 Event）、792 outcomes；全库 1,576 kernels / 6,082 outcomes；193 个 history 条件、196 个 follow-up、129 个 sharedHistoryTag 角色 |
+| 88 年 run | 35,234 events；8,266 composed（1,064 kernels）；634 r14 events / 255 r14 tasks / 105 kernels；1,488 条显式前因；245 条 historyRefs |
+| 人口 | 357 出生 / 464 死亡 / 739 人物 / 273 存活；max living household 12 |
+| 文本 | 31,930 distinct texts；reuse 0.0938；0 unresolved tokens；0 post-death subject/participant |
+| 因果证据 | 同 seed 60 年：19,569 events / 870 显式链接 / 152 条 ≥3 年链 / 70 人；18 段人生内部 96 条链接；70 年独立 seed 1,057/161/73 |
+| 机制 | 修复 cash 符号/债务、commit 原子性、雇主组织代表、未成年家庭、伴侣唯一性、参与者去重、任务 follow-up、关键效果阻断、死亡地点/见证人 |
+| 文学 | Critic 阶段样本：整生均分 19/30；事件 7/15（46.7%，均分 29.73），composed 5/8；结局 0/2。不是“已写出 lives”的证明 |
+| 性能 | 20k composed-only 2,757 ms/年；原 benchmark 3,631 ms/年；heap 453–514 MB |
+| 验证 | `pnpm test` 85 files/497 pass/36 skip；v4 36 files/217 pass；build 3.00s；e2e 1 pass 13.4s |
+
+未完成/限制：文学仍在结局、女性主体代词、伴侣/子女连续性上失败；r14 覆盖 105/265；出生仍略低于死亡（357/464）；12,392 次 blocked casts；79 scheduled expired、30 household_full；没有生产 PostgreSQL/API 规模验证与运行时 LLM 叙事。不得把 870/1,057 条链接或 1,174,428 候选情境称为全部已演出人生。

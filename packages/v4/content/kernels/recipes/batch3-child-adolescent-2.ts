@@ -675,7 +675,7 @@ export const BATCH3_CHILD_ADOLESCENT_2: PlotKernel[] = recipes([
       {
         id: 'excluded',
         w: 0.3,
-        text: '{friend}说入伙要交二十个铜板买蜡烛，{subject}掏遍口袋只有九个。他们让{subjectPronoun}在楼梯口等，等到天黑也没人下来。楼上传来笑声，像隔着一层厚被子。他把九个铜板在楼梯上排成一排，又一个个收进口袋。',
+        text: '{friend}说入伙要交二十个铜板买蜡烛，{subject}掏遍口袋只有九个。他们让{subjectPronoun}在楼梯口等，等到天黑也没人下来。楼上传来笑声，像隔着一层厚被子。{subject}把九个铜板在楼梯上排成一排，又一个个收进口袋。',
         significance: 0.6,
         fx: {
           mood: -0.12,

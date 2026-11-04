@@ -1,4 +1,11 @@
-import type { EventEffect, Place, RoleRequirement, SceneCondition, SceneStage } from '../domain.js';
+import type {
+  EventEffect,
+  Place,
+  RoleRequirement,
+  SceneCondition,
+  SceneFollowupTarget,
+  SceneStage,
+} from '../domain.js';
 import type { GeneratedTaskMeta } from '../generated.js';
 
 /**
@@ -89,6 +96,20 @@ export type KernelVariantWhen = {
   sex?: 'female' | 'male';
   /** Health/vitality window; compiled into a SceneCondition. */
   health?: { min?: number; max?: number };
+  /** Past-event branch; compiled into a SceneCondition. */
+  history?: {
+    actionPrefix?: string;
+    kernelId?: string;
+    outcome?: string;
+    tag?: string;
+    minCount?: number;
+    maxCount?: number;
+    withinYears?: number;
+    minYearsAgo?: number;
+    includeParticipants?: boolean;
+  };
+  /** Persistent flag branch; compiled into a SceneCondition. */
+  hasFlag?: string;
 };
 
 export type KernelOutcome = {
@@ -101,6 +122,13 @@ export type KernelOutcome = {
   /** Structured motive/conflict/response for the incident trace. */
   trace?: { motive?: string; conflict?: string; response?: string };
   when?: KernelVariantWhen;
+  /**
+   * Kernel ids (not compiled scene ids) to schedule after this outcome. The
+   * engine resolves them against whichever compiled context is active when the
+   * follow-up becomes due.
+   */
+  followupIds?: string[];
+  followupTargets?: SceneFollowupTarget[];
 };
 
 export type KernelVariant = {

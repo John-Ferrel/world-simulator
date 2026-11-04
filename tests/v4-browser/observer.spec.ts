@@ -93,7 +93,15 @@ test('register, give birth, read a concrete log and inspect the map', async ({ p
     ) {
       traceSeen = true;
       await expect(page.locator('.incident-trace')).toContainText('机制');
-      await page.screenshot({ path: 'docs/v4/phase-13-incident-trace.png' });
+      await page.screenshot({ path: 'docs/v4/phase-14-incident-trace.png' });
+      if (
+        await page
+          .locator('.prior-events')
+          .isVisible()
+          .catch(() => false)
+      ) {
+        await page.screenshot({ path: 'docs/v4/phase-14-causal-links.png' });
+      }
       await page.getByRole('button', { name: '关闭事件档案' }).click();
       break;
     }
@@ -108,6 +116,6 @@ test('register, give birth, read a concrete log and inspect the map', async ({ p
   await pins.nth(12).click();
   await expect(page.locator('.place-people')).toBeVisible();
 
-  await page.screenshot({ path: 'docs/v4/phase-13-browser.png', fullPage: true });
+  await page.screenshot({ path: 'docs/v4/phase-14-browser.png', fullPage: true });
   expect(errors).toEqual([]);
 });

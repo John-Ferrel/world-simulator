@@ -25,7 +25,7 @@ describe('autonomous living world', () => {
   it('lets historical people and ordinary people act, join and change organizations without injected outcomes', () => {
     let current = world();
     const events: WorldState['events'] = [];
-    for (let year = 0; year < 10; year += 1) {
+    for (let year = 0; year < 14; year += 1) {
       const result = advanceV4Year(current, scenes, {
         economy: { enabled: true },
         eventRuntime: true,

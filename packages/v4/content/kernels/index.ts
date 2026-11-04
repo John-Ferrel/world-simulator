@@ -7,6 +7,7 @@ import { CIVIC_CULTURE_MIGRATION_KERNELS } from './civic-culture-migration.js';
 import { KIT_RECIPES } from './recipes/kit-recipes.js';
 import { RECIPE_PACKS } from './recipes/registry.js';
 import { PHASE13_RECIPE_PACKS } from './recipes/registry13.js';
+import { PHASE14_RECIPE_PACKS } from './recipes/registry14.js';
 
 /** Plot Kernel registry. Each domain file exports its own independent array. */
 export const KERNEL_LIBRARY: PlotKernel[] = [
@@ -18,4 +19,5 @@ export const KERNEL_LIBRARY: PlotKernel[] = [
   ...KIT_RECIPES,
   ...RECIPE_PACKS,
   ...PHASE13_RECIPE_PACKS,
+  ...PHASE14_RECIPE_PACKS,
 ];

@@ -89,7 +89,16 @@ export function taskUtility(
     score -= risk * (0.55 + caution + exhaustion) * 0.9;
   }
   if (meta.capability && capability === meta.capability) score += 0.8;
-  if (person.agency?.lastActionKind?.includes(`task:${domain}`)) score *= 0.55;
+  // A long effort is not a random draw each year. If the person has already
+  // committed to this domain, keep offering related tasks; a different domain
+  // still competes, but the focus gives continuity to schooling, a craft, a
+  // courtship or a political cause.
+  const focus = person.agency?.focus;
+  if (focus?.domain === domain) {
+    score += 0.35 + Math.min(0.35, focus.attempts * 0.05);
+    if (focus.taskId === definition.id) score *= 0.8;
+  }
+  if (person.agency?.lastActionKind?.includes(`task:${domain}`)) score *= 0.72;
   if (person.agency?.lastActionKind === 'care_for_kin' && meta.needs.includes('care')) score *= 0.7;
   // A task that requires a relationship or organization is already filtered by
   // casting; do not add a second hidden bonus for merely being available.

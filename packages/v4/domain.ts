@@ -105,6 +105,20 @@ export type PersonAgency = {
   lastAction?: WorldDate;
   lastActionKind?: string;
   attempts?: number;
+  /** Bounded record of why the person changed course. */
+  history?: {
+    goal: PersonAgencyGoal;
+    since: WorldDate;
+    reason: string;
+    eventId?: Id;
+  }[];
+  /** A repeated voluntary effort, used to keep long goals alive across years. */
+  focus?: {
+    domain: string;
+    taskId?: string;
+    since: WorldDate;
+    attempts: number;
+  };
 };
 
 export type HistoricalIdentity = {
@@ -537,6 +551,14 @@ export type EventFact = {
   immediateText: string;
   /** Short player-facing title for ambient events. */
   title?: string;
+  /**
+   * Semantic tags of the committed incident: authored scene tags plus tags
+   * derived from settled effects. Later scenes can consume these as personal
+   * history without hard-coding a specific scene id.
+   */
+  tags?: string[];
+  /** Earlier committed facts matched by this incident's history conditions. */
+  historyRefs?: Id[];
   significance: number;
   visibility: 'private' | 'participants' | 'public';
   sceneId?: Id;
@@ -577,6 +599,13 @@ export type RoleRequirement = {
   organizationKind?: Organization['kind'];
   /** Restrict a historical role to one stable public identity. */
   historicalId?: string;
+  /**
+   * Restrict this role to a person who already shared an event carrying this
+   * semantic tag with the subject. This is how a mentor, former lover, enemy
+   * or old comrade can return years later instead of being recast as a new
+   * stranger. Such a role is never materialized.
+   */
+  sharedHistoryTag?: string;
 };
 
 export type SceneCondition =
@@ -632,7 +661,48 @@ export type SceneCondition =
   | { kind: 'worldYear'; min?: number; max?: number }
   | { kind: 'region'; in: string[] }
   | { kind: 'sex'; in: Person['sex'][] }
-  | { kind: 'pressure'; key: string; min: number };
+  | { kind: 'pressure'; key: string; min: number }
+  /**
+   * The subject (or a participant, when includeParticipants is true) has
+   * already lived through matching incidents. This is a read-only condition on
+   * committed EventFacts, not a second narrative state machine.
+   */
+  | {
+      kind: 'history';
+      /** Exact scene/kernel id prefix, e.g. `vienna-family-courtship`. */
+      actionPrefix?: string;
+      /** Composed kernel id, matched against the compiled action prefix. */
+      kernelId?: string;
+      /** Required outcome suffix (e.g. `join-and-carry`). */
+      outcome?: string;
+      /** Semantic event tag (authored scene tag or settled-effect tag). */
+      tag?: string;
+      minCount?: number;
+      maxCount?: number;
+      /** Only events within this many years before the checked date. */
+      withinYears?: number;
+      /** Require the remembered event to be at least this many calendar years old. */
+      minYearsAgo?: number;
+      minSignificance?: number;
+      includeParticipants?: boolean;
+      /** Require the past incident to have had a participant in this role. */
+      withRole?: string;
+    }
+  /** The person holds at least one knowledge proposition matching the text. */
+  | { kind: 'knowledge'; propositionIncludes?: string; minConfidence?: number }
+  /** The person owns or participates in a project of this kind/state. */
+  | { kind: 'project'; projectKind?: string; state?: Project['state']; minStage?: number }
+  /** At least one active relation carries enough shared history. */
+  | {
+      kind: 'relationHistory';
+      relationKind?: Relation['kind'];
+      minSharedEvents?: number;
+      minTrust?: number;
+      minYears?: number;
+      partnerSex?: Person['sex'];
+    }
+  /** A persistent personal flag set by an earlier committed effect. */
+  | { kind: 'hasFlag'; flag: string };
 
 export type SceneEffect = EventEffect; // v4 effects are the same typed vocabulary.
 
@@ -655,6 +725,8 @@ export type SceneFollowupTarget = {
 };
 
 export type IncidentTrace = {
+  /** Earlier committed facts this incident explicitly continues. */
+  causes?: { eventId: Id; action: string; date: WorldDate }[];
   mechanism: {
     sceneId: string;
     outcomeId: string;
@@ -797,6 +869,8 @@ export type ScheduledEvent = {
   sceneId: string;
   subjectId: Id;
   due: WorldDate;
+  /** Original due date, used to expire a follow-up that can never resolve. */
+  firstDue?: WorldDate;
   causeEventId?: Id;
   depth: number;
   source: 'followup' | 'fact' | 'action';

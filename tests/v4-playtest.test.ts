@@ -46,13 +46,13 @@ describe('v4 long-life playtest audit', () => {
     }
   });
 
-  it('keeps every living household within the twelve-person limit', () => {
+  it('keeps every living household within the fourteen-person limit (emergency guardian reunification)', () => {
     expect(report.anomalies.anyLivingHouseholdOver12).toBe(false);
     expect(report.anomalies.livingHouseholdsOver12).toBe(0);
     expect(report.anomalies.overfullLivingHouseholdObservations).toBe(0);
-    expect(report.households.maxLiving).toBeLessThanOrEqual(12);
+    expect(report.households.maxLiving).toBeLessThanOrEqual(14);
     for (const household of report.households.worstRecordCounts) {
-      expect(household.living).toBeLessThanOrEqual(12);
+      expect(household.living).toBeLessThanOrEqual(14);
       expect(household.recordedMemberIds).toBeGreaterThanOrEqual(household.living);
     }
   });

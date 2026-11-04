@@ -5394,7 +5394,7 @@ export const HEALTH_VIOLENCE_WAR_KERNELS: PlotKernel[] = [
       {
         id: 'pharmacy-gives-up',
         weight: 0.25,
-        text: '{subject}在柜台前站了很久，最后把处方留在那里，说等有货再来。回家路上经过医院，看见药房窗口也挂着“无货”；第二天，处方被雨水泡烂在口袋里。他把湿透的处方摊在炉边烤，字还是糊了。',
+        text: '{subject}在柜台前站了很久，最后把处方留在那里，说等有货再来。回家路上经过医院，看见药房窗口也挂着“无货”；第二天，处方被雨水泡烂在口袋里。{subject}把湿透的处方摊在炉边烤，字还是糊了。',
         effects: [
           {
             type: 'cash',

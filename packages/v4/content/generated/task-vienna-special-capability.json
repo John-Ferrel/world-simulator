@@ -6,14 +6,7 @@
     "min": 12,
     "max": 60
   },
-  "tags": [
-    "special",
-    "capability",
-    "literacy",
-    "numeracy",
-    "craft",
-    "care"
-  ],
+  "tags": ["special", "capability", "literacy", "numeracy", "craft", "care"],
   "baseRate": 0.1,
   "conditions": [
     {
@@ -25,14 +18,8 @@
   "kind": "task",
   "task": {
     "domain": "special",
-    "goals": [
-      "knowledge",
-      "status"
-    ],
-    "needs": [
-      "knowledge",
-      "autonomy"
-    ],
+    "goals": ["knowledge", "status"],
+    "needs": ["knowledge", "autonomy"],
     "baseUtility": 1.2,
     "risk": 0.2,
     "skills": []
@@ -108,18 +95,14 @@
             {
               "id": "default",
               "key": "favorable-clause",
-              "text": "他把纸铺在厨房桌上，手指顺着被咖啡渍晕开的行尾移动，念到“限十四日内”时停住，又翻到背面找见一行更浓的墨水：期限自通告之日起算。{neighbor}听完拍了下桌沿，说那还来得及。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{subjectPronoun}把纸铺在厨房桌上，手指顺着被咖啡渍晕开的行尾移动，念到“限十四日内”时停住，又翻到背面找见一行更浓的墨水：期限自通告之日起算。{neighbor}听完拍了下桌沿，说那还来得及。",
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "favorable-clause",
               "text": "楼梯间的灯很暗，{subject}干脆蹲下来，把契据凑向门口透进来的天光，一个词一个词地读。读到摊派只写“顶层住户”时，{neighbor}伸手把那行字摸了一遍，像要确认它是真的，然后转身去敲隔壁的门。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             }
           ]
         },
@@ -153,18 +136,14 @@
             {
               "id": "default",
               "key": "missed-deadline",
-              "text": "他把“八日”看成了“六日”，念的时候还很笃定。{neighbor}第二天中午回来，把退回来的纸往他面前一放，只说了一句“窗口说昨天就截止了”，便弯腰去捡掉在地上的纽扣。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subjectPronoun}把“八日”看成了“六日”，念的时候还很笃定。{neighbor}第二天中午回来，把退回来的纸往{subjectPronoun}面前一放，只说了一句“窗口说昨天就截止了”，便弯腰去捡掉在地上的纽扣。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "missed-deadline",
               "text": "契据上的日期被水渍泡得发胀，{subject}眯着眼辨认，说最迟是六日。{neighbor}七号一早出门，回来时鞋底沾着市政厅院里的泥，手里那张表上盖着“逾期”的蓝章，誊写员收了她四十赫勒。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -198,37 +177,25 @@
             {
               "id": "default",
               "key": "wait-for-clerk",
-              "text": "他把那条小字描了三遍，越描越觉得“烟道”两个字像又不像。{neighbor}坐在门槛上等他的准话，他把纸条折起来说，还是等穿制服的人来看吧。三天后书记员来了，只说了一句“按纸面办”。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subjectPronoun}把那条小字描了三遍，越描越觉得“烟道”两个字像又不像。{neighbor}坐在门槛上等{subjectPronoun}的准话，{subjectPronoun}把纸条折起来说，还是等穿制服的人来看吧。三天后书记员来了，只说了一句“按纸面办”。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "wait-for-clerk",
-              "text": "厨房里飘着煮土豆的汽，{subject}把契据推远又拉近，最后承认自己没把握。{neighbor}把纸收回围裙口袋，说那就等市政厅的人。期限到的那天她数出硬币，一枚一枚排在桌上，他站在旁边没说话。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "厨房里飘着煮土豆的汽，{subject}把契据推远又拉近，最后承认自己没把握。{neighbor}把纸收回围裙口袋，说那就等市政厅的人。期限到的那天她数出硬币，一枚一枚排在桌上，{subjectPronoun}站在旁边没说话。",
+              "tone": ["matter-of-fact"]
             }
           ]
         }
       ],
       "task": {
         "domain": "knowledge",
-        "goals": [
-          "knowledge",
-          "status"
-        ],
-        "needs": [
-          "knowledge",
-          "autonomy"
-        ],
+        "goals": ["knowledge", "status"],
+        "needs": ["knowledge", "autonomy"],
         "baseUtility": 1.25,
         "risk": 0.1,
-        "skills": [
-          "literacy"
-        ],
+        "skills": ["literacy"],
         "capability": "literacy"
       }
     },
@@ -307,18 +274,14 @@
             {
               "id": "default",
               "key": "overcharged-week",
-              "text": "他把账本横过来，一周一周地画竖线，嘴里念着“这周还了，这周还了”。算到第七根线时他停住，把铅笔尖点在店主多写的那一格上。{neighbor}凑过来看，先是不信，随后把账本推到柜台里面，声音不高但很稳。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{subjectPronoun}把账本横过来，一周一周地画竖线，嘴里念着“这周还了，这周还了”。算到第七根线时{subjectPronoun}停住，把铅笔尖点在店主多写的那一格上。{neighbor}凑过来看，先是不信，随后把账本推到柜台里面，声音不高但很稳。",
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "overcharged-week",
-              "text": "杂货店里一股酸菜和煤油混着的味道。{subject}没动秤上的东西，只借了张包糖的旧报纸，把三次还款的日期抄下来，再用指节敲着柜台算。店主起先摆手，等他把错处说明白，才从钱匣里数出十八赫勒。",
-              "tone": [
-                "dry"
-              ]
+              "text": "杂货店里一股酸菜和煤油混着的味道。{subject}没动秤上的东西，只借了张包糖的旧报纸，把三次还款的日期抄下来，再用指节敲着柜台算。店主起先摆手，等{subjectPronoun}把错处说明白，才从钱匣里数出十八赫勒。",
+              "tone": ["dry"]
             }
           ]
         },
@@ -352,18 +315,14 @@
             {
               "id": "default",
               "key": "shopkeeper-refuses",
-              "text": "店主把铅笔从{subject}手里抽回去，在账本封面上敲了两下，说这条街上都是这么算的。{neighbor}看看他又看看柜台，最后从手帕里数出硬币。出门时她把找零的赫勒一枚枚塞进口袋，指甲刮着布面。",
-              "tone": [
-                "dry"
-              ]
+              "text": "店主把铅笔从{subject}手里抽回去，在账本封面上敲了两下，说这条街上都是这么算的。{neighbor}看看{subjectPronoun}又看看柜台，最后从手帕里数出硬币。出门时她把找零的赫勒一枚枚塞进口袋，指甲刮着布面。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "shopkeeper-refuses",
-              "text": "算到第三遍，{subject}把报纸上那几行数字指给店主看，店主却转身去招呼别的客人。{neighbor}拉了拉他的袖子，低声说算了，下星期还要来买面包。她付了钱，出门时把门帘掀得很用力。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "算到第三遍，{subject}把报纸上那几行数字指给店主看，店主却转身去招呼别的客人。{neighbor}拉了拉{subjectPronoun}的袖子，低声说算了，下星期还要来买面包。她付了钱，出门时把门帘掀得很用力。",
+              "tone": ["matter-of-fact"]
             }
           ]
         },
@@ -399,36 +358,24 @@
               "id": "default",
               "key": "installment-plan",
               "text": "{subject}把账本翻到封底，用店主那支秃铅笔写下“每周六还，共六次”，又让双方各按一个指印。{neighbor}盯着那行字看，嘴唇动了动，像是在心里排每周的菜钱。店主收账本时哼了一声，没再提利息。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "installment-plan",
-              "text": "柜台上的煤油灯结了灯花，{subject}把灯芯挑亮，指着账本说这样一次算清谁都上火。他提议分六周，每周的数目小到{neighbor}点头。店主起先不肯，后来看见门口又进来人，才摆摆手说按指印来吧。",
-              "tone": [
-                "dry"
-              ]
+              "text": "柜台上的煤油灯结了灯花，{subject}把灯芯挑亮，指着账本说这样一次算清谁都上火。{subjectPronoun}提议分六周，每周的数目小到{neighbor}点头。店主起先不肯，后来看见门口又进来人，才摆摆手说按指印来吧。",
+              "tone": ["dry"]
             }
           ]
         }
       ],
       "task": {
         "domain": "work",
-        "goals": [
-          "work",
-          "status"
-        ],
-        "needs": [
-          "cash",
-          "autonomy"
-        ],
+        "goals": ["work", "status"],
+        "needs": ["cash", "autonomy"],
         "baseUtility": 1.3,
         "risk": 0.15,
-        "skills": [
-          "numeracy"
-        ],
+        "skills": ["numeracy"],
         "capability": "numeracy"
       }
     },
@@ -510,25 +457,21 @@
             {
               "id": "default",
               "key": "rota-agreed",
-              "text": "水龙头还在滴水，{subject}蹲下来用粉笔在门框上画了两格，写单周、双周。{firstParty}和{secondParty}各站一边，起先都不看对方，等他把钥匙的事说清，{secondParty}先嗯了一声，{firstParty}才跟着点头。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "水龙头还在滴水，{subject}蹲下来用粉笔在门框上画了两格，写单周、双周。{firstParty}和{secondParty}各站一边，起先都不看对方，等{subjectPronoun}把钥匙的事说清，{secondParty}先嗯了一声，{firstParty}才跟着点头。",
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "rota-agreed",
-              "text": "他把两家的孩子也叫到跟前，说水桶再藏一次就谁家都不用。{firstParty}把手里那把小钥匙在围裙上蹭了蹭，递给{secondParty}看，说各留一把也好。炉台上的灰被两双手一起抹掉，谁也没再多说。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subjectPronoun}把两家的孩子也叫到跟前，说水桶再藏一次就谁家都不用。{firstParty}把手里那把小钥匙在围裙上蹭了蹭，递给{secondParty}看，说各留一把也好。炉台上的灰被两双手一起抹掉，谁也没再多说。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "renewed-quarrel",
           "weight": 30,
-          "text": "两家人当面答应得好好的，过了几天又为一块掉在炉边的煤渣吵起来。{firstParty}说{secondParty}家扫得不干净，{secondParty}说钥匙给早了。{subject}再去劝，两家都只让他评理，不肯退半步。",
+          "text": "两家人当面答应得好好的，过了几天又为一块掉在炉边的煤渣吵起来。{firstParty}说{secondParty}家扫得不干净，{secondParty}说钥匙给早了。{subject}再去劝，两家都只让{subjectPronoun}评理，不肯退半步。",
           "effects": [
             {
               "type": "mood",
@@ -557,25 +500,21 @@
             {
               "id": "default",
               "key": "renewed-quarrel",
-              "text": "那块煤渣还躺在炉脚边，{firstParty}用鞋尖把它拨到{secondParty}家门口。{subject}听见声音从屋里出来，手里还拿着没放下的汤勺。两家同时开口，各说各的理，他站在中间，汤勺慢慢垂了下去。",
-              "tone": [
-                "dry"
-              ]
+              "text": "那块煤渣还躺在炉脚边，{firstParty}用鞋尖把它拨到{secondParty}家门口。{subject}听见声音从屋里出来，手里还拿着没放下的汤勺。两家同时开口，各说各的理，{subjectPronoun}站在中间，汤勺慢慢垂了下去。",
+              "tone": ["dry"]
             },
             {
               "id": "alt",
               "key": "renewed-quarrel",
               "text": "才安静了三天，走廊里又响起钥匙开锁的急响。{secondParty}说单周双周的纸条被谁撕了一角，{firstParty}说风刮的。{subject}把纸条捡起来拼，两家人已经隔着水龙头站定了。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             }
           ]
         },
         {
           "id": "one-family-leaves",
           "weight": 15,
-          "text": "调解没成，{firstParty}家开始托人找房子，说宁可多付两克朗房租也不共用炉子。月底他们搬走时只交回一把钥匙，厨房里那半面墙空出来，{secondParty}把水桶拎回自家门口，脸上也不见高兴。",
+          "text": "调解没成，{firstParty}家开始托人找房子，说宁可多付两克朗房租也不共用炉子。月底{subjectPronoun}们搬走时只交回一把钥匙，厨房里那半面墙空出来，{secondParty}把水桶拎回自家门口，脸上也不见高兴。",
           "effects": [
             {
               "type": "relation_end",
@@ -602,36 +541,24 @@
               "id": "default",
               "key": "one-family-leaves",
               "text": "搬家那天{firstParty}把钥匙放在窗台上，钥匙环上还系着一小截红线。{subject}帮着抬了一只箱子下楼，箱角磕在楼梯扶手上，掉下几片干墙皮。{secondParty}站在厨房门口看着，没上前搭手。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "one-family-leaves",
               "text": "月底的院子安静得反常，孩子也不追跑了。{firstParty}最后出来时手里提着一只水桶，走到门口又回头看了一眼水龙头，才把桶递给{secondParty}，说留着用吧。{subject}站在楼梯口，没找到该说的话。",
-              "tone": [
-                "dry"
-              ]
+              "tone": ["dry"]
             }
           ]
         }
       ],
       "task": {
         "domain": "social",
-        "goals": [
-          "belonging",
-          "family"
-        ],
-        "needs": [
-          "belonging",
-          "safety"
-        ],
+        "goals": ["belonging", "family"],
+        "needs": ["belonging", "safety"],
         "baseUtility": 1.2,
         "risk": 0.2,
-        "skills": [
-          "social"
-        ],
+        "skills": ["social"],
         "capability": "social_insight"
       }
     },
@@ -652,10 +579,7 @@
         },
         {
           "kind": "placeKind",
-          "in": [
-            "home",
-            "factory"
-          ]
+          "in": ["home", "factory"]
         }
       ],
       "roles": [
@@ -713,18 +637,14 @@
             {
               "id": "default",
               "key": "bearing-fixed",
-              "text": "铺子里全是机油和熨布的气味。{subject}把轴套搁在膝上，锉刀一下一下地走，铁屑落在围裙上。{worker}在旁边扶着机头，等他把飞轮装回去，两个人一起听那声音从刮擦变成均匀的嗒嗒。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "铺子里全是机油和熨布的气味。{subject}把轴套搁在膝上，锉刀一下一下地走，铁屑落在围裙上。{worker}在旁边扶着机头，等{subjectPronoun}把飞轮装回去，两个人一起听那声音从刮擦变成均匀的嗒嗒。",
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "bearing-fixed",
-              "text": "他先转半圈，停下来用指腹摸轴颈，再转半圈。{worker}递来一小团棉纱，他把旧油泥擦净，发现磨痕只在一边，便拿锉刀轻轻修过去。装好后他踩了两下踏板，飞轮带着皮带转起来，像有人在屋里轻轻拍手。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subjectPronoun}先转半圈，停下来用指腹摸轴颈，再转半圈。{worker}递来一小团棉纱，{subjectPronoun}把旧油泥擦净，发现磨痕只在一边，便拿锉刀轻轻修过去。装好后{subjectPronoun}踩了两下踏板，飞轮带着皮带转起来，像有人在屋里轻轻拍手。",
+              "tone": ["dry"]
             }
           ]
         },
@@ -760,24 +680,20 @@
               "id": "default",
               "key": "temporary-fix",
               "text": "皮子垫进去时{subject}就有些犹豫，但{worker}已经把料子递到针下。机器转了一下午，第二天清早又发出那种刮擦声。技师蹲下看了看，说轴偏了，临时垫的东西顶不了多久。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "temporary-fix",
-              "text": "他把螺丝挨个紧了一遍，手背蹭上黑油。{employer}站在门口问能不能撑到星期天，他点了点头。第二天机器又停住时，店铺还没开门，{worker}在门口跺脚，他蹲在踏车边，一时没再伸手。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subjectPronoun}把螺丝挨个紧了一遍，手背蹭上黑油。{employer}站在门口问能不能撑到星期天，{subjectPronoun}点了点头。第二天机器又停住时，店铺还没开门，{worker}在门口跺脚，{subjectPronoun}蹲在踏车边，一时没再伸手。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "watch-and-learn",
           "weight": 20,
-          "text": "{subject}没敢自己拆，请技师来修，自己蹲在旁边递扳手、接油盘，把拆下的零件按顺序摆在报纸上，每一步都记在纸条背面。修完他照着纸条复述了一遍，{worker}说下回可以先拆到轴套为止。",
+          "text": "{subject}没敢自己拆，请技师来修，自己蹲在旁边递扳手、接油盘，把拆下的零件按顺序摆在报纸上，每一步都记在纸条背面。修完{subjectPronoun}照着纸条复述了一遍，{worker}说下回可以先拆到轴套为止。",
           "effects": [
             {
               "type": "skill",
@@ -805,37 +721,25 @@
             {
               "id": "default",
               "key": "watch-and-learn",
-              "text": "技师把零件一个一个卸下来，{subject}就跟着一个一个摆到报纸上，手指点着位置记。油盘快满时他端去倒掉，回来正赶上装机，便蹲得更近，看技师怎样把轴套敲回原位。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "技师把零件一个一个卸下来，{subject}就跟着一个一个摆到报纸上，手指点着位置记。油盘快满时{subjectPronoun}端去倒掉，回来正赶上装机，便蹲得更近，看技师怎样把轴套敲回原位。",
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "watch-and-learn",
-              "text": "纸条上被他画满了圈和箭头，{worker}凑过来看，说这像小孩子画的马路。{subject}没笑，只问轴套那头为什么敲三下。技师走后他把纸条叠好塞进内袋，又在踏车旁站了一会儿才走。",
-              "tone": [
-                "dry"
-              ]
+              "text": "纸条上被{subjectPronoun}画满了圈和箭头，{worker}凑过来看，说这像小孩子画的马路。{subject}没笑，只问轴套那头为什么敲三下。技师走后{subjectPronoun}把纸条叠好塞进内袋，又在踏车旁站了一会儿才走。",
+              "tone": ["dry"]
             }
           ]
         }
       ],
       "task": {
         "domain": "work",
-        "goals": [
-          "work",
-          "status"
-        ],
-        "needs": [
-          "cash",
-          "status"
-        ],
+        "goals": ["work", "status"],
+        "needs": ["cash", "status"],
         "baseUtility": 1.35,
         "risk": 0.25,
-        "skills": [
-          "craft"
-        ],
+        "skills": ["craft"],
         "capability": "craft_affinity"
       }
     },
@@ -913,25 +817,21 @@
             {
               "id": "default",
               "key": "arrived-at-sanatorium",
-              "text": "第二个站台上风很大，{subject}把围巾又绕了一圈，坐在长椅上数着行李。{neighbor}把箱子换到另一只手，说还赶得上。窄轨车开动时他靠着车窗，看树往后走，胸口那股紧劲慢慢松开。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "第二个站台上风很大，{subject}把围巾又绕了一圈，坐在长椅上数着行李。{neighbor}把箱子换到另一只手，说还赶得上。窄轨车开动时{subjectPronoun}靠着车窗，看树往后走，胸口那股紧劲慢慢松开。",
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "arrived-at-sanatorium",
-              "text": "每次换车他都先找墙根坐下，把药瓶从内袋摸出来看一眼再放回去。{neighbor}没催他，只把车票按站次排好，一张一张递过去。松树林的气味从车窗灌进来时，他第一次把身子坐直了。",
-              "tone": [
-                "dry"
-              ]
+              "text": "每次换车{subjectPronoun}都先找墙根坐下，把药瓶从内袋摸出来看一眼再放回去。{neighbor}没催{subjectPronoun}，只把车票按站次排好，一张一张递过去。松树林的气味从车窗灌进来时，{subjectPronoun}第一次把身子坐直了。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "collapsed-at-transfer",
           "weight": 30,
-          "text": "{subject}在第二次换车时胸口一紧，眼前发黑，倒在站台的石板上。站务员把他扶到候车室，喂了水，又叫来一辆出租马车送回维也纳。疗养的事只能推到明年，车票退了一半的钱。",
+          "text": "{subject}在第二次换车时胸口一紧，眼前发黑，倒在站台的石板上。站务员把{subjectPronoun}扶到候车室，喂了水，又叫来一辆出租马车送回维也纳。疗养的事只能推到明年，车票退了一半的钱。",
           "effects": [
             {
               "type": "health",
@@ -957,18 +857,14 @@
             {
               "id": "default",
               "key": "collapsed-at-transfer",
-              "text": "{subject}记得自己是去够行李架上的箱子，接着石板地就到了眼前。醒来时后脑勺垫着一件叠起来的外套，{neighbor}蹲在旁边拍他的脸。出租车夫把箱子绑在车顶时，他还在冒冷汗。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{subject}记得自己是去够行李架上的箱子，接着石板地就到了眼前。醒来时后脑勺垫着一件叠起来的外套，{neighbor}蹲在旁边拍{subjectPronoun}的脸。出租车夫把箱子绑在车顶时，{subjectPronoun}还在冒冷汗。",
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "collapsed-at-transfer",
-              "text": "站台上的人围了半圈，有人递水，有人问要不要叫医生。{subject}能听见声音，却觉得隔着一层布。{neighbor}把箱子放在他脚边，跟站务员说了好一会儿，最后马车来的时候，他扶着车门才站直。",
-              "tone": [
-                "dry"
-              ]
+              "text": "站台上的人围了半圈，有人递水，有人问要不要叫医生。{subject}能听见声音，却觉得隔着一层布。{neighbor}把箱子放在{subjectPronoun}脚边，跟站务员说了好一会儿，最后马车来的时候，{subjectPronoun}扶着车门才站直。",
+              "tone": ["dry"]
             }
           ]
         },
@@ -1003,32 +899,22 @@
             {
               "id": "default",
               "key": "cancelled-for-stove",
-              "text": "他站在售票厅里，看着前面的人把票递进去又拿回来。{neighbor}在门口等着，他把车票折好放进内袋，说还是不去了。回家路上他买了包药粉，又把钥匙多配了一把交给{neighbor}。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "{subjectPronoun}站在售票厅里，看着前面的人把票递进去又拿回来。{neighbor}在门口等着，{subjectPronoun}把车票折好放进内袋，说还是不去了。回家路上{subjectPronoun}买了包药粉，又把钥匙多配了一把交给{neighbor}。",
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "cancelled-for-stove",
-              "text": "炉子的事他反复想了三遍：煤球谁添，烟囱什么时候扫，钥匙交给谁。退票窗口的铃响了一声，他转身出了门。门诊的医生说药粉要按时吃，他点头，回家把药包放在炉台上最显眼的地方。",
-              "tone": [
-                "dry"
-              ]
+              "text": "炉子的事{subjectPronoun}反复想了三遍：煤球谁添，烟囱什么时候扫，钥匙交给谁。退票窗口的铃响了一声，{subjectPronoun}转身出了门。门诊的医生说药粉要按时吃，{subjectPronoun}点头，回家把药包放在炉台上最显眼的地方。",
+              "tone": ["dry"]
             }
           ]
         }
       ],
       "task": {
         "domain": "health",
-        "goals": [
-          "survival",
-          "care"
-        ],
-        "needs": [
-          "health",
-          "safety"
-        ],
+        "goals": ["survival", "care"],
+        "needs": ["health", "safety"],
         "baseUtility": 1.1,
         "risk": 0.4,
         "skills": [],
@@ -1082,7 +968,7 @@
         {
           "id": "three-nights",
           "weight": 55,
-          "text": "{subject}在隔壁守了三夜，按时喂药，用冷布擦病人的额头，把汗湿的床单换下来搭在椅背上。第四天早上烧退了，{parent}从洗衣房回来，把这一周的工钱分了一半给他，一共一克朗六十赫勒。",
+          "text": "{subject}在隔壁守了三夜，按时喂药，用冷布擦病人的额头，把汗湿的床单换下来搭在椅背上。第四天早上烧退了，{parent}从洗衣房回来，把这一周的工钱分了一半给{subjectPronoun}，一共一克朗六十赫勒。",
           "effects": [
             {
               "type": "cash",
@@ -1110,25 +996,21 @@
             {
               "id": "default",
               "key": "three-nights",
-              "text": "走廊的水龙头整夜滴着，{subject}就着那声音给病人换额头上的布。第二夜病人要水，他扶起他的时候，能摸到后背的汗把衬衣浸透。第四天{parent}推门进来，先看床，再看他，然后从手帕里数钱。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "走廊的水龙头整夜滴着，{subject}就着那声音给病人换额头上的布。第二夜病人要水，{subjectPronoun}扶起{subjectPronoun}的时候，能摸到后背的汗把衬衣浸透。第四天{parent}推门进来，先看床，再看{subjectPronoun}，然后从手帕里数钱。",
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "three-nights",
-              "text": "他把药粉倒进小勺，兑上温水，等病人咽下去才坐回椅子。椅背硌着脊梁，他也没动。天亮时窗外的送奶车叮当响，病人说想喝一口热汤，{parent}进门时正看见他端着碗吹气。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subjectPronoun}把药粉倒进小勺，兑上温水，等病人咽下去才坐回椅子。椅背硌着脊梁，{subjectPronoun}也没动。天亮时窗外的送奶车叮当响，病人说想喝一口热汤，{parent}进门时正看见{subjectPronoun}端着碗吹气。",
+              "tone": ["dry"]
             }
           ]
         },
         {
           "id": "caregiver-falls-ill",
           "weight": 30,
-          "text": "病人退烧了，{subject}自己却开始咳嗽，夜里额头滚烫。他怕传给自家孩子，只好把夜班交给另一个邻居，回家躺了两天。{parent}过意不去，端来一锅汤和四个土豆，在门口站了一会儿才走。",
+          "text": "病人退烧了，{subject}自己却开始咳嗽，夜里额头滚烫。{subjectPronoun}怕传给自家孩子，只好把夜班交给另一个邻居，回家躺了两天。{parent}过意不去，端来一锅汤和四个土豆，在门口站了一会儿才走。",
           "effects": [
             {
               "type": "health",
@@ -1155,18 +1037,14 @@
             {
               "id": "default",
               "key": "caregiver-falls-ill",
-              "text": "咳嗽是第三天下午开始的，他起先以为是走廊里的灰。到了夜里，他摸着自家床沿才觉得不对，额头烫，膝盖发软。第二天他把钥匙从窗口递出去，说今夜换人守，声音哑得自己都陌生。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "咳嗽是第三天下午开始的，{subjectPronoun}起先以为是走廊里的灰。到了夜里，{subjectPronoun}摸着自家床沿才觉得不对，额头烫，膝盖发软。第二天{subjectPronoun}把钥匙从窗口递出去，说今夜换人守，声音哑得自己都陌生。",
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "caregiver-falls-ill",
-              "text": "他回家倒头就睡，醒来时窗帘缝里已经是白天的光。{parent}把汤放在门槛上，没进门，只隔着门问他家里还有没有煤球。他说有，嗓子却像被砂纸擦过，话没说完就咳弯了腰。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subjectPronoun}回家倒头就睡，醒来时窗帘缝里已经是白天的光。{parent}把汤放在门槛上，没进门，只隔着门问{subjectPronoun}家里还有没有煤球。{subjectPronoun}说有，嗓子却像被砂纸擦过，话没说完就咳弯了腰。",
+              "tone": ["dry"]
             }
           ]
         },
@@ -1201,37 +1079,25 @@
             {
               "id": "default",
               "key": "fetch-doctor",
-              "text": "病人的指甲在床单上抓出细响，{subject}把耳朵凑近，听见胸口里拉风箱似的声。他摸黑下楼，街面的石板冻得发白，医生家的门铃拽了三下才有人应。回来时他手里攥着药包，指头已经僵了。",
-              "tone": [
-                "matter-of-fact"
-              ]
+              "text": "病人的指甲在床单上抓出细响，{subject}把耳朵凑近，听见胸口里拉风箱似的声。{subjectPronoun}摸黑下楼，街面的石板冻得发白，医生家的门铃拽了三下才有人应。回来时{subjectPronoun}手里攥着药包，指头已经僵了。",
+              "tone": ["matter-of-fact"]
             },
             {
               "id": "alt",
               "key": "fetch-doctor",
-              "text": "他顾不上穿好外套，只把围巾在下巴底下一塞就出了门。医生提着灯进屋，他站在床边举着灯，看病人的肩膀怎样一上一下。药灌下去后，屋里只剩炉子里煤渣塌落的轻响。",
-              "tone": [
-                "dry"
-              ]
+              "text": "{subjectPronoun}顾不上穿好外套，只把围巾在下巴底下一塞就出了门。医生提着灯进屋，{subjectPronoun}站在床边举着灯，看病人的肩膀怎样一上一下。药灌下去后，屋里只剩炉子里煤渣塌落的轻响。",
+              "tone": ["dry"]
             }
           ]
         }
       ],
       "task": {
         "domain": "health",
-        "goals": [
-          "care",
-          "survival"
-        ],
-        "needs": [
-          "health",
-          "care"
-        ],
+        "goals": ["care", "survival"],
+        "needs": ["health", "care"],
         "baseUtility": 1.25,
         "risk": 0.2,
-        "skills": [
-          "social"
-        ],
+        "skills": ["social"],
         "capability": "health"
       }
     }

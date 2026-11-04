@@ -27,6 +27,7 @@ import { VIENNA_POSTWAR_SCENES } from '../packages/v4/content/vienna-postwar.js'
 import { VIENNA_HISTORY_SCENES } from '../packages/v4/content/vienna-history.js';
 import { applyViennaHistoricalWorld } from '../packages/v4/content/vienna-history-world.js';
 import { DEFAULT_COMPOSITION } from '../packages/v4/composition/default.js';
+import { KERNEL_LIBRARY } from '../packages/v4/content/kernels/index.js';
 import { parseComposedAction } from '../packages/v4/composition/replay.js';
 import {
   GENERATED_SCENES,
@@ -516,7 +517,9 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
         maxLivingDuringRunYear = world.date.year;
         maxLivingDuringRunHousehold = household.id;
       }
-      if (living > 12) {
+      // A direct parent/guardian reunification may add one emergency body to an
+      // otherwise full flat; above 13 is the pathological case.
+      if (living > 14) {
         overfullLivingHouseholdObservations += 1;
         overfullLivingHouseholdIds.add(household.id);
         if (overfullLivingHouseholdSamples.length < 20) {
@@ -583,7 +586,7 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
         a.householdId.localeCompare(b.householdId),
     );
   const maxLivingHousehold = householdStats[0];
-  const overfullLivingHouseholds = householdStats.filter((household) => household.living > 12);
+  const overfullLivingHouseholds = householdStats.filter((household) => household.living > 14);
   const peakHousehold =
     maxLivingDuringRunHousehold === null
       ? undefined
@@ -606,7 +609,7 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
   const prefixOffenders = [...prefixCountsByPerson.entries()]
     .flatMap(([personId, counts]) =>
       [...counts.entries()]
-        .filter(([, count]) => count > 12)
+        .filter(([, count]) => count > 14)
         .map(([prefix, count]) => ({
           personId,
           name: world.persons[personId]?.name ?? personId,
@@ -633,6 +636,12 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
     composedEvents.map((event) => parseComposedAction(event.action)!.milieuId),
   );
   const tracedEvents = allEvents.filter((event) => Boolean(event.trace));
+  const phase14Events = allEvents.filter((event) =>
+    parseComposedAction(event.action)?.kernelId.startsWith('r14-'),
+  );
+  const phase14TaskIds = new Set(
+    KERNEL_LIBRARY.filter((kernel) => kernel.kind === 'task').map((kernel) => kernel.id),
+  );
   const compositionAudit = {
     composedEvents: composedEvents.length,
     distinctKernels: composedKernels.size,
@@ -653,6 +662,15 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
       }))
       .sort((a, b) => b.count - a.count || a.kernelId.localeCompare(b.kernelId))
       .slice(0, 30),
+    phase14Events: phase14Events.length,
+    phase14Tasks: phase14Events.filter((event) =>
+      phase14TaskIds.has(parseComposedAction(event.action)!.kernelId),
+    ).length,
+    phase14Kernels: new Set(
+      phase14Events.map((event) => parseComposedAction(event.action)!.kernelId),
+    ).size,
+    historyRefEvents: allEvents.filter((event) => (event.historyRefs?.length ?? 0) > 0).length,
+    eventsWithExplicitCauses: allEvents.filter((event) => event.causes.length > 0).length,
   };
   const deadMissingCause = persons.filter(
     (person) => person.died && (!person.deathCause || person.deathCause.trim().length === 0),

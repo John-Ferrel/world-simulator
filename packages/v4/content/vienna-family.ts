@@ -788,8 +788,8 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
     stage: 'adulthood',
     ageWindow: { min: 18, max: 40 },
     subjectProvenance: ['birth', 'initial', 'materialized_population'],
-    rate: 0.12,
-    cooldownYears: 4,
+    rate: 0.04,
+    cooldownYears: 10,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 18, maxAge: 40, sex: 'female' },
       { key: 'partner', kind: 'partner', required: true, minAge: 18, maxAge: 40, sex: 'female' },

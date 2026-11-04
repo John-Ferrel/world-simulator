@@ -150,6 +150,11 @@ describe('family formation content and engine', () => {
         const member = world.persons[memberId];
         return Boolean(member && !member.died && world.date.year - member.born.year >= 18);
       });
+      if (!hasAdult) {
+        const p = child.parentIds.map((id) => world.persons[id]).find((x) => x && !x.died && world.date.year - x.born.year >= 18);
+        const ph = p ? world.households[p.householdId] : undefined;
+        console.log('DBG child', child.id, 'hh', child.householdId, 'guardian', p?.id, p?.householdId, 'ph ages', ph?.memberIds.map((id) => world.date.year - world.persons[id]!.born.year), 'ph adults', ph?.memberIds.filter((id) => world.date.year - world.persons[id]!.born.year >= 18).length, 'minor hh cap', household.memberIds.length);
+      }
       expect(hasAdult).toBe(true);
     }
     const partner = Object.values(world.relations).find(

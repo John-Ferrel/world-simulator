@@ -37,6 +37,7 @@ export type RoleDecl =
         occupation?: string;
         organizationKind?: Organization['kind'];
         historicalId?: string;
+        sharedHistoryTag?: string;
         required?: boolean;
       },
     ];
@@ -76,6 +77,16 @@ export type Fx = {
   raw?: EventEffect[];
 };
 
+export type FollowupSpec =
+  | string
+  | {
+      sceneId: string;
+      subjectRole?: string;
+      /** Defaults to next year. */
+      delayMonths?: number;
+      source?: 'followup' | 'fact' | 'action';
+    };
+
 export type OutcomeSpec = {
   id: string;
   w?: number;
@@ -84,6 +95,8 @@ export type OutcomeSpec = {
   /** Structured motive/conflict/response used by Incident Trace. */
   trace?: { motive?: string; conflict?: string; response?: string };
   when?: KernelVariantWhen;
+  /** Kernel ids to schedule after this outcome. */
+  followup?: FollowupSpec | FollowupSpec[];
   /** One shorthand bundle, or several applied in order. */
   fx: Fx | Fx[];
 };
@@ -318,6 +331,15 @@ export function compileEffect(fx: Fx, reason: string): EventEffect[] {
 function compileOutcome(spec: OutcomeSpec, fallbackReason: string): KernelOutcome {
   const bundles = Array.isArray(spec.fx) ? spec.fx : [spec.fx];
   const effects = bundles.flatMap((fx) => compileEffect(fx, fallbackReason));
+  const followups =
+    spec.followup === undefined
+      ? []
+      : Array.isArray(spec.followup)
+        ? spec.followup
+        : [spec.followup];
+  const followupTargets = followups.map((entry) =>
+    typeof entry === 'string' ? { sceneId: entry } : { ...entry },
+  );
   return {
     id: spec.id,
     weight: spec.w ?? 1,
@@ -326,6 +348,7 @@ function compileOutcome(spec: OutcomeSpec, fallbackReason: string): KernelOutcom
     ...(spec.significance !== undefined ? { significance: spec.significance } : {}),
     ...(spec.trace ? { trace: spec.trace } : {}),
     ...(spec.when ? { when: spec.when } : {}),
+    ...(followupTargets.length > 0 ? { followupTargets } : {}),
   };
 }
 

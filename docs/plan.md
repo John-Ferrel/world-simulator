@@ -175,7 +175,20 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - 人口：88 年 **375 births / 449 deaths / 757 persons / 306 alive**；Phase 12 为 100 births / 482 persons。出生路径不再产生“陌生父亲”，same-sex/non-cohabiting 死锁已处理；但仍低于替代水平并依赖 materialization。
 - 文学：首轮 10/20 (mean 30.55)，最终 15 样本 **12/15 (80%)，mean 33.67**，刚好达到 75% 门槛、零余量；剩余问题主要是 base content 的 cast/POV 纪律和少量效果可见性。
 - 机制：修复 subject cache、stranger father、same-sex/divorce deadlock、zero-effect commit、cash sign、post-death participant；最终 playtest 0 unresolved token、0 post-death subject/participant（death event 除外）。仍有 20,472 blocked casts、304 unresolved_effect_ref、33 invalid_relation。
-- 性能：20k **3,611 ms/年** composed-only；原 benchmark **4,475 ms/年**；heap 378–465 MB，<5s 目标保持。
+- 性能：20k **2,757 ms/年** composed-only；原 benchmark **3,631 ms/年**；heap 378–465 MB，<5s 目标保持。
 - 容量：3,000 synthetic profiles / **1,174,428 eligible person×scene×outcome** situations。
 - 验证：`pnpm test` 83 files/481 pass/36 skip；v4 34 files/201 pass；build 3.25s；e2e 1 pass；截图 `docs/v4/phase-13-browser.png`、`phase-13-incident-trace.png`；五段人生 `docs/v4/phase-13-lives.md`。
 - 未完成：文学仅压线（15 样本）、出生仍低于死亡、blocked casts 很高、无生产 DB/API 规模验证、无运行时 LLM 叙事、无多城市 world pack。完整报告 `docs/v4/phase-13-report.md`。
+
+## Phase 14 当前状态（2026-11-04）
+
+- **因果**：EventFact 语义 tags、`history`/`knowledge`/`project`/`relationHistory`/`hasFlag` 条件、`historyRefs`、`sharedHistoryTag` 选角、composed follow-up（含 Task 目标）、延迟重试、cause 参与者复用。
+- **目标**：Agency goal history + focus；失业/丧亲/战争/迫害/毕业/奖学金/晋升/出版会改变目标；同领域任务持续尝试。
+- **内容**：265 个新 kernel（111 Task + 154 Event）、792 outcomes；193 个 history 条件、196 个 follow-up、129 个 sharedHistoryTag 角色；全库 1,576 kernels / 6,082 outcomes。
+- **机制**：现金符号与债务、雇主组织/工场回退、关系组织代表、未成年家庭修复、伴侣唯一性、参与者去重、关键效果阻断、任务 follow-up、死后参与者修复。最终 88 年 0 未解析模板 token、0 死后主体/参与者事件；残余 79 scheduled expired、30 household_full。
+- **实测**：88 年 35,234 事件，8,266 组合动作（1,064 kernel），634 个 r14 事件（105 kernel）/255 r14 任务；1,488 条显式前因事件、245 条 historyRefs；357 出生 / 464 死亡 / 739 人物 / 273 存活；31,930 不同文本，复用 0.0938。
+- **长期链**：65 年同 seed 审计 647 条显式链接、108 条 ≥3 年链、53 人；70 年独立 seed 另有 1,057/161/73 的审计。
+- **完整人生**：`phase-14-lives.md` 18 段（3 seeds）+ `phase-14-special-life.md` Klara 能力人生 294 事件。
+- **文学**：Critic 阶段样本整生均分 19/30；事件 7/15（46.7%，均分 29.73），composed 5/8，结局 0/2；见 `phase-14-critique.md`，最终 dossier 未重评。
+- **验证**：`pnpm test` 85 files/497 pass/36 skip；v4 36 files/217 pass；build/e2e/性能见报告。
+- **未完成**：文学样本有限、r14 84/265 覆盖、出生低于死亡、10,742 blocked casts、无生产 DB/API 与运行时 LLM 验证。

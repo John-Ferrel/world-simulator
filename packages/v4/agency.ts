@@ -196,8 +196,46 @@ function goalFor(world: WorldState, person: Person, date: WorldDate): PersonAgen
   const process = activeProcesses(world, regionId).find(
     (development) => development.historical?.participants[person.id],
   );
+  // A person is not only a bundle of current needs. Recent committed facts can
+  // change what they are trying to do: a dismissal makes work urgent, a death
+  // turns the household inward, a publication or promotion opens ambition, and
+  // war or persecution can override an ordinary career plan.
+  const nowMonth = monthIndex(date);
+  const recent = world.events
+    .slice(-900)
+    .filter(
+      (event) =>
+        nowMonth - monthIndex(event.date) <= 36 &&
+        (event.subjectId === person.id ||
+          event.participants.some((participant) => participant.personId === person.id)),
+    )
+    .sort((a, b) => monthIndex(b.date) - monthIndex(a.date));
+  const recentTags = new Set(recent.flatMap((event) => event.tags ?? []));
+  const taggedEvent = (tags: string[]) =>
+    recent.find((event) => (event.tags ?? []).some((tag) => tags.includes(tag)));
+  const achievement = taggedEvent([
+    'promotion',
+    'publication',
+    'fame',
+    'public_recognition',
+    'election',
+    'graduation',
+    'scholarship',
+    'business_success',
+    'award',
+  ]);
+  const catastrophe = taggedEvent([
+    'war',
+    'persecution',
+    'repression',
+    'displacement',
+    'exile',
+    'injury',
+  ]);
+  const bereavement = taggedEvent(['death', 'widowhood', 'bereavement']);
   let goal: PersonAgencyGoal = 'work';
   let summary = '维持工作与家庭生活，寻找更稳定的收入。';
+  let reasonEventId: string | undefined;
   if (person.health.vitality < 0.38) {
     goal = 'rest';
     summary = '身体已经吃不消，先减少外出和重活。';
@@ -219,15 +257,33 @@ function goalFor(world: WorldState, person: Person, date: WorldDate): PersonAgen
       goal = 'status';
       summary = `维持${person.historicalIdentity.publicRole}的公开位置，并处理随之而来的关系与责任。`;
     }
+  } else if (bereavement && (person.agency?.goal === 'family' || person.agency?.goal === 'care')) {
+    goal = 'family';
+    summary = '家里刚办过丧事；先把剩下的人照应好，再谈别的。';
+    reasonEventId = bereavement.id;
   } else if (sickKin) {
     goal = 'care';
     summary = `照顾家里的${sickKin.name}，同时想办法补上收入和食物。`;
   } else if (!person.employment || (household?.cash ?? 0) < 3) {
     goal = 'survival';
     summary = '家里现金和食物都不够，先找到工作或向熟人求助。';
+    reasonEventId = recentTags.has('unemployment') ? taggedEvent(['unemployment'])?.id : undefined;
   } else if (dependent) {
     goal = 'family';
     summary = `照顾${dependent.name}，让孩子或老人能撑过这段时间。`;
+  } else if (catastrophe) {
+    goal = 'cause';
+    summary = recentTags.has('war')
+      ? '战争已经进了家门；先保住人，再看能不能做点什么。'
+      : '最近的迫害或镇压改变了日子的走向；不能只当没发生过。';
+    reasonEventId = catastrophe.id;
+  } else if (achievement) {
+    goal = recentTags.has('graduation') || recentTags.has('scholarship') ? 'knowledge' : 'status';
+    summary =
+      recentTags.has('graduation') || recentTags.has('scholarship')
+        ? '刚刚拿到资格或学位；趁热打铁，继续读下去或找更专业的工作。'
+        : '最近终于被人看见；把这份位置和名声守住，再往前一步。';
+    reasonEventId = achievement.id;
   } else if (process) {
     goal = 'cause';
     summary = '继续参与自己已经卷入的历史进程，争取它不要半途消失。';
@@ -254,6 +310,16 @@ function goalFor(world: WorldState, person: Person, date: WorldDate): PersonAgen
     lastAction: current?.lastAction,
     lastActionKind: current?.lastActionKind,
     attempts: current?.attempts ?? 0,
+    focus: current?.focus,
+    history: [
+      ...(current?.history ?? []),
+      {
+        goal,
+        since: { ...date },
+        reason: summary,
+        ...(reasonEventId ? { eventId: reasonEventId } : {}),
+      },
+    ].slice(-8),
   };
 }
 
@@ -1274,12 +1340,6 @@ export function planBottomUpProcess(
     .sort((a, b) => a.id.localeCompare(b.id));
   if (candidates.length === 0) return undefined;
   const organization = candidates[0]!;
-  let hash = 2166136261;
-  for (const char of [world.seed, 'bottom-up', organization.id, date.year].join('|')) {
-    hash ^= char.charCodeAt(0);
-    hash = Math.imul(hash, 16777619);
-  }
-  if (((hash >>> 0) % 1000) / 1000 >= 0.4) return undefined;
   const members = orgMembers(world, organization.id).sort(
     (a, b) =>
       (b.life?.skills.social ?? 0) +

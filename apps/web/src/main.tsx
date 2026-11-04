@@ -124,6 +124,9 @@ type LogEvent = {
   visibility?: 'private' | 'participants' | 'public';
   kind: LogKind;
   major: boolean;
+  causes?: string[];
+  historyRefs?: string[];
+  tags?: string[];
   segments: LogSegment[];
   processRefs?: ProcessRef[];
   trace?: {
@@ -1679,11 +1682,13 @@ function LogPane({
           state={eventModal}
           selectedId={person.id}
           ownerIds={ownerIds}
+          events={events}
           onClose={() => {
             eventRequest.current += 1;
             setEventModal(null);
           }}
           onSelectPerson={selectPerson}
+          onOpenEvent={openEvent}
           onOpenProcess={(id, fallback) => {
             eventRequest.current += 1;
             setEventModal(null);
@@ -2054,15 +2059,19 @@ function EventDossierModal({
   state,
   selectedId,
   ownerIds,
+  events,
   onClose,
   onSelectPerson,
+  onOpenEvent,
   onOpenProcess,
 }: {
   state: { id: string; loading: boolean; event?: LogEvent; error?: string };
   selectedId: string;
   ownerIds: Set<string>;
+  events: LogEvent[];
   onClose: () => void;
   onSelectPerson: (id: string) => void;
+  onOpenEvent: (id: string) => void;
   onOpenProcess: (id: string, fallback?: ProcessRef) => void;
 }) {
   useEffect(() => {
@@ -2081,6 +2090,11 @@ function EventDossierModal({
       : 0;
   const people = event?.people ?? [];
   const processRefs = event?.processRefs ?? [];
+  const causeIds = [...new Set([...(event?.causes ?? []), ...(event?.historyRefs ?? [])])];
+  const causeEvents = causeIds
+    .map((id) => events.find((candidate) => candidate.id === id))
+    .filter((candidate): candidate is LogEvent => Boolean(candidate))
+    .sort((a, b) => a.date.year * 12 + a.date.month - (b.date.year * 12 + b.date.month));
   return (
     <div
       className="modal-overlay"
@@ -2129,6 +2143,26 @@ function EventDossierModal({
                 onSelectPerson={onSelectPerson}
               />
             </p>
+            {causeEvents.length > 0 && (
+              <section className="modal-section prior-events">
+                <h3>前因</h3>
+                <div className="prior-event-list">
+                  {causeEvents.map((cause) => (
+                    <button
+                      key={cause.id}
+                      type="button"
+                      className="prior-event"
+                      onClick={() => onOpenEvent(cause.id)}
+                    >
+                      <span className="prior-event-date">
+                        {cause.date.year}.{String(cause.date.month).padStart(2, '0')}
+                      </span>
+                      <span className="prior-event-title">{readableLogTitle(cause)}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
             {event.trace && (
               <section className="modal-section incident-trace">
                 <h3>因果链</h3>

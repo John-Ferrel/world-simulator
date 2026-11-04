@@ -136,6 +136,10 @@ function personConditions(when: KernelVariantWhen | undefined): SceneCondition[]
       ...(when.health.max !== undefined ? { max: when.health.max } : {}),
     });
   }
+  if (when.hasFlag) conditions.push({ kind: 'hasFlag', flag: when.hasFlag });
+  if (when.history) {
+    conditions.push({ kind: 'history', ...when.history });
+  }
   return conditions;
 }
 
@@ -239,6 +243,12 @@ function compileOutcomes(
       ...(branchConditions.length > 0 ? { conditions: branchConditions } : {}),
       ...(outcome.trace ? { trace: outcome.trace } : {}),
       ...(outcome.significance !== undefined ? { significance: outcome.significance } : {}),
+      ...(outcome.followupIds && outcome.followupIds.length > 0
+        ? { followupSceneIds: [...outcome.followupIds] }
+        : {}),
+      ...(outcome.followupTargets && outcome.followupTargets.length > 0
+        ? { followupTargets: structuredClone(outcome.followupTargets) }
+        : {}),
     });
   }
   return result;
