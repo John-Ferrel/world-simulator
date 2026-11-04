@@ -12,7 +12,7 @@ export const CONTEXT_PROFILES: ContextProfile[] = [
     from: 1900,
     to: 1914,
     tags: ['vienna', 'urban', 'peace', 'industrial', 'schooling'],
-    regionIds: ['region-vienna'],
+    regionIds: ['region-lower-austria', 'region-vienna'],
     places: {
       '@school': 'place-wien-volksschule-leopoldstadt',
       '@workplace': 'place-wien-printshop-winter',
@@ -40,7 +40,7 @@ export const CONTEXT_PROFILES: ContextProfile[] = [
     from: 1900,
     to: 1914,
     tags: ['peace', 'industrial', 'factory'],
-    regionIds: ['region-vienna'],
+    regionIds: ['region-lower-austria', 'region-vienna'],
     places: {
       '@workplace': 'place-wien-printshop-winter',
       '@factory': 'place-wien-printshop-winter',
@@ -63,7 +63,7 @@ export const CONTEXT_PROFILES: ContextProfile[] = [
     from: 1914,
     to: 1918,
     tags: ['war', 'scarcity', 'medical'],
-    regionIds: ['region-vienna'],
+    regionIds: ['region-lower-austria', 'region-vienna'],
     requiresProcessKinds: ['war_mobilization'],
     places: {
       '@workplace': 'place-wien-printshop-winter',
@@ -88,7 +88,7 @@ export const CONTEXT_PROFILES: ContextProfile[] = [
     from: 1919,
     to: 1933,
     tags: ['postwar', 'reform', 'scarcity'],
-    regionIds: ['region-vienna'],
+    regionIds: ['region-lower-austria', 'region-vienna'],
     requiresLegacyKinds: ['war_aftermath'],
     places: {
       '@school': 'place-wien-volksschule-leopoldstadt',
@@ -114,7 +114,7 @@ export const CONTEXT_PROFILES: ContextProfile[] = [
     from: 1925,
     to: 1935,
     tags: ['reform', 'medical', 'schooling'],
-    regionIds: ['region-vienna'],
+    regionIds: ['region-lower-austria', 'region-vienna'],
     requiresLegacyKinds: ['reform'],
     places: {
       '@school': 'place-wien-volksschule-leopoldstadt',
@@ -138,7 +138,7 @@ export const CONTEXT_PROFILES: ContextProfile[] = [
     from: 1920,
     to: 1935,
     tags: ['medical', 'university', 'knowledge'],
-    regionIds: ['region-vienna'],
+    regionIds: ['region-lower-austria', 'region-vienna'],
     places: {
       '@hospital': 'place-wien-allgemeines-krankenhaus',
       '@university': 'place-wien-maedchenlyzeum',
@@ -182,7 +182,7 @@ export const CONTEXT_PROFILES: ContextProfile[] = [
     from: 1919,
     to: 1935,
     tags: ['crisis', 'political', 'scarcity'],
-    regionIds: ['region-vienna'],
+    regionIds: ['region-lower-austria', 'region-vienna'],
     requiresProcessKinds: ['economic_crisis', 'political_repression'],
     places: {
       '@workplace': 'place-wien-printshop-winter',
@@ -228,7 +228,7 @@ export const CONTEXT_PROFILES: ContextProfile[] = [
     from: 1900,
     to: 1935,
     tags: ['university', 'culture', 'schooling'],
-    regionIds: ['region-vienna'],
+    regionIds: ['region-lower-austria', 'region-vienna'],
     places: {
       '@school': 'place-wien-volksschule-leopoldstadt',
       '@university': 'place-wien-maedchenlyzeum',

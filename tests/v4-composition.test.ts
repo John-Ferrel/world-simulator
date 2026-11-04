@@ -60,6 +60,38 @@ function testKernel(overrides: Partial<PlotKernel> = {}): PlotKernel {
 }
 
 describe('Phase 11 context × kernel composition', () => {
+  it('compiles region gates so the same recipe does not automatically follow a person across regions', () => {
+    const kernel = testKernel();
+    const source = createCompositionSource([kernel]);
+    const result = source.compile(structuredClone(VIENNA_1912_SEED), {
+      year: 1912,
+      month: 1,
+    });
+    const viennaScenes = result.scenes.filter((scene) => scene.id.includes('ctx-vienna'));
+    expect(viennaScenes.length).toBeGreaterThan(0);
+    const ruralScenes = result.scenes.filter((scene) => scene.id.includes('klosterneuburg'));
+    for (const scene of viennaScenes) {
+      expect(scene.conditions).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'region',
+            in: expect.arrayContaining(['region-lower-austria']),
+          },
+        ]),
+      );
+    }
+    for (const scene of ruralScenes) {
+      expect(scene.conditions).toEqual(
+        expect.arrayContaining([
+          {
+            kind: 'region',
+            in: ['region-klosterneuburg'],
+          },
+        ]),
+      );
+    }
+  });
+
   it('fails a major outcome with an unresolved effect instead of silently dropping the effect', () => {
     const kernel = testKernel({
       contexts: ['factory'],

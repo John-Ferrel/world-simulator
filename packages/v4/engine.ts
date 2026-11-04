@@ -1161,6 +1161,10 @@ function conditionPasses(
         }
         return true;
       });
+    case 'region':
+      return (
+        Array.isArray(condition.in) && condition.in.includes(regionIdForPerson(world, subject))
+      );
     case 'worldYear':
       if (typeof condition.min === 'number' && date.year < condition.min) return false;
       if (typeof condition.max === 'number' && date.year > condition.max) return false;
@@ -3547,6 +3551,7 @@ function runBottomUpProcesses(context: EngineContext, date: WorldDate): void {
 type IndexedScene = {
   definition: SceneDefinition;
   requiredPlaceKinds?: Set<string>;
+  requiredRegionIds?: Set<string>;
   employment?: boolean;
   education?: string[];
   hasRole?: string;
@@ -3584,6 +3589,7 @@ const INDEXED_CONDITION_KINDS = new Set<SceneCondition['kind']>([
   'notHasRole',
   'capability',
   'hasRelation',
+  'region',
 ]);
 
 function indexScenesByStage(definitions: SceneDefinition[]): StageIndex {
@@ -3597,6 +3603,9 @@ function indexScenesByStage(definitions: SceneDefinition[]): StageIndex {
       switch (condition.kind) {
         case 'placeKind':
           if (Array.isArray(condition.in)) entry.requiredPlaceKinds = new Set(condition.in);
+          break;
+        case 'region':
+          if (Array.isArray(condition.in)) entry.requiredRegionIds = new Set(condition.in);
           break;
         case 'employment':
           entry.employment = condition.employed;
@@ -3677,6 +3686,12 @@ function indexedSceneFits(
     return false;
   }
   if (entry.subjectIds !== undefined && !entry.subjectIds.includes(subject.id)) return false;
+  if (
+    entry.requiredRegionIds !== undefined &&
+    !entry.requiredRegionIds.has(regionIdForPerson(world, subject))
+  ) {
+    return false;
+  }
   if (
     entry.subjectProvenance !== undefined &&
     !entry.subjectProvenance.includes(subject.provenance.kind)
@@ -3762,6 +3777,7 @@ function personSceneSignature(world: WorldState, subject: Person, stage: SceneSt
     stage,
     ageAt(subject, world.date),
     subject.locationId,
+    regionIdForPerson(world, subject),
     subject.householdId,
     subject.employment ? subject.employment.organizationId : '',
     subject.education.status,

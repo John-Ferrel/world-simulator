@@ -145,3 +145,13 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - 性能：160 人真实内容 147.7 ms/年；1k 535 ms、5k 10.4s、20k 252.7s/年；20k 未达生产要求。
 - 文学：Critic 20 样本 9 通过 / 11 失败；性别代词、货币、集体效果、条件与重复仍是硬缺口。
 - 未完成：百万是上界不是实例；无多城市/10k 历史人物/更强制候选索引。
+
+## Phase 12 执行状态（2026-11-04，进行中）
+
+- 工程：保留 Phase 11 Context/Milieu/PlotKernel/Composer；新增紧凑 Event Recipe Kit，只编译为现有 `PlotKernel`/`SceneOutcome`/`EventEffect`，没有第二执行器。
+- 人物级分支：`KernelOutcome.when` 编译为 `SceneOutcome.conditions`；已支持 hasRole/notHasRole/employment/education/cash/skill/capability/age/relation。
+- 地区级分支：新增 `region` SceneCondition；composer 把 context 的 regionIds 编译进场景，维也纳与克洛斯特新堡不再自动共享同一机会。
+- 因果审计：新增 `IncidentTrace`，事件提交时记录机制、地点、主体、参与者、动机/冲突/回应（可选authoring）与实际 effects；未解析的 major effect 现在使 outcome 编译失败并写入 `CompositionContent.errors`。
+- 性能：角色候选使用年度人物索引；普通事件候选池按人物签名预过滤，milestone/lifecycle 分池，大池使用确定性抽样。20k 合成组合负载在部分新内容下约 4.6–5.1 s/年（多次测量受并行内容生产影响）；最终数字待内容冻结后重测。
+- 内容：6 个并行批次（童年教育、工作商业、家庭社会、健康犯罪、公民战争迁移、文化信仰科学）各目标 50 recipes；已完成/进行中的 kernel 库已达到 421 条（含原有 150），后续继续扩容到 1000+。
+- 验收：recipe checker、region/person branch tests、IncidentTrace test、composer unresolved-effect test 已加入；完整 20k/playtest/Critic/浏览器证据待内容冻结后执行。

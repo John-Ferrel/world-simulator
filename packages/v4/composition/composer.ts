@@ -269,6 +269,9 @@ function compileKernel(
     ...(milieu.conditions ?? []),
     ...(variant?.conditions ?? []),
     { kind: 'worldYear', min: context.from, max: context.to },
+    ...(context.regionIds && context.regionIds.length > 0
+      ? [{ kind: 'region', in: context.regionIds } as SceneCondition]
+      : []),
     ...(context.requiresProcessKinds ?? []).map(
       (kind) =>
         ({
