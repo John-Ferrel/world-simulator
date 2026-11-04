@@ -167,3 +167,15 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - 机制：修复 subject role cache 串人、陌生父亲、trace 未插值/未反映已提交 effects；仍存在出生率下降、代词残留、效果不可见、基础内容重复。
 - 验证：`pnpm test` 475 pass/36 skip；`pnpm build` 通过；`pnpm test:e2e` 通过；截图 `docs/v4/phase-12-browser.png`、`docs/v4/phase-12-incident-trace.png`。
 - 未完成：1M 实际事件、生产 PostgreSQL/API 规模、运行时 LLM 叙事、多城市 world pack、文学达标。详见 `docs/v4/phase-12-report.md`。
+
+## Phase 13 最终状态（2026-11-04）
+
+- 内容：1,311 kernels（1,060 event + 251 task）、5,290 outcomes、914 variants、1,047 人物分支；新增 300 个 Phase 13 recipes（200 Task + 100 Event）。
+- 运行：source-aware 普通遭遇调度、基础 scene rate cap（lifecycle/once 除外）、Agency actors 96、儿童/老年 actor、晚期三个 context（1934–2000）。组合事件从 Phase 12 的 443 条提升到 **6,227 条**（3,573 composed scene + 2,654 composed task），触发 661 个不同 kernel。
+- 人口：88 年 **375 births / 449 deaths / 757 persons / 306 alive**；Phase 12 为 100 births / 482 persons。出生路径不再产生“陌生父亲”，same-sex/non-cohabiting 死锁已处理；但仍低于替代水平并依赖 materialization。
+- 文学：首轮 10/20 (mean 30.55)，最终 15 样本 **12/15 (80%)，mean 33.67**，刚好达到 75% 门槛、零余量；剩余问题主要是 base content 的 cast/POV 纪律和少量效果可见性。
+- 机制：修复 subject cache、stranger father、same-sex/divorce deadlock、zero-effect commit、cash sign、post-death participant；最终 playtest 0 unresolved token、0 post-death subject/participant（death event 除外）。仍有 20,472 blocked casts、304 unresolved_effect_ref、33 invalid_relation。
+- 性能：20k **3,611 ms/年** composed-only；原 benchmark **4,475 ms/年**；heap 378–465 MB，<5s 目标保持。
+- 容量：3,000 synthetic profiles / **1,174,428 eligible person×scene×outcome** situations。
+- 验证：`pnpm test` 83 files/481 pass/36 skip；v4 34 files/201 pass；build 3.25s；e2e 1 pass；截图 `docs/v4/phase-13-browser.png`、`phase-13-incident-trace.png`；五段人生 `docs/v4/phase-13-lives.md`。
+- 未完成：文学仅压线（15 样本）、出生仍低于死亡、blocked casts 很高、无生产 DB/API 规模验证、无运行时 LLM 叙事、无多城市 world pack。完整报告 `docs/v4/phase-13-report.md`。

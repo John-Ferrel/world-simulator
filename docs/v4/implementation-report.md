@@ -241,3 +241,22 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 机制 | 修复 subject 角色缓存串人和“陌生人当父亲”两个硬 bug；仍存在出生率下降（100 vs Phase 11 237）、代词残留、效果可见性不足 |
 
 未完成/限制：composed events 仍只占 443/20,186；基础内容重复严重；16 个农村占位符编译错误；91 个 `unresolved_effect_ref`、33 个 `invalid_relation` 运行警告；没有 1M 实际提交事件、生产 DB/API 压测或运行时 LLM 叙事。不得把 1,073,786 候选情境或 8,694,688 naive 上界称为已执行事件。
+
+## Phase 13（2026-11-04）— Living Stories
+
+完整报告：`docs/v4/phase-13-report.md`；文学批评：`phase-13-critique.md`；机制批评：`phase-13-mechanics-critique.md`；五段真实人生：`phase-13-lives.md`。
+
+| 项 | 实测 |
+|---|---|
+| 内核 | 1,311（1,060 event + 251 task），5,290 outcomes，914 variants，1,047 人物分支 |
+| 内容新增 | 200 Task + 100 Event recipes；86 base scenes rewritten；484 narration variants |
+| 运行 | 88 年 31,830 events；6,227 composed actions（3,573 scenes + 2,654 tasks）；661 kernels |
+| 人口 | 375 births / 449 deaths / 757 persons / 306 alive（Phase 12: 100/482） |
+| 文学 | 首轮 10/20 (30.55)；最终 12/15 (80%, 33.67/40)，刚好过 75% 门槛 |
+| 机制 | subject cache / stranger father / same-sex & divorce deadlock / empty-effect / cash sign / post-death participant 修复；最终 0 unresolved token、0 post-death subject/participant（death event 除外） |
+| 调度 | base scene 18,737；composed scene 3,573；base task 3,357；composed task 2,654；20,472 blocked casts |
+| 性能 | 20k 3,611 ms/年 composed-only；原 benchmark 4,475 ms/年；heap 378–465 MB |
+| 容量 | 3,000 profiles / 1,174,428 eligible situations |
+| 验证 | `pnpm test` 83 files/481 pass/36 skip；v4 201 pass；build 3.25s；e2e 1 pass |
+
+未完成：文学样本仅 15 条且零余量；375 births 仍低于 449 deaths，家庭/宏观仍依赖 materialization；20,472 blocked casts；304 unresolved_effect_ref、33 invalid_relation；无生产 PostgreSQL/API 规模验证、无运行时 LLM 叙事、无多城市 world pack。不得把 1,174,428 候选情境称为已执行事件。
