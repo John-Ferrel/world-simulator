@@ -1,0 +1,5018 @@
+{
+  "id": "pack-infant-wonder",
+  "version": 1,
+  "title": "幼年奇想：空椅子、地窖秘密与第一场雪",
+  "description": "补强 Phase 17 中最薄弱的 infancy/childhood 阶段：把想象同伴和孩子的秘密做成可持续、可消费的状态，让学校、家庭、疾病、丧亲和家产在 0–12 岁的日常里留下具体后果。它不复制既有童年苦难线，而是写儿童如何解释大人不愿解释的事。",
+  "author": "phase18-content-author/infant-wonder",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-07",
+  "sourceBriefId": "phase18-infant-wonder",
+  "rationale": "目录里 infancy 只有 2 个 kernel、childhood 只有 63 个，绝大多数童年故事仍写成成年人的回忆或一次性的贫困场景。这个包用两个轻状态补上儿童自己的持续性：想象同伴会随孤独、现实友谊和搬家改变；孩子的秘密有重量、想说的冲动和被发现的路径。状态由童年 kernel 创建，也被同一包里的饭桌、兄弟姐妹、老师和搬家 kernel 读取，还让 raising-child、grief、chronic-illness、family-estate 在儿童视角下成为真实条件。所有结果落在煤气灯、地窖、石板、墨水瓶、配给铁盒和病床边的窗上。",
+  "themes": [
+    "childhood",
+    "play",
+    "imaginary_friend",
+    "first_memory",
+    "family_secret",
+    "school",
+    "illness",
+    "small_cruelty",
+    "wonder"
+  ],
+  "era": "1912–1955",
+  "tone": [
+    "warm",
+    "eerie",
+    "comic"
+  ],
+  "scope": [
+    "infancy",
+    "childhood"
+  ],
+  "rarity": "common",
+  "contentWarnings": [
+    "child illness",
+    "grief",
+    "death and funerals",
+    "poverty",
+    "school cruelty",
+    "family secrets",
+    "eerie ambiguity"
+  ],
+  "states": [
+    {
+      "id": "iw18-imaginary-friend",
+      "version": 1,
+      "packId": "pack-infant-wonder",
+      "title": "一个只有孩子看得见的朋友",
+      "description": "孩子在空椅子、床底或院子里养着一个看不见的同伴。它可能是玩伴、替罪者或听众；大人越否认，它有时越清楚。它不是超自然实体，只是一段会随年龄、孤独和现实友谊改变的心理安排。",
+      "owner": "person",
+      "slot": "childhood_play",
+      "conflict": "replace",
+      "tags": [
+        "childhood",
+        "play",
+        "imaginary_friend",
+        "solitude",
+        "imagination",
+        "secret"
+      ],
+      "parameters": {
+        "closeness": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "secrecy": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        },
+        "boldness": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 4,
+          "max": 12
+        }
+      ],
+      "durationMonths": {
+        "min": 6,
+        "max": 60
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "childhood",
+            "play",
+            "imagination",
+            "solitude",
+            "family"
+          ],
+          "multiplier": 1.4
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "courtship",
+            "politics"
+          ],
+          "multiplier": 0.75
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "play",
+            "imagination"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "friend-year",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "still-there",
+              "weight": 2,
+              "text": "又过了一年，{subject}还给那把空椅子留着位置。椅面上有一道被裤子磨亮的痕迹，大人说那是旧漆；{subject}知道那是朋友坐出来的。冬天煤少，{subject}把最暖的位置让给椅子，自己坐在床沿。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "iw18-imaginary-friend",
+                  "key": "closeness",
+                  "delta": 3,
+                  "reason": "another year of keeping the friend close"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "iw18-imaginary-friend",
+                  "key": "secrecy",
+                  "delta": 2,
+                  "reason": "the friend became a private habit"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "the empty chair still felt occupied"
+                }
+              ]
+            },
+            {
+              "id": "fading",
+              "weight": 1,
+              "text": "{subject}这一年很少再和那把椅子说话。学校里有了新的同桌，放学后要在楼梯间跳格子；有一天{subject}把书包扔在椅面上，才想起自己已经三天没有给朋友留位置。椅面凉得很快，像一块普通木头。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "iw18-imaginary-friend",
+                  "key": "closeness",
+                  "delta": -8,
+                  "reason": "school and new playmates took the child's attention"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "iw18-imaginary-friend",
+                  "key": "boldness",
+                  "delta": -2,
+                  "reason": "the friend was left out of the day"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "a small pang at forgetting the friend"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "after-a-death",
+          "onTags": [
+            "death"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "closeness",
+              "delta": 6,
+              "reason": "a death made the invisible companion more necessary"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "secrecy",
+              "delta": 4,
+              "reason": "the child did not want adults to take the friend away"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the friend was the only one who did not cry"
+            }
+          ],
+          "text": "家里办完丧事，{subject}把空椅子搬到床边，替朋友也铺了一块旧毯子。大人问这是给谁留的，{subject}说给一个不会死的人；说完自己也愣了一下。",
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "age",
+          "min": 13
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "imaginary_friend_active",
+          "add": true,
+          "reason": "the child gave the invisible friend a place"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "imaginary_friend_active",
+          "add": false,
+          "reason": "the imaginary friend faded or was put away"
+        }
+      ],
+      "historicalBasis": "1912–1955 年的维也纳工人家庭常与祖父母、邻居和兄弟姐妹共用房间；想象同伴是孤独儿童常见的自我安排，不被当作超自然事实。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/infant-wonder",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase18-infant-wonder"
+        ],
+        "rationale": "Imaginary companionship needs persistence: closeness, secrecy and boldness change what the child will blame on the friend and when the friend is packed away. It is created by childhood kernels and read by family, school and moving scenes."
+      }
+    },
+    {
+      "id": "iw18-child-secret",
+      "version": 1,
+      "packId": "pack-infant-wonder",
+      "title": "孩子藏在口袋里的事",
+      "description": "孩子看见或做了一件不该说的事：一包藏起来的钱、一封烧掉的信、一只死去的动物、某个大人夜里的眼泪。秘密有重量，也有想被说出来的冲动；它会被兄弟姐妹、饭桌和追问改变。",
+      "owner": "person",
+      "slot": "childhood_secret",
+      "conflict": "replace",
+      "tags": [
+        "childhood",
+        "secret",
+        "knowledge",
+        "guilt",
+        "family",
+        "fear"
+      ],
+      "parameters": {
+        "weight": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        },
+        "tellUrge": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        },
+        "discovered": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 5,
+          "max": 12
+        }
+      ],
+      "durationMonths": {
+        "min": 3,
+        "max": 48
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "childhood",
+            "secret",
+            "family",
+            "knowledge",
+            "guilt"
+          ],
+          "multiplier": 1.35
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "school",
+            "play",
+            "leisure"
+          ],
+          "multiplier": 0.85
+        }
+      ],
+      "ticks": [
+        {
+          "id": "secret-year",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "held",
+              "weight": 2,
+              "text": "这一年{subject}把秘密藏得更深。走过地窖门口时，{subject}会故意哼歌；饭桌上有人提起那件事，{subject}就把汤勺在碗底转三圈。秘密没有变大，却像一颗卡在鞋里的石子，走每一步都知道它在。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "iw18-child-secret",
+                  "key": "weight",
+                  "delta": 4,
+                  "reason": "the secret was carried for another year"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "iw18-child-secret",
+                  "key": "tellUrge",
+                  "delta": 3,
+                  "reason": "the silence became harder to keep"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "a secret kept through another winter"
+                }
+              ]
+            },
+            {
+              "id": "slipped",
+              "weight": 1,
+              "text": "话是在洗碗时滑出来的。{subject}说“那天我看见了”，说完立刻把水龙头开到最大。大人没有听清，问了一句“看见什么”；{subject}摇头，说水太凉。那天夜里，{subject}第一次希望自己当时没有下楼。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "iw18-child-secret",
+                  "key": "tellUrge",
+                  "delta": -8,
+                  "reason": "the child nearly told the secret"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "iw18-child-secret",
+                  "key": "weight",
+                  "delta": -6,
+                  "reason": "speaking half of it made it lighter"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "iw18-child-secret",
+                  "key": "discovered",
+                  "value": true,
+                  "reason": "the secret began to show"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "a partial confession brought relief"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-school-note-reminds",
+          "onTags": [
+            "school"
+          ],
+          "chance": 0.2,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "tellUrge",
+              "delta": 4,
+              "reason": "a note sent home made the child think of the hidden thing"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "weight",
+              "delta": 2,
+              "reason": "the secret pressed against ordinary school business"
+            }
+          ],
+          "text": "{subject}把老师要家长签字的纸条折成四折，忽然想起自己还有一件事没有告诉家里。纸条在口袋里放了一路，边角被手指捏得发亮。",
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "iw18-child-secret",
+          "parameter": "discovered",
+          "equals": true
+        },
+        {
+          "kind": "age",
+          "min": 13
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "child_secret_active",
+          "add": true,
+          "reason": "the child began carrying a secret"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "child_secret_active",
+          "add": false,
+          "reason": "the child's secret was told, discovered or outgrown"
+        }
+      ],
+      "historicalBasis": "1912–1955 年间，维也纳家庭经历战争、通胀、失业与占领；孩子常在楼梯间、地窖和厨房里听见大人不愿公开的事。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/infant-wonder",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase18-infant-wonder"
+        ],
+        "rationale": "A child's secret is not a one-line confession scene: weight, tellUrge and discovery decide whether it is bargained over, blurted out, or carried into adolescence. It is created by witnessing kernels and consumed by dinner, sibling and confession kernels."
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "iw18-infancy.ceiling-shadows",
+      "title": "天花板上的影子",
+      "domain": "family",
+      "kind": "event",
+      "stage": "infancy",
+      "ageWindow": {
+        "min": 0,
+        "max": 2
+      },
+      "tags": [
+        "infancy",
+        "night",
+        "wonder",
+        "gaslight",
+        "fear",
+        "family"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "infancy"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 0,
+          "max": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 2
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 50,
+          "sameHousehold": true
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 4,
+          "maxAge": 12,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-shadow-bows",
+          "weight": 0.4,
+          "text": "煤气灯芯拧到最小，天花板上一件挂着的大衣被风推得晃了晃。{subject}躺在摇篮里忽然笑出声，朝那片影子伸出两只手。{parent}抬头看了很久，只看见衣钩和一块掉漆的墙皮。",
+          "significance": 0.62,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$parent",
+              "amount": 0.02,
+              "reason": "the baby laughed at the ceiling"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.03,
+              "trust": 0.01,
+              "reason": "a small shared moment in the dark"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "laughed_at_ceiling_shadow",
+              "add": true,
+              "reason": "the infant laughed at a moving shadow"
+            }
+          ]
+        },
+        {
+          "id": "the-coat-is-just-a-coat",
+          "weight": 0.35,
+          "text": "{parent}把{subject}抱起来，走到衣钩下面，让孩子伸手去抓那件旧大衣。粗呢的袖口擦过掌心，{subject}先愣住，随后皱着鼻子哭了一声。{parent}笑着把大衣掀开，说“看，只有衣服”，灯影也跟着晃了一下。",
+          "significance": 0.58,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$parent",
+              "amount": 0.03,
+              "reason": "the mystery turned out to be a coat"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.04,
+              "trust": 0.02,
+              "reason": "the parent showed the baby the coat"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "learned_the_coat_rack",
+              "add": true,
+              "reason": "the infant was shown what made the shadow"
+            }
+          ]
+        },
+        {
+          "id": "fever-behind-the-shadows",
+          "weight": 0.25,
+          "text": "后半夜{subject}烧起来，额头烫得像炉盖。{parent}把湿布叠成窄条，一遍遍擦孩子的手心；煤气灯的影子在墙上忽长忽短，{subject}哭一阵停一阵。天快亮时，{parent}抱着孩子去敲隔壁的门，借来一支体温计。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "an infant fever at night"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "night fever",
+              "add": true,
+              "reason": "the infant ran a fever"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a borrowed thermometer and medicine"
+            },
+            {
+              "type": "mood",
+              "personId": "$parent",
+              "amount": -0.04,
+              "reason": "a night of watching the baby breathe"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "infant_night_fever",
+              "add": true,
+              "reason": "the infant had a night fever"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 3
+    },
+    {
+      "id": "iw18-infancy.first-word",
+      "title": "第一个词",
+      "domain": "family",
+      "kind": "event",
+      "stage": "infancy",
+      "ageWindow": {
+        "min": 1,
+        "max": 2
+      },
+      "tags": [
+        "infancy",
+        "first_word",
+        "memory",
+        "family",
+        "wonder",
+        "eerie"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "infancy"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 1,
+          "max": 2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 1,
+          "maxAge": 2
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 52,
+          "sameHousehold": true
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 5,
+          "maxAge": 12,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-dead-grandmothers-name",
+          "weight": 0.3,
+          "text": "{subject}扶着桌沿站起来，指着门口的空处，清清楚楚叫出一个名字。屋里没人教过这个词；{parent}手里的铝勺停在半空。那是去年冬天埋掉的老人的名字，窗外正好有送煤的车经过，铁轮压过石缝。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$parent",
+              "amount": -0.03,
+              "reason": "the first word was a dead person's name"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.03,
+              "fear": 0.02,
+              "reason": "a strange first word"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$parent",
+              "proposition": "孩子说出的第一个词，是去年死去的祖母的名字。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "first_word_dead_name",
+              "add": true,
+              "reason": "the first word named a dead person"
+            }
+          ]
+        },
+        {
+          "id": "the-dog-gets-the-first-word",
+          "weight": 0.35,
+          "text": "{subject}追着炉边的狗爬了半间屋，忽然拍着地板喊出狗的名字。狗吓得钻到床下，{parent}笑得把水壶都放下了；邻居在门外问出了什么事。那天晚上，家里给狗多留了半块面包。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$parent",
+              "amount": 0.04,
+              "reason": "the first word was the dog's name"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.04,
+              "reason": "a comic first word"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "half a loaf kept back for the dog"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "first_word_dog_name",
+              "add": true,
+              "reason": "the first word was the dog's name"
+            }
+          ]
+        },
+        {
+          "id": "a-word-for-bread",
+          "weight": 0.35,
+          "text": "{subject}指着桌上的面包说出一个短词，声音轻得像在试音。{parent}把面包掰下一角，泡进热水里喂给孩子；{subject}吃完又指了一次，这次说得更清楚。厨房里的人都笑了，连灶上的水汽也像在往上冒。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "bread softened for the child"
+            },
+            {
+              "type": "mood",
+              "personId": "$parent",
+              "amount": 0.03,
+              "reason": "the first word was about food"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.03,
+              "trust": 0.02,
+              "reason": "the child asked and was understood"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "first_word_bread",
+              "add": true,
+              "reason": "the first word was bread"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 2,
+      "cooldownYears": 4
+    },
+    {
+      "id": "iw18-friend.chair-by-the-stove",
+      "title": "灶边的空椅子",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 5,
+        "max": 8
+      },
+      "tags": [
+        "childhood",
+        "play",
+        "imaginary_friend",
+        "solitude",
+        "family",
+        "wonder"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 5,
+          "max": 8
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "iw18-imaginary-friend"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 8
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 55,
+          "sameHousehold": true
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 3,
+          "maxAge": 12,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "a-guest-named-by-the-child",
+          "weight": 0.35,
+          "text": "{subject}从碗橱里多拿了一只缺口的盘子，摆在灶边那把没人坐的椅子上，还认真地告诉屋里的人：今天有客人。盘子里放着一小块土豆和一片面包边。{parent}问客人叫什么，{subject}说了一个从没听过的名字。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "parameters": {
+                "closeness": 60,
+                "secrecy": 25,
+                "boldness": 40
+              },
+              "durationMonths": 18,
+              "reason": "the child gave an invisible guest a name and a place at table"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.04,
+              "reason": "the parent played along with the guest"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a plate set for the invisible guest"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the invisible guest was welcomed"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "invisible_guest_named",
+              "add": true,
+              "reason": "the child named an invisible guest"
+            }
+          ]
+        },
+        {
+          "id": "the-adult-calls-it-a-phase",
+          "weight": 0.25,
+          "text": "{subject}说朋友今天不饿，{parent}把盘子收走，说“等你长大就好了”。那天下午{subject}没有再提朋友，只把空椅子推到墙角，又在椅背上搭了一条围巾。晚上熄灯后，{subject}对着墙角小声说了很久的话。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "parameters": {
+                "closeness": 50,
+                "secrecy": 45,
+                "boldness": 30
+              },
+              "durationMonths": 24,
+              "reason": "an adult dismissed the invisible friend, making it more private"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the friend was called a phase"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "trust": -0.02,
+              "reason": "the child stopped mentioning the friend at table"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "imaginary_friend_denied_by_adult",
+              "add": true,
+              "reason": "an adult dismissed the invisible friend"
+            }
+          ]
+        },
+        {
+          "id": "the-sibling-sits-on-the-chair",
+          "weight": 0.2,
+          "text": "{sibling}一屁股坐在那把空椅子上，说“让我也见见你的朋友”。{subject}急得去拉椅子腿，两个人把盘子碰翻在地，土豆滚到灶台下。{parent}赶来时，{subject}正趴在炉边找那块土豆，嘴里还在替朋友道歉。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "parameters": {
+                "closeness": 55,
+                "secrecy": 40,
+                "boldness": 55
+              },
+              "durationMonths": 18,
+              "reason": "a sibling intruded on the invisible friend's chair"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.03,
+              "affection": 0.02,
+              "reason": "a quarrel over the empty chair"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the friend was sat upon"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "friend_defended_from_sibling",
+              "add": true,
+              "reason": "the child defended the friend's chair"
+            }
+          ]
+        },
+        {
+          "id": "the-chair-is-for-the-dead",
+          "weight": 0.2,
+          "text": "{subject}把盘子摆好，说这把椅子是留给去年埋掉的那个人的。{parent}手里的火柴停了一下，屋里只剩煤在炉膛里塌下去的声响。{subject}又说，朋友不喜欢哭，所以今天谁都不许哭；说完自己先红了眼睛。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "parameters": {
+                "closeness": 65,
+                "secrecy": 60,
+                "boldness": 30
+              },
+              "durationMonths": 24,
+              "reason": "the invisible friend was named for a dead person"
+            },
+            {
+              "type": "mood",
+              "personId": "$parent",
+              "amount": -0.04,
+              "reason": "the child's guest was named for the dead"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.03,
+              "fear": 0.02,
+              "reason": "the parent did not know what to say"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "friend_named_for_the_dead",
+              "add": true,
+              "reason": "the invisible friend carried a dead person's name"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 4
+    },
+    {
+      "id": "iw18-friend.sugar-cube",
+      "title": "留给客人的方糖",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 6,
+        "max": 9
+      },
+      "tags": [
+        "childhood",
+        "play",
+        "imaginary_friend",
+        "food",
+        "family",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 9
+        },
+        {
+          "kind": "hasState",
+          "stateId": "iw18-imaginary-friend",
+          "parameter": "closeness",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 9
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 55,
+          "sameHousehold": true
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 4,
+          "maxAge": 12,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-cube-disappears",
+          "weight": 0.35,
+          "text": "{subject}把家里最后一块方糖放在空椅子旁边的碟子里，说是给朋友留的。下午糖不见了，{subject}一口咬定是朋友吃了；晚上{sibling}从口袋里摸出黏着糖渣的纸，笑得直不起腰。{subject}追着{sibling}绕了三圈桌子。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "closeness",
+              "delta": 4,
+              "reason": "the friend was defended even when the sugar was stolen"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "secrecy",
+              "delta": 3,
+              "reason": "the child kept the friend's appetite a serious matter"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.02,
+              "affection": 0.04,
+              "reason": "a comic chase over the sugar cube"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the chase ended in laughter"
+            }
+          ]
+        },
+        {
+          "id": "the-parent-sets-two-cups",
+          "weight": 0.35,
+          "text": "{parent}什么也没问，拿出两只杯子，给空椅子那边也倒了一点咖啡代用品。{subject}先是高兴，后来又有些不好意思，把杯子往朋友那边推了推。{parent}说“客人先请”，{subject}便一本正经地替朋友道谢，声音比平时轻。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "closeness",
+              "delta": 6,
+              "reason": "the parent honoured the invisible guest"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "secrecy",
+              "delta": -3,
+              "reason": "the friend became a shared household joke"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.04,
+              "trust": 0.03,
+              "reason": "the parent set a second cup"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the guest was treated as real"
+            }
+          ]
+        },
+        {
+          "id": "the-friend-refuses",
+          "weight": 0.3,
+          "text": "{subject}把方糖推到空椅子前，等了一会儿，又收回来，说朋友今天不想吃甜的。{parent}问是不是朋友不喜欢糖，{subject}认真点头，还补充说朋友只喜欢硬面包的边。第二天，碟子里果然只剩下一圈面包边。",
+          "significance": 0.62,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "boldness",
+              "delta": 5,
+              "reason": "the child gave the friend opinions of their own"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "closeness",
+              "delta": -2,
+              "reason": "the friend refused the treat"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "bread crusts left for the invisible guest"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "friend_has_tastes",
+              "add": true,
+              "reason": "the child invented the friend's preferences"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 2,
+      "cooldownYears": 2
+    },
+    {
+      "id": "iw18-friend.takes-the-blame",
+      "title": "打碎的牛奶罐",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 6,
+        "max": 10
+      },
+      "tags": [
+        "childhood",
+        "imaginary_friend",
+        "blame",
+        "family",
+        "secret",
+        "small_cruelty"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 10
+        },
+        {
+          "kind": "hasState",
+          "stateId": "iw18-imaginary-friend",
+          "parameter": "closeness",
+          "min": 30
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 10
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55,
+          "sameHousehold": true
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 4,
+          "maxAge": 12,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-friend-did-it",
+          "weight": 0.4,
+          "text": "牛奶罐从桌沿滚下去，在砖地上碎成三瓣。{subject}看着地上的白沫，说“是朋友碰的”。{parent}没有立刻发火，只把碎片一片片捡进围裙；捡到最后一片时，才问朋友今天穿什么颜色的衣服。{subject}答不上来。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "secrecy",
+              "delta": 8,
+              "reason": "the child used the friend as a scapegoat"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "closeness",
+              "delta": -4,
+              "reason": "the friend was blamed for a real accident"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "boldness",
+              "delta": 6,
+              "reason": "the child dared to lie through the friend"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "trust": -0.04,
+              "reason": "the parent did not believe the friend story"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a broken milk jug"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the lie did not hold"
+            }
+          ]
+        },
+        {
+          "id": "the-sibling-knows",
+          "weight": 0.3,
+          "text": "{sibling}从门后探出头，说看见是{subject}自己碰倒的。{subject}赶紧把{sibling}拉到楼梯间，答应把攒了半年的彩色玻璃珠分一半。{sibling}想了一会儿，说还要替自己写一页大字；两个人在楼梯上坐了很久，牛奶在厨房里慢慢渗进砖缝。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "secrecy",
+              "delta": 5,
+              "reason": "a sibling was bought into the lie"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "obligation": 0.05,
+              "trust": -0.02,
+              "reason": "a bargain over the broken jug"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "milk lost on the kitchen floor"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sibling_keeps_friend_secret",
+              "add": true,
+              "reason": "a sibling agreed to keep the friend story"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the secret now had a witness"
+            }
+          ]
+        },
+        {
+          "id": "the-truth-comes-out",
+          "weight": 0.3,
+          "text": "{subject}在擦桌子时忽然说，是自己碰倒的，朋友没有手。{parent}把抹布接过去，说“我知道”，又让孩子去楼下借一只新罐子。{subject}回来时，空椅子被挪回了墙角，朋友的位置只剩一小块被炉火烤暖的砖地。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "secrecy",
+              "delta": -10,
+              "reason": "the child told the truth about the jug"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "closeness",
+              "delta": 3,
+              "reason": "the friend survived the confession"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.03,
+              "reason": "the child admitted the truth"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a replacement milk jug"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the truth was easier than the lie"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 2,
+      "cooldownYears": 2
+    },
+    {
+      "id": "iw18-friend.real-friend",
+      "title": "院子里来了真孩子",
+      "domain": "social",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 8,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "friendship",
+        "imaginary_friend",
+        "play",
+        "change"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 8,
+          "max": 11
+        },
+        {
+          "kind": "hasState",
+          "stateId": "iw18-imaginary-friend"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 11
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 12
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-real-friend-wins",
+          "weight": 0.35,
+          "text": "{neighbor}抱着一只旧皮球来敲门，在院子里喊{subject}下去。{subject}匆匆把空椅子推到床后，说朋友今天不舒服。踢到天黑，{subject}回家时已经忘了那把椅子；椅背上搭着的围巾掉在地上，沾了一层灰。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "closeness",
+              "delta": -10,
+              "reason": "a real playmate took the child's afternoon"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "secrecy",
+              "delta": -5,
+              "reason": "the friend was hidden from the neighbour"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "affection": 0.05,
+              "reason": "an afternoon of ball games"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a real friend came to play"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "real_friend_arrived",
+              "add": true,
+              "reason": "a real playmate entered the child's afternoons"
+            }
+          ]
+        },
+        {
+          "id": "two-friends-one-chair",
+          "weight": 0.3,
+          "text": "{subject}把{neighbor}领到空椅子前，郑重介绍自己的朋友。{neighbor}愣了一下，随即对着空气鞠了一躬，还问朋友会不会玩球。两个人轮流把球滚到椅子底下，假装有人接住；笑声从院子一直传到三楼。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "closeness",
+              "delta": 3,
+              "reason": "the friend was introduced to a real child"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "boldness",
+              "delta": 5,
+              "reason": "the friend was included in a real game"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "affection": 0.04,
+              "reason": "the neighbour played along"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "both friends could play together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "friend_introduced_to_neighbor",
+              "add": true,
+              "reason": "the invisible friend was introduced to a neighbour"
+            }
+          ]
+        },
+        {
+          "id": "the-friend-gets-jealous",
+          "weight": 0.2,
+          "text": "球滚进阴沟，{neighbor}说是{subject}没接住，{subject}却转头对空椅子说“都怪你”。{neighbor}莫名其妙，抱着球走了。{subject}一个人站在院子里，忽然觉得那把椅子离自己很远，像别人家窗口里的一件旧家具。",
+          "significance": 0.64,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "closeness",
+              "delta": 5,
+              "reason": "the child turned to the friend after a quarrel"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "secrecy",
+              "delta": 6,
+              "reason": "the friend was blamed in front of a real child"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": -0.03,
+              "reason": "a quarrel over the ball"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the real friend walked away"
+            }
+          ]
+        },
+        {
+          "id": "the-friend-is-put-away",
+          "weight": 0.15,
+          "text": "{subject}把空椅子上的围巾叠好，放进床下的木箱，又把箱子推回最里面。{neighbor}在楼下喊第二遍时，{subject}应了一声，跑下去时没有回头。那天晚上，木箱里只传出一声很轻的碰响，像有人翻了个身。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "reason": "the child put the invisible friend away for a real playmate"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the friend was packed into a box"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "affection": 0.04,
+              "reason": "the child chose to go downstairs"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "imaginary_friend_boxed",
+              "add": true,
+              "reason": "the invisible friend was put away in a box"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 3
+    },
+    {
+      "id": "iw18-friend.farewell",
+      "title": "搬家前的那只木箱",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 10,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "imaginary_friend",
+        "moving",
+        "memory",
+        "farewell"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 10,
+          "max": 11
+        },
+        {
+          "kind": "hasState",
+          "stateId": "iw18-imaginary-friend"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 10,
+          "maxAge": 11
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 4,
+          "maxAge": 10,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "left-in-the-old-room",
+          "weight": 0.35,
+          "text": "家具已经搬空，只剩墙角一块被椅子磨白的墙皮。{subject}站在门口看了一会儿，说朋友要留下来看房子。{parent}没有催，抱着箱子先下楼；{subject}最后关灯时，朝那块白墙点了点头。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "reason": "the child left the invisible friend in the old room"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a farewell to the old room"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.03,
+              "reason": "the parent let the child say goodbye"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "friend_left_behind",
+              "add": true,
+              "reason": "the invisible friend was left in the old home"
+            }
+          ]
+        },
+        {
+          "id": "packed-with-the-toys",
+          "weight": 0.35,
+          "text": "{subject}把一只空铁盒放进装玩具的箱子，说朋友坐在这里，到了新家再出来。{parent}问要不要留个透气孔，{subject}认真点头。搬家车在楼下按了两声喇叭，{subject}抱着箱子坐在车斗里，一路上都在轻轻晃它。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "closeness",
+              "delta": 4,
+              "reason": "the friend was packed for the move"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "key": "secrecy",
+              "delta": 2,
+              "reason": "the friend travelled in a private tin"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the friend was not left behind"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.04,
+              "reason": "the parent made a hole in the box"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "friend_packed_for_moving",
+              "add": true,
+              "reason": "the invisible friend was packed for the move"
+            }
+          ]
+        },
+        {
+          "id": "told-the-younger-child",
+          "weight": 0.3,
+          "text": "{subject}把{sibling}领到空椅子前，说以后这张椅子归你管，朋友喜欢硬面包的边，不喜欢别人坐上来。{sibling}问朋友会不会跟着走，{subject}说会，但得先教会你。两个人在空屋里又摆了一次盘子，楼上传来搬家具的拖声。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-imaginary-friend",
+              "reason": "the child handed the invisible friend to a younger sibling"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "affection": 0.06,
+              "trust": 0.04,
+              "reason": "the friend was passed on"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the friend would still have a chair"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "friend_passed_to_sibling",
+              "add": true,
+              "reason": "the invisible friend was handed to a younger sibling"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 2,
+      "cooldownYears": 5
+    },
+    {
+      "id": "iw18-secret.cellar-door",
+      "title": "地窖门没关",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 6,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "secret",
+        "family",
+        "cellar",
+        "knowledge",
+        "fear"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 11
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "iw18-child-secret"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "saw-the-bundle",
+          "weight": 0.3,
+          "text": "地窖门虚掩着，{subject}下去找腌菜坛，看见{parent}蹲在煤堆后面，把一包用油纸裹好的东西塞进墙缝。{parent}听见脚步，回头时脸上还带着灰；{subject}说自己只是来拿坛子，声音比平时高。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "parameters": {
+                "weight": 55,
+                "tellUrge": 35,
+                "discovered": false
+              },
+              "durationMonths": 24,
+              "reason": "the child saw a parent hide a bundle in the cellar"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "大人在酒窖的墙缝里藏了一包用油纸裹着的东西。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.02,
+              "fear": 0.02,
+              "reason": "the child saw something not meant to be seen"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a secret was born in the cellar"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saw_cellar_bundle",
+              "add": true,
+              "reason": "the child saw a bundle hidden in the cellar"
+            }
+          ]
+        },
+        {
+          "id": "saw-the-empty-jars",
+          "weight": 0.25,
+          "text": "地窖里一排腌菜坛都轻得能一只手提起来，{subject}揭开盖子，只闻到一点酸味和潮气。楼上还摆着待客的糖罐，{parent}总说家里不缺；{subject}把坛盖一个个盖回去，忽然明白那些糖罐是空的。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "parameters": {
+                "weight": 35,
+                "tellUrge": 20,
+                "discovered": false
+              },
+              "durationMonths": 18,
+              "reason": "the child learned the household was poorer than it pretended"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "家里的腌菜坛是空的，待客的糖罐也只是摆设。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the empty jars explained the short dinners"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saw_empty_cellar_jars",
+              "add": true,
+              "reason": "the child found the cellar jars empty"
+            }
+          ]
+        },
+        {
+          "id": "the-door-was-just-coal",
+          "weight": 0.25,
+          "text": "地窖里只有煤、旧箱子和一只缺腿的凳子，{subject}转了一圈，什么秘密也没找到。上楼时{parent}正在切洋葱，问孩子下去做什么；{subject}说找坛子，{parent}便让孩子把手洗了来帮忙，案板上的洋葱辣得两人都流泪。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.03,
+              "trust": 0.02,
+              "reason": "a false alarm in the cellar turned into kitchen help"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the cellar held only coal"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "onions prepared for supper"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cellar_was_only_coal",
+              "add": true,
+              "reason": "the child found nothing hidden in the cellar"
+            }
+          ]
+        },
+        {
+          "id": "the-parent-saw-the-child",
+          "weight": 0.2,
+          "text": "{subject}刚走到地窖最后一级台阶，{parent}就从煤堆后面站起来，说“上去”。{subject}转身时看见墙缝里露出一点油纸的角，回到厨房后，{parent}把一碗汤推到孩子面前，谁也没有先开口。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "parameters": {
+                "weight": 65,
+                "tellUrge": 45,
+                "discovered": false
+              },
+              "durationMonths": 24,
+              "reason": "the child was caught at the cellar door"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "大人从地窖墙缝里站起来，让我立刻上楼。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.05,
+              "fear": 0.03,
+              "reason": "the parent ordered the child upstairs"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a silent bowl of soup after the cellar"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "caught_at_cellar_door",
+              "add": true,
+              "reason": "the child was caught at the cellar door"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 4
+    },
+    {
+      "id": "iw18-secret.dinner-table",
+      "title": "饭桌上的半句话",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 7,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "secret",
+        "family",
+        "dinner",
+        "confession",
+        "suspense"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 7,
+          "max": 11
+        },
+        {
+          "kind": "hasState",
+          "stateId": "iw18-child-secret",
+          "parameter": "tellUrge",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-secret-slips",
+          "weight": 0.35,
+          "text": "汤喝到一半，{parent}说起地窖里的煤又少了，{subject}忽然接了一句“不是煤”。桌上安静下来，{parent}的勺子停在碗沿；{subject}低头把面包撕成很小的块，直到{parent}轻声问“那是什么”。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "tellUrge",
+              "delta": -10,
+              "reason": "the secret slipped out at dinner"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "weight",
+              "delta": -5,
+              "reason": "the half-sentence lifted part of the weight"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "discovered",
+              "value": true,
+              "reason": "the hidden thing came into the open"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "trust": -0.03,
+              "reason": "the parent heard the slip"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the dinner turned quiet"
+            }
+          ]
+        },
+        {
+          "id": "the-child-swallows-it",
+          "weight": 0.35,
+          "text": "{subject}把面包在汤里按了按，等{parent}把话头转到别处，才敢抬头。那半句话在舌根下面发苦，像一块没有化开的药；{subject}又喝了两口汤，说今天的盐放多了。{parent}起身去拿水，椅子在地板上刮了一声。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "tellUrge",
+              "delta": 8,
+              "reason": "the secret was swallowed again"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "weight",
+              "delta": 3,
+              "reason": "silence made the secret heavier"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the words stayed unsaid"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "swallowed_secret_at_table",
+              "add": true,
+              "reason": "the child chose silence at dinner"
+            }
+          ]
+        },
+        {
+          "id": "the-parent-changes-the-subject",
+          "weight": 0.3,
+          "text": "{parent}看了{subject}一会儿，忽然问明天要不要带石板去学校。{subject}知道{parent}看出来了，因为{parent}问话时把汤勺握得很紧。两个人顺着学校的事往下说，谁也没有再碰地窖；晚饭后，{subject}主动去洗了碗。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "tellUrge",
+              "delta": -4,
+              "reason": "the parent quietly let the subject drop"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "weight",
+              "delta": 6,
+              "reason": "the child understood that the parent already knew"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "trust": -0.02,
+              "affection": 0.02,
+              "reason": "a shared but unspoken understanding"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the subject was changed too quickly"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parent_knows_the_secret",
+              "add": true,
+              "reason": "the parent changed the subject"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 2,
+      "cooldownYears": 2
+    },
+    {
+      "id": "iw18-secret.sibling-bargain",
+      "title": "柜子后面的糖纸",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 7,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "secret",
+        "sibling",
+        "bargain",
+        "family",
+        "small_cruelty"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 7,
+          "max": 11
+        },
+        {
+          "kind": "hasState",
+          "stateId": "iw18-child-secret",
+          "parameter": "weight",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 12,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "a-marble-for-silence",
+          "weight": 0.35,
+          "text": "{sibling}从柜子后面摸出那张揉皱的糖纸，说只要分一颗彩色玻璃珠，就不把地窖的事说出去。{subject}蹲在床边数珠子，数到第三颗时又收回去一颗。交易在楼梯间完成，两个人都没有看对方的眼睛。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "weight",
+              "delta": 3,
+              "reason": "a sibling now shared the secret"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "tellUrge",
+              "delta": 2,
+              "reason": "the secret had a second keeper"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "obligation": 0.05,
+              "trust": -0.03,
+              "reason": "silence was bought with a marble"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the secret now belonged to someone else too"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sibling_bought_silence",
+              "add": true,
+              "reason": "a sibling was paid for silence"
+            }
+          ]
+        },
+        {
+          "id": "the-sibling-tells",
+          "weight": 0.3,
+          "text": "{sibling}没有要珠子，转身就去找大人，说{subject}一定在地窖里看见了什么。{subject}被叫到厨房时，大人正在擦一只已经擦干净的碗；那只碗在手里转了很久，谁也没有先提地窖。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "weight",
+              "delta": -5,
+              "reason": "the secret was no longer the child's alone"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "discovered",
+              "value": true,
+              "reason": "a sibling told the parent"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.08,
+              "reason": "the sibling told"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "betrayal by a sibling"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sibling_told_the_secret",
+              "add": true,
+              "reason": "a sibling told the secret"
+            }
+          ]
+        },
+        {
+          "id": "a-shared-secret",
+          "weight": 0.35,
+          "text": "{sibling}听了一半，忽然说自己也有一件事：上个月把大人的顶针掉进了阴沟。两个人在床沿坐直，交换了秘密，又约定谁先说出来谁就替对方刷一周的锅。那天夜里，{subject}第一次觉得柜子后面不那么黑了。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "weight",
+              "delta": 6,
+              "reason": "the secret was traded for another"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "tellUrge",
+              "delta": -6,
+              "reason": "a shared secret was easier to keep"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.06,
+              "affection": 0.04,
+              "reason": "a pact of mutual secrets"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the secret was no longer carried alone"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "siblings_share_secret",
+              "add": true,
+              "reason": "the siblings traded secrets"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 2
+    },
+    {
+      "id": "iw18-secret.adult-asks",
+      "title": "大人说“你没看见”",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 8,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "secret",
+        "family",
+        "pressure",
+        "fear"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 8,
+          "max": 11
+        },
+        {
+          "kind": "hasState",
+          "stateId": "iw18-child-secret"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 11
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-child-promises",
+          "weight": 0.4,
+          "text": "{parent}把{subject}叫到厨房，关上门，说那天的事“你没看见”。{subject}点头，点得很快，像怕慢一点就会被看出在撒谎。{parent}从罐子里摸出一块糖，放在孩子手心；糖纸在掌纹里响了一声，谁也没有再提地窖。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "weight",
+              "delta": 8,
+              "reason": "the child promised to forget what was seen"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "tellUrge",
+              "delta": -5,
+              "reason": "a promise closed the child's mouth"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.05,
+              "obligation": 0.05,
+              "reason": "the child was asked to forget"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the promise sat heavily"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "promised_to_forget",
+              "add": true,
+              "reason": "the child promised not to have seen anything"
+            }
+          ]
+        },
+        {
+          "id": "the-child-asks-a-price",
+          "weight": 0.25,
+          "text": "{subject}没有立刻点头，先说学校要买一块新石板，旧的那块已经裂了。{parent}看了孩子一会儿，从围裙口袋里数出几枚硬币，放在桌上。{subject}把硬币收起来，又说“我什么也没看见”；两个人都松了一口气，又都没有看对方。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "weight",
+              "delta": -3,
+              "reason": "the secret was traded for a slate"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "tellUrge",
+              "delta": 2,
+              "reason": "the bargain made the secret feel dirty"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "coins for a new school slate"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.03,
+              "reason": "a secret bought with school money"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "secret_bought_with_a_gift",
+              "add": true,
+              "reason": "the child exacted a price for silence"
+            }
+          ]
+        },
+        {
+          "id": "the-child-refuses",
+          "weight": 0.35,
+          "text": "{subject}说“我看见了”，声音不高，却把厨房里的水壶声压了下去。{parent}的手抬起来又放下，最后只把门打开，让孩子出去。{subject}走到楼梯口才发现自己忘了拿外套；那天晚上，饭桌上多摆了一副碗筷，没有人坐。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "weight",
+              "delta": -5,
+              "reason": "the child refused to pretend"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "tellUrge",
+              "delta": 10,
+              "reason": "the refusal broke the silence"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "discovered",
+              "value": true,
+              "reason": "the child would not deny what was seen"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.1,
+              "fear": 0.04,
+              "reason": "the child contradicted the parent"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the refusal cost the child the parent's warmth"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 3
+    },
+    {
+      "id": "iw18-secret.confession",
+      "title": "放学后的空教室",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 9,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "secret",
+        "confession",
+        "school",
+        "relief"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 9,
+          "max": 11
+        },
+        {
+          "kind": "hasState",
+          "stateId": "iw18-child-secret",
+          "parameter": "weight",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 9,
+          "maxAge": 11
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-teacher-keeps-it",
+          "weight": 0.35,
+          "text": "{subject}在空教室里把地窖的事说了一遍，说到一半就开始抠桌沿的木刺。{teacher}没有打断，只把窗户关上，等孩子说完才问“你现在怕什么”。{subject}说怕大人知道自己看见过；{teacher}说知道了也不会少一块肉。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "reason": "the child told a teacher and was heard"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.04,
+              "reason": "the teacher kept the confession"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$teacher",
+              "proposition": "孩子在地窖里看见了大人藏起来的东西。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the secret was spoken to someone safe"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "teacher_kept_secret",
+              "add": true,
+              "reason": "a teacher heard the secret and kept it"
+            }
+          ]
+        },
+        {
+          "id": "the-teacher-sends-a-note-home",
+          "weight": 0.3,
+          "text": "{teacher}听完没有安慰，只拿出一张纸，写了两行字，折好让{subject}带回家。{subject}在楼梯口把纸打开又折上，最后还是没有扔掉。那天晚上，家里大人看完纸条，把地窖钥匙挂到了更高的钉子上。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "discovered",
+              "value": true,
+              "reason": "the teacher sent a note home"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.06,
+              "reason": "the teacher told the parent"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the note carried the secret home"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "teacher_sent_note_home",
+              "add": true,
+              "reason": "the teacher sent a note about the secret"
+            }
+          ]
+        },
+        {
+          "id": "the-child-cannot-say-it",
+          "weight": 0.35,
+          "text": "{subject}在空教室里坐到天快黑，{teacher}批完一摞本子，问是不是有话要说。{subject}摇头，说只是等雨停。{teacher}把伞递过来，{subject}接伞时忽然说“地窖”，又立刻改口说“地窖里有老鼠”。{teacher}看了孩子一眼，没有再问。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "tellUrge",
+              "delta": 6,
+              "reason": "the child tried and failed to tell"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "key": "weight",
+              "delta": 3,
+              "reason": "the unfinished confession did not relieve the secret"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.01,
+              "reason": "the teacher lent an umbrella"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the words would not come out"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "confession_stuck",
+              "add": true,
+              "reason": "the child could not tell the teacher"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 2,
+      "cooldownYears": 3
+    },
+    {
+      "id": "iw18-school.ink-pot",
+      "title": "墨水瓶打翻以后",
+      "domain": "education",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 6,
+        "max": 10
+      },
+      "tags": [
+        "childhood",
+        "school",
+        "cruelty",
+        "shame",
+        "teacher",
+        "ink"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 10
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 10
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-blame-sticks",
+          "weight": 0.35,
+          "text": "墨水瓶从桌角翻下去，蓝黑的一摊漫过{subject}的抄写本。{teacher}从讲台后抬起头，先看见{subject}手上的墨，便让{subject}站到墙角。真正碰倒瓶子的{neighbor}低着头，把脚尖缩进凳子下面，一句话也没有说。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "an unjust punishment in front of the class"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the class remembered the ink accident"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.06,
+              "respect": -0.04,
+              "reason": "the teacher blamed the wrong child"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "the real culprit stayed silent"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ink_pot_blamed",
+              "add": true,
+              "reason": "the child was blamed for the ink pot"
+            }
+          ]
+        },
+        {
+          "id": "the-classmate-confesses",
+          "weight": 0.3,
+          "text": "{neighbor}站起来，说瓶子是自己碰的，因为想看清{subject}本子上的画。{teacher}让两个人都站到讲台前，罚抄同一页字；抄到一半，{neighbor}用胳膊肘碰了碰{subject}，把一块橡皮推过来。{subject}没有接，嘴角却松了一点。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "affection": 0.04,
+              "reason": "the classmate confessed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "the teacher corrected the punishment"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the truth came out in class"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ink_pot_confessed",
+              "add": true,
+              "reason": "the classmate confessed to the ink accident"
+            }
+          ]
+        },
+        {
+          "id": "the-child-takes-revenge",
+          "weight": 0.2,
+          "text": "放学后，{subject}把剩下的半瓶墨水滴进{neighbor}挂在椅背上的外套口袋。第二天{neighbor}的母亲来学校闹了一场，{teacher}没有再查是谁干的；{subject}坐在最后一排，看见{neighbor}红着眼圈，忽然觉得那块墨迹比自己的抄写本还难看。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "fear": 0.05,
+              "reason": "revenge for the ink accident"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the class suspected the revenge"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "revenge felt good for one afternoon"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ink_revenge",
+              "add": true,
+              "reason": "the child took revenge for the ink pot"
+            }
+          ]
+        },
+        {
+          "id": "the-teacher-says-nothing",
+          "weight": 0.15,
+          "text": "{teacher}从讲台抽屉里拿出一块湿布，把桌上的墨迹慢慢擦掉，又把{subject}的抄写本翻到新的一页，说“重抄”。整个教室只有布擦过木头的沙沙声；{subject}低头写字时，第一次明白有些大人不需要发火也能让人害怕。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the teacher's silence was worse than shouting"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "respect": -0.03,
+              "fear": 0.04,
+              "reason": "the teacher cleaned the ink without a word"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.01,
+              "reason": "a page recopied under silent pressure"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ink_wiped_in_silence",
+              "add": true,
+              "reason": "the teacher cleaned the ink in silence"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 2
+    },
+    {
+      "id": "iw18-school.bell-rope",
+      "title": "够不着的铃绳",
+      "domain": "education",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 5,
+        "max": 9
+      },
+      "tags": [
+        "childhood",
+        "school",
+        "bell",
+        "comic",
+        "play",
+        "injury"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 5,
+          "max": 9
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 9
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 5,
+          "maxAge": 10
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "rings-it",
+          "weight": 0.35,
+          "text": "铃绳比{subject}高出一截，孩子把煤箱拖到墙边，踩上去，指尖才够到绳头。铃声响得整条街都回头，{teacher}从办公室出来，先皱眉，随后忍不住笑，说下次搬凳子记得叫人扶。",
+          "significance": 0.62,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the child rang the school bell"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "affection": 0.03,
+              "reason": "the teacher laughed at the bell"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the bell rang for the whole street"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rang_the_school_bell",
+              "add": true,
+              "reason": "the child rang the school bell"
+            }
+          ]
+        },
+        {
+          "id": "falls-into-the-snow",
+          "weight": 0.3,
+          "text": "煤箱在雪水里滑了一下，{subject}整个人摔进墙根的雪堆，铃绳还在头顶晃。{teacher}赶来时，孩子已经自己坐起来，膝盖破了一层皮，嘴里还咬着半截围巾。那天下午{subject}没有上课，被留在火炉边烤湿袜子。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a fall while reaching for the bell rope"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "bruised knee",
+              "add": true,
+              "reason": "the child fell from the coal box"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "affection": 0.03,
+              "reason": "the teacher dried the child's socks"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a cold fall in the snow"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fell_from_bell_rope",
+              "add": true,
+              "reason": "the child fell reaching for the bell"
+            }
+          ]
+        },
+        {
+          "id": "the-whole-street-hears",
+          "weight": 0.2,
+          "text": "铃在午饭前响了两遍，街角卖煤的、洗衣妇和修鞋匠都朝学校看。{teacher}冲出来，发现{subject}还挂在绳子上，脚离地半尺。孩子被放下来时，街上已经有人笑出了声；那天放学，{subject}绕了远路回家。",
+          "significance": 0.64,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the whole street heard the wrong bell"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "the teacher had to pull the child down"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the prank was funny before it was shameful"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rang_bell_early",
+              "add": true,
+              "reason": "the child rang the bell at the wrong hour"
+            }
+          ]
+        },
+        {
+          "id": "the-teacher-rings-it",
+          "weight": 0.15,
+          "text": "{teacher}没有让孩子再爬煤箱，而是把{subject}抱起来，让孩子自己抓住铃绳。铃响时，{subject}离地很高，能看见院子里所有孩子的头顶。{teacher}放下孩子后，说“以后想摇铃就来找我”，{subject}点头，手心还留着粗麻绳的印子。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "affection": 0.05,
+              "trust": 0.04,
+              "reason": "the teacher lifted the child to the bell"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the child rang the bell safely"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lifted_to_the_bell",
+              "add": true,
+              "reason": "the teacher lifted the child to ring the bell"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 3
+    },
+    {
+      "id": "iw18-school.dead-sparrow",
+      "title": "操场边的死麻雀",
+      "domain": "education",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 7,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "school",
+        "death",
+        "grief",
+        "funeral",
+        "eerie"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 7,
+          "max": 11
+        },
+        {
+          "kind": "hasState",
+          "stateId": "grief"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "a-funeral-in-a-matchbox",
+          "weight": 0.35,
+          "text": "麻雀是在操场墙根下发现的，翅膀还半张着。{subject}和{neighbor}用火柴盒装它，在煤堆后面挖了一个浅坑，插上两根树枝。{subject}把口袋里那块硬面包掰碎撒在坑边，说“路上吃”，{neighbor}跟着鞠了一躬。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a small funeral gave the grief a shape"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "affection": 0.05,
+              "trust": 0.03,
+              "reason": "the children buried the sparrow together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sparrow_funeral",
+              "add": true,
+              "reason": "the child buried a dead sparrow"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我和同学在煤堆后面埋了一只麻雀，还给它放了面包。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-sparrow-goes-to-the-teacher",
+          "weight": 0.3,
+          "text": "{subject}把火柴盒捧到办公室，想让老师看看麻雀的爪子。老师正在批改听写，头也没抬，说“扔出去，别带进教室”。{subject}把盒子拿到垃圾桶边，又折回来，最后把它放在窗台外，让雪慢慢盖住。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the dead bird was rejected"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": -0.02,
+              "reason": "the shared funeral was interrupted"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "dead_sparrow_rejected",
+              "add": true,
+              "reason": "an adult refused to look at the dead sparrow"
+            }
+          ]
+        },
+        {
+          "id": "the-child-keeps-it",
+          "weight": 0.35,
+          "text": "{subject}没有埋掉麻雀，而是把它放进装纽扣的铁盒，塞到床板下面。夜里{subject}起来看了两次，第三次被大人发现；大人把铁盒拿走时，{subject}说“它还没冷”，声音小得几乎听不见。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the dead bird was taken away"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a night without sleep over the bird"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_dead_sparrow",
+              "add": true,
+              "reason": "the child hid a dead sparrow under the bed"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 2,
+      "cooldownYears": 4
+    },
+    {
+      "id": "iw18-home.attic-ledger",
+      "title": "阁楼上的旧账本",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 7,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "family_estate",
+        "attic",
+        "secret",
+        "inheritance",
+        "wonder"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 7,
+          "max": 11
+        },
+        {
+          "kind": "hasState",
+          "stateId": "family-estate",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 28,
+          "maxAge": 65,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "a-name-like-hers",
+          "weight": 0.3,
+          "text": "阁楼的木箱里压着一本旧账，扉页上写着一个和{subject}很像的名字，只是中间多了一个花体字母。账本里夹着一张褪色照片，照片上的女孩穿着同一条裙子的旧样式。{subject}把名字念了两遍，觉得像在叫另一个人。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "parameters": {
+                "weight": 30,
+                "tellUrge": 25,
+                "discovered": false
+              },
+              "durationMonths": 18,
+              "reason": "the child found a family name in the attic"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "阁楼账本的扉页上写着一个和我很像的名字。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a name in the attic felt like a discovery"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_attic_ledger",
+              "add": true,
+              "reason": "the child found an old ledger in the attic"
+            }
+          ]
+        },
+        {
+          "id": "debts-in-grandfathers-hand",
+          "weight": 0.3,
+          "text": "账本最后几页记着一串借粮和利息，字迹越写越斜，最后一行只写了一半。{subject}看不懂全部，却认得“欠”字；下楼时{parent}正在算地租，{subject}把账本藏在围裙后面，晚饭时一直盯着{parent}的手。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "parameters": {
+                "weight": 40,
+                "tellUrge": 30,
+                "discovered": false
+              },
+              "durationMonths": 18,
+              "reason": "the child found evidence of the estate debt"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "阁楼账本上记着家里欠下的粮和利息。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": 1,
+              "reason": "the old debt was remembered"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the child learned the estate owed money"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_found_estate_debt",
+              "add": true,
+              "reason": "the child found the estate debt in the ledger"
+            }
+          ]
+        },
+        {
+          "id": "a-dress-that-fits",
+          "weight": 0.2,
+          "text": "{subject}从箱底翻出一条旧裙子，腰身大得能塞进两个自己，便在腰间系了一根麻绳。下楼时{parent}正在擦灯罩，抬头看见孩子，手停了一下，说“像你曾祖母”。{subject}转了一圈，裙摆扫起一层灰，在光里飘了很久。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "an old dress fit like a costume"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.03,
+              "reason": "the parent recognised an ancestor in the child"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wore_attic_dress",
+              "add": true,
+              "reason": "the child wore a dress from the attic"
+            }
+          ]
+        },
+        {
+          "id": "nothing-but-moths",
+          "weight": 0.2,
+          "text": "阁楼里只有樟脑丸、旧报纸和一只被虫蛀穿的羊毛围巾。{subject}把箱子一个个打开又合上，最后在横梁上发现一只死去的飞蛾，翅膀上的粉已经掉了一半。下楼时孩子两手空空，却觉得那个下午很长。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the attic held only moths and dust"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.01,
+              "reason": "an afternoon of opening old boxes"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "attic_only_moths",
+              "add": true,
+              "reason": "the child found nothing but moths in the attic"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 2,
+      "cooldownYears": 5
+    },
+    {
+      "id": "iw18-home.ration-tin",
+      "title": "少了一枚硬币的铁盒",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 6,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "family",
+        "money",
+        "hunger",
+        "secret",
+        "school"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 11
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "takes-a-coin",
+          "weight": 0.3,
+          "text": "铁盒放在面粉袋后面，里面是交学费和买煤的硬币。{subject}趁{parent}去井边打水，拿走了一枚，在街角买了一个还温着的面包。面包吃到一半，{subject}忽然想起铁盒盖上的凹痕，便把剩下的半个揣回口袋，没敢再咬。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "iw18-child-secret",
+              "parameters": {
+                "weight": 25,
+                "tellUrge": 40,
+                "discovered": false
+              },
+              "durationMonths": 12,
+              "reason": "the child took a coin from the household tin"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a coin taken from the school and coal tin"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "careDebt",
+              "delta": 2,
+              "reason": "the household tin came up short"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "warm bread on a hungry afternoon"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "took_from_ration_tin",
+              "add": true,
+              "reason": "the child stole from the household tin"
+            }
+          ]
+        },
+        {
+          "id": "tells-mother",
+          "weight": 0.35,
+          "text": "{subject}把铁盒端到桌上，说里面的钱对不上，可能是自己数错了。{parent}把硬币倒出来，一枚枚排开，排到最后少了一枚；{parent}没有问是谁拿的，只说“明天少买一次煤”。{subject}低头把硬币又数了一遍，这次数得很慢。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "careDebt",
+              "delta": -1,
+              "reason": "the shortfall was faced openly"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "delta": 2,
+              "reason": "the child was trusted with the tin"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.03,
+              "reason": "they counted the tin together"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the missing coin meant less coal"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "counted_the_tin_together",
+              "add": true,
+              "reason": "the child counted the household tin with a parent"
+            }
+          ]
+        },
+        {
+          "id": "puts-back-the-coin",
+          "weight": 0.35,
+          "text": "{subject}已经把硬币攥在手心，走到门口又折回来，把硬币放回铁盒，还照着原来的顺序摆好。{parent}回来时，{subject}正在数面粉袋上的补丁；那天下午孩子没有出门，只把面包铺的香味想了一遍又一遍。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "delta": 2,
+              "reason": "the child put the coin back"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "trust": 0.03,
+              "reason": "the parent never knew, but the child kept faith"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the coin went back into the tin"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "put_coin_back",
+              "add": true,
+              "reason": "the child resisted taking from the tin"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 3
+    },
+    {
+      "id": "iw18-home.first-memory",
+      "title": "炉子里的蓝火",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 5,
+        "max": 8
+      },
+      "tags": [
+        "childhood",
+        "first_memory",
+        "fire",
+        "family",
+        "wonder",
+        "fear"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 5,
+          "max": 8
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 8
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 55,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-blue-flame",
+          "weight": 0.35,
+          "text": "{subject}蹲在炉门前，看煤块底下冒出一点点蓝火，像有人把天空折小塞进了铁炉。{parent}说那是煤气，不是天空；{subject}还是把眼睛凑得更近，直到睫毛被烤得发卷。那天以后，{subject}记住的第一个画面就是那圈蓝。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a first memory of blue flame"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.03,
+              "reason": "the parent explained the blue fire"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "煤气在煤块底下会烧出一小圈蓝火。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "first_memory_blue_flame",
+              "add": true,
+              "reason": "the child remembered the blue flame"
+            }
+          ]
+        },
+        {
+          "id": "the-kitchen-fire",
+          "weight": 0.3,
+          "text": "油布靠近炉边，先冒烟，随后窜起一小片黄火。{parent}把一盆水泼上去，火没灭，反而顺着水边爬开；最后是湿麻袋压住的。{subject}记得最清楚的不是火，是{parent}光脚踩在地上、脚背上沾着黑灰的样子。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a small kitchen fire"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "fear of fire",
+              "add": true,
+              "reason": "the child saw a kitchen fire"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a burned oilcloth and wet sack"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "trust": 0.03,
+              "reason": "the parent put out the fire"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a first memory of fire"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kitchen_fire_memory",
+              "add": true,
+              "reason": "the child remembered a kitchen fire"
+            }
+          ]
+        },
+        {
+          "id": "the-first-snow",
+          "weight": 0.35,
+          "text": "{subject}清早醒来，窗台上积了一层白，玻璃上的冰花像羽毛。{parent}还没生火，屋里冷得能看见呼吸；{subject}把手指按在窗上，留下五个小洞，又隔着洞看楼下的送煤车。那天是{subject}记得的第一个冬天。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the first snow seen through the window"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.03,
+              "reason": "a cold morning shared before the fire"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "first_memory_snow",
+              "add": true,
+              "reason": "the child remembered the first snow"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 6
+    },
+    {
+      "id": "iw18-play.kite-on-roof",
+      "title": "屋顶上的风筝",
+      "domain": "social",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 6,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "play",
+        "kite",
+        "roof",
+        "neighbor",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 11
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 11
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 12
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "climbs-and-gets-it",
+          "weight": 0.3,
+          "text": "风筝挂在修鞋铺的屋檐上，尾巴缠着铁皮烟囱。{subject}踩着煤箱爬上矮墙，{neighbor}在下面扶着箱子，不停地说“慢一点”。{subject}把风筝扯下来时撕了一个角，落地时膝盖先着地，手里还举着那截竹骨。",
+          "significance": 0.64,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a scrape while retrieving the kite"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the child climbed the shed roof"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "affection": 0.04,
+              "reason": "the neighbour held the coal box steady"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the kite came down in one piece"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kite_from_roof",
+              "add": true,
+              "reason": "the child retrieved a kite from a roof"
+            }
+          ]
+        },
+        {
+          "id": "the-kite-is-lost",
+          "weight": 0.3,
+          "text": "风把风筝往屋脊另一边推，竹骨卡在两片瓦之间。{subject}和{neighbor}仰头看到脖子发酸，最后只看见一截纸尾巴在烟里抖。{neighbor}说再糊一只，{subject}说纸不够了；两个人蹲在墙根，把剩下的线绕回木轴上。",
+          "significance": 0.62,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the kite was lost on the roof"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "affection": 0.03,
+              "reason": "they wound the string back together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kite_lost_on_roof",
+              "add": true,
+              "reason": "the kite was lost on a roof"
+            }
+          ]
+        },
+        {
+          "id": "the-lodger-gets-it-down",
+          "weight": 0.2,
+          "text": "楼里的一个大人搬来长梯，把风筝从烟囱边挑下来。{subject}在下面张着手，{neighbor}负责扶梯子；风筝落到地上时，尾巴上多了一层黑灰。大人拍拍手走了，{subject}追到楼梯口，才发现自己忘了说谢谢。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "an adult rescued the kite"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.02,
+              "reason": "they held the ladder together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "adult_rescued_kite",
+              "add": true,
+              "reason": "an adult rescued the kite from the roof"
+            }
+          ]
+        },
+        {
+          "id": "the-kite-takes-the-washing",
+          "weight": 0.2,
+          "text": "风筝落下来时钩住了晾衣绳，把一条湿床单拖过煤灰。床单的主人从窗口探出头，{subject}和{neighbor}拔腿就跑，跑到街角才发现风筝还挂在绳上。第二天，{subject}家的门缝里塞进来一张要赔床单的纸条。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a laundry bill for the dirty sheet"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the kite dragged a neighbour's washing"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": -0.02,
+              "reason": "they ran away from the laundry"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the escape was funny until the note arrived"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kite_in_the_washing",
+              "add": true,
+              "reason": "the kite tangled in a neighbour's washing"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 2,
+      "cooldownYears": 2
+    },
+    {
+      "id": "iw18-play.toy-theatre",
+      "title": "纸板戏台",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 6,
+        "max": 10
+      },
+      "tags": [
+        "childhood",
+        "play",
+        "theatre",
+        "family",
+        "wonder",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 6,
+          "max": 10
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 10
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-audience-claps",
+          "weight": 0.35,
+          "text": "{subject}用鞋盒搭了一个戏台，把画在硬纸上的国王、仆人和一条狗插在缝里。{parent}坐在床沿当观众，看到国王被狗追下台时笑出了声。{subject}谢幕三次，最后把那只狗也抱出来，说它才是主角。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the toy theatre performance was a success"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.04,
+              "trust": 0.02,
+              "reason": "the parent watched the whole play"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "cutting and mounting paper figures"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the household applauded the toy theatre"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "toy_theatre_performed",
+              "add": true,
+              "reason": "the child performed a toy theatre play"
+            }
+          ]
+        },
+        {
+          "id": "the-stage-collapses",
+          "weight": 0.3,
+          "text": "演到第二幕，鞋盒的侧板忽然塌了，国王和仆人一起滑进床底。{subject}愣了一秒，索性把塌下来的纸板当成地震，继续念台词；{parent}笑得直拍床沿，最后趴在地上帮孩子找那只狗。",
+          "significance": 0.64,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the collapse became part of the play"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "affection": 0.04,
+              "trust": 0.02,
+              "reason": "they searched under the bed together"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.01,
+              "reason": "improvising with a broken stage"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "toy_theatre_collapsed",
+              "add": true,
+              "reason": "the toy theatre collapsed during a play"
+            }
+          ]
+        },
+        {
+          "id": "the-parent-sells-the-theatre",
+          "weight": 0.2,
+          "text": "{parent}把鞋盒戏台和旧纸板一起卖给了收废纸的人，换回几枚硬币和一小筐煤。{subject}放学回家，看见床底空了，没有哭，只把剩下的硬纸狗藏进课本里。那天晚上，{parent}多给孩子盛了半勺汤。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the toy theatre was sold as waste paper"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the toy theatre was sold"
+            },
+            {
+              "type": "relation",
+              "a": "$parent",
+              "b": "$subject",
+              "kind": "kin",
+              "trust": -0.04,
+              "affection": 0.02,
+              "reason": "the parent sold the theatre for coal"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "toy_theatre_sold",
+              "add": true,
+              "reason": "the toy theatre was sold for coal"
+            }
+          ]
+        },
+        {
+          "id": "the-child-charges-admission",
+          "weight": 0.15,
+          "text": "{subject}把戏台搬到楼梯间，向来看的孩子收两枚纽扣或一张糖纸。第一场来了四个人，第二场来了七个；{parent}下楼倒水时，看见孩子正一本正经地检票，门口排着一串补丁裤子。",
+          "significance": 0.62,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "buttons and paper taken as theatre admission"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the stairwell theatre drew a crowd"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the child ran a theatre for the building"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "toy_theatre_admission",
+              "add": true,
+              "reason": "the child charged admission to the toy theatre"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 2,
+      "cooldownYears": 3
+    },
+    {
+      "id": "iw18-play.funeral-procession",
+      "title": "街角的葬礼",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 7,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "death",
+        "funeral",
+        "street",
+        "eerie",
+        "grief"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "childhood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 7,
+          "max": 11
+        },
+        {
+          "kind": "hasState",
+          "stateId": "grief"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "follows-the-coffin",
+          "weight": 0.35,
+          "text": "一队送葬的人从街角转过来，黑布上的银线在雨里发亮。{subject}本来只是站在门口看，后来不知不觉跟在队伍最后，走了三条街。抬棺的人没有回头；孩子也不知道自己是什么时候开始数脚步的。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a stranger's funeral pulled the child along"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我跟着一队不认识的送葬人走了三条街。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "followed_a_funeral",
+              "add": true,
+              "reason": "the child followed a stranger's funeral"
+            }
+          ]
+        },
+        {
+          "id": "a-flower-from-the-hearse",
+          "weight": 0.3,
+          "text": "{subject}从灵车后面的花圈上抽了一朵白花，想带回去给家里那个空着的杯子。一个戴黑纱的妇人看见了，没有骂，只伸手把花要回去。{subject}把花递过去时，花瓣已经被攥出了水。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a funeral flower was taken and returned"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a mourner saw the child take a flower"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "stole_funeral_flower",
+              "add": true,
+              "reason": "the child took a flower from a funeral wreath"
+            }
+          ]
+        },
+        {
+          "id": "the-child-sees-a-face",
+          "weight": 0.35,
+          "text": "队伍拐进巷子时，{subject}看见二楼一扇窗后站着一个和死者很像的人，正低头整理袖口。孩子抬头看了很久，直到窗口只剩一块空玻璃。回家后{subject}说给大人听，大人只说那间屋早就空了。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a face in an empty window"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a night of broken sleep after the funeral"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "nightmares",
+              "add": true,
+              "reason": "the child saw a face in an empty window"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "送葬队伍经过时，我在一扇本该空着的窗后看见一个像死者的人。",
+              "confidence": 0.65,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": false
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saw_the_dead_face",
+              "add": true,
+              "reason": "the child saw a familiar face in an empty window"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 2,
+      "cooldownYears": 4
+    },
+    {
+      "id": "iw18-parent.sickbed-window",
+      "title": "病床边的窗",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 55
+      },
+      "tags": [
+        "adulthood",
+        "illness",
+        "parent",
+        "child",
+        "play",
+        "care"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "stage",
+          "in": [
+            "adulthood"
+          ]
+        },
+        {
+          "kind": "age",
+          "min": 28,
+          "max": 55
+        },
+        {
+          "kind": "hasState",
+          "stateId": "chronic-illness"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 55
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 11,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "watches-the-child-play",
+          "weight": 0.35,
+          "text": "{subject}靠在病床边的枕头上，看见{child}在窗下摆了两只茶杯，正给对面的空处倒水。孩子说一句，停一下，像在等回答。{subject}没有喊，只把被角往上拉了拉；窗玻璃上有一层雾气，孩子的影子在里面晃。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$child",
+              "stateId": "iw18-imaginary-friend",
+              "parameters": {
+                "closeness": 50,
+                "secrecy": 40,
+                "boldness": 35
+              },
+              "durationMonths": 18,
+              "reason": "the sick parent watched the child serve an invisible guest"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "affection": 0.04,
+              "reason": "the parent watched without interrupting"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a long day in the sickbed"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the child's game was a small window into another world"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "watched_childs_imaginary_tea",
+              "add": true,
+              "reason": "the sick parent watched an imaginary tea party"
+            }
+          ]
+        },
+        {
+          "id": "calls-the-child-inside",
+          "weight": 0.3,
+          "text": "{subject}敲了敲窗框，让{child}进来拿药。孩子把茶杯留在窗台上，跑进屋时鞋底带着泥；{subject}指了指柜子上的纸包，又让孩子把水壶提来。药片很小，孩子数了两遍才数对，{subject}看着孩子的手，忽然觉得那双手比去年大了。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.03,
+              "obligation": 0.04,
+              "reason": "the child was called in from play to help"
+            },
+            {
+              "type": "mood",
+              "personId": "$child",
+              "amount": -0.03,
+              "reason": "the game was interrupted"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "another day of illness"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "medicine from the cabinet"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "called_child_from_play",
+              "add": true,
+              "reason": "the sick parent called the child in from play"
+            }
+          ]
+        },
+        {
+          "id": "asks-the-child-who-is-there",
+          "weight": 0.2,
+          "text": "{subject}问{child}在跟谁说话。{child}说了一个名字，又补了一句“她不喜欢别人看她”。{subject}在枕头上转过头，窗下只有两只茶杯和一把空椅子；孩子却认真地朝那个方向摆了摆手，像是在让谁别怕。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$child",
+              "stateId": "iw18-imaginary-friend",
+              "parameters": {
+                "closeness": 55,
+                "secrecy": 30,
+                "boldness": 25
+              },
+              "durationMonths": 18,
+              "reason": "the parent asked the child about the invisible companion"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子说出了一个我从没听过的名字，还说那个人不喜欢被看见。",
+              "confidence": 0.85,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the empty chair by the window felt occupied"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the fever made the room feel colder"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "asked_the_empty_chair",
+              "add": true,
+              "reason": "the sick parent asked who the child was talking to"
+            }
+          ]
+        },
+        {
+          "id": "lets-the-game-continue",
+          "weight": 0.15,
+          "text": "{subject}闭上眼睛，假装睡着了。{child}轻手轻脚地进来，把一杯水放在床头，又把被角掖好；出去时，孩子对着门外说“她睡了，我们小声点”。{subject}听着那串脚步走远，直到杯子里的水面重新静下来。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "affection": 0.06,
+              "trust": 0.03,
+              "reason": "the child left water by the sickbed"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the child's care was quiet and real"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a little water and a little rest"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_left_water_by_bed",
+              "add": true,
+              "reason": "the child left water by the sickbed"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 3
+    }
+  ]
+}

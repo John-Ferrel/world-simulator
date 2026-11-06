@@ -1,0 +1,5241 @@
+{
+  "id": "pack-youth-fire",
+  "version": 1,
+  "title": "少年之火：初恋、考试、背叛与出逃",
+  "description": "把十三到二十五岁之间最容易留下痕迹的几件事做成可继续生长的机制：第一次心动不是一句诗，而是一个会分心、会走漏、会改变考试与友谊的状态；出逃也不是一次冲动，而是一份藏在床下、要攒钱、要证件、会被家人和车站检验的计划。二十四个 kernel 让初恋与考试相撞，让朋友在舞会与考场背叛，让危险的逞强、身体的羞耻、政治的觉醒和夜车票彼此牵连。",
+  "author": "phase18-content-author/youth-fire",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-07",
+  "sourceBriefId": "phase18-youth-fire",
+  "rationale": "Phase 17 的少年内容多为一次性场景：初恋、考试、背叛、离家各自发生，却不留下可查询的持续状态。这个包补两个互相咬合的少年状态（第一次心动、出逃计划），并用二十四个 kernel 让它们被考试、舞会、学徒作坊、大学读书会、公开丑闻、罢工潮和夜车真正消费；同时避免把少年写成单纯的受害者，保留逞强、虚荣、告密、利用他人和失败。",
+  "themes": [
+    "youth",
+    "first_love",
+    "exam",
+    "friendship_betrayal",
+    "dare",
+    "body",
+    "political_awakening",
+    "escape"
+  ],
+  "era": "1912–1955",
+  "tone": [
+    "romantic",
+    "rebellious",
+    "dark",
+    "comic"
+  ],
+  "scope": [
+    "person",
+    "household",
+    "organization"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "adolescent sexuality and body shame",
+    "exam cheating and public humiliation",
+    "dangerous dares and injury",
+    "family conflict and running away",
+    "political surveillance",
+    "class humiliation"
+  ],
+  "states": [
+    {
+      "id": "yf18-first-awakening",
+      "version": 1,
+      "packId": "pack-youth-fire",
+      "title": "第一次心动",
+      "description": "一段第一次把全部注意力吸走的感情。它可能只是一只落在电车座位上的手套、地图册边上的一行铅笔字，或浴棚门口的一次对视；它不是婚约，也不是已经成立的秘密恋情，而是一种会让人分心、逞强、撒谎、在考试时写错名字的状态。",
+      "owner": "person",
+      "slot": "awakening",
+      "conflict": "replace",
+      "tags": [
+        "love",
+        "youth",
+        "first_love",
+        "desire",
+        "school",
+        "awakening"
+      ],
+      "parameters": {
+        "intensity": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "nerve": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "talk": {
+          "type": "number",
+          "default": 5,
+          "min": 0,
+          "max": 100
+        },
+        "reciprocated": {
+          "type": "boolean",
+          "default": false
+        },
+        "secret": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "links": {
+        "beloved": "person"
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 19
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "yf18-first-awakening"
+        }
+      ],
+      "durationMonths": {
+        "min": 6,
+        "max": 48
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "love",
+            "courtship",
+            "school",
+            "youth",
+            "desire"
+          ],
+          "multiplier": 1.55
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "exam",
+            "work",
+            "family"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "love",
+            "courtship",
+            "nerve"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "half-year-of-glances",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "willpower",
+            "dc": 12,
+            "successOutcomeIds": [
+              "answered-glance"
+            ],
+            "failureOutcomeIds": [
+              "rehearsed-conversation"
+            ],
+            "criticalFailureOutcomeIds": [
+              "talked-about"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "answered-glance",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}在教堂门口或学校走廊里又遇见{beloved}。这一次对方先点了头，{subject}准备好的整段话全忘了，只把手里的书换到另一只手上；回家后{subject}才发现，自己把书拿倒了。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-first-awakening",
+                  "key": "intensity",
+                  "delta": 5,
+                  "reason": "the glance was answered"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-first-awakening",
+                  "key": "nerve",
+                  "delta": 8,
+                  "reason": "a small answer made the next step possible"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-first-awakening",
+                  "key": "reciprocated",
+                  "value": true,
+                  "reason": "the feeling was not entirely one-sided"
+                },
+                {
+                  "type": "relation",
+                  "a": "$subject",
+                  "b": "$link:beloved",
+                  "kind": "friend",
+                  "trust": 0.02,
+                  "affection": 0.03,
+                  "reason": "a nod in the school corridor"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.03,
+                  "reason": "being noticed"
+                }
+              ]
+            },
+            {
+              "id": "rehearsed-conversation",
+              "result": "partial",
+              "weight": 2,
+              "text": "{subject}在厨房里对着镜子练了七遍开场白，第二天却在离{beloved}三步远的地方拐进面包店。{subject}买了一袋并不需要的盐，回家路上把开场白又想了一遍；这一次，连标点都更熟练了。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-first-awakening",
+                  "key": "intensity",
+                  "delta": 6,
+                  "reason": "the rehearsal became more vivid than the meeting"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-first-awakening",
+                  "key": "talk",
+                  "delta": 3,
+                  "reason": "a small detail leaked to a friend"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "the privacy of a rehearsal"
+                }
+              ]
+            },
+            {
+              "id": "talked-about",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "{subject}只把{beloved}的名字写在一张草稿纸背面，第二天那张纸就在教室后排传了一圈。有人把名字念出来，有人问{subject}是不是要请人喝咖啡；{subject}说那是表姐的名字，声音大得连自己都吓了一跳。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-first-awakening",
+                  "key": "talk",
+                  "delta": 12,
+                  "reason": "a name on a scrap of paper travelled"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-first-awakening",
+                  "key": "nerve",
+                  "delta": -6,
+                  "reason": "the whole class knew too much"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "a private name became classroom gossip"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "being teased before the first word was said"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "seen-with-the-glove",
+          "onTags": [
+            "public_humiliation"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "talk",
+              "delta": 15,
+              "reason": "a public moment put the private feeling on display"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "nerve",
+              "delta": -5,
+              "reason": "humiliation made the next approach harder"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the private feeling was seen"
+            }
+          ],
+          "text": "有人在教室里看见{subject}把一只旧手套夹进课本。消息传到走廊尽头时，已经变成{subject}要跟人私奔；{subject}把课本抱在胸前，一整天没有打开。",
+          "cooldownMonths": 12
+        },
+        {
+          "id": "exam-week-distraction",
+          "onTags": [
+            "exam"
+          ],
+          "chance": 0.35,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": -3,
+              "reason": "exam pressure pushed the feeling into the margins"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "talk",
+              "delta": 2,
+              "reason": "a note was passed during revision"
+            }
+          ],
+          "text": "考试周里，{subject}把课本摊在桌上，眼睛却一直看着窗外那条电车线。笔记的页边多了几个没有写完的名字，{subject}用橡皮擦掉，纸面起了毛。",
+          "cooldownMonths": 6
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "yf18-first-awakening",
+          "parameter": "intensity",
+          "max": 5
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "yf18_first_awakening_active",
+          "add": true,
+          "reason": "a first attachment became a standing part of the subject's attention"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "yf18_first_awakening_active",
+          "add": false,
+          "reason": "the first awakening lost its hold"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/youth-fire",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase18-youth-fire"
+        ],
+        "rationale": "First love needs its own mechanics: distraction, nerve, gossip and a named person. It is not yet a secret affair, so it must not duplicate forbidden-attachment."
+      }
+    },
+    {
+      "id": "yf18-runaway-plan",
+      "version": 1,
+      "packId": "pack-youth-fire",
+      "title": "床底下的包袱",
+      "description": "一份还没有执行的离家计划：藏在床底的包袱、攒了一半的车票钱、从表姐信上抄来的地址、替父母签过字的表格。它让日常争吵变成可追踪的准备，也让车站、家人、同伴和证件真正检验一个人到底走不走得成。",
+      "owner": "person",
+      "slot": "escape",
+      "conflict": "replace",
+      "tags": [
+        "escape",
+        "youth",
+        "plan",
+        "home",
+        "travel",
+        "risk"
+      ],
+      "parameters": {
+        "preparation": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        },
+        "suspicion": {
+          "type": "number",
+          "default": 5,
+          "min": 0,
+          "max": 100
+        },
+        "resolve": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "destination": {
+          "type": "string",
+          "default": "格拉茨"
+        },
+        "ticket": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "links": {
+        "companion": "person"
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 13,
+          "max": 25
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "yf18-runaway-plan"
+        }
+      ],
+      "durationMonths": {
+        "min": 3,
+        "max": 24
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "runaway",
+            "escape",
+            "family",
+            "station",
+            "travel",
+            "police"
+          ],
+          "multiplier": 1.45
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "escape",
+            "travel",
+            "cunning"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "three-months-of-preparation",
+          "everyMonths": 3,
+          "check": {
+            "attribute": "cunning",
+            "dc": 11,
+            "successOutcomeIds": [
+              "route-memorised"
+            ],
+            "failureOutcomeIds": [
+              "bundle-under-the-bed"
+            ],
+            "criticalFailureOutcomeIds": [
+              "someone-counts-the-savings"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "route-memorised",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}把去车站的路又走了一遍，记住了哪一段有煤气灯、哪一段住着巡夜的警察。回家后，{subject}在旧日历背面画了一条线，标出换乘的站名；那条线短得可笑，却比课本上的任何地图都清楚。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-runaway-plan",
+                  "key": "preparation",
+                  "delta": 12,
+                  "reason": "the route was walked and memorised"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-runaway-plan",
+                  "key": "suspicion",
+                  "delta": 2,
+                  "reason": "a longer walk than usual"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "the plan became slightly more real"
+                }
+              ]
+            },
+            {
+              "id": "bundle-under-the-bed",
+              "result": "partial",
+              "weight": 2,
+              "text": "{subject}把包袱重新塞回床底，又在上面压了一双冬鞋。母亲进来换床单时，{subject}站在门口，假装在看墙上的圣像；床单抖开的声音像一列很慢的火车，{subject}数着它经过的每一节车厢。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-runaway-plan",
+                  "key": "preparation",
+                  "delta": 4,
+                  "reason": "the bundle was moved and hidden again"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-runaway-plan",
+                  "key": "suspicion",
+                  "delta": 6,
+                  "reason": "the mother changed the sheets"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "a near discovery"
+                }
+              ]
+            },
+            {
+              "id": "someone-counts-the-savings",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "{subject}藏在糖罐后面的硬币少了一小叠。父亲说家里这个月煤钱不够，先拿去用了；{subject}看着空出来的那圈灰，什么也没说。那天晚上，{subject}第一次认真算了一笔账：从维也纳到格拉茨，到底要攒几个冬天。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-runaway-plan",
+                  "key": "suspicion",
+                  "delta": 15,
+                  "reason": "the family found the hidden savings"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "yf18-runaway-plan",
+                  "key": "resolve",
+                  "delta": -6,
+                  "reason": "the fare money disappeared into coal"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "the escape fund was spent on coal"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-family-question",
+          "onTags": [
+            "family"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "suspicion",
+              "delta": 8,
+              "reason": "a family row made the plan harder to hide"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "resolve",
+              "delta": -2,
+              "reason": "the row also made leaving feel less like an adventure"
+            }
+          ],
+          "text": "饭桌上又为房租吵起来。{subject}把面包掰成很小的块，听见父亲说“这个家养不起闲人”；{subject}没有回嘴，只在心里把格拉茨的地址又背了一遍。",
+          "cooldownMonths": 6
+        },
+        {
+          "id": "police-in-the-street",
+          "onTags": [
+            "police"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "suspicion",
+              "delta": 12,
+              "reason": "police in the street made the plan feel visible"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "resolve",
+              "delta": 3,
+              "reason": "fear hardened the resolve to leave"
+            }
+          ],
+          "text": "巡警在巷口查身份证，{subject}把装着车票钱的信封塞进袜筒。警察只看了{subject}一眼就放行；{subject}走出很远才发现，自己一直屏着呼吸。",
+          "cooldownMonths": 6
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "yf18-runaway-plan",
+          "parameter": "resolve",
+          "max": 0
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "yf18_runaway_plan_active",
+          "add": true,
+          "reason": "leaving home became a plan rather than a mood"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "yf18_runaway_plan_active",
+          "add": false,
+          "reason": "the plan was executed, abandoned or discovered"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/youth-fire",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase18-youth-fire"
+        ],
+        "rationale": "A runaway plan needs preparation, suspicion, a ticket and a destination, or it is only a mood. The state is consumed by station, family and first-wage scenes."
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "yf18-firstlook.tram-glove",
+      "title": "电车座位上的手套",
+      "domain": "relationship",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 13,
+        "max": 16
+      },
+      "tags": [
+        "first_love",
+        "love",
+        "tram",
+        "glove",
+        "youth",
+        "courtship"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "yf18-first-awakening"
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 16
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "return-it-at-the-gate",
+          "weight": 3,
+          "text": "下一站，{subject}追下车，把那只手套递还给{beloved}。{beloved}说了一声谢谢，手指在毛线手套里缩了一下；{subject}回到车上才发现自己坐过了两站，只好沿着环城路走回家。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-first-awakening",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "intensity": 45,
+                "nerve": 25,
+                "talk": 0,
+                "reciprocated": false,
+                "secret": true
+              },
+              "links": {
+                "beloved": "$beloved"
+              },
+              "reason": "returning a glove began a first attachment"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": 0.03,
+              "affection": 0.05,
+              "reason": "a glove returned at the tram stop"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a small kindness on the tram"
+            }
+          ]
+        },
+        {
+          "id": "keep-it-in-the-satchel",
+          "weight": 2,
+          "text": "{subject}把手套塞进书包最里层，回家后放在枕头下面。第二天上学，{subject}每隔一会儿就摸一下书包带，像在确认一件不能给家里看见的东西；手套上还留着电车木座的气味。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-first-awakening",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "intensity": 60,
+                "nerve": 5,
+                "talk": 0,
+                "reciprocated": false,
+                "secret": true
+              },
+              "links": {
+                "beloved": "$beloved"
+              },
+              "reason": "keeping the glove turned a stranger into a secret"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_kept_glove",
+              "add": true,
+              "reason": "the glove was kept instead of returned"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a secret kept under the pillow"
+            }
+          ]
+        },
+        {
+          "id": "let-friend-return-it",
+          "weight": 1,
+          "text": "{subject}把手套交给{friend}，让{friend}替自己去还。{friend}回来时说，{beloved}问是谁捡到的；{friend}顺口报了一个名字，{subject}听见那名字不是自己的，笑得比平时响。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-first-awakening",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "intensity": 35,
+                "nerve": 10,
+                "talk": 10,
+                "reciprocated": false,
+                "secret": true
+              },
+              "links": {
+                "beloved": "$beloved"
+              },
+              "reason": "a friend carried the first message"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.02,
+              "reason": "the friend took the credit"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "hearing the wrong name praised"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-firstlook.atlas-margin",
+      "title": "地图册边上的字",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 14,
+        "max": 17
+      },
+      "tags": [
+        "first_love",
+        "school",
+        "atlas",
+        "note",
+        "secrecy"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "yf18-first-awakening"
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "write-back-in-pencil",
+          "weight": 3,
+          "text": "地理课上，{subject}在地图册的空白处看见一行铅笔字：“多瑙河从维也纳流走，不从这儿。”{subject}认出是{beloved}的笔迹，趁{teacher}转身，在下面添了一句：“那你往哪儿流？”下课铃响时，{subject}把地图册塞进{beloved}的课桌。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-first-awakening",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "intensity": 55,
+                "nerve": 30,
+                "talk": 0,
+                "reciprocated": false,
+                "secret": true
+              },
+              "links": {
+                "beloved": "$beloved"
+              },
+              "reason": "a note in the atlas margin was answered"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": 0.02,
+              "affection": 0.06,
+              "reason": "two lines written in a school atlas"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_atlas_note",
+              "add": true,
+              "reason": "the atlas became a private letter"
+            }
+          ]
+        },
+        {
+          "id": "tear-out-the-page",
+          "weight": 2,
+          "text": "{subject}把那页地图撕下来，折成四折藏进袜筒。回家路上，{subject}在煤气灯下把字读了三遍，又把纸塞进炉子；火苗舔到“多瑙河”三个字时，{subject}伸手抢出来，指尖烫出一个泡。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-first-awakening",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "intensity": 50,
+                "nerve": 5,
+                "talk": 0,
+                "reciprocated": false,
+                "secret": true
+              },
+              "links": {
+                "beloved": "$beloved"
+              },
+              "reason": "a torn map page became a private relic"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a burned fingertip"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_burned_fingers",
+              "add": true,
+              "reason": "the note was rescued from the stove"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the page survived the fire"
+            }
+          ]
+        },
+        {
+          "id": "read-it-to-the-class",
+          "weight": 1,
+          "text": "{subject}以为那是谁开的玩笑，把地图册举起来念给全班听。{teacher}问是谁写的；教室最后一排有人把书立起来挡住脸。放学后，{beloved}在楼梯口等{subject}，只说了一句“你念错了一个字”，就从他身边走过去。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-first-awakening",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "intensity": 40,
+                "nerve": 10,
+                "talk": 20,
+                "reciprocated": false,
+                "secret": true
+              },
+              "links": {
+                "beloved": "$beloved"
+              },
+              "reason": "a private note was read aloud by mistake"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a classroom joke that exposed the writer"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "the note was read to everyone"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a misunderstanding at the stairwell"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-firstlook.parish-dance",
+      "title": "教会礼堂的舞卡",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 15,
+        "max": 18
+      },
+      "tags": [
+        "first_love",
+        "dance",
+        "church",
+        "courtship",
+        "jealousy"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "yf18-first-awakening"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 18
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 18
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 18
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "the-second-dance",
+          "weight": 3,
+          "text": "舞卡上第一支曲子被{beloved}写走了。{subject}在教会礼堂的木地板上踩错了两步，{beloved}说没关系，把手放回{subject}背后；第三支曲子响起时，{friend}在门口冲{subject}比了个手势，{subject}假装没看见。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": 8,
+              "reason": "a second dance in the parish hall"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "nerve",
+              "delta": 10,
+              "reason": "the dance card was answered"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "reciprocated",
+              "value": true,
+              "reason": "the second dance was not an accident"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": 0.04,
+              "affection": 0.08,
+              "reason": "one dance too many"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a warm hand on a cold evening"
+            }
+          ]
+        },
+        {
+          "id": "friend-cuts-in",
+          "weight": 2,
+          "text": "{friend}在第二支曲子前把{beloved}请走，说{subject}答应过要替她看管外套。{subject}抱着一件不属于自己的大衣站在圣像下面，看他们在蜡烛光里转圈；回家路上，{subject}把舞卡撕成小片，扔进多瑙运河。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": 5,
+              "reason": "watching the dance from the cloakroom"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "nerve",
+              "delta": -8,
+              "reason": "the friend moved first"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "talk",
+              "delta": 5,
+              "reason": "the dance card was seen and discussed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.08,
+              "reason": "the friend cut in without asking"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": -0.02,
+              "reason": "the dance went to someone else"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "holding another person's coat"
+            }
+          ]
+        },
+        {
+          "id": "leave-before-the-last-dance",
+          "weight": 1,
+          "text": "{subject}在最后一支曲子前溜出礼堂，沿着教堂外墙走了一圈。窗子里传来手风琴声，{subject}数到第三遍副歌才往家走；家里问舞会好不好，{subject}说人太多，脚疼。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": -6,
+              "reason": "leaving before the last dance"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "nerve",
+              "delta": -3,
+              "reason": "the chance was not taken"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a dance heard through a window"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-firstlook.essay-exam",
+      "title": "作文题下的名字",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 16,
+        "max": 18
+      },
+      "tags": [
+        "first_love",
+        "exam",
+        "essay",
+        "school",
+        "humiliation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "yf18-first-awakening"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 18
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 18
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-teacher-keeps-it",
+          "weight": 3,
+          "text": "德语作文题是《我的家乡》。{subject}写了半页多瑙河，剩下半页写一个总在电车上看书的人。{teacher}没有打分，只在页边写“感情太多，论据太少”，把作文折好放进自己的公文包；放学后，{subject}看见{beloved}在门口等，忽然不敢走过去。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": 6,
+              "reason": "a private feeling was written into an exam"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "talk",
+              "delta": 3,
+              "reason": "the teacher read more than the essay"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "an essay written with too much feeling"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a teacher's private remark"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "being read too closely"
+            }
+          ]
+        },
+        {
+          "id": "read-aloud-as-a-warning",
+          "weight": 2,
+          "text": "{teacher}在班上念了{subject}的作文，念到“她的手套放在木座上”时停了一下，说这就是考试里最危险的东西：把私事当成论据。全班笑了，{subject}盯着桌面上的墨水圈，听见{beloved}在最后一排合上了书。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "talk",
+              "delta": 20,
+              "reason": "the essay was read aloud as a warning"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": 4,
+              "reason": "the whole class heard the glove"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "nerve",
+              "delta": -10,
+              "reason": "public reading made the next step harder"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a private essay became a class lesson"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": -0.03,
+              "reason": "the essay named a glove everyone recognised"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "being made an example"
+            }
+          ]
+        },
+        {
+          "id": "fail-the-exam",
+          "weight": 1,
+          "text": "成绩单发下来，作文那一栏是“不及格”。{subject}把成绩单折成小方块，塞进电车月票的夹层；回家路上，{subject}第一次觉得{beloved}的名字比分数更沉。夜里{subject}把作文重写了一遍，没有交。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": 8,
+              "reason": "the failed essay made the feeling heavier"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "secret",
+              "value": true,
+              "reason": "the rewritten essay was never handed in"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_failed_essay",
+              "add": true,
+              "reason": "an essay about the wrong subject failed"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a grade that did not measure the right thing"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-friend.two-tickets",
+      "title": "两张舞会票",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 14,
+        "max": 17
+      },
+      "tags": [
+        "first_love",
+        "friendship",
+        "betrayal",
+        "dance",
+        "tickets"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "yf18-first-awakening"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "confront-at-the-cloakroom",
+          "weight": 3,
+          "text": "{subject}在衣帽间堵住{friend}，问那两张票怎么到了{beloved}手里。{friend}说{subject}从来没敢开口，自己只是替{subject}把话说了；{subject}把票根揉成一团，塞进{friend}的西装口袋，转身时撞翻了侍者的托盘。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": 5,
+              "reason": "the friend's betrayal sharpened the feeling"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "talk",
+              "delta": 10,
+              "reason": "a scene at the cloakroom"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "nerve",
+              "delta": -5,
+              "reason": "the friend had spoken first"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.12,
+              "reason": "the tickets were taken"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": -0.04,
+              "reason": "the invitation came from the wrong person"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a tray crashed at the dance"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a best friend's easy answer"
+            }
+          ]
+        },
+        {
+          "id": "give-them-away",
+          "weight": 2,
+          "text": "{subject}把两张票送给门口卖花的小女孩，自己在普拉特大街上看橱窗。橱窗里摆着一双和{beloved}一样的白手套；{subject}站到商店关门，回家时说票弄丢了，谁也没有再问。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": -8,
+              "reason": "the tickets were given away"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "secret",
+              "value": true,
+              "reason": "the lost tickets were a cover story"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_gave_tickets_away",
+              "add": true,
+              "reason": "the dance tickets went to a flower seller"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a shop window full of gloves"
+            }
+          ]
+        },
+        {
+          "id": "three-on-two-tickets",
+          "weight": 1,
+          "text": "{subject}最后还是去了，{friend}和{beloved}已经坐在第三排。{subject}在过道边加了一把椅子，三个人挤在两个座位上；引座员来查票，{friend}说{subject}是自己的妹妹，{subject}在黑暗里笑得直抖，笑完才发现{beloved}的手一直放在{friend}的袖子上。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": 3,
+              "reason": "a comic humiliation at the dance"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "talk",
+              "delta": 8,
+              "reason": "the usher heard the story"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "nerve",
+              "delta": 5,
+              "reason": "laughter made the shame bearable"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.05,
+              "reason": "the friend had the better seat"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": -0.03,
+              "reason": "the hand on the sleeve"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a story that would be retold"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "laughter in the dark"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-friend.inkwell",
+      "title": "墨水瓶底下的答案",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 15,
+        "max": 18
+      },
+      "tags": [
+        "exam",
+        "cheating",
+        "friendship",
+        "betrayal",
+        "school"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "public-scandal"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 18
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 18
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "deny-everything",
+          "weight": 3,
+          "text": "{teacher}把{subject}和{friend}一起叫到讲台前，问墨水瓶底下的公式是谁写的。{subject}说不知道；{friend}低着头，袖口还沾着同样的蓝墨水。{teacher}让两人各写一份检讨，{subject}写到一半，听见{friend}在旁边小声说“对不起”，笔尖把纸戳破了。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the exam cheating remained unresolved"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.08,
+              "reason": "the friend's apology came too late"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_exam_suspicion",
+              "add": true,
+              "reason": "the teacher never forgot the inkwell"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a broken pen nib"
+            }
+          ]
+        },
+        {
+          "id": "take-the-blame",
+          "weight": 2,
+          "text": "{subject}说公式是自己写的，{friend}只是看见了。{teacher}没收了{subject}的钢笔，在成绩册上记了一笔；{friend}放学后在校门口等{subject}，递过来一块用纸包着的巧克力，{subject}没有接，只把书包带往肩上提了提。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the subject took the blame for the cheats"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.06,
+              "obligation": 0.05,
+              "reason": "a debt was created at the school gate"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_took_blame",
+              "add": true,
+              "reason": "the subject protected the friend"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a chocolate refused"
+            }
+          ]
+        },
+        {
+          "id": "name-the-friend",
+          "weight": 2,
+          "text": "{subject}说{friend}把答案抄在墨水瓶底，还答应分给自己一半。{teacher}把{friend}的座位调到第一排；第二天，{subject}的课桌里多了一张纸条，上面只有一行字：“你以后别走夜路。”{subject}把纸条交给{teacher}，事情从此不再是两个人的事。",
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "reason": "the subject named the friend"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the school saw the subject as truthful"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_named_friend",
+              "add": true,
+              "reason": "a threat turned a private cheat into a school case"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a note that sounded like a threat"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-dare.bridge-rail",
+      "title": "桥栏上的风",
+      "domain": "street",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 13,
+        "max": 17
+      },
+      "tags": [
+        "dare",
+        "bridge",
+        "river",
+        "friendship",
+        "risk"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "yf18-first-awakening"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 17
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 18
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 18
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 2,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "walk-the-rail",
+          "weight": 3,
+          "text": "多瑙河上的铁桥在夜里只剩两排灯。{subject}翻过栏杆，鞋底踩上结霜的钢梁，走了七步；{beloved}在桥头喊了一声，风把声音吹散。{subject}翻回来时，{friend}把一支烟塞进{subject}嘴里，手抖得点不着火。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": 10,
+              "reason": "a dare performed for the beloved"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "nerve",
+              "delta": 15,
+              "reason": "seven steps on a frosty rail"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "talk",
+              "delta": 5,
+              "reason": "the story would be told at school"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "cold and fear on the bridge"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the bridge stunt was admired"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_walked_bridge_rail",
+              "add": true,
+              "reason": "the subject walked the rail"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the wind and the applause"
+            }
+          ]
+        },
+        {
+          "id": "climb-back-down",
+          "weight": 2,
+          "text": "{subject}的手已经搭上栏杆，听见桥下有驳船拉笛，忽然把手收回来。{friend}骂了一句，{beloved}却把围巾解下来递给{subject}；三个人在桥头站了一会儿，谁也没有再提这件事。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": 3,
+              "reason": "the dare was refused but the evening was not ruined"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "nerve",
+              "delta": -5,
+              "reason": "the rail was left uncrossed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "affection": 0.05,
+              "reason": "a scarf offered at the bridge"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.03,
+              "reason": "the dare was refused"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a quiet walk home"
+            }
+          ]
+        },
+        {
+          "id": "fall-on-the-ice",
+          "weight": 1,
+          "text": "{subject}走到第四步，鞋底在霜上滑了一下，整个人挂在栏杆外侧。{friend}抓住{subject}的手腕，{beloved}跑去叫桥头卖烤栗子的老人；{subject}被拉上来时，膝盖已经湿透，第二天走路一瘸一拐。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "a fall on the bridge rail"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "intensity",
+              "delta": 6,
+              "reason": "the beloved saw the subject at their weakest"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-first-awakening",
+              "key": "nerve",
+              "delta": -10,
+              "reason": "the fall was worse than the dare"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.08,
+              "reason": "the friend held on"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_bridge_scare",
+              "add": true,
+              "reason": "a dare nearly ended on the rail"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a soaked knee and a story too close"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-dare.prater-slide",
+      "title": "闭园后的木滑道",
+      "domain": "leisure",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 14,
+        "max": 18
+      },
+      "tags": [
+        "dare",
+        "prater",
+        "fairground",
+        "comic",
+        "friendship"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 2,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "ride-in-the-dark",
+          "weight": 3,
+          "text": "普拉特的木滑道在闭园后还亮着一盏值班灯。{subject}和{friend}从围栏底下钻进去，用一块麻袋垫着滑下来，木槽里的蜡味呛得人直笑。滑到底时，{worker}提着灯站在出口，问他们要不要再买一张票。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "a closed fairground ride in the dark"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a late ticket paid to the watchman"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the watchman knew the face"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.04,
+              "reason": "a shared prater stunt"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_prater_stunt",
+              "add": true,
+              "reason": "the wooden slide was ridden after closing"
+            }
+          ]
+        },
+        {
+          "id": "caught-by-the-watchman",
+          "weight": 2,
+          "text": "{worker}的灯从摩天轮那边晃过来时，{friend}已经跑没影了，{subject}的鞋带却挂在木槽边。{worker}把{subject}带到园门口，记下住址，说星期一让学校来领人；{subject}一路上只担心{friend}会不会把这件事讲给全班。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the Prater watchman took the name"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a Monday reckoning at school"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_prater_caught",
+              "add": true,
+              "reason": "the watchman recorded the address"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.05,
+              "reason": "the friend ran and left the subject behind"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a fine paid at the Prater office"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-story",
+          "weight": 1,
+          "text": "第二天，{subject}在教室里把滑道说成三层楼高、底下是鳄鱼池。{friend}配合着补充细节，连{worker}的灯都被说成探照灯；全班听得入神，只有后排的{beloved}问了一句“那你为什么裤子破了”。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a good story told at school"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the class laughed with the subject"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.03,
+              "reason": "a shared exaggeration"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_prater_story",
+              "add": true,
+              "reason": "the slide became a school legend"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-body.danube-cabin",
+      "title": "浴棚第三间的门闩",
+      "domain": "leisure",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 14,
+        "max": 17
+      },
+      "tags": [
+        "body",
+        "desire",
+        "river",
+        "swimming",
+        "shame",
+        "first_love"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "yf18-first-awakening"
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 2,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "wade-in-first",
+          "weight": 3,
+          "text": "多瑙河的浴棚按男女分开，木板缝里能看见对面的人影。{subject}穿着借来的毛线泳衣，站在第三间门口不敢下水；{beloved}从水里冒出来，头发贴在额头上，说水不冷。{subject}走进河里时，满脑子都是自己肋骨上那道疤。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-first-awakening",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "intensity": 50,
+                "nerve": 15,
+                "talk": 0,
+                "reciprocated": false,
+                "secret": true
+              },
+              "links": {
+                "beloved": "$beloved"
+              },
+              "reason": "a first desire surfaced at the river baths"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "cold river water and a long swim"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "affection": 0.05,
+              "reason": "a shared river bath"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "being seen without a coat"
+            }
+          ]
+        },
+        {
+          "id": "stay-behind-the-curtain",
+          "weight": 2,
+          "text": "{subject}把浴巾裹到下巴，说自己怕水。{friend}在门外笑，说去年还见{subject}从木塔上跳下去；{subject}没有解释，只隔着板缝看{beloved}把水撩到肩上。回家时，{subject}的泳衣还是干的，衣角被手攥得起了皱。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-first-awakening",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "intensity": 40,
+                "nerve": -5,
+                "talk": 0,
+                "reciprocated": false,
+                "secret": true
+              },
+              "links": {
+                "beloved": "$beloved"
+              },
+              "reason": "watching from behind a curtain became a private attachment"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_stayed_dry",
+              "add": true,
+              "reason": "the subject did not enter the water"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a dry swimsuit and a missed chance"
+            }
+          ]
+        },
+        {
+          "id": "jump-from-the-tower",
+          "weight": 1,
+          "text": "{subject}爬上河边的木跳台，下面的水黑得像一块铁。{beloved}在岸上抬头看，{subject}想挥手，脚下一滑就掉了下去；浮上来时，嘴里全是河水的腥味，岸上的人都在鼓掌，{subject}却只听见自己的心跳。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-first-awakening",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "intensity": 60,
+                "nerve": 20,
+                "talk": 5,
+                "reciprocated": false,
+                "secret": true
+              },
+              "links": {
+                "beloved": "$beloved"
+              },
+              "reason": "a dive performed for an audience of one"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a hard landing in the Danube"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the dive was admired on the bank"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_jumped_tower",
+              "add": true,
+              "reason": "the subject jumped from the river tower"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the river and the applause"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-politics.latin-pamphlet",
+      "title": "拉丁文课本里的油印纸",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 15,
+        "max": 18
+      },
+      "tags": [
+        "politics",
+        "school",
+        "pamphlet",
+        "censorship",
+        "awakening"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 18
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 18
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "pass-it-on",
+          "weight": 3,
+          "text": "{teacher}把一本拉丁文课本推到{subject}面前，说第三十四页的译文错了。{subject}翻到那一页，夹在里面的是一张油印纸，写着面粉配给和工厂检查的数字。放学后，{subject}把纸抄了一遍，塞进{friend}的历史作业本；那天晚上，{subject}第一次觉得自己住的街区有一张看不见的地图。",
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "配给数字与官方公告并不一致",
+              "confidence": 0.7,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true,
+              "reason": "a mimeographed sheet hidden in a Latin textbook"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_read_pamphlet",
+              "add": true,
+              "reason": "the subject read and copied a banned sheet"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "a book lent with something inside"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the street acquired a hidden map"
+            }
+          ]
+        },
+        {
+          "id": "burn-it-in-the-courtyard",
+          "weight": 2,
+          "text": "{subject}在学校的煤炉边把油印纸烧了，灰烬和煤渣混在一起。{teacher}第二天问第三十四页读得怎么样，{subject}说译文看不出来；{teacher}点点头，把课本收回去，从此没有再借给{subject}任何书。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a burnt sheet and a closed door"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.06,
+              "reason": "the teacher understood the refusal"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_burned_pamphlet",
+              "add": true,
+              "reason": "the pamphlet was burned in the school stove"
+            }
+          ]
+        },
+        {
+          "id": "take-it-to-the-director",
+          "weight": 1,
+          "text": "{subject}把油印纸交到校长室，{official}正好坐在里面喝茶。校长问纸是从哪儿来的；{subject}说在课本里捡的。{teacher}当天下午被叫走，第二天换了一个代课老师；{subject}的拉丁文成绩突然好了起来，教室里却没有人再和{subject}说话。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the school saw the subject as cooperative"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "reason": "the teacher was removed after the denunciation"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_denounced_teacher",
+              "add": true,
+              "reason": "the pamphlet was handed to the director"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a quiet classroom after the denunciation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-politics.canteen-strike",
+      "title": "罢工食堂的一锅汤",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 14,
+        "max": 18
+      },
+      "tags": [
+        "strike",
+        "union",
+        "food",
+        "loyalty",
+        "politics"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "strike-wave",
+          "owner": "organization"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 30
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 55
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "carry-the-bread",
+          "weight": 3,
+          "text": "工厂食堂的烟囱不冒烟了，{sibling}把一锅扁豆汤抬到后门，让{subject}用围裙兜着面包送进罢工棚。{worker}在门口拦住{subject}，问是不是工会的人；{subject}说自己是{sibling}的妹妹，{worker}笑了一声，把面包接过去。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "bread carried home from the strike kitchen"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_strike_runner",
+              "add": true,
+              "reason": "the subject carried bread to the picket"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.08,
+              "reason": "a younger sister helped the strike kitchen"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the picket knew the runner's face"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "being useful in a grown-up quarrel"
+            }
+          ]
+        },
+        {
+          "id": "take-the-foremans-money",
+          "weight": 2,
+          "text": "{subject}从罢工棚前绕过去，替工头把一篮面包送到仍开工的车间。工头给了{subject}两枚硬币，说别让{sibling}看见；{subject}把钱塞进鞋垫，晚饭时{sibling}问面包怎么少了一半，{subject}说分给同学了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "coins from the foreman for crossing the picket"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.12,
+              "reason": "the sibling suspected where the bread went"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_crossed_picket",
+              "add": true,
+              "reason": "the subject carried bread to the working shift"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a lie that tasted like warm bread"
+            }
+          ]
+        },
+        {
+          "id": "hide-the-pot",
+          "weight": 1,
+          "text": "{subject}把汤锅藏进煤棚，盖上旧麻袋；警察来问时，{subject}说家里今天没开火。人走后，{sibling}从煤堆后面出来，脸上全是灰，问{subject}怕不怕；{subject}说怕，但汤还没凉。",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_hid_strike_soup",
+              "add": true,
+              "reason": "a pot of soup was hidden from the police"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.05,
+              "reason": "the sibling was hidden in the coal shed"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the soup survived the search"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "fear and soup in the same afternoon"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-runaway.bundle",
+      "title": "床底下的包袱",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 14,
+        "max": 17
+      },
+      "tags": [
+        "runaway",
+        "escape",
+        "family",
+        "plan",
+        "night_train"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "yf18-runaway-plan"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 55
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "hide-the-bundle",
+          "weight": 3,
+          "text": "{subject}把两件衬衫、一双袜子和小时候的洗礼证明卷进一块旧桌布，塞到床底下。{parent}在厨房里数硬币，数了三遍都没有抬头；{subject}躺在黑暗里，听见夜车从远处经过，铁轨的声音一直传到枕头下面。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-runaway-plan",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "preparation": 15,
+                "suspicion": 5,
+                "resolve": 55,
+                "destination": "格拉茨",
+                "ticket": false
+              },
+              "reason": "a bundle hidden under the bed became a plan"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_bundle_hidden",
+              "add": true,
+              "reason": "the bundle was packed in secret"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the night train heard through a pillow"
+            }
+          ]
+        },
+        {
+          "id": "buy-the-ticket-tonight",
+          "weight": 2,
+          "text": "{subject}趁{parent}去上夜班，把储钱罐砸在窗台上。硬币滚进床缝，{subject}趴在地上摸到最后一枚，跑去南站买了一张最便宜的单程票；售票员问要不要往返，{subject}说不用，声音比自己想象中平静。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-runaway-plan",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "preparation": 35,
+                "suspicion": 15,
+                "resolve": 70,
+                "destination": "格拉茨",
+                "ticket": true
+              },
+              "reason": "a one-way ticket turned anger into a route"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "the savings jar was broken for a ticket"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_ticket_bought",
+              "add": true,
+              "reason": "a one-way ticket was bought at the south station"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the ticket made the plan feel possible"
+            }
+          ]
+        },
+        {
+          "id": "unpack-and-boil-water",
+          "weight": 1,
+          "text": "{subject}把包袱重新打开，衬衫上的褶子已经压平了。{subject}把洗礼证明放回抽屉，去厨房烧了一壶水；{parent}醒来时，桌上多了一杯茶，{subject}说今天不想去上学。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the bundle was unpacked before it was ever carried"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.03,
+              "reason": "a cup of tea instead of a departure"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_unpacked",
+              "add": true,
+              "reason": "the bundle was unpacked and put away"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-runaway.cousin-letter",
+      "title": "格拉茨来的信",
+      "domain": "migration",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 15,
+        "max": 18
+      },
+      "tags": [
+        "runaway",
+        "letter",
+        "cousin",
+        "work",
+        "plan"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "yf18-runaway-plan"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 18
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 55
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "answer-in-secret",
+          "weight": 3,
+          "text": "格拉茨的表姐来信，说旅馆缺一个叠床单的女孩，管吃住，工钱少但能攒下。{subject}把信藏在算术本里，用铅笔在背面写回信；邮票是从{parent}的抽屉里偷的，信封上不敢写自己的名字，只写了“内详”。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-runaway-plan",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "preparation": 45,
+                "suspicion": 5,
+                "resolve": 60,
+                "destination": "格拉茨",
+                "ticket": false
+              },
+              "reason": "a letter from a cousin gave the plan a destination"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a stolen stamp and writing paper"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_cousin_reply",
+              "add": true,
+              "reason": "a reply was sent without a return address"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a door opened in another city"
+            }
+          ]
+        },
+        {
+          "id": "show-the-letter-to-parent",
+          "weight": 2,
+          "text": "{subject}把信放在晚饭桌上。{parent}读完，问格拉茨远不远，又说家里的房租下个月要涨；那晚谁也没有说行或不行，信被压在糖罐下面，第二天边角沾了咖啡。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-runaway-plan",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "preparation": 20,
+                "suspicion": 0,
+                "resolve": 35,
+                "destination": "格拉茨",
+                "ticket": false
+              },
+              "reason": "a family conversation made leaving thinkable"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.04,
+              "reason": "the letter was shown at the supper table"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_family_knows_letter",
+              "add": true,
+              "reason": "the family knew about the cousin's offer"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a letter under the sugar jar"
+            }
+          ]
+        },
+        {
+          "id": "forge-the-permit",
+          "weight": 1,
+          "text": "{subject}在市政厅的表格上替{parent}签了名，又把日期往前挪了三天。办事员看了{subject}一眼，问父亲怎么没来；{subject}说他病在床上。印章落下去时，{subject}的手心全是汗，出门才发现自己把回执捏成了两半。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "yf18-runaway-plan",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "preparation": 60,
+                "suspicion": 20,
+                "resolve": 65,
+                "destination": "格拉茨",
+                "ticket": false
+              },
+              "reason": "a forged signature made the paperwork possible"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "stamps and a clerk's fee"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_forged_permit",
+              "add": true,
+              "reason": "the travel permit carried a forged signature"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the clerk remembered the nervous applicant"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the stamp fell before the fear did"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-runaway.north-station",
+      "title": "北站最后一班慢车",
+      "domain": "migration",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 25
+      },
+      "tags": [
+        "runaway",
+        "station",
+        "train",
+        "papers",
+        "escape"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "yf18-runaway-plan"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 25
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "board-the-train",
+          "weight": 3,
+          "text": "北站的钟指到十一点四十，{subject}把包袱塞进头顶的行李架，票根攥在手心。{official}在检票口翻看{subject}的工票，问去格拉茨做什么；{subject}说去看表姐，声音没有抖。汽笛响时，{subject}看见站台上没有一张熟悉的脸，忽然笑了一下。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "stateId": "yf18-runaway-plan",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "the plan was executed at the north station"
+            },
+            {
+              "type": "move",
+              "personId": "$subject",
+              "locationId": "@station",
+              "reason": "the subject boarded the night train"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "the fare and a platform coffee"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_left_vienna",
+              "add": true,
+              "reason": "the subject left Vienna on the night train"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the train moved before the fear did"
+            }
+          ]
+        },
+        {
+          "id": "turn-back-at-the-barrier",
+          "weight": 2,
+          "text": "{subject}已经走到检票口，听见身后有人喊自己的小名。回头看见{parent}提着一只保温壶，站在卖报纸的摊子旁边。{subject}把票递过去又收回来，最后陪她坐在长椅上喝完那壶汤；火车开走时，两个人都没有看站台。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "resolve",
+              "delta": -20,
+              "reason": "the parent appeared at the barrier"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "suspicion",
+              "delta": 10,
+              "reason": "the family knew about the station"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.08,
+              "reason": "a flask of soup on a station bench"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the train left without the subject"
+            }
+          ]
+        },
+        {
+          "id": "stopped-for-papers",
+          "weight": 1,
+          "text": "{official}把{subject}的包袱解开，问里面的洗礼证明为什么和车票上的名字不一样。{subject}说那是小时候的名字；{official}把证明收进公文包，让{subject}跟他去办公室。火车在窗外开走，{subject}只看见最后一节车厢的灯。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "suspicion",
+              "delta": 25,
+              "reason": "the papers did not match the ticket"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "resolve",
+              "delta": -10,
+              "reason": "the station office was a warning"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a name checked at the station"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_stopped_at_station",
+              "add": true,
+              "reason": "the papers were taken to the station office"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the last carriage light pulling away"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-runaway.mother-bundle",
+      "title": "床底下的包袱被翻出来",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 14,
+        "max": 18
+      },
+      "tags": [
+        "runaway",
+        "family",
+        "discovery",
+        "lie",
+        "plan"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "yf18-runaway-plan"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 55
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "tell-the-truth",
+          "weight": 3,
+          "text": "{parent}把包袱放在桌上，问{subject}是不是打算走。{subject}说是，又说不出为什么；{parent}没有打，只把包袱里的衬衫一件件叠好，说格拉茨的冬天比维也纳冷。那天夜里，{subject}听见{parent}在厨房里数钱，数到很晚。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "suspicion",
+              "delta": 20,
+              "reason": "the parent found the bundle"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "resolve",
+              "delta": 5,
+              "reason": "the truth made the plan more concrete"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "preparation",
+              "delta": 5,
+              "reason": "the parent added a warmer shirt"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.06,
+              "reason": "a confession at the table"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_parent_knows_plan",
+              "add": true,
+              "reason": "the parent knew about the plan"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "counting coins heard through a wall"
+            }
+          ]
+        },
+        {
+          "id": "lie-about-a-school-trip",
+          "weight": 2,
+          "text": "{subject}说包袱是替同学准备的，学校要去瓦豪采葡萄。{parent}问是哪位同学，{subject}报了一个班里最有钱的名字；{parent}居然信了，还往包袱里塞了两个苹果。第二天，{subject}在车站看见那个同学，才知道谎话已经开始自己走路。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "suspicion",
+              "delta": 8,
+              "reason": "the lie put a real classmate into the story"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "preparation",
+              "delta": -5,
+              "reason": "two apples made the bundle heavier"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.03,
+              "reason": "a lie that would need a second lie"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_trip_lie",
+              "add": true,
+              "reason": "the bundle was explained as a school trip"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the lie was already walking"
+            }
+          ]
+        },
+        {
+          "id": "leave-that-night",
+          "weight": 1,
+          "text": "{subject}趁{parent}睡着，把包袱从床底拖出来，从厨房窗口翻出去。巷子里的煤气灯灭了一盏，{subject}摸着墙走到街口，回头看见自家窗户亮着；{parent}站在窗帘后面，没有开窗，也没有喊。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "stateId": "yf18-runaway-plan",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "the plan was executed before dawn"
+            },
+            {
+              "type": "move",
+              "personId": "$subject",
+              "locationId": "@station",
+              "reason": "the subject left through the kitchen window"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a few coins taken from the kitchen drawer"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.1,
+              "reason": "leaving without a word"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a cold walk to the station"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_left_in_night",
+              "add": true,
+              "reason": "the subject left home through a window"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the window stayed lit behind the subject"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-runaway.companion",
+      "title": "同伴的退票",
+      "domain": "migration",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 15,
+        "max": 18
+      },
+      "tags": [
+        "runaway",
+        "friendship",
+        "companion",
+        "plan",
+        "betrayal"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "yf18-runaway-plan"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 18
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 19
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "go-alone",
+          "weight": 3,
+          "text": "{friend}把车票放在桌上，说家里给她找了活，走不了。{subject}把两张票叠在一起，撕掉一张，另一张塞进内袋；{friend}问{subject}一个人怕不怕，{subject}说不怕，出门时却把地址写给了她。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "resolve",
+              "delta": 10,
+              "reason": "the companion backed out and the subject went on"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "preparation",
+              "delta": 5,
+              "reason": "one ticket instead of two"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "suspicion",
+              "delta": 5,
+              "reason": "the friend knew the departure date"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.05,
+              "reason": "the companion stayed behind"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_go_alone",
+              "add": true,
+              "reason": "the subject decided to travel alone"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "one ticket torn in half"
+            }
+          ]
+        },
+        {
+          "id": "stay-and-spend-the-fare",
+          "weight": 2,
+          "text": "{subject}把票退了，和{friend}在普拉特门口的摊子上吃了两碗热汤。汤里有太多盐，{subject}喝到一半就放下勺子；{friend}说等明年攒够钱再一起走，{subject}点头，没有说自己已经把包袱收进了柜子最下层。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "stateId": "yf18-runaway-plan",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "the ticket was refunded for a shared meal"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the refunded fare"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "affection": 0.06,
+              "reason": "two bowls of soup at the Prater gate"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_stayed_for_friend",
+              "add": true,
+              "reason": "the plan was postponed for a friend"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a soup too salty to finish"
+            }
+          ]
+        },
+        {
+          "id": "find-another-companion",
+          "weight": 1,
+          "text": "{subject}在车站遇见一个也要去格拉茨的年轻女工，两人合买了一张双人票，便宜两成。{friend}知道后说{subject}早就想甩下自己；{subject}没有解释，只把新同伴的地址写在旧信封背面。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "preparation",
+              "delta": 10,
+              "reason": "a second traveller shared the fare"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "suspicion",
+              "delta": 8,
+              "reason": "the new companion knew the plan"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "yf18-runaway-plan",
+              "key": "resolve",
+              "delta": 5,
+              "reason": "the journey was no longer solitary"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a shared ticket and a platform tea"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.08,
+              "reason": "the friend was replaced"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_new_companion",
+              "add": true,
+              "reason": "another traveller joined the plan"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a cheaper ticket and a new address"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-apprentice.press-guard",
+      "title": "压印机没有护板",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 15,
+        "max": 18
+      },
+      "tags": [
+        "apprenticeship",
+        "work",
+        "danger",
+        "machine",
+        "injury",
+        "refusal"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "apprenticeship-contract"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 18
+        },
+        {
+          "key": "master",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 45
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "refuse-the-machine",
+          "weight": 3,
+          "text": "教堂年历的订单催得紧，{master}把压印机的护板卸了，说这样进纸快一半。{subject}看着那块铁板，说手会进去；{master}把工钱袋往桌上一扔，问{subject}是不是不想出师了。{subject}没有碰机器，那天下午的活由{worker}接手。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": -0.1,
+              "reason": "the apprentice refused to work without the guard"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "apprenticeship-contract",
+              "key": "progress",
+              "delta": -5,
+              "reason": "the refusal cost a day of work"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "apprenticeship-contract",
+              "key": "failures",
+              "delta": 1,
+              "reason": "the master marked the refusal as disobedience"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_refused_unguarded_press",
+              "add": true,
+              "reason": "the apprentice refused to work without a guard"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a refusal that kept all ten fingers"
+            }
+          ]
+        },
+        {
+          "id": "tie-the-sleeve-and-work",
+          "weight": 2,
+          "text": "{subject}把袖口卷到肘上，用麻绳扎紧，替{master}把一叠纸送进压印机。前两百张很顺，第二百零一张时，纸角卡住，{subject}伸手去拨，机器没有停；等{worker}拉开{subject}，食指的指甲已经翻了起来。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "a hand caught in an unguarded press"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "手伤",
+              "add": true,
+              "reason": "a crushed finger"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "apprenticeship-contract",
+              "key": "progress",
+              "delta": -8,
+              "reason": "the injury stopped the workshop year"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a doctor and a bandage"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_press_injury",
+              "add": true,
+              "reason": "the press took a finger"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the pain arrived before the regret"
+            }
+          ]
+        },
+        {
+          "id": "call-the-inspector",
+          "weight": 2,
+          "text": "{subject}趁{master}去喝咖啡，跑到街角的工厂检查所，把卸下来的护板指给{official}看。{official}第二天带着卷尺来了，在压印机旁边量了很久；{master}陪着笑，等门一关，就把{subject}的工具从案子上扫进了木箱。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": -0.15,
+              "reason": "the apprentice reported the missing guard"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the workshop talked about the inspection"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "apprenticeship-contract",
+              "key": "progress",
+              "delta": 3,
+              "reason": "the guard was reinstalled"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_reported_press",
+              "add": true,
+              "reason": "an inspector visited the workshop"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the machine was made a little less hungry"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-body.false-alarm",
+      "title": "助产士家的煤筐",
+      "domain": "health",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 17,
+        "max": 18
+      },
+      "tags": [
+        "body",
+        "pregnancy_scare",
+        "class",
+        "shame",
+        "exam",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "cash",
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 18,
+          "sex": "male"
+        },
+        {
+          "key": "partner",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 19,
+          "sex": "female"
+        },
+        {
+          "key": "midwife",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 55,
+          "sex": "female"
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "carry-the-coal",
+          "weight": 3,
+          "text": "{partner}在电车月票背面写了“晚了十天”，{subject}把攒着买课本的钱塞进鞋垫，陪她去了她母亲家。助产士{midwife}把窗帘拉上，问了几句，又让{partner}喝了一杯糖水；最后她说只是考试周乱了日子，转头让{subject}把后院那筐煤搬进厨房。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "the textbook money went on a doctor's visit"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "friend",
+              "trust": 0.05,
+              "affection": 0.04,
+              "reason": "a scare faced together"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$midwife",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "the midwife made him carry coal"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_false_alarm",
+              "add": true,
+              "reason": "the scare turned out to be exam stress"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "relief arrived with a coal sack"
+            }
+          ]
+        },
+        {
+          "id": "pawn-the-bicycle",
+          "weight": 2,
+          "text": "{subject}把自行车推到当铺，换来的钱刚好够一次私人诊所的诊费。{partner}在候诊室里一直攥着他的袖子，医生看完单子，说没有，只是贫血和熬夜；{subject}走出诊所才发现，自己连坐电车回家的钱都花光了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "a bicycle pawned for a private clinic"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "friend",
+              "trust": 0.06,
+              "affection": 0.05,
+              "reason": "a clinic waiting room shared"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_pawned_bicycle",
+              "add": true,
+              "reason": "the bicycle was pawned for a false alarm"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "relief mixed with the walk home"
+            }
+          ]
+        },
+        {
+          "id": "avoid-the-house",
+          "weight": 1,
+          "text": "{subject}不敢去助产士家，也不敢问{partner}，只在放学后绕着那条街走。第三天，{partner}在教室门口拦住他，把一张折成小方块的化验单拍在他胸口，说“没有”，然后转身走了；{subject}站在走廊里，第一次觉得一张纸也能把人压弯腰。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "friend",
+              "trust": -0.1,
+              "affection": -0.04,
+              "reason": "the subject avoided the house for three days"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a clinic fee paid too late"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_avoided_scare",
+              "add": true,
+              "reason": "the subject hid from the pregnancy scare"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a piece of paper in a school corridor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-scandal.false-rumor",
+      "title": "厕所门上的名字",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 16,
+        "max": 18
+      },
+      "tags": [
+        "rumor",
+        "scandal",
+        "school",
+        "false_accusation",
+        "handwriting"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 18
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 18
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-handwriting-sample",
+          "weight": 3,
+          "text": "{teacher}把一张匿名纸条放在桌上，说有人看见{subject}从教务处拿走试卷。{subject}要了一支笔，当场把纸条上的句子抄了一遍；{teacher}把两张纸对着窗光看，{subject}的字母圆，纸条上的字母却往里折。第二天，{friend}在办公室门口哭，说是她写的，只想让别人别再查她不及格的卷子。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "stateId": "public-scandal",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "the handwriting proved the rumour false"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the false accusation was cleared"
+            },
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "reason": "the friend had written the false note"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_cleared_rumor",
+              "add": true,
+              "reason": "the handwriting sample cleared the subject"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a name cleaned with a pen"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-stolen-questions",
+          "weight": 2,
+          "text": "{subject}没有交笔迹样本，反而在厕所门口贴了一张“试题出售”的纸条，想看看谁会来买。第二天，三个低年级学生把零钱塞进{subject}的课桌；{teacher}把{subject}叫去时，桌上已经堆了一小把硬币，{subject}忽然分不清自己是在开玩笑还是在认罪。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "coins for fake stolen questions"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the rumour looked true after the joke"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "reason": "a joke that looked like a confession"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_sold_fake_questions",
+              "add": true,
+              "reason": "the subject sold fake exam questions as a joke"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a dangerous joke that paid for itself"
+            }
+          ]
+        },
+        {
+          "id": "leave-the-school",
+          "weight": 1,
+          "text": "{subject}拒绝再写任何东西，把书包从椅背上取下来，走出教室。{teacher}追到楼梯口，说只要写一行字就能说清楚；{subject}说写一行字也会被说成是练过的。{subject}走下台阶时，听见教室里有人把窗户推开，冷风跟着追了出来。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "stateId": "public-scandal",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "the subject left school rather than answer the rumour"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "none",
+              "reason": "the subject walked out of school"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "the teacher was left at the stairwell"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_left_school_rumor",
+              "add": true,
+              "reason": "the subject refused to answer the rumour"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a cold draught on the stairs"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-desire.typing-school",
+      "title": "打字机旁的紫罗兰",
+      "domain": "relationship",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 20
+      },
+      "tags": [
+        "forbidden_attachment",
+        "same_sex_desire",
+        "class",
+        "typing_school",
+        "secret"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "forbidden-attachment"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 20,
+          "sex": "female"
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 24,
+          "sex": "female"
+        },
+        {
+          "key": "classmate",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 24,
+          "sex": "female"
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "deny-in-the-cloakroom",
+          "weight": 3,
+          "text": "打字学校的衣帽间里，{classmate}看见{subject}和{beloved}的手在同一个衣钩下面碰了一下。{subject}说{beloved}在替她摘线头，声音太急；{beloved}把手缩回去，围巾的一角还留在{subject}掌心里。那天下午，{subject}打错了七行地址。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "grief",
+              "delta": 8,
+              "reason": "the denial hurt more than the witness"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "reciprocity",
+              "delta": -10,
+              "reason": "the beloved pulled her hand away"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "discretion",
+              "delta": 5,
+              "reason": "the cloakroom taught a sharper caution"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": -0.08,
+              "reason": "the hand was withdrawn"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_denied_at_typing_school",
+              "add": true,
+              "reason": "the subject denied the attachment in the cloakroom"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "seven wrong addresses in one afternoon"
+            }
+          ]
+        },
+        {
+          "id": "let-her-see",
+          "weight": 2,
+          "text": "{subject}没有把手抽回来，反而把{beloved}的围巾从衣钩上取下来，替她围好。{classmate}看了两秒，说自己的打字速度还跟不上，如果{subject}肯在午休教她，她可以什么都不记得。{subject}答应了，午休的教室从此多了一台没有人用的打字机。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "exposure",
+              "delta": 8,
+              "reason": "a classmate saw the attachment and kept it"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "reciprocity",
+              "delta": 5,
+              "reason": "the scarf was tied in front of a witness"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$classmate",
+              "kind": "friend",
+              "trust": 0.03,
+              "obligation": 0.04,
+              "reason": "typing lessons bought silence"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_classmate_kept_secret",
+              "add": true,
+              "reason": "a classmate agreed to forget what she saw"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a scarf tied without hiding"
+            }
+          ]
+        },
+        {
+          "id": "meet-at-the-library",
+          "weight": 1,
+          "text": "{subject}和{beloved}把见面的地方改到大学图书馆的阅览室，两个人隔着一张长桌，各自翻一本谁也不看的书。{beloved}在一本旧诗集里夹了一朵压干的紫罗兰；{subject}把花夹进打字课本，书脊从此合不严。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "exposure",
+              "delta": 3,
+              "reason": "the library was quieter than the typing school"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "discretion",
+              "delta": 5,
+              "reason": "a new meeting place was chosen"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "reciprocity",
+              "delta": 6,
+              "reason": "a pressed violet was exchanged"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "affection": 0.08,
+              "trust": 0.03,
+              "reason": "a book that would not close properly"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "tram fare to the university library"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a flower hidden in a typing manual"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-politics.rent-march",
+      "title": "锅碗队伍",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 24
+      },
+      "tags": [
+        "politics",
+        "rent_strike",
+        "street",
+        "university",
+        "housing"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "university-student"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 24
+        },
+        {
+          "key": "organizer",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 50
+        },
+        {
+          "key": "landlord",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "bang-the-pot",
+          "weight": 3,
+          "text": "队伍从巷口的洗衣房出发，女人和孩子拿着锅盖和木勺，边走边敲。{organizer}塞给{subject}一只掉了搪瓷的锅，说学生站在前面，警察不敢先动手。{subject}敲了三条街，手掌发麻，听见整条巷子的窗户一扇扇打开。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a student joined the rent march"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "a pot was put into the subject's hands"
+            },
+            {
+              "type": "state_add",
+              "stateId": "political-suspect",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "heat": 0.15,
+                "file": "租金抗议"
+              },
+              "reason": "the subject marched with the rent strike"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_rent_march",
+              "add": true,
+              "reason": "the subject banged a pot through the district"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the whole street opened its windows"
+            }
+          ]
+        },
+        {
+          "id": "hide-the-banner",
+          "weight": 2,
+          "text": "{subject}把学生会的横幅卷起来，夹在腋下，拐进一条没有灯的巷子。{landlord}正好从酒馆出来，看见横幅上的半个字，也看见{subject}；第二天，房东太太来收租，说下个月起要加煤火费。{subject}没有争，只把横幅塞进床底，和旧课本放在一起。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "a sudden coal charge after the march"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$landlord",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "the landlord recognised the banner"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_hid_banner",
+              "add": true,
+              "reason": "the banner was hidden under the bed"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a rent increase in the same week"
+            }
+          ]
+        },
+        {
+          "id": "name-the-landlord",
+          "weight": 1,
+          "text": "{subject}站在队伍前面，把{landlord}那栋楼三年没修的水管、两块松动的楼梯板和去年冬天停掉的暖气一件件说出来。{organizer}让人把话记在纸上，队伍里有人鼓掌；{landlord}站在自家门口，脸比门牌还白，等队伍走远才把门关上。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the subject named the landlord in public"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$landlord",
+              "kind": "acquaintance",
+              "trust": -0.12,
+              "reason": "the landlord was named before the crowd"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "the organizer wrote down the complaints"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_named_landlord",
+              "add": true,
+              "reason": "the subject spoke against the landlord in the street"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a list of repairs said out loud"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-family.one-apprenticeship",
+      "title": "一个学徒名额",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 15,
+        "max": 18
+      },
+      "tags": [
+        "siblings",
+        "apprenticeship",
+        "scarcity",
+        "family_duty",
+        "choice"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "cash",
+          "max": 60
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "apprenticeship-contract"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 18
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 13,
+          "maxAge": 15
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 55
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "yield-to-the-younger",
+          "weight": 3,
+          "text": "木匠铺只收一个学徒，押金却要两份。{parent}把两张表格摊在桌上，说家里只拿得出一次；{subject}看见{sibling}把铅笔削得很尖，最后说让{sibling}去。第二天，{subject}去码头找了半日工，回家时{sibling}正在院子里练刨花，刨子是新领的，柄上还缠着纸条。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "apprenticeship-contract",
+              "ownerType": "person",
+              "ownerId": "$sibling",
+              "parameters": {
+                "progress": 5,
+                "failures": 0,
+                "trade": "细木工",
+                "paid": true
+              },
+              "reason": "the younger sibling took the only apprenticeship"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "half-day wages from the docks"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.1,
+              "reason": "the older sibling gave up the place"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_yielded_apprenticeship",
+              "add": true,
+              "reason": "the subject yielded the apprenticeship to a sibling"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a new plane handle in the yard"
+            }
+          ]
+        },
+        {
+          "id": "take-the-slot",
+          "weight": 2,
+          "text": "{subject}把两张表格并排看了很久，最后把自己的名字写在上面。{sibling}没有哭，只把削好的铅笔放回{subject}的工具袋，说“你用得上”。开学那天，{subject}在作坊门口回头，看见{sibling}站在巷子口，手里提着一只空饭盒。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "apprenticeship-contract",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "progress": 10,
+                "failures": 0,
+                "trade": "细木工",
+                "paid": true
+              },
+              "reason": "the subject took the only apprenticeship"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.15,
+              "reason": "the sibling was left without a place"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.03,
+              "reason": "the parent had hoped for a different choice"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_took_sibling_slot",
+              "add": true,
+              "reason": "the subject took the apprenticeship from the sibling"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a place at the bench, and an empty lunch tin"
+            }
+          ]
+        },
+        {
+          "id": "sabotage-the-interview",
+          "weight": 1,
+          "text": "{subject}在{sibling}去面试前，把那只新刨子的刃口在石头上磨歪了一点。{sibling}在师傅面前刨不出一整条刨花，脸涨得通红；{subject}站在门外，听见师傅说“回去再练一年”。那天晚上，{subject}拿到了合同，{sibling}把歪刨子挂在床头，一句话也没有说。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "apprenticeship-contract",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "progress": 10,
+                "failures": 0,
+                "trade": "细木工",
+                "paid": true
+              },
+              "reason": "the subject sabotaged the sibling's interview"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.2,
+              "reason": "the plane blade was deliberately dulled"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.05,
+              "reason": "the parent suspected what happened"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_sabotaged_sibling",
+              "add": true,
+              "reason": "the subject sabotaged a sibling's apprenticeship interview"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a crooked plane on a bedpost"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-performance.choir-solo",
+      "title": "教堂音乐会的高音",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 14,
+        "max": 18
+      },
+      "tags": [
+        "performance",
+        "choir",
+        "humiliation",
+        "school",
+        "voice"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 18
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 55
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 2,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "finish-in-falsetto",
+          "weight": 3,
+          "text": "教堂音乐会的独唱轮到{subject}，第一句拉丁文还稳，唱到“荣耀”那个高音时，嗓子忽然劈了一下。{subject}看见{parent}在第三排低下头，{teacher}在风琴旁边打手势让继续；{subject}用假声把剩下的两小节唱完，声音细得像一根线。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the solo cracked in front of the parish"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "music",
+              "amount": 0.03,
+              "reason": "finishing a solo after a cracked note"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "the conductor kept the choir going"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_finished_solo",
+              "add": true,
+              "reason": "the solo was finished in falsetto"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the last note was still sung"
+            }
+          ]
+        },
+        {
+          "id": "run-off-the-choir-loft",
+          "weight": 2,
+          "text": "{subject}在高音上停住，嘴唇还张着，声音却没有出来。风琴继续往前走了两小节，{teacher}开始让合唱队接；{subject}从唱诗班的侧门跑下去，木楼梯在脚下响得像一串惊雷。散场时，{beloved}在教堂门口等，{subject}从后门走了。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the soloist fled the choir loft"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "reason": "the choir had to cover the solo"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": -0.03,
+              "reason": "the subject left by the back door"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_fled_solo",
+              "add": true,
+              "reason": "the subject ran out of the choir loft"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a staircase louder than the organ"
+            }
+          ]
+        },
+        {
+          "id": "laugh-and-bow",
+          "weight": 1,
+          "text": "{subject}听见自己的声音劈开，索性停下来，对着教堂的穹顶笑了一声。{teacher}在风琴后面瞪眼，{subject}却把那句拉丁文降了八度重新唱了一遍，声音厚得像另一个人；台下有人先笑，随后跟着鼓掌，{beloved}在最后一排把手套举起来挥了挥。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the recovery amused the parish"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "affection": 0.03,
+              "reason": "a glove waved from the back row"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "the conductor did not enjoy the joke"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_laughed_at_solo",
+              "add": true,
+              "reason": "the subject turned a cracked note into a joke"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "laughter instead of shame"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yf18-runaway.returned",
+      "title": "被送回来的车票",
+      "domain": "migration",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 22
+      },
+      "tags": [
+        "runaway",
+        "failure",
+        "police",
+        "failed_apprentice",
+        "homecoming"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "yf18-runaway-plan"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "failed-apprentice"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 22
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "returned-home",
+          "weight": 3,
+          "text": "{official}在站台上把{subject}的包袱解开，翻出一张替父亲签过字的表格，又看了看车票上的名字。他没有发火，只把{subject}带到值班室，给家里打了一个电话；两个钟头后，{parent}出现在门口，手里攥着{subject}小时候的洗礼证明。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "stateId": "yf18-runaway-plan",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "the escape plan ended at the station office"
+            },
+            {
+              "type": "move",
+              "personId": "$subject",
+              "locationId": "@home",
+              "reason": "the subject was returned to the family"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.05,
+              "reason": "the parent had to collect the subject from the station"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a fine at the station office"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_returned_home",
+              "add": true,
+              "reason": "the failed escape ended at home"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a train window and a parent at the door"
+            }
+          ]
+        },
+        {
+          "id": "sent-to-the-labor-hostel",
+          "weight": 2,
+          "text": "{official}说家里既然管不住，就去季节工棚住一个月。{subject}被带到城外的劳工宿舍，床板上只有一条薄毯；同屋的人问{subject}是从哪个站被带来的，{subject}说北站，那人笑了，说这里一半的人都从北站来。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "stateId": "yf18-runaway-plan",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "the plan ended in a labor hostel"
+            },
+            {
+              "type": "move",
+              "personId": "$subject",
+              "locationId": "@station",
+              "reason": "the subject was sent to a seasonal labor hostel"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a thin blanket in a labor hostel"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.02,
+              "reason": "the family did not come to collect the subject"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_labor_hostel",
+              "add": true,
+              "reason": "the subject was sent to a seasonal labor hostel"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a dormitory full of people from the north station"
+            }
+          ]
+        },
+        {
+          "id": "the-gendarme-tears-the-permit",
+          "weight": 1,
+          "text": "{official}把那张伪造的表格对着灯看了很久，最后撕成两半，说这次不记名字。{subject}被放回站台，可去格拉茨的火车已经开走；第二天，表姐来信说旅馆的位子给了别人。{subject}把信读了两遍，走到厨房，把包袱重新塞回床底。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "stateId": "yf18-runaway-plan",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "the destination job disappeared and the plan collapsed"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "a wasted ticket and a borrowed fare"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yf18_plan_collapsed",
+              "add": true,
+              "reason": "the escape plan collapsed even without an arrest"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the bundle went back under the bed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "格拉茨的旅馆工作已经给了别人",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "the cousin's letter arrived after the train left"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

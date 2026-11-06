@@ -13,6 +13,16 @@ import crimeJustice from './pack-crime-justice.json' with { type: 'json' };
 import desireScandal from './pack-desire-scandal.json' with { type: 'json' };
 import workCraft from './pack-work-craft.json' with { type: 'json' };
 import faithMiracles from './pack-faith-miracles.json' with { type: 'json' };
+import infantWonder from './pack-infant-wonder.json' with { type: 'json' };
+import darkFantasy from './pack-dark-fantasy.json' with { type: 'json' };
+import smallMysteries from './pack-small-mysteries.json' with { type: 'json' };
+import elderMemory from './pack-elder-memory.json' with { type: 'json' };
+import blackComedy from './pack-black-comedy.json' with { type: 'json' };
+import loveDesire from './pack-love-desire.json' with { type: 'json' };
+import moneyLuck from './pack-money-luck.json' with { type: 'json' };
+import youthFire from './pack-youth-fire.json' with { type: 'json' };
+import oddJobs from './pack-odd-jobs.json' with { type: 'json' };
+import historyStreet from './pack-history-street.json' with { type: 'json' };
 import type { PlotKernel } from '../../../composition/types.js';
 import type { StatePack } from '../../../state/registry.js';
 import type { StateDefinition } from '../../../state/types.js';
@@ -39,6 +49,16 @@ export const GENERATED_STATE_PACKS: StatePack[] = [
   desireScandal,
   workCraft,
   faithMiracles,
+  infantWonder,
+  darkFantasy,
+  smallMysteries,
+  elderMemory,
+  blackComedy,
+  loveDesire,
+  moneyLuck,
+  youthFire,
+  oddJobs,
+  historyStreet,
 ] as unknown as StatePack[];
 
 export const GENERATED_STATES: StateDefinition[] = GENERATED_STATE_PACKS.flatMap(

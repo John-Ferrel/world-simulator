@@ -1,0 +1,6174 @@
+{
+  "id": "pack-black-comedy",
+  "version": 1,
+  "title": "黑色喜剧：荒唐名声、官僚幽灵与错拿的遗产",
+  "description": "把黑色喜剧写成两份可持续的处境：一份错得离谱却被当成真的名声，以及一份比身体跑得更快的官僚档案。蜡像馆的假发明家、拼错的晋升名单、四十七个同名继承人、替身国王、活人的死亡证明、领不到的养老金、撬错门的贼和写错的推荐信，都能留下钱、关系、职位压力或下一场戏可读的档案。笑料不是终点，后果才是。",
+  "author": "phase18-content-author/black-comedy",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-07",
+  "sourceBriefId": "phase18-black-comedy",
+  "rationale": "Phase 17 的荒诞运气已经用过假继承人和木偶戏公辱，但错认、官僚错误和荒唐升迁还没有可追踪的公共名声与纸面身份。本包新增 bc18-ridiculous-fame 记录“理由错了、名声却是真的”的处境，新增 bc18-bureaucratic-ghost 记录活人与档案互相追赶的处境；两者都有明确的创建场景、持续参数、反应、退出与下游消费者。六条既有状态线被真正读取：public-scandal、office-patronage、stage-king、fame、af17-lucky-idiot、curse-bargain。遗产线刻意避开别墅与公证人念错门牌，改为灵车、债务和鹦鹉条件；公辱线避开木偶戏，改为念错的兽医报告和自己的守灵夜。并非每个笑话都以惩罚收尾：有人靠倒印的广告发财，有人把遗产变成夜间搬运行，也有人只是终于得到一间安静的展厅。",
+  "states": [
+    {
+      "id": "bc18-ridiculous-fame",
+      "version": 1,
+      "packId": "pack-black-comedy",
+      "title": "荒唐的名声",
+      "description": "这个人被当成某种人物：发明家、被冤枉的英雄、被升职的能人、某个已故名人的亲戚。名声是真的，理由却是错的；每一次被介绍、被刊登、被请去剪彩，都让公开纠正变得更贵。",
+      "owner": "person",
+      "slot": "fame",
+      "conflict": "replace",
+      "tags": [
+        "fame",
+        "reputation",
+        "mistaken_identity",
+        "promotion",
+        "media",
+        "absurd",
+        "public",
+        "status",
+        "humiliation",
+        "irony"
+      ],
+      "parameters": {
+        "notoriety": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "legitimacy": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        },
+        "absurdity": {
+          "type": "number",
+          "default": 60,
+          "min": 0,
+          "max": 100
+        },
+        "invitations": {
+          "type": "number",
+          "default": 1,
+          "min": 0,
+          "max": 20
+        },
+        "boredom": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        },
+        "officialStory": {
+          "type": "string",
+          "default": "一个被念错的名字"
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 48
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "fame",
+            "media",
+            "public",
+            "performance",
+            "office",
+            "promotion",
+            "scandal"
+          ],
+          "multiplier": 1.55
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "ordinary",
+            "factory"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "public",
+            "performance",
+            "deception"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "ridiculously_famous",
+          "add": true,
+          "reason": "被当成一个自己并不是的人物"
+        },
+        {
+          "type": "reputation",
+          "personId": "$subject",
+          "amount": 0.02,
+          "reason": "错误的理由开始带来真实的注意"
+        },
+        {
+          "type": "mood",
+          "personId": "$subject",
+          "amount": 0.02,
+          "reason": "被陌生人认出来"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "ridiculously_famous",
+          "add": false,
+          "reason": "荒唐的名声不再占据公共生活"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "ridiculous-fame-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "charisma",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "the-story-holds-another-year",
+              "result": "success",
+              "weight": 3,
+              "text": "又一年过去，{subject}仍在被介绍成那个人物。邀请函从市郊的园艺会、女子学校和退伍军人酒馆寄来；{subject}学会在签名后加一句模糊的谦辞，听起来像有许多往事不便细说。每一次应付都带来一点小钱，也让真正的解释更不合时宜。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "bc18-ridiculous-fame",
+                  "key": "notoriety",
+                  "delta": 7,
+                  "reason": "荒唐的名声又维持了一年"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "bc18-ridiculous-fame",
+                  "key": "invitations",
+                  "delta": 1,
+                  "reason": "又收到一份邀请"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "一场小型演讲的车马费"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "被更多陌生人认出来"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "被人需要的感觉"
+                }
+              ]
+            },
+            {
+              "id": "the-audience-gets-bored",
+              "result": "failure",
+              "weight": 2,
+              "text": "观众开始厌倦同一个故事。园艺会请了更年轻的发明家，女子学校把{subject}的名字从海报上撤下；{subject}在咖啡馆听见有人说“那个人还在讲火柴”。同一个月，一张报纸把旧照片配上新标题，问{subject}是否已经“过气”。纠正的冲动又回来，但没有人再提问。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "bc18-ridiculous-fame",
+                  "key": "legitimacy",
+                  "delta": -8,
+                  "reason": "听众开始怀疑这个故事"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "bc18-ridiculous-fame",
+                  "key": "boredom",
+                  "delta": 12,
+                  "reason": "同一套说辞已经失去新鲜感"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "bc18-ridiculous-fame",
+                  "key": "invitations",
+                  "delta": -1,
+                  "reason": "一份邀请被取消"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "报纸问这个人是否已经过气"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "没有人再追问真相"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "reprinted-wrong",
+          "onTags": [
+            "public",
+            "media"
+          ],
+          "chance": 0.45,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 6,
+              "reason": "报纸又把旧故事登了一遍"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "absurdity",
+              "delta": 5,
+              "reason": "新的版面添了新的误认"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": -4,
+              "reason": "故事离事实又远了一点"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "story_reprinted_wrong",
+              "add": true,
+              "reason": "旧误认被报纸重新刊登"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "解释又一次错过时机"
+            }
+          ],
+          "text": "报纸的周末副刊又把{subject}的旧照片翻出来，配上一个更整齐的故事：发明、失败、谦逊的晚年。{subject}写信去更正，编辑回了一张便条，说读者喜欢现在这个版本。",
+          "significance": 0.4,
+          "cooldownMonths": 18,
+          "maxPerYear": 1
+        },
+        {
+          "id": "exposure-backfires",
+          "onTags": [
+            "betrayal"
+          ],
+          "requiresRoles": [
+            "betrayer"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 8,
+              "reason": "背叛者提供的真相被当成新轶事"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": 6,
+              "reason": "公开争论反而让故事更可信"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "背叛者试图揭穿这个故事"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "exposure_backfired",
+              "add": true,
+              "reason": "揭穿反而延长了荒唐的名声"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "连敌人都没能把故事讲清"
+            }
+          ],
+          "text": "{betrayer}把{subject}并不是那个人的证据寄给报社，还附上自己的姓名。编辑把它们写成一篇“旧友回忆”，读者读到的却是两个人多年的交情；{subject}看见报纸时，先笑了，随后把那一页折起来，放进抽屉最深处。",
+          "significance": 0.5,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        }
+      ],
+      "transitions": [
+        {
+          "id": "fame-becomes-real",
+          "to": "fame",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "bc18-ridiculous-fame",
+              "parameter": "notoriety",
+              "min": 70
+            },
+            {
+              "kind": "hasState",
+              "stateId": "bc18-ridiculous-fame",
+              "parameter": "legitimacy",
+              "min": 45
+            }
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "荒唐的名声已经硬得足以当成真的"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "absurd_fame_hardened",
+              "add": true,
+              "reason": "错误的理由长成了真实的公共身份"
+            }
+          ],
+          "reason": "足够高的知名度与可信度让荒唐故事转成普通名声"
+        },
+        {
+          "id": "fame-collapses-into-scandal",
+          "to": "public-scandal",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "bc18-ridiculous-fame",
+              "parameter": "legitimacy",
+              "max": 5
+            },
+            {
+              "kind": "hasState",
+              "stateId": "bc18-ridiculous-fame",
+              "parameter": "notoriety",
+              "min": 55
+            }
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "荒唐故事被公开当成骗局"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ridiculous_fame_collapsed",
+              "add": true,
+              "reason": "名声在公开质疑中塌掉"
+            }
+          ],
+          "reason": "可信度耗尽而知名度仍高，荒唐名声转为公开丑闻"
+        }
+      ],
+      "historicalBasis": "报纸副刊、慈善义演、蜡像馆和市民讲座在二十世纪上半叶的城市公共生活中制造了大量被误认的“名人”；本状态只记录误认带来的注意、邀请与纠正成本。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/black-comedy",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让“被当成某个人物”成为有知名度、可信度、荒诞度和邀请数的持续处境，并能转化为名声或丑闻。"
+      }
+    },
+    {
+      "id": "bc18-bureaucratic-ghost",
+      "version": 1,
+      "packId": "pack-black-comedy",
+      "title": "档案里的活鬼",
+      "description": "户籍册、配给卡和税务簿各说各话：这个人一会儿死了，一会儿从未出生，一会儿同时住在两条街。身体还在排队，纸面身份却已经开始自己走路；每更正一次，就多出一份需要更正的副本。",
+      "owner": "person",
+      "slot": "identity_records",
+      "conflict": "replace",
+      "tags": [
+        "bureaucracy",
+        "identity",
+        "paperwork",
+        "death",
+        "mistake",
+        "legal",
+        "absurd",
+        "ghost",
+        "records",
+        "risk"
+      ],
+      "parameters": {
+        "fileDepth": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        },
+        "sightings": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 12
+        },
+        "risk": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        },
+        "duplicates": {
+          "type": "number",
+          "default": 1,
+          "min": 0,
+          "max": 9
+        },
+        "officialStatus": {
+          "type": "string",
+          "default": "在户籍册上已死亡"
+        },
+        "alias": {
+          "type": "string",
+          "default": "一份写错的门牌"
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 60
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "bureaucracy",
+            "office",
+            "legal",
+            "identity",
+            "archive",
+            "paperwork",
+            "public"
+          ],
+          "multiplier": 1.55
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "ordinary",
+            "factory"
+          ],
+          "multiplier": 0.85
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "paperwork",
+            "legal"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "bureaucratic_ghost",
+          "add": true,
+          "reason": "纸面身份开始与身体分离"
+        },
+        {
+          "type": "mood",
+          "personId": "$subject",
+          "amount": -0.01,
+          "reason": "被一张自己没写过的表格盯上"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "bureaucratic_ghost",
+          "add": false,
+          "reason": "档案终于追上身体，或身体不再在乎档案"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "paper-trail-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "cunning",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "kept-the-files-apart",
+              "result": "success",
+              "weight": 2,
+              "text": "这一年，{subject}学会了同时带三张纸出门：一张证明活着，一张证明死了，一张证明自己从没搬过家。窗口后面的人各自只看自己那一张，偶尔还会夸{subject}的材料齐全。年底，{subject}从补发的配给里省下一小袋面粉，觉得自己像个熟练的走私犯。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "bc18-bureaucratic-ghost",
+                  "key": "fileDepth",
+                  "delta": 4,
+                  "reason": "三套材料又各自添了附件"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "bc18-bureaucratic-ghost",
+                  "key": "risk",
+                  "delta": -5,
+                  "reason": "这一轮没有被拆穿"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "省下的配给和车钱"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "暂时学会了在窗口之间生存"
+                }
+              ]
+            },
+            {
+              "id": "another-window-opens",
+              "result": "failure",
+              "weight": 2,
+              "text": "一个税务员把{subject}的死亡记录和一张新房租收据订在一起，寄到了另一个区。三个星期后，{subject}收到一封要求“已故纳税人”补缴暖气税的信；去问时，窗口说档案正在路上，让{subject}先等通知。通知没有来，房租却涨了。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "bc18-bureaucratic-ghost",
+                  "key": "fileDepth",
+                  "delta": 7,
+                  "reason": "死亡记录和房租收据被订在一起"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "bc18-bureaucratic-ghost",
+                  "key": "risk",
+                  "delta": 10,
+                  "reason": "新的窗口开始追这笔账"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "跑窗口的车钱"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "heating_tax_for_the_dead",
+                  "add": true,
+                  "reason": "要求已故纳税人补缴暖气税"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "通知一直没来"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "another-file-opened",
+          "onTags": [
+            "legal",
+            "office",
+            "public"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 12,
+              "reason": "另一个机关打开了同名档案"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "duplicates",
+              "delta": 1,
+              "reason": "同名副本又多了一份"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "sightings",
+              "delta": 1,
+              "reason": "又多了一个见过这份档案的人"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "another_file_opened",
+              "add": true,
+              "reason": "另一个机关开始追同一份身份"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "每扇窗口都像第一次见到自己"
+            }
+          ],
+          "text": "{subject}刚在一个窗口证明自己活着，另一个窗口又从抽屉里抽出一张死亡通知。两个办事员隔着走廊互相看了一眼，谁也没有先开口；{subject}站在中间，忽然明白自己不是一个人，而是一份正在被转抄的卷宗。",
+          "significance": 0.45,
+          "cooldownMonths": 18,
+          "maxPerYear": 1
+        }
+      ],
+      "transitions": [
+        {
+          "id": "ghost-becomes-a-case",
+          "to": "under-investigation",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "bc18-bureaucratic-ghost",
+              "parameter": "risk",
+              "min": 70
+            }
+          ],
+          "chance": 0.65,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "身份混乱被当成欺诈调查"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ghost_investigated",
+              "add": true,
+              "reason": "活人档案进入正式调查"
+            }
+          ],
+          "reason": "档案风险积累到足以让身份混乱变成刑事案件"
+        }
+      ],
+      "historicalBasis": "户籍、配给、税务和教区登记在二十世纪上半叶的维也纳相互重叠，一次抄写错误就足以让人同时出现在生死两栏；本状态只记录纸面身份与身体的错位，不声明超自然现象。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/black-comedy",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把官僚误认写成有档案深度、风险、目击与副本数的持续处境，让死亡证明、养老金和普查都能继续消费它。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "bc18-fame.wrong-bust",
+      "title": "蜡像馆里的发明家",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "fame",
+        "mistaken_identity",
+        "museum",
+        "public",
+        "invention",
+        "absurd",
+        "status",
+        "humiliation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "bc18-ridiculous-fame",
+          "owner": "person"
+        },
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 75
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "curator",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "widow",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "plaque-stays",
+          "weight": 0.4,
+          "significance": 0.8,
+          "text": "市立蜡像馆新添了一间“发明家厅”。{curator}把{subject}请到绿绒椅子上，说照片是从旧报纸上剪的，名字也核对过三遍。揭幕那天，{subject}看见自己的蜡像握着一根安全火柴，铭牌上写着一个从未属于{subject}的专利号；掌声很整齐，{curator}把下一场讲解的酬劳塞进口袋，动作像在递一块糖。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "蜡像馆的讲解酬劳"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 38,
+                "legitimacy": 12,
+                "absurdity": 72,
+                "invitations": 1,
+                "boredom": 8,
+                "officialStory": "安全火柴的发明人"
+              },
+              "durationMonths": 24,
+              "reason": "被蜡像馆当成发明家"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "揭幕式让陌生人记住了这张脸"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$curator",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "馆长把一场讲解交给了这个人"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wax_museum_inventor",
+              "add": true,
+              "reason": "蜡像被标成安全火柴的发明人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "掌声听起来像真的"
+            }
+          ]
+        },
+        {
+          "id": "widow-corrects",
+          "weight": 0.35,
+          "significance": 0.82,
+          "text": "揭幕到一半，穿黑纱的{widow}从第二排站起来，说那根火柴是她丈夫一八九三年在布尔诺登记的，专利号还刻在家里一只锡盒上。{curator}请她进办公室核对文件，{subject}被留在展厅里，面对一队已经买票的小学生。第二天，铭牌换成了“无名热心市民”，{subject}的名字被刮掉，只剩一道白痕。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被真正的遗属当众纠正"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 22,
+                "legitimacy": 5,
+                "absurdity": 45,
+                "invitations": 0,
+                "boredom": 20,
+                "officialStory": "被刮掉的名字"
+              },
+              "durationMonths": 12,
+              "reason": "公开纠正留下了一段荒唐的余波"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "退掉车马费后的车钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$widow",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "遗属当众拆穿了铭牌"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "publicly corrected at a wax museum",
+              "add": true,
+              "reason": "在揭幕式上被遗属纠正"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "plaque_scraped_clean",
+              "add": true,
+              "reason": "名字从铭牌上被刮掉"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "在买票的小学生面前被拆穿"
+            }
+          ]
+        },
+        {
+          "id": "hired-as-living-exhibit",
+          "weight": 0.25,
+          "significance": 0.72,
+          "text": "{subject}在办公室承认自己连火柴头用什么配都不知道。{curator}沉默了一会儿，忽然问{subject}愿不愿意每周三下午坐在展厅里，给参观者演示“发明家如何沉思”。酬劳是三克朗，外加一顶借来的礼帽。第一个周三，{subject}坐了四个小时，只被一个孩子问过“你会不会变魔术”。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "扮演活展品的酬劳"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 30,
+                "legitimacy": 18,
+                "absurdity": 80,
+                "invitations": 1,
+                "boredom": 10,
+                "officialStory": "蜡像馆的活展品"
+              },
+              "durationMonths": 18,
+              "reason": "被雇来扮演一个不是自己的发明家"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "living_exhibit",
+              "add": true,
+              "reason": "每周三在蜡像馆扮演发明家"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$curator",
+              "kind": "colleague",
+              "trust": 0.05,
+              "reason": "馆长给了一份荒唐但稳定的差事"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hired_as_living_exhibit",
+              "add": true,
+              "reason": "成为蜡像馆的活展品"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "至少不用再解释火柴的配方"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-fame.lecture-tour",
+      "title": "巡回演讲的发明家",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 75
+      },
+      "tags": [
+        "fame",
+        "lecture",
+        "travel",
+        "absurd",
+        "public",
+        "invention",
+        "reputation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "bc18-ridiculous-fame",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        },
+        {
+          "key": "impresario",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "mayor",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "provincial-triumph",
+          "weight": 0.4,
+          "significance": 0.78,
+          "text": "外省的市民协会一个接一个发来邀请，请{subject}讲“发明的未来”。{impresario}把票价定得太高，礼堂却照样坐满；{subject}在台上谈摩擦、谈火花、谈一种自己也没见过的机器，听众把每一句都记进小本子。散场后，{mayor}握着手说，这座城市需要更多像{subject}这样敢想的人。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 5,
+              "reason": "巡回演讲的酬劳"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 8,
+              "reason": "外省报纸也登了演讲消息"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "invitations",
+              "delta": 1,
+              "reason": "新的邀请排到了下一季"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "在几座小城受到了礼遇"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "学会了在台上应付提问"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "被当成一个真正的人物"
+            }
+          ]
+        },
+        {
+          "id": "waterworks-question",
+          "weight": 0.35,
+          "significance": 0.82,
+          "text": "{mayor}请{subject}顺便看看城里的水厂。{subject}把一只标着“关闭”的阀门拧向另一边，半小时后，半条街的菜窖进了水。没有人受伤，镇公所赔了菜农六克朗，又给{subject}两克朗车马费，请他尽快搭下一班车离开。{impresario}在站台上说，这也算一种巡回演讲。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "镇公所给的车马费"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": -6,
+              "reason": "外省开始怀疑这个发明家"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 5,
+              "reason": "水厂事故被当成奇闻传开"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "菜窖被淹的消息跟着这个人"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "flooded a town cellar",
+              "add": true,
+              "reason": "把水厂阀门拧错了方向"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "flooded_a_cellar_on_tour",
+              "add": true,
+              "reason": "巡回演讲途中淹了半条街的菜窖"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被镇公所客气地送走"
+            }
+          ]
+        },
+        {
+          "id": "confession-applauded",
+          "weight": 0.25,
+          "significance": 0.8,
+          "text": "讲到第三场，{subject}放下讲稿，说自己其实不是发明家，只是被一张剪报推上了台。礼堂安静了一瞬，随后响起比前两场更长的掌声；{mayor}说，一个肯承认此事的人比发明家更难得。募捐盘里多出三克朗，{impresario}当晚就把“诚实”写进了下一张海报。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "募捐盘里分到的钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": 12,
+              "reason": "坦白被当成一种罕见的诚实"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 6,
+              "reason": "“诚实”成了新的宣传词"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "公开承认误认反而赢得尊敬"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "confession_mistaken_for_modesty",
+              "add": true,
+              "reason": "坦白被听众当成谦逊"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "第一次把真相说完整"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-fame.endorsement",
+      "title": "倒着印的肥皂广告",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 70
+      },
+      "tags": [
+        "fame",
+        "advertising",
+        "business",
+        "public",
+        "absurd",
+        "media",
+        "reputation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "agent",
+          "kind": "worker",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "photographer",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "poster-upside-down",
+          "weight": 0.4,
+          "significance": 0.82,
+          "text": "肥皂厂把{subject}的脸印上了环城大道的广告柱，排版工人却把整张脸倒了过来。路人先笑，随后排队买那种“倒着看也体面”的肥皂；厂主说这是新式幽默，{agent}在月底多送了一只皮箱。{subject}没有提醒他们原图是正的，只问明年的合同能不能再加两克朗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "肥皂广告的分成"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 45,
+                "legitimacy": 25,
+                "absurdity": 70,
+                "invitations": 2,
+                "boredom": 5,
+                "officialStory": "倒着印的肥皂广告"
+              },
+              "durationMonths": 18,
+              "reason": "倒印的广告把这个人变成了一个笑话式名人"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "整条环城大道都认出了这张脸"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$agent",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "代理商把倒印说成新式幽默"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "upside_down_soap_poster",
+              "add": true,
+              "reason": "广告柱上的脸被倒着印"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "错误居然卖得不错"
+            }
+          ]
+        },
+        {
+          "id": "green-faces",
+          "weight": 0.3,
+          "significance": 0.85,
+          "text": "第一批肥皂卖出去两周，顾客开始带着绿色的脸回来。药房说那是染料，洗不掉，只能等；{agent}躲进咖啡馆后间，{subject}被推到柜台前应付退货。官司最后庭外和解，{subject}赔了四克朗，名字还上了《维也纳晚报》的社会栏，标题里用了“绿面”两个字。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "肥皂官司的赔偿"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "durationMonths": 12,
+              "reason": "绿脸肥皂成了公开丑闻"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "名字和绿脸一起上了社会栏"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$agent",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "代理商把退货柜台留给了代言人"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "endorsed a defective soap",
+              "add": true,
+              "reason": "为一种会染绿脸的肥皂代言"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "green_face_soap_scandal",
+              "add": true,
+              "reason": "肥皂把顾客的脸染绿了"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "站在柜台前被人指着脸骂"
+            }
+          ]
+        },
+        {
+          "id": "bathhouse-donation",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "{subject}把代言费换成了一叠工厂浴票，请{agent}以肥皂厂名义发给纺织女工。厂主起初嫌麻烦，听说报纸会登照片，才点头。女工们周末排着队去公共浴场，{subject}没有剪彩，只在门口收票。那一年，肥皂没有多卖多少，{subject}走在街上却开始有人让路。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "留下的一点代言费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "工厂区开始把这个人当成自己人"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 25,
+                "legitimacy": 45,
+                "absurdity": 55,
+                "invitations": 1,
+                "boredom": 4,
+                "officialStory": "把广告费换成浴票的人"
+              },
+              "durationMonths": 24,
+              "reason": "一次代言被改成了工厂区的善举"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$agent",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "代理商配合发出了浴票"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "soap_fee_became_bath_tickets",
+              "add": true,
+              "reason": "把代言费换成了工人的浴票"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "钱没有进自己口袋，却换来另一种体面"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-fame.charity-matinee",
+      "title": "丑闻义演",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "scandal",
+        "theatre",
+        "charity",
+        "public",
+        "humiliation",
+        "reputation",
+        "absurd"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "actress",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "journalist",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "laughed-first",
+          "weight": 0.4,
+          "significance": 0.84,
+          "text": "慈善义演把{subject}的丑闻编成一出独幕喜剧，海报上写着“本人出演本人”。{actress}在后台替{subject}别上一朵纸花，说笑第一声的人就赢了。幕布拉开，{subject}看见台下坐着那些在咖啡馆议论过自己的人，先笑出了声；笑声传开，丑闻忽然变成一件大家可以一起笑的事。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "义演的酬劳"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "reason": "公开嘲笑自己的丑闻，丑闻失去了咬人的力气"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 40,
+                "legitimacy": 20,
+                "absurdity": 75,
+                "invitations": 1,
+                "boredom": 6,
+                "officialStory": "在义演里演自己的丑闻"
+              },
+              "durationMonths": 18,
+              "reason": "丑闻被改成了一出可以继续演的喜剧"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "先笑自己的人赢了观众"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$actress",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "女演员在后台替这个人别了一朵纸花"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "laughed_at_own_scandal_on_stage",
+              "add": true,
+              "reason": "在慈善义演里扮演自己的丑闻"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "把嘲笑接了过来"
+            }
+          ]
+        },
+        {
+          "id": "coins-on-stage",
+          "weight": 0.35,
+          "significance": 0.86,
+          "text": "第三幕，{subject}照着剧本念到“我是个可怜人”，前排有人把一枚铜币扔上台，随后是第二枚、第三枚。{actress}想挡，{subject}却弯腰把铜币一枚枚捡进帽子。散场后，{journalist}问{subject}感觉如何；{subject}说铜币比掌声重，然后一个人走回了家。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "捡起的铜币"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "观众把铜币扔上台"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "pelted with coins at a charity matinee",
+              "add": true,
+              "reason": "在义演舞台上被观众扔铜币"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$actress",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "女演员试图替这个人挡铜币"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$journalist",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "记者在散场后追问感受"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "coins_thrown_at_charity_matinee",
+              "add": true,
+              "reason": "在义演舞台上被扔铜币"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "铜币比掌声重"
+            }
+          ]
+        },
+        {
+          "id": "debtors-fund",
+          "weight": 0.25,
+          "significance": 0.76,
+          "text": "{subject}把义演酬劳捐给了一个替负债人付利息的小基金，数目不大，只够三个人。{journalist}在报上写“丑闻里长出一只钱袋”，语气不算友善，却让基金的捐款多了九克朗。{subject}没有上台致谢，只在账本上把三个名字划掉；那晚回家，{subject}第一次没有绕开街角的报摊。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "捐给负债人基金的义演酬劳"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "丑闻被一小笔善款改了方向"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 30,
+                "legitimacy": 40,
+                "absurdity": 55,
+                "invitations": 1,
+                "boredom": 8,
+                "officialStory": "丑闻里长出的钱袋"
+              },
+              "durationMonths": 24,
+              "reason": "义演捐款让这个人有了另一种公共身份"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$journalist",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "记者把捐款写进了报道"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "scandal_turned_into_debtors_fund",
+              "add": true,
+              "reason": "把义演酬劳捐给负债人基金"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "没有上台，却睡得更沉"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-fame.statue-unveiling",
+      "title": "替男高音揭幕的铜像",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 75
+      },
+      "tags": [
+        "fame",
+        "statue",
+        "mistaken_identity",
+        "public",
+        "ceremony",
+        "absurd",
+        "humiliation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "bc18-ridiculous-fame",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        },
+        {
+          "key": "sculptor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "mayor",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "lovers-meeting-point",
+          "weight": 0.35,
+          "significance": 0.72,
+          "text": "铜像揭幕那天，{mayor}念错了男高音的名字，{sculptor}在台下把帽子捏变了形。没有人注意那张脸其实是照着{subject}的旧照片刻的；雕像很快成了约会的暗号，恋人们说“在假男高音下面等”。{subject}每天经过，偶尔替游客指路，从不纠正。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "揭幕式给的车马费"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 5,
+              "reason": "雕像让这张脸留在了广场上"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": 5,
+              "reason": "市民接受了这张脸"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sculptor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "雕塑家用了这个人的旧照片"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "face_on_a_tenor_statue",
+              "add": true,
+              "reason": "铜像用了这个人的脸"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "每天经过自己的铜像"
+            }
+          ]
+        },
+        {
+          "id": "eggs-and-fans",
+          "weight": 0.35,
+          "significance": 0.84,
+          "text": "男高音的戏迷从格拉茨包了一辆马车赶来，在揭幕式上扔鸡蛋。{sculptor}躲进市政厅，{mayor}对着扩音筒说艺术需要讨论；{subject}站在铜像旁边，领口挂着一片蛋黄，被记者拍进了第二天的报纸。标题没有提{subject}的名字，只写“一张不属于任何人的脸”。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "外套的干洗费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被戏迷当成了冒名者"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 8,
+              "reason": "扔鸡蛋的照片登上了报纸"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": -5,
+              "reason": "公众开始追问这张脸是谁的"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sculptor",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "雕塑家把责任推给了照片"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "egg-stained at a statue unveiling",
+              "add": true,
+              "reason": "在铜像揭幕式上被扔鸡蛋"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "egg_on_the_tenor_statue",
+              "add": true,
+              "reason": "铜像揭幕式上的鸡蛋落在这个人身上"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "领口挂着一片蛋黄"
+            }
+          ]
+        },
+        {
+          "id": "second-commission",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "市议会开会时，一个老议员说，既然市民喜欢这张脸，不如再立一座“无名市民”铜像。{sculptor}接了第二份工，{subject}做了三次模特，每次两克朗。新铜像手里没有火柴，也没有王冠，只提着一只菜篮；揭幕那天，{subject}站在人群后排，听见有人说，这人才像我们这条街上的。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "三次模特酬劳"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 6,
+              "reason": "第二座铜像让这张脸更常见了"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": 12,
+              "reason": "市民把铜像当成自己人"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "被当成无名市民的模特"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "statue_model",
+              "add": true,
+              "reason": "为第二座铜像做模特"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "model_for_unknown_citizen",
+              "add": true,
+              "reason": "成为无名市民铜像的模特"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "终于有一张脸像自己"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-fame.merchandise",
+      "title": "发明家的假胡子",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "fame",
+        "merchandise",
+        "business",
+        "absurd",
+        "legal",
+        "public",
+        "reputation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "bc18-ridiculous-fame",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "manufacturer",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "lawyer",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "lawsuit-sells-moustaches",
+          "weight": 0.35,
+          "significance": 0.82,
+          "text": "{subject}请{lawyer}递了状子，说假胡子用了{subject}的脸。开庭那天，旁听席坐满了想看看“发明家本人”的人；法官问胡子与脸有何关系，庭里笑成一片。官司输了，{subject}付了两克朗诉讼费；同一个月，假胡子的销量翻了一倍，{manufacturer}在报纸上登了一句“感谢那位不肯沉默的先生”。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "诉讼费和律师费"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 10,
+              "reason": "官司把假胡子的广告做大了"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "boredom",
+              "delta": 5,
+              "reason": "这个笑话已经被讲得太多"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "官司输掉，销量却涨了"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "lost a likeness suit",
+              "add": true,
+              "reason": "为假胡子起诉却输了官司"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lawyer",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "律师接下了这桩注定被笑的案子"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lost_moustache_lawsuit",
+              "add": true,
+              "reason": "假胡子官司败诉"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "法官也笑了"
+            }
+          ]
+        },
+        {
+          "id": "late-contract",
+          "weight": 0.35,
+          "significance": 0.76,
+          "text": "合同在假胡子卖到第三个月时才送到。{lawyer}把七克朗和一张授权书并排放在桌上，说再晚一周，厂里就打算换一张脸。{subject}签了字，又要求加一条：每卖出一打，给孤儿院捐十赫勒。{manufacturer}答应了，因为这条款可以登在包装纸上。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 7,
+              "reason": "迟到的肖像授权费"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": 5,
+              "reason": "合同让这张脸有了一点正式依据"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lawyer",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "律师赶在换脸前拿到了合同"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$manufacturer",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "厂商接受了孤儿院捐款条款"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "late_moustache_contract",
+              "add": true,
+              "reason": "在假胡子快换脸时签下合同"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "迟到的钱也是钱"
+            }
+          ]
+        },
+        {
+          "id": "carnival-stall",
+          "weight": 0.3,
+          "significance": 0.74,
+          "text": "厂里剩下一箱卖不掉的假胡子，{subject}用三克朗买下，在狂欢节门口摆了个摊。孩子们把胡子别在帽檐上，年轻人买去参加化装舞会；一个老妇人买了两副，说给远行的儿子留着。收摊时，{subject}数出五克朗，比本金多了两克朗，还剩下半箱胡子。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "狂欢节卖假胡子的利润"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "在摊位上学会了吆喝"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": -2,
+              "reason": "假胡子变成了普通节庆用品"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "stallholder",
+              "add": true,
+              "reason": "在狂欢节门口摆摊"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_moustaches_at_carnival",
+              "add": true,
+              "reason": "把剩下的假胡子卖给了狂欢节"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "错误变成了两克朗利润"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-ghost.death-certificate",
+      "title": "活着领到的死亡证明",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "bureaucracy",
+        "legal",
+        "death",
+        "identity",
+        "mistake",
+        "paperwork",
+        "absurd"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "bc18-bureaucratic-ghost",
+          "owner": "person"
+        },
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "accepts-the-file",
+          "weight": 0.35,
+          "significance": 0.85,
+          "text": "户籍官{clerk}为了结掉一桩陈年失踪案，在档案上给{subject}盖了“推定死亡”。三天后，{subject}收到一张慰问卡和一本作废的配给簿；同一天，追了半年的债主忽然不再上门。旧货商听说后，花两克朗买走一份抄本，说要给一个躲债的朋友看看格式。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "卖给旧货商的死亡证明抄本"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "parameters": {
+                "fileDepth": 25,
+                "sightings": 1,
+                "risk": 20,
+                "duplicates": 1,
+                "officialStatus": "在户籍册上已死亡",
+                "alias": "一份注销的配给卡"
+              },
+              "durationMonths": 30,
+              "reason": "被户籍官推定死亡"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "街坊开始用看死人的眼神看这个人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "户籍官用一个章结掉了旧案"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "declared_dead_while_alive",
+              "add": true,
+              "reason": "活着却收到死亡证明"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "债主终于不再上门"
+            }
+          ]
+        },
+        {
+          "id": "correct-it-twice",
+          "weight": 0.35,
+          "significance": 0.84,
+          "text": "{subject}在窗口要求更正，{clerk}把表格翻了三遍，最后开出一张新的出生证明，名字却少了一个字母。于是城里同时住着一个死人、一个活人，和一个只在档案里出生的陌生人。{subject}拿着两张纸站在区公所门口，忽然不知道该用哪一张去领下个月的煤票。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "更正材料的手续费和车钱"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "parameters": {
+                "fileDepth": 40,
+                "sightings": 2,
+                "risk": 15,
+                "duplicates": 2,
+                "officialStatus": "同时活着和死了",
+                "alias": "少了一个字母的名字"
+              },
+              "durationMonths": 36,
+              "reason": "更正制造了更多互相矛盾的档案"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "户籍官把名字又写错了一次"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "declared dead while alive",
+              "add": true,
+              "reason": "活着却被写进死亡栏"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "two_living_files_one_death",
+              "add": true,
+              "reason": "更正后出现一个死人和两个活人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "不知道该用哪一张纸买煤"
+            }
+          ]
+        },
+        {
+          "id": "collect-the-benefit",
+          "weight": 0.3,
+          "significance": 0.86,
+          "text": "邻居出主意说，死者家属可以领一笔丧葬补助。{subject}让{neighbor}冒充远房表姐，自己在旁边按了手印；钱到手后，两人在厨房里分成三份，第三份留着买煤。第二个星期，{clerk}寄来一封信，说抚恤金已经核准，请家属来拍一张遗像；{subject}把信压在盐罐下面，盐受潮结了块。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "冒领的丧葬补助分成"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "parameters": {
+                "fileDepth": 35,
+                "sightings": 2,
+                "risk": 40,
+                "duplicates": 2,
+                "officialStatus": "被冒领的死者",
+                "alias": "远房表姐的弟弟"
+              },
+              "durationMonths": 24,
+              "reason": "让邻居冒充遗属领取补助"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "obligation": 0.15,
+              "reason": "邻居冒充遗属分了丧葬补助"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "fraudulent survivor benefit",
+              "add": true,
+              "reason": "冒领自己的丧葬补助"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "collected_own_funeral_benefit",
+              "add": true,
+              "reason": "活着领到了自己的丧葬补助"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "盐罐下面压着一封荒唐的信"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-ghost.own-funeral",
+      "title": "自己的守灵夜",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "bureaucracy",
+        "funeral",
+        "mistaken_identity",
+        "public",
+        "absurd",
+        "death",
+        "humiliation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "bc18-bureaucratic-ghost",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "cousin",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 80
+        },
+        {
+          "key": "undertaker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "walks-in",
+          "weight": 0.35,
+          "significance": 0.86,
+          "text": "守灵夜设在死者生前常去的酒馆后间。{subject}推门进去，看见自己的照片立在蜡烛中间，{cousin}正用手帕擦眼角。{undertaker}问来客是谁，{subject}说“一个远亲”；话音落下，{cousin}抬起头，手帕掉在地上。半条街的人都来看热闹，{subject}被推到椅子上，稀里糊涂成了这场葬礼的主角。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "看热闹的人塞来的酒钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "参加自己葬礼的人成了街谈巷议"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 25,
+                "legitimacy": 8,
+                "absurdity": 85,
+                "invitations": 1,
+                "boredom": 5,
+                "officialStory": "参加自己守灵夜的人"
+              },
+              "durationMonths": 12,
+              "reason": "活人出现在自己的守灵夜"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 12,
+              "reason": "半条街的人都看见死人还活着"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "sightings",
+              "delta": 1,
+              "reason": "守灵夜多了一批目击者"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$cousin",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "fear": 0.1,
+              "reason": "远亲在守灵夜看见了活人"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "attended own wake",
+              "add": true,
+              "reason": "走进自己的守灵夜"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "attended_own_wake",
+              "add": true,
+              "reason": "在自己的守灵夜露面"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "荒唐得让人忘了害怕"
+            }
+          ]
+        },
+        {
+          "id": "lets-it-run",
+          "weight": 0.35,
+          "significance": 0.74,
+          "text": "{subject}没有进门，只站在酒馆对面的雨棚下。{cousin}在里面念悼词，说死者一生慷慨、爱吃甜、从不欠账；{subject}听见这些不属于自己的好话，忽然哭了起来。捐款盘里收了六克朗，{cousin}把它们包进手帕。{subject}等到灯灭才走，雨已经停了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "在雨棚下买的热酒"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 5,
+              "reason": "远亲开始相信这个人真的死了"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$cousin",
+              "kind": "kin",
+              "trust": 0.1,
+              "reason": "听见远亲在守灵夜念自己的好话"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "远亲记得的并不是我欠过的账，而是我爱吃甜。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "watched own wake from across the street",
+              "add": true,
+              "reason": "站在街对面看完了自己的守灵夜"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "watched_own_wake",
+              "add": true,
+              "reason": "没有走进自己的守灵夜"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "悼词里的好人不是自己"
+            }
+          ]
+        },
+        {
+          "id": "second-corpse",
+          "weight": 0.3,
+          "significance": 0.84,
+          "text": "{undertaker}把另一具同名尸体推进后间，说档案上只有一个名字，不能开两场葬礼。两个家庭在门口争起来，{subject}只好当场解开领口，让众人看脖子上的胎记。警察来了，记下姓名和住址；{cousin}在一旁小声问，那今晚到底埋谁。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "警察局的手续费和车钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "两个家庭在殡仪馆门口争一具尸体"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 20,
+              "reason": "警察记下了这个活死人的姓名和住址"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "sightings",
+              "delta": 2,
+              "reason": "殡仪馆和警察都看见了活人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$undertaker",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "殡仪员坚持档案上只有一个名字"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "mistaken for a corpse at a funeral",
+              "add": true,
+              "reason": "被殡仪馆当成另一具同名尸体"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "argued_with_own_corpse",
+              "add": true,
+              "reason": "在殡仪馆和另一具同名尸体争身份"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "解开领口给众人看胎记"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-ghost.pension-window",
+      "title": "死者不能领养老金",
+      "domain": "welfare",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 30,
+        "max": 80
+      },
+      "tags": [
+        "bureaucracy",
+        "pension",
+        "identity",
+        "legal",
+        "paperwork",
+        "absurd",
+        "poverty"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "bc18-bureaucratic-ghost",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "widow-for-a-day",
+          "weight": 0.35,
+          "significance": 0.84,
+          "text": "窗口后的{clerk}说，死者不能领养老金，但遗属可以。邻居回家换了件黑裙，挽着{subject}的胳膊又排了一次队；八克朗的补发款从铁栅栏下面推出来，两人在街角分成两份。{subject}把属于自己的那份塞进鞋底，回家路上一直觉得那只鞋比另一只重。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "冒充遗属领到的补发养老金"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 18,
+              "reason": "窗口留下了遗属代领的记录"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "duplicates",
+              "delta": 1,
+              "reason": "又多出一份遗属档案"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "obligation": 0.2,
+              "reason": "邻居冒充遗属领取养老金"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "pension collected by proxy",
+              "add": true,
+              "reason": "让邻居冒充遗属领取养老金"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "pension_collected_by_fake_widow",
+              "add": true,
+              "reason": "让邻居冒充遗属领钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "鞋底的钱比另一只鞋重"
+            }
+          ]
+        },
+        {
+          "id": "posthumous-medal",
+          "weight": 0.35,
+          "significance": 0.72,
+          "text": "养老金办公室寄来一枚“忠诚遗属”铜章和三克朗，说这是对死者家属的最后抚恤。{subject}不能亲自去领，只好让{neighbor}代收；邻居把铜章别在自家外套上，回来时只字不提三克朗。{subject}没有追问，因为那枚铜章若挂在自己胸前，实在不知道该怎么解释。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "代领材料的车钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 8,
+              "reason": "邻居以遗属身份出现在抚恤名单上"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "duplicates",
+              "delta": 1,
+              "reason": "抚恤名单上多了一个遗属名字"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "邻居把铜章说成替死者争来的体面"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "邻居收下了三克朗却没有提起"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "posthumous medal collected by a neighbour",
+              "add": true,
+              "reason": "让邻居代领死后的铜章"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "neighbor_kept_the_medal",
+              "add": true,
+              "reason": "邻居把铜章别在了自己外套上"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "连死后的体面也被别人戴走"
+            }
+          ]
+        },
+        {
+          "id": "prove-alive",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "{subject}花了三天跑教堂、区公所和旧雇主，最后拿到一张六个月内有效的“在世证明”。{clerk}把证明压在玻璃板下，说下次再死，最好提前通知。养老金恢复了，每月两克朗；{subject}走出门，阳光照在证明的钢印上，像一枚刚刚盖好的出生章。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "恢复发放的养老金"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "fileDepth",
+              "delta": 10,
+              "reason": "在世证明又添了一份附件"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": -3,
+              "reason": "临时证明暂时挡住了追问"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "窗口给了一张六个月的证明"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "temporary living certificate",
+              "add": true,
+              "reason": "只能证明六个月内还活着"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "six_month_living_certificate",
+              "add": true,
+              "reason": "拿到一张六个月有效的在世证明"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "养老金又回来了"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-ghost.double-tax",
+      "title": "死人和活人各交一次税",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "bureaucracy",
+        "tax",
+        "identity",
+        "paperwork",
+        "legal",
+        "absurd",
+        "money"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "bc18-bureaucratic-ghost",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "assessor",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "pay-both",
+          "weight": 0.35,
+          "significance": 0.76,
+          "text": "税吏先来收活人的税，三天后，另一个窗口又来收死人的遗产税。{subject}把两张税单并排放在桌上，发现名字、门牌和年份都分毫不差，只有税率不同。为了避免再被请去问话，{subject}把两份都交了；月底，家里的煤只够烧到复活节。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "活人和死人两份税单"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 5,
+              "reason": "两份税单都被登记为已缴"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "煤只够烧到复活节"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "taxed twice as living and dead",
+              "add": true,
+              "reason": "同时缴纳活人和死人的税"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_tax_twice",
+              "add": true,
+              "reason": "为同一间屋子交了两份税"
+            }
+          ]
+        },
+        {
+          "id": "expose-the-merge",
+          "weight": 0.35,
+          "significance": 0.84,
+          "text": "{subject}把两张税单寄给了市议会，又抄了一份给《新自由报》。记者查出，两个窗口共用一个旧索引，谁也没核对死亡日期。{assessor}被停职两周，{subject}拿到一克朗的“纠错酬金”。回家路上，{subject}想，这大概是死人身份带来的第一笔正经收入。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "市议会给的纠错酬金"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "揭开了两个窗口共用一个旧索引"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 10,
+              "reason": "公开投诉让更多窗口注意到这个名字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$assessor",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "税务员因为两份税单被停职"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "邻居帮忙把抄本送到了报社"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "reported a double-tax file",
+              "add": true,
+              "reason": "把两份税单寄给市议会和报社"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "exposed_double_tax_file",
+              "add": true,
+              "reason": "揭发了活死人的双份税单"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "死人身份第一次带来正经收入"
+            }
+          ]
+        },
+        {
+          "id": "ghost-pays",
+          "weight": 0.3,
+          "significance": 0.74,
+          "text": "死人的档案里挂着一笔从未结清的税，{subject}索性让那笔账继续欠着，自己用活人的名字去领煤票。两个窗口各自记账，互不打扰；{subject}每月省下一克朗，却要绕两条街，避免同时经过两家税务所。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "绕路多花的车钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "fileDepth",
+              "delta": 8,
+              "reason": "死人的欠税继续挂在另一份档案上"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 12,
+              "reason": "两份税务档案仍然没有合并"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "clean_living_tax_record",
+              "add": true,
+              "reason": "让死人的档案继续欠税"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "省下一克朗，多绕两条街"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-ghost.census-night",
+      "title": "普查员不肯数一个死人",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "bureaucracy",
+        "census",
+        "identity",
+        "paperwork",
+        "absurd",
+        "neighborhood",
+        "legal"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "bc18-bureaucratic-ghost",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "censusTaker",
+          "kind": "official",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "counted-twice",
+          "weight": 0.35,
+          "significance": 0.78,
+          "text": "普查员在门口翻了半天名册，说{subject}在死亡栏里，不能算进住户。{subject}把他请进屋，倒了一杯水；普查员想了很久，最后在“死者”旁边的空行里又添了一个“同名房客”。月底，住房补贴按两个人头发下来，{subject}买了一双新鞋，另一份钱塞进了门房的口袋。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "多算一个人头得到的住房补贴"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "duplicates",
+              "delta": 1,
+              "reason": "普查表上多了一个同名房客"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "fileDepth",
+              "delta": 4,
+              "reason": "住房补贴又添了一份住户记录"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$censusTaker",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "普查员在死亡栏旁边添了一个房客"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "counted twice in census",
+              "add": true,
+              "reason": "同一张普查表上出现死者与房客"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "counted_as_two_people",
+              "add": true,
+              "reason": "普查表上同时死了又住着"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "多出来的人头换来一双新鞋"
+            }
+          ]
+        },
+        {
+          "id": "dog-witness",
+          "weight": 0.35,
+          "significance": 0.74,
+          "text": "普查员坚持要看到活人，{subject}在门口站到半夜。最后是隔壁的狗先叫了起来，{neighbor}披着外套出来作证，说这个人每晚都回来喂猫。普查员在表格上写：“一名在世者，由狗确认。”{neighbor}签了字，{subject}请他喝了一杯热酒，两个人都觉得这事不该再提。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "请邻居喝的一杯热酒"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": -5,
+              "reason": "普查员在表格上承认了在世者"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "fileDepth",
+              "delta": 4,
+              "reason": "狗的证词也进了档案"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.12,
+              "reason": "邻居在半夜替这个人作证"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "verified alive by a neighbour's dog",
+              "add": true,
+              "reason": "由狗叫声证明还活着"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "verified_by_a_dog",
+              "add": true,
+              "reason": "普查员把狗的证词写进了表格"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "至少还有一个邻居愿意签字"
+            }
+          ]
+        },
+        {
+          "id": "ghost-story",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "普查员把当晚的事讲给了酒馆里的人听，第二天，街上的孩子开始敲{subject}的门，喊“活鬼出来”。{subject}开门，他们就跑；{subject}关门，他们又回来。月底，一个走江湖的戏班找上门，愿意出两克朗请{subject}在幕间站一会儿，不用说话，只要穿白衣服。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "戏班请人站幕间的酬劳"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "sightings",
+              "delta": 3,
+              "reason": "街上的孩子和戏班都来看活鬼"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被街坊当成会走路的鬼故事"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 20,
+                "legitimacy": 0,
+                "absurdity": 85,
+                "invitations": 1,
+                "boredom": 5,
+                "officialStory": "被普查员写进酒馆故事的活鬼"
+              },
+              "durationMonths": 12,
+              "reason": "活鬼故事让这个人成了街区的荒唐名人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$censusTaker",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "普查员把档案里的怪事讲进了酒馆"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "local_ghost_story",
+              "add": true,
+              "reason": "孩子开始敲门喊活鬼"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "连戏班都只请自己站着不说话"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-ghost.quiet-correction",
+      "title": "更正成新生儿",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "bureaucracy",
+        "paperwork",
+        "identity",
+        "absurd",
+        "legal",
+        "quiet",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "bc18-bureaucratic-ghost",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "new-ration-book",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "为了把死亡记录销掉，{clerk}在同一个日期上开了一张出生证明，说这样账目最干净。于是{subject}在官方文件里成了一个刚出生的婴儿，领到一本新配给簿和一张婴儿体检券。{subject}把体检券给了邻居的孩子，自己拿着配给簿去煤店；店员看了看年龄栏，又看了看{subject}的胡子，最后什么也没问。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "新生儿配给簿换到的煤和面粉"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "fileDepth",
+              "delta": 8,
+              "reason": "出生证明又添了一份附件"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 10,
+              "reason": "新生儿和成年人共用一张脸"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "duplicates",
+              "delta": 1,
+              "reason": "死亡、出生和活人档案同时存在"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "officialStatus",
+              "value": "在更正后成为新生儿",
+              "reason": "死亡记录被一张同日出生证明抵掉"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "officially reborn",
+              "add": true,
+              "reason": "被更正成一个刚出生的婴儿"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "officially_reborn",
+              "add": true,
+              "reason": "拿到一张同日出生的出生证明"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "煤店店员什么也没问"
+            }
+          ]
+        },
+        {
+          "id": "school-inspector",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "学务督察按着新户籍找上门，说有一名适龄儿童从未入学。{subject}躲在阁楼里，{neighbor}在楼下说孩子出疹子，不能见风；督察留下了一张入学通知和一瓶鱼肝油。晚上，{subject}从阁楼下来，看见通知上写着“七岁”，忽然觉得自己这一生确实该重新开始。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 15,
+              "reason": "学务督察开始寻找这个新生儿"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "邻居开始替这个人遮掩"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "reason": "邻居对督察说孩子出疹子"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "registered as a school-age newborn",
+              "add": true,
+              "reason": "户籍上成了七岁学童"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "school_notice_for_newborn",
+              "add": true,
+              "reason": "收到一张写给七岁儿童的入学通知"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "躲在阁楼里听督察敲门"
+            }
+          ]
+        },
+        {
+          "id": "keep-both-documents",
+          "weight": 0.3,
+          "significance": 0.76,
+          "text": "{subject}没有去销死亡证明，又去补了一张出生证明。此后办事，哪边队伍短就用哪张纸：领煤票用活人的，避开税务用死人的，给孩子报名用刚出生的。{clerk}在档案里给{subject}做了三个不同颜色的标签，说这样至少不容易拿错；{subject}觉得，这是自己在官僚系统里得到过的最诚实的建议。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "用不同身份省下的配给差额"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "fileDepth",
+              "delta": 5,
+              "reason": "死亡和出生证明都被留在手边"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "risk",
+              "delta": 5,
+              "reason": "三份身份随时可能被拿到同一个窗口"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-bureaucratic-ghost",
+              "key": "officialStatus",
+              "value": "同时死亡与新生",
+              "reason": "保留了死亡和出生两张证明"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "cunning",
+              "amount": 0.02,
+              "reason": "学会了根据队伍长短选择身份"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_both_certificates",
+              "add": true,
+              "reason": "同时保留死亡与出生证明"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "三个颜色标签至少不会拿错"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-inherit.forty-seven-franz",
+      "title": "四十七个弗朗茨",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 75
+      },
+      "tags": [
+        "inheritance",
+        "mistaken_identity",
+        "debt",
+        "funeral",
+        "work",
+        "absurd",
+        "family"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "af17-mistaken-heir",
+          "owner": "person"
+        },
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 75
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        },
+        {
+          "key": "notary",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        },
+        {
+          "key": "creditor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "hearse-as-taxi",
+          "weight": 0.35,
+          "significance": 0.84,
+          "text": "四十七个弗朗茨·穆勒里，只有{subject}拿得出干净的房租簿。公证人{notary}把遗嘱念完，遗产是一辆灵车、两匹老马和十四克朗的欠账。{subject}没有钱下葬，先把灵车租给搬家的人；夜里跑环城大道，白天替人运钢琴。{creditor}起初等着看笑话，后来开始给他介绍生意。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 5,
+              "reason": "用灵车替人搬家的收入"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "hearse_driver",
+              "add": true,
+              "reason": "把继承来的灵车当成搬家车"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 25,
+                "legitimacy": 20,
+                "absurdity": 65,
+                "invitations": 1,
+                "boredom": 6,
+                "officialStory": "继承了一辆灵车的人"
+              },
+              "durationMonths": 18,
+              "reason": "夜里开灵车搬家成了街谈巷议"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$creditor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "obligation": 0.1,
+              "reason": "债主从看笑话变成介绍生意"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hearse_became_a_moving_van",
+              "add": true,
+              "reason": "把灵车租给搬家的人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "欠账居然开始有出路"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-horses",
+          "weight": 0.35,
+          "significance": 0.7,
+          "text": "{subject}把灵车和两匹马卖给了城西的殡仪馆，拿到的钱正好抵掉欠账，只剩下一盒黑手套和半瓶擦铜油。{notary}说这笔遗产算是结清了；{subject}却总觉得，自己像替一个陌生人做了一场没有尸体的买卖。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "卖掉灵车和马匹的余款"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "街坊说这个人把遗产拆成了零件"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$notary",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "公证人确认遗产已经结清"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "sold an inherited hearse",
+              "add": true,
+              "reason": "把继承来的灵车卖给了殡仪馆"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_inherited_hearse",
+              "add": true,
+              "reason": "灵车和马匹换成了现钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "留下一盒不知道给谁戴的黑手套"
+            }
+          ]
+        },
+        {
+          "id": "bury-the-stranger",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "遗嘱里还附了一笔丧葬费，条件是要有“家属”到场。死者没有亲人，{subject}只好穿黑衣站在墓旁，听牧师念一个从未听过的名字。雨把花圈上的纸花打湿，泥水漫过鞋面；葬礼结束后，{notary}把九克朗交给他，说账已结清。{subject}回家脱鞋，发现袜子上沾着别人的土。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 7,
+              "reason": "以家属身份到场后的遗产余款"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "替一个陌生人站完了葬礼"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$notary",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "公证人看见这个人把葬礼站完"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "buried a stranger to claim an inheritance",
+              "add": true,
+              "reason": "以家属身份参加陌生人的葬礼"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "buried_a_stranger_for_the_estate",
+              "add": true,
+              "reason": "替死者站完葬礼才拿到遗产"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "袜子上沾着别人的土"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-inherit.parrot-condition",
+      "title": "遗嘱里的鹦鹉",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 75
+      },
+      "tags": [
+        "inheritance",
+        "family",
+        "condition",
+        "absurd",
+        "death",
+        "legal",
+        "quiet"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 75
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        },
+        {
+          "key": "notary",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        },
+        {
+          "key": "aunt",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 85
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "parrot-outlives",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "姑妈的遗嘱只有一条：谁替她养那只灰鹦鹉满两年，谁就拿十二克朗。{subject}搬进阁楼，每天煮谷子、换水、用旧报纸垫笼底。鹦鹉学会了学门铃响，也学会了在{subject}咳嗽时叫“吃药”。两年后，公证人{notary}来验鸟，鹦鹉在他帽子上拉了一泡；{subject}拿到钱，先买了一只新笼子。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 12,
+              "reason": "养满两年鹦鹉得到的遗产"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "两年里学会了照顾一只鹦鹉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$aunt",
+              "kind": "kin",
+              "trust": 0.1,
+              "reason": "替姑妈把鹦鹉养到了遗嘱要求的期限"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "kept a parrot for an inheritance",
+              "add": true,
+              "reason": "为遗产养了两年鹦鹉"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_the_parrot",
+              "add": true,
+              "reason": "鹦鹉活过了两年期限"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "新笼子比旧笼子亮"
+            }
+          ]
+        },
+        {
+          "id": "parrot-dies",
+          "weight": 0.35,
+          "significance": 0.76,
+          "text": "鹦鹉死在第二个冬天。窗缝里灌进来的风把笼布吹开，它缩在食盆旁边，像一团被揉皱的灰纸。{notary}说条件没有完成，十二克朗归了姑妈的教子；{subject}把鸟埋在院子里，留下那只笼子。春天，笼子里长出一丛野草，{subject}没有拔。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "鹦鹉的药费和笼布"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "街坊说这个人连一只鸟也没留住"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$aunt",
+              "kind": "kin",
+              "trust": -0.1,
+              "reason": "姑妈的鹦鹉没有活到继承条件完成"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "failed a parrot condition",
+              "add": true,
+              "reason": "鹦鹉在两年期限前死了"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parrot_died_before_the_will",
+              "add": true,
+              "reason": "鹦鹉死在第二个冬天"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "笼子里长出一丛野草"
+            }
+          ]
+        },
+        {
+          "id": "parrot-repeats-secret",
+          "weight": 0.3,
+          "significance": 0.84,
+          "text": "鹦鹉在公证处忽然开口，反复说“盒子在钟后面”。{aunt}脸色变了，{notary}说鸟只会学舌；可回家一找，钟后面真有一只铁盒，里面是姑妈早年存下的银器。亲戚们打起了官司，{subject}作为养鸟人出庭，拿了三克朗证人费，也记住了{notary}在庭上擦汗的样子。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "出庭作证的证人费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "鹦鹉和铁盒的故事传遍了亲戚圈"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$notary",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "公证人在庭上被鹦鹉的话牵出铁盒"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "公证人知道钟后面的铁盒，却从没在遗嘱里提起。",
+              "confidence": 0.6,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "testified in a parrot inheritance case",
+              "add": true,
+              "reason": "为鹦鹉和铁盒的官司出庭"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parrot_revealed_the_silver",
+              "add": true,
+              "reason": "鹦鹉说出了钟后面的铁盒"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "一只鸟比公证人记得更多"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-office.promotion-by-typo",
+      "title": "晋升名单上的一个字母",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 70
+      },
+      "tags": [
+        "office",
+        "promotion",
+        "bureaucracy",
+        "mistake",
+        "status",
+        "absurd",
+        "politics"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "office-patronage",
+          "owner": "person"
+        },
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 70
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "director",
+          "kind": "official",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 75
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "accept-the-post",
+          "weight": 0.4,
+          "significance": 0.86,
+          "text": "晋升名单上，{clerk}把“助理文书”误排成了“主任”。文件一路盖到市长办公室，竟没有人退回来；{subject}在星期一搬进了有地毯的办公室，领到每月六克朗的主任薪金。{director}在走廊里看了{subject}一眼，没有问{subject}会不会看预算，只问要不要配一名速记员。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "主任薪金"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 30,
+                "legitimacy": 10,
+                "absurdity": 75,
+                "invitations": 1,
+                "boredom": 4,
+                "officialStory": "因拼写错误当上主任"
+              },
+              "durationMonths": 18,
+              "reason": "一个拼写错误让这个人成了主任"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "acting_director",
+              "add": true,
+              "reason": "搬进了主任办公室"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$director",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "主任没有退回这份任命"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "colleague",
+              "trust": 0.1,
+              "obligation": 0.1,
+              "reason": "文书把助理排成了主任"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "promoted_by_a_typo",
+              "add": true,
+              "reason": "因拼写错误当上主任"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "地毯比旧椅子软"
+            }
+          ]
+        },
+        {
+          "id": "confess-to-director",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "{subject}把那份名单拿到{director}面前，说自己不该坐这间办公室。{director}看完，先关上门，笑了很久；原来被抢走位置的是他的政敌。{subject}没有当上主任，却成了“特别助理”，薪水三克朗，任务是替主任记住每一个人名。{clerk}在门外说，这比升职安全。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "特别助理的薪水"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "主动承认任命错误反而赢得信任"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 20,
+                "legitimacy": 30,
+                "absurdity": 50,
+                "invitations": 1,
+                "boredom": 5,
+                "officialStory": "主动承认升职错误的人"
+              },
+              "durationMonths": 18,
+              "reason": "承认错误让这个人成了办公室里的奇人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$director",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "主任发现这份错误正好打击了政敌"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "文书说这比升职安全"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "confessed_the_promotion_typo",
+              "add": true,
+              "reason": "主动向主任承认晋升名单有误"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "没有地毯，但睡得更稳"
+            }
+          ]
+        },
+        {
+          "id": "post-abolished",
+          "weight": 0.25,
+          "significance": 0.84,
+          "text": "审计员发现编制表上没有这个职位，{subject}的晋升被写成“临时代理”，代理费还要退回。{subject}补交五克朗，把地毯上的墨水瓶也赔了；{clerk}被调去地下室抄写旧档。临走前，{clerk}对{subject}说，不是每个错字都能害人，但这一笔确实害了两个。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "退还代理费和赔偿墨水瓶"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被写成了没有编制的临时代理"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "文书因为一个字母被调去地下室"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "promoted by a typo then demoted",
+              "add": true,
+              "reason": "因错字升职又被审计撤掉"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "promotion_typo_reversed",
+              "add": true,
+              "reason": "晋升被审计写成临时代理"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "地毯和墨水瓶都赔了进去"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-office.new-director-speech",
+      "title": "第一次训话的主任",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 70
+      },
+      "tags": [
+        "office",
+        "promotion",
+        "speech",
+        "bureaucracy",
+        "public",
+        "absurd",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "bc18-ridiculous-fame",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "reporter",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "speech-misread",
+          "weight": 0.4,
+          "significance": 0.78,
+          "text": "第一次训话，{subject}把预算备忘录拿倒了，从头念到尾。底下的人先是发愣，随后有人小声说，主任是在用倒着的账提醒大家：钱不够。散会后，各科主动减了文具和加班费，{subject}没有解释，{clerk}在门口递上一杯咖啡，说这招比拍桌子管用。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "各科省下来的办公费分成"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": 5,
+              "reason": "下属把倒念的预算当成管理手段"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 5,
+              "reason": "倒着念预算的故事在办公室传开"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "文书替主任把倒念说成了管理手段"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "学会了下属愿意接受的说法"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "budget_read_backwards",
+              "add": true,
+              "reason": "把预算备忘录倒着念完"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "没有人发现拿倒了"
+            }
+          ]
+        },
+        {
+          "id": "cut-the-wrong-budget",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "{subject}在训话里说“我们要节约用纸”，第二天，档案室不再领墨水，公文开始用铅笔写；一周后，市议会来要正式副本，整间办公室找不到一张能交出去的文件。{subject}自己掏钱买了两瓶墨水，{clerk}在报销单上写“主任训话的后果”，被{subject}划掉了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "自己掏钱买的两瓶墨水"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": -6,
+              "reason": "办公室交不出正式副本"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "市议会来要副本时找不到文件"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "colleague",
+              "trust": 0.05,
+              "reason": "文书把主任训话的后果写在报销单上"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "accidentally cut office supplies",
+              "add": true,
+              "reason": "一句节约用纸让办公室断了墨水"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cut_the_wrong_supplies",
+              "add": true,
+              "reason": "节约用纸变成了不领墨水"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "自己买墨水填公务的窟窿"
+            }
+          ]
+        },
+        {
+          "id": "reporter-turns-it-into-profile",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "第二天，{reporter}在报纸上写{subject}是“一个不会说漂亮话的主任”，还引用了那句被倒着念的预算备注。文章登出后，两个外区的小官员来信请教“简朴管理法”；{subject}把信转给了{clerk}，自己接受了外区一场讲座的邀请，酬劳三克朗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "外区讲座的酬劳"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 8,
+              "reason": "报纸把倒念的预算写成了简朴管理法"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "invitations",
+              "delta": 1,
+              "reason": "外区发来讲座邀请"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": 8,
+              "reason": "报纸把错误解释成一种作风"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$reporter",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "记者写了一篇关于主任的侧写"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "profile_in_the_newspaper",
+              "add": true,
+              "reason": "被报纸写成不会说漂亮话的主任"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "错误又变成了一次讲座"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-stage.understudy-king",
+      "title": "替身上台的王",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 65
+      },
+      "tags": [
+        "theatre",
+        "performance",
+        "stage",
+        "mistaken_identity",
+        "absurd",
+        "fame",
+        "humiliation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "stage-king",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "manager",
+          "kind": "worker",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 70
+        },
+        {
+          "key": "actress",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "accidental-triumph",
+          "weight": 0.35,
+          "significance": 0.86,
+          "text": "主演在开演前被警察带走，{manager}把{subject}从提词厢推上舞台。{subject}穿着大两号的王袍，忘了三句台词，索性坐下，盯着台下看；观众以为这是新式演法，评论家第二天写“沉默的君主终于不再假装说话”。{actress}在侧幕捂住嘴，{manager}已经开始谈下一轮合同。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "替演国王的酬劳"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "评论家称赞了沉默的君主"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 35,
+                "legitimacy": 30,
+                "absurdity": 60,
+                "invitations": 2,
+                "boredom": 5,
+                "officialStory": "忘词成名的国王"
+              },
+              "durationMonths": 18,
+              "reason": "忘词被评论家当成新式演法"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$actress",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "女演员在侧幕看见这个人坐下"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "forgot_lines_became_a_style",
+              "add": true,
+              "reason": "忘词后被评论家当成新式演法"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "台下没有人发现自己忘了词"
+            }
+          ]
+        },
+        {
+          "id": "booed-off",
+          "weight": 0.35,
+          "significance": 0.82,
+          "text": "{subject}上场时踩到王袍，连人带椅摔进乐池，王冠滚到第一排一位老太太脚边。观众先愣，接着笑成一片；{manager}在后台把节目单撕了。第二天，小报写“王冠落地，剧院关门”，{subject}在家里躺了三天，听见楼下孩子喊“国王”，也不敢开窗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "摔坏王冠的赔偿"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "在舞台上连人带椅摔进乐池"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 20,
+                "legitimacy": 5,
+                "absurdity": 70,
+                "invitations": 0,
+                "boredom": 10,
+                "officialStory": "在台上摔断椅子的国王"
+              },
+              "durationMonths": 12,
+              "reason": "舞台事故让这个人成了小报笑料"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$manager",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "经理把节目单撕了"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "booed off stage",
+              "add": true,
+              "reason": "在舞台上摔进乐池后被观众嘲笑"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fell_into_the_orchestra_pit",
+              "add": true,
+              "reason": "连人带椅摔进乐池"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "听见楼下孩子喊国王"
+            }
+          ]
+        },
+        {
+          "id": "mistaken-for-real-royal",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "台下坐着一位外国公使，他把{subject}当成了某位流亡的君主，散场后送来一枚纪念章和一张晚宴请柬。{manager}不敢解释，让{subject}穿着戏服去了；{subject}在席间只说“我的国家很小”，公使便谈起边境。回家后，{subject}把纪念章放进抽屉，和电车月票放在一起。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "晚宴后公使给的车马费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "被外国公使当成流亡君主"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 26,
+                "legitimacy": 0,
+                "absurdity": 80,
+                "invitations": 1,
+                "boredom": 4,
+                "officialStory": "被公使当成流亡君主"
+              },
+              "durationMonths": 12,
+              "reason": "戏服被当成了流亡君主的便装"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$manager",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "经理让这个人穿着戏服去赴宴"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "mistaken for a real monarch at the theatre",
+              "add": true,
+              "reason": "被外国公使当成流亡君主"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "dined_as_a_king",
+              "add": true,
+              "reason": "穿着戏服参加了公使的晚宴"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "纪念章和电车月票放在一起"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-luck.civic-mascot",
+      "title": "幸运委员会的吉祥物",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "luck",
+        "charity",
+        "public",
+        "reputation",
+        "absurd",
+        "social",
+        "suspicion"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "af17-lucky-idiot",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "chairwoman",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "raffle-wins",
+          "weight": 0.35,
+          "significance": 0.76,
+          "text": "慈善委员会的女士们请{subject}在抽奖箱前站一会儿，说好运气会传染。{subject}只是替主持人递了一张纸条，头奖就落到了委员会自己买的票上；一篮火腿、两瓶酒和一只银烛台被抬下台。{chairwoman}当场聘{subject}做下一场义卖的“吉祥物”，报酬是一枚铜别针和一顿下午茶。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "义卖吉祥物的酬劳和分到的火腿"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "委员会把好运归功于这个人"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "streak",
+              "delta": 1,
+              "reason": "又一场抽奖在眼前中了"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": 8,
+              "reason": "委员会开始把好运当成一种本事"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$chairwoman",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "委员会聘这个人做义卖吉祥物"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "civic_mascot",
+              "add": true,
+              "reason": "被慈善委员会当成吉祥物"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "一枚铜别针和一顿下午茶"
+            }
+          ]
+        },
+        {
+          "id": "luck-blamed-for-fire",
+          "weight": 0.35,
+          "significance": 0.84,
+          "text": "仓库失火那晚，委员会的活动棚因为风向改变而保住了。第二天，{chairwoman}却在门口拦住{subject}，说有人看见{subject}在火起前从仓库边走过；幸运不能证明清白，反而像一种从别人那里借来的东西。{subject}把铜别针还给她，回家路上第一次觉得，好运也会留下脚印。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "被委员会辞退后的车钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被邻居怀疑好运来自别人的损失"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": 15,
+              "reason": "仓库失火让好运第一次显得可疑"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$chairwoman",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "委员会把火灾后的怀疑指向这个人"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "blamed for surviving a fire",
+              "add": true,
+              "reason": "活动棚保住后被怀疑借走了别人的运气"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "luck_blamed_for_fire",
+              "add": true,
+              "reason": "好运被说成从火灾里借来的"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "好运第一次留下脚印"
+            }
+          ]
+        },
+        {
+          "id": "mascot-union",
+          "weight": 0.3,
+          "significance": 0.74,
+          "text": "城里几个自称运气好的人凑在一起，成立了一个“幸运者互助会”，每人每月交二十赫勒，谁遇到倒霉事就领一笔小钱。{subject}被推举为会长，因为{subject}的运气最没有道理；第一次开会，七个人带来七种护身符，最后决定把会费锁在一只旧饼干盒里。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "幸运者互助会的会费结余"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": -5,
+              "reason": "互助会把好运说成一种可以互相帮助的东西"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "club_chairman",
+              "add": true,
+              "reason": "被推举为幸运者互助会会长"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$chairwoman",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "委员会主席也加入了互助会"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "第一次主持会议"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "founded_lucky_peoples_club",
+              "add": true,
+              "reason": "成了幸运者互助会的会长"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "七种护身符锁进一只饼干盒"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-curse.quiet-life",
+      "title": "安静生活的字面实现",
+      "domain": "curse",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "curse",
+        "wish",
+        "quiet",
+        "work",
+        "absurd",
+        "health",
+        "irony"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "curse-bargain",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "genuinely-quiet",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "{subject}在许愿后的第三个月，成了自然史博物馆的夜班看守。展厅里只有标本、钟声和暖气片的滴答；没有人来借盐，也没有债主在楼下咳嗽。{subject}起初不习惯，后来学会在闭馆后给每一只鸟擦玻璃眼。工资不高，睡眠却第一次沉到底，像一块石头落进无风的井。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "博物馆夜班看守的工资"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "终于能睡整夜"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "night_watchman",
+              "add": true,
+              "reason": "在自然史博物馆做夜班看守"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-bargain",
+              "reason": "安静的生活已经实现，仪式的债不再占据当前生活"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "works alone at night",
+              "add": true,
+              "reason": "在闭馆后的博物馆独自值夜"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "quiet_life_granted",
+              "add": true,
+              "reason": "愿望以一间空展厅的形式实现"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "睡眠第一次沉到底"
+            }
+          ]
+        },
+        {
+          "id": "too-quiet",
+          "weight": 0.35,
+          "significance": 0.84,
+          "text": "愿望实现得过于彻底：{subject}的左耳先是嗡嗡响，随后什么也听不见。世界安静下来，安静得像隔着一层厚布；{subject}错过电车、错过医生的叫号，也错过朋友在街对面喊名字。夜里，{subject}把手贴在墙上，能感到震动，却听不见声音，忽然明白安静也是要付房租的。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "左耳失去听觉"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "看耳朵的车钱和诊费"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-bargain",
+              "reason": "愿望已经以另一种方式结清"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "deaf in one ear",
+              "add": true,
+              "reason": "左耳在愿望实现后失去听觉"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "quiet_life_took_an_ear",
+              "add": true,
+              "reason": "安静的生活拿走了一只耳朵"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "安静也是要付房租的"
+            }
+          ]
+        },
+        {
+          "id": "sells-silence",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "{subject}发现，只要自己在场，{neighbor}和别人的争吵就会压低嗓子。先是有人请{subject}去坐一会儿，后来变成每小时十赫勒的“静场”差事：婚礼、葬礼、债主谈判。{subject}不劝架，只坐在角落里削苹果；人们说，这个人身上有一种让账本合上的安静。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "替人静场的酬劳"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "人们开始传说这个人能让屋子安静"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 25,
+                "legitimacy": 25,
+                "absurdity": 80,
+                "invitations": 1,
+                "boredom": 6,
+                "officialStory": "把安静租出去的人"
+              },
+              "durationMonths": 18,
+              "reason": "静场差事让这个人有了荒唐的地方名声"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-bargain",
+              "reason": "把愿望的余波改成了一门差事"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "邻居第一个请这个人去静场"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rented_out_silence",
+              "add": true,
+              "reason": "开始按小时替人静场"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "至少安静还能换钱"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-enemy.accidental-help",
+      "title": "仇人写错的推荐信",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "enemy",
+        "mistake",
+        "work",
+        "reputation",
+        "absurd",
+        "luck",
+        "social"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 75
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "editor",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "letter-printed-as-praise",
+          "weight": 0.35,
+          "significance": 0.84,
+          "text": "{rival}写了一封告状信，列数{subject}的懒惰、贪婪和“可疑的出身”，却把信封上的地址写成了报社。{editor}以为这是一篇自荐小品，删掉几处脏话登了出来；读者喜欢这种不留情面的自嘲，两个商行给{subject}寄来聘书。{rival}在咖啡馆看见报纸，差点把杯子捏碎。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "商行聘书的预付薪金"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "读者把告状信读成了自嘲"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 20,
+                "legitimacy": 10,
+                "absurdity": 70,
+                "invitations": 2,
+                "boredom": 4,
+                "officialStory": "被仇人骂出名的人"
+              },
+              "durationMonths": 18,
+              "reason": "仇人的告状信被报纸当成自荐小品"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "告状信被报纸登成了自嘲"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$editor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "编辑把告状信登了出来"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "denounced in print and hired",
+              "add": true,
+              "reason": "被仇人告状却因此得到聘书"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "enemys_letter_became_an_advert",
+              "add": true,
+              "reason": "仇人的告状信变成了自荐广告"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "仇人帮了一个大忙"
+            }
+          ]
+        },
+        {
+          "id": "warehouse-sinecure",
+          "weight": 0.35,
+          "significance": 0.76,
+          "text": "{rival}把{subject}的名字推荐给码头仓库，说那里正缺一个“能扛两百斤的人”。{subject}去了才知道，岗位是看管一只装满旧账本的暖房，工钱三克朗，主要工作是别让老鼠咬纸。{rival}听说后，在工会门口堵了三天，问这算哪门子惩罚。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "仓库暖房的看管工钱"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "warehouse_keeper",
+              "add": true,
+              "reason": "被推荐去看管旧账本"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.05,
+              "reason": "仇人推荐的苦差事其实很轻松"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "enemy_recommended_a_sinecure",
+              "add": true,
+              "reason": "仇人推荐的仓库活变成了清闲差事"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "暖房里只有旧纸和老鼠"
+            }
+          ]
+        },
+        {
+          "id": "wrong-coal-delivery",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "{rival}把二十袋“劣质煤”送到{subject}门口，货到付款，想看{subject}拿不出钱。卸货时，煤块黑得发亮，是上好的无烟煤；{subject}付了钱，转手卖给面包房，净赚五克朗。{rival}来打听煤的去向，{subject}说已经烧了，还谢谢他记得自己怕冷。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 5,
+              "reason": "转卖无烟煤的差价"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "劣质煤阴谋变成了五克朗利润"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "enemy sent better coal than promised",
+              "add": true,
+              "reason": "仇人送来的劣质煤其实是好煤"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "enemy_coal_was_anthracite",
+              "add": true,
+              "reason": "仇人送来的煤卖了个好价钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "谢谢仇人记得自己怕冷"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-humiliation.borrowed-speech",
+      "title": "念错的演讲稿",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "humiliation",
+        "public",
+        "speech",
+        "mistake",
+        "absurd",
+        "reputation",
+        "school"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "bc18-ridiculous-fame",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "reporter",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "vet-report-read",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "{teacher}把一叠稿纸放在讲台上，{subject}没有看就念了起来。第一页写的是牛的胃病、饲料和胀气，{subject}越念越慢，台下孩子笑得前仰后合；{teacher}却在本子上记：“内容具体，贴近生活。”散会后，{reporter}问{subject}是不是故意用兽医报告讽刺官僚，{subject}说不是。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "学校给的演讲车马费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "孩子们喜欢这份念错的稿子"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 5,
+              "reason": "兽医报告成了校园里的笑话"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "教师把念错的稿子记成贴近生活"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "read a vet report as a speech",
+              "add": true,
+              "reason": "在学校典礼上念了兽医报告"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "read_the_vet_report",
+              "add": true,
+              "reason": "把牛的胃病当成演讲稿念完"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "孩子们笑得比听演讲开心"
+            }
+          ]
+        },
+        {
+          "id": "walk-off-with-dignity",
+          "weight": 0.35,
+          "significance": 0.78,
+          "text": "{subject}念到第三行，忽然发现纸上写的是牛的饲料配比，不是自己的演讲稿。{subject}停下来，向台下承认拿错了纸，然后说，今天的演讲取消；礼堂先是一片安静，随后有人鼓掌。{reporter}在报上写“一个不肯把错误念完的人”，第二天，{subject}收到三封邀请函。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "停下来承认拿错稿子"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "legitimacy",
+              "delta": 8,
+              "reason": "公开承认错误反而增加了可信度"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "key": "notoriety",
+              "delta": 4,
+              "reason": "报纸写了这个不肯念完的人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$reporter",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "记者写了关于这个人的短文"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "refused to finish a wrong speech",
+              "add": true,
+              "reason": "在台上停下来承认拿错稿子"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "stopped_the_wrong_speech",
+              "add": true,
+              "reason": "没有把兽医报告念完"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "台下有人鼓掌"
+            }
+          ]
+        },
+        {
+          "id": "cow-owner-sues",
+          "weight": 0.3,
+          "significance": 0.82,
+          "text": "那张兽医报告的主人是城郊的奶牛场主。他在报纸上认出了自己的字迹，以“泄露经营秘密”为由把{subject}告了；法庭判赔两克朗，{subject}又花了三克朗请律师。{teacher}来道歉，{subject}说，至少现在全城都知道那头牛的胃不好。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "赔偿和律师费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "因念错稿子被奶牛场主告上法庭"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "教师拿错了稿纸"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "sued over a borrowed speech",
+              "add": true,
+              "reason": "因念了兽医报告被起诉"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sued_over_a_vet_report",
+              "add": true,
+              "reason": "念错稿子引来一场官司"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "全城都知道那头牛的胃不好"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-crime.failed-burglary",
+      "title": "撬错门的贼",
+      "domain": "crime",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 65
+      },
+      "tags": [
+        "crime",
+        "burglary",
+        "mistake",
+        "absurd",
+        "police",
+        "legal",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 65
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "accomplice",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 60
+        },
+        {
+          "key": "inspector",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "health-inspectors",
+          "weight": 0.35,
+          "significance": 0.82,
+          "text": "两人摸黑撬开一扇门，里面没有保险柜，只有背景布、三脚架和一池显影水。店主以为他们是卫生局派来查暗房通风的，殷勤地领着看排水口；{accomplice}只好装模作样地记了几笔，{subject}顺手把柜台上一顶帽子戴走。临走时，店主还问要不要写整改通知。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "卖掉顺走的帽子"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "cunning",
+              "amount": 0.03,
+              "reason": "在暗房里装了一回卫生检查员"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$accomplice",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "两人一起把错门演成了检查"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "mistaken for a health inspector during a burglary",
+              "add": true,
+              "reason": "撬错门后被当成卫生检查员"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "burglary_mistaken_for_inspection",
+              "add": true,
+              "reason": "撬错门却检查了暗房排水"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "店主还问要不要写整改通知"
+            }
+          ]
+        },
+        {
+          "id": "caught-in-darkroom",
+          "weight": 0.35,
+          "significance": 0.84,
+          "text": "显影液被{accomplice}碰翻，整盆药水泼在一张婚礼合影上。新郎的脸变成一团灰雾，店主抓住{subject}的领子；{inspector}来后，两人被关了一夜。第二天，{subject}交了罚款三克朗，{accomplice}被新娘的家人追着要赔照片；那顶帽子也留在了拘留室。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "破坏暗房的罚款"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "在照相馆被警察带走"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 10,
+                "charge": "撬门入室"
+              },
+              "durationMonths": 9,
+              "reason": "撬错门留下了入室记录"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$accomplice",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "同伙碰翻了显影液"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "arrested in a photography studio",
+              "add": true,
+              "reason": "在照相馆暗房里被带走"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "destroyed_a_wedding_portrait",
+              "add": true,
+              "reason": "显影液泼毁了婚礼合影"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "在拘留室过了一夜"
+            }
+          ]
+        },
+        {
+          "id": "right-office-wrong-drawer",
+          "weight": 0.3,
+          "significance": 0.86,
+          "text": "他们终于摸到公证处的后窗，撬开的抽屉里却没有遗嘱，只有一叠慈善捐款收据，数目和报纸上公布的对不上。{subject}把收据塞进外套，找到一位律师，换回七克朗；律师说，这不是盗窃，是取证。{accomplice}问那遗嘱怎么办，{subject}说，先让死人再等一等。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 7,
+              "reason": "把慈善收据交给律师的酬劳"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "公证处抽屉里的慈善捐款收据与报纸公布的数目对不上。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$accomplice",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "两人一起把撬错的抽屉变成了证据"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "stole the wrong receipts",
+              "add": true,
+              "reason": "想偷遗嘱却拿走了一叠慈善收据"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "stole_charity_receipts",
+              "add": true,
+              "reason": "从公证处拿走对不上的慈善收据"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "先让死人再等一等"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bc18-crime.inept-blackmail",
+      "title": "一张睡在葬礼上的照片",
+      "domain": "crime",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "crime",
+        "blackmail",
+        "photograph",
+        "mistake",
+        "humiliation",
+        "absurd",
+        "reputation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 75
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "blackmailer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "photographer",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "mourning-card",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "{blackmailer}在葬礼上偷拍了一张{subject}靠着棺材睡着的照片，说只要不给四克朗，就把照片寄给{subject}的老板。{subject}还没有凑钱，照片先被家里人选去做了悼念卡；亲戚们说，只有真正伤心的人才会累成这样。{blackmailer}拿着底片站在门口，第一次不知道该威胁谁。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "相馆支付的悼念卡照片使用费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "亲戚把照片当成了真正伤心的证据"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$blackmailer",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "勒索照片变成了悼念卡"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "blackmailed with a funeral photograph",
+              "add": true,
+              "reason": "被一张葬礼上睡着的照片勒索"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "blackmail_photo_became_mourning_card",
+              "add": true,
+              "reason": "勒索用的照片被选作悼念卡"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "第一次不知道该威胁谁的是别人"
+            }
+          ]
+        },
+        {
+          "id": "pay-hush-money",
+          "weight": 0.35,
+          "significance": 0.82,
+          "text": "{subject}先给了两克朗，{blackmailer}又要四克朗；第三次来收钱时，{subject}把他带到了警察局。警员在{blackmailer}的口袋里找到三张别人的照片，其中一张是市议员在酒馆后门。{subject}拿回自己的照片，也花掉了一个下午，回家时晚饭已经凉了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "付给勒索者的封口钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被勒索的事在警局留了记录"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$blackmailer",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.1,
+              "reason": "把勒索者带到了警察局"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "paid a blackmailer once",
+              "add": true,
+              "reason": "先付了两克朗封口钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_then_reported_blackmail",
+              "add": true,
+              "reason": "付过一次钱后把勒索者送进警局"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "晚饭已经凉了"
+            }
+          ]
+        },
+        {
+          "id": "photographer-sells-print",
+          "weight": 0.3,
+          "significance": 0.76,
+          "text": "{photographer}把那张照片卖给了《晨报》，配文写“送别者的疲惫”。{subject}收到两克朗模特费和一份报纸；照片里的{subject}歪着头，嘴半张，确实像哭过。邻居开始叫{subject}“那个在葬礼上睡着的人”，语气不算尊敬，也不完全是嘲笑。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "报纸给的照片使用费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "照片被报纸登成了送别者的疲惫"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 22,
+                "legitimacy": 15,
+                "absurdity": 50,
+                "invitations": 0,
+                "boredom": 8,
+                "officialStory": "在葬礼上睡着的哀悼者"
+              },
+              "durationMonths": 12,
+              "reason": "葬礼照片被报纸登成了哀悼者的侧影"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$photographer",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "摄影师把照片卖给了报纸"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "funeral_photo_in_the_paper",
+              "add": true,
+              "reason": "睡在葬礼上的照片登了报"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "被叫成在葬礼上睡着的人"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "themes": [
+    "black_comedy",
+    "bureaucracy",
+    "mistaken_identity",
+    "ridiculous_fame",
+    "inheritance",
+    "irony"
+  ],
+  "era": "1912–1955",
+  "tone": [
+    "absurd",
+    "comic",
+    "dark"
+  ],
+  "scope": [
+    "person",
+    "household",
+    "office"
+  ],
+  "rarity": "rare",
+  "contentWarnings": [
+    "public humiliation",
+    "bureaucratic cruelty",
+    "wrongful death record",
+    "blackmail",
+    "petty crime",
+    "funeral",
+    "class humiliation"
+  ]
+}

@@ -1,0 +1,4863 @@
+{
+  "id": "pack-small-mysteries",
+  "version": 1,
+  "title": "小谜案与街坊秘密：错信、失物、传闻与没有答案的房间",
+  "description": "把错送的信、找不到的旧物、邻居夜里不灭的灯、被误认的帮工、巷子里的传说和几次过于整齐的巧合，做成成年与老年生活里可持续的小谜案。两条新状态分别记录一件失物的牵念与一条街坊秘密的重量；它们由普通场景创建，又被翻找、质问、谣言和选择继续消费。",
+  "author": "phase18-content-author/small-mysteries",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-07",
+  "sourceBriefId": "phase18-small-mysteries",
+  "rationale": "目录里悬疑、误会和街坊传闻多附着在警察、法庭、诅咒或大事件上，缺少“没有尸体、没有侦探、只有一件东西和一户人家”的低强度谜案。本包不新建调查引擎：失物用 attachment、leads、suspicion 记录，秘密用 pressure、danger、proof 记录；所有推进都落在既有的 search、rumor、relation、knowledge、state_remove 与普通场景上。它同时消费 grief、raising-child、under-investigation、office-patronage、fame、family-estate、chronic-illness，并把“未解决”写成一种可保留的结局，而不是系统失败。",
+  "states": [
+    {
+      "id": "sm18-missing-object",
+      "version": 1,
+      "packId": "pack-small-mysteries",
+      "title": "一件说不清下落的东西",
+      "description": "一件有来历的物件不见了：胸针、怀表、孩子的洗礼铜牌，或一封没有寄出的信。主人记得最后一次见到它的位置，却越找越不确定；线索、疑心和不肯放手的程度，会改变之后每一次翻箱倒柜和每一次看邻居的眼神。",
+      "owner": "person",
+      "slot": "small_mystery_object",
+      "conflict": "replace",
+      "tags": [
+        "mystery",
+        "object",
+        "loss",
+        "memory",
+        "search",
+        "suspicion",
+        "everyday"
+      ],
+      "parameters": {
+        "attachment": {
+          "type": "number",
+          "default": 60,
+          "min": 0,
+          "max": 100
+        },
+        "leads": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "suspicion": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        },
+        "object": {
+          "type": "string",
+          "default": "祖母的银胸针"
+        }
+      },
+      "durationMonths": {
+        "min": 3,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "mystery",
+            "object",
+            "loss",
+            "memory",
+            "search",
+            "family"
+          ],
+          "multiplier": 1.45
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "mystery",
+            "search"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "something_is_missing",
+          "add": true,
+          "reason": "一件有来历的东西不见了"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "something_is_missing",
+          "add": false,
+          "reason": "找东西的事告一段落"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "another-drawer",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "perception",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "a-receipt-in-the-lining",
+              "result": "success",
+              "weight": 2,
+              "text": "半年过去，{subject}又翻了一遍那只装旧纽扣的铁盒，在盒盖夹层里摸到一小片发黄的收据。上面的日期和那件东西最后一次出现的那天对得上，但字迹已经淡得只剩半个印章。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "sm18-missing-object",
+                  "key": "leads",
+                  "reason": "在铁盒夹层里找到一张旧收据",
+                  "delta": 6
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "sm18-missing-object",
+                  "key": "suspicion",
+                  "reason": "收据让事情有了一点轮廓",
+                  "delta": -2
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "一张旧收据把记忆往前推了半年"
+                }
+              ]
+            },
+            {
+              "id": "the-same-question",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}把同一只抽屉拉开又推上，里面的东西已经按原来的位置摆了三遍。楼下有人搬煤，铁锹刮过石阶；{subject}忽然想不起那件东西最后一次被谁拿在手里，只觉得每个人的脸都有一点可疑。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "sm18-missing-object",
+                  "key": "suspicion",
+                  "reason": "反复回想让疑心变重",
+                  "delta": 8
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "sm18-missing-object",
+                  "key": "leads",
+                  "reason": "同一只抽屉里没有再找到线索",
+                  "delta": -2
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "记忆开始靠不住"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-rumor-hardens",
+          "onTags": [
+            "rumor",
+            "scandal"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "suspicion",
+              "reason": "街坊的议论把怀疑指向了一个具体的人",
+              "delta": 10
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "家里丢东西的事传到了街上"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "每个人都在问是谁拿的"
+            }
+          ],
+          "text": "{subject}在院子里听见两个人在说“那家的东西”，话头在看见{subject}时停住。晚上，{subject}把首饰盒从五斗柜挪到床边，又觉得这样更像在防谁。",
+          "significance": 0.45,
+          "cooldownMonths": 12,
+          "maxPerYear": 2
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/small-mysteries",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把失物写成会持续改变观察和关系的状态：attachment、leads、suspicion 三个参数让同一件东西在半年后仍能被翻出来，也允许它永远找不到。"
+      }
+    },
+    {
+      "id": "sm18-town-secret",
+      "version": 1,
+      "packId": "pack-small-mysteries",
+      "title": "手里攥着一条街坊的秘密",
+      "description": "一个人知道了一件会改变邻居、房东或整条巷子的事：地下室住着没有登记的人，账本上多出一行，旧房间里有一封不该留的信。秘密有分量、有危险，也有被说出去的时刻；说与不说都会留下后果。",
+      "owner": "person",
+      "slot": "neighborhood_secret",
+      "conflict": "replace",
+      "tags": [
+        "secret",
+        "neighborhood",
+        "rumor",
+        "knowledge",
+        "risk",
+        "obligation",
+        "mystery"
+      ],
+      "parameters": {
+        "pressure": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "danger": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "proof": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        "what": {
+          "type": "string",
+          "default": "邻居家的地下室住着一个不愿登记的人"
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 180
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "secret",
+            "neighbor",
+            "rumor",
+            "mystery",
+            "scandal"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "secret",
+            "neighbor"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "carries_a_neighborhood_secret",
+          "add": true,
+          "reason": "知道了一条会伤人的街坊秘密"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "carries_a_neighborhood_secret",
+          "add": false,
+          "reason": "秘密被说开、被遗忘或不再重要"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "the-secret-keeps",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "willpower",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "held-behind-the-teeth",
+              "result": "success",
+              "weight": 2,
+              "text": "半年里，{subject}在楼梯口三次遇见那件不该提的事，每次都把话咽回去。秘密没有变轻，只是被放到了一个更深的抽屉里；{subject}开始记得自己每一次沉默是在哪一层楼梯。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "sm18-town-secret",
+                  "key": "pressure",
+                  "reason": "又守住了一个半年",
+                  "delta": -3
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "sm18-town-secret",
+                  "key": "proof",
+                  "reason": "沉默让细节在脑子里更清楚",
+                  "delta": 2
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "守住秘密比说出来更累"
+                }
+              ]
+            },
+            {
+              "id": "a-sentence-slips",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}本来只想说一句“那家人最近不太容易”，话到嘴边却带出了地下室。听的人没有追问，只把杯子放下；第二天，楼道里多了几道从门口扫到楼梯口的目光。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "sm18-town-secret",
+                  "key": "pressure",
+                  "reason": "一句话说漏了半截",
+                  "delta": 7
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "sm18-town-secret",
+                  "key": "danger",
+                  "reason": "听的人开始自己拼凑",
+                  "delta": 8
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "街坊开始用另一种眼光看这件事"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "说漏嘴以后一整天都在回想那句话"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "scandal-touches-it",
+          "onTags": [
+            "scandal"
+          ],
+          "chance": 0.55,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "另一桩丑闻让这条秘密变得更急",
+              "delta": 12
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "街上的注意力转向了这条巷子",
+              "delta": 5
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "秘密被别的丑闻挤到了更亮的地方"
+            }
+          ],
+          "text": "街口有人家出了丑事，围观的人转到这条巷子时，{subject}发现自己也站在门口。{subject}没有说任何名字，但回家以后，还是把窗帘拉得比平时早。",
+          "significance": 0.5,
+          "cooldownMonths": 12,
+          "maxPerYear": 2
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/small-mysteries",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "秘密属于知道的人，而不是抽象的“镇子”：pressure、danger、proof 让说与不说都能被后续 kernel 读取，what 参数保存具体内容。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "sm18-letter.misdelivered",
+      "title": "错送到楼上的信",
+      "domain": "home",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 80
+      },
+      "tags": [
+        "letter",
+        "mistake",
+        "grief",
+        "neighbor",
+        "secret",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-letter",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "grief",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 85
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "read-it-for-the-neighbor",
+          "weight": 0.35,
+          "text": "{subject}把信封送到楼上，{neighbor}开门时手上还沾着面粉。信是寄给{neighbor}已经阵亡的儿子的，落款是一个陌生女人。{neighbor}没有拆，只把信按在围裙上，说“你替我念吧”，声音低得几乎听不见。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "替邻居念了阵亡儿子的来信",
+              "trust": 0.05,
+              "affection": 0.08
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "邻居的儿子在战场上还有一个女人给他写信",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "替邻居念了一封不该由自己念的信"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "read_the_dead_sons_letter",
+              "add": true,
+              "reason": "在楼梯口替邻居念了信"
+            }
+          ]
+        },
+        {
+          "id": "opens-it-at-the-stove",
+          "weight": 0.3,
+          "text": "{subject}把信放在灶台边烘着，蜡封一软就揭开了。里面除了一张家常话，还夹着一张北站寄存处的牌子；收信人的名字不是{neighbor}家的姓。{subject}把牌子翻过来，背面用铅笔写着一个日期，正是{neighbor}的儿子阵亡后第三周。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "parameters": {
+                "pressure": 25,
+                "danger": 10,
+                "proof": 60,
+                "what": "邻居阵亡儿子的信里夹着一张北站寄存牌"
+              },
+              "durationMonths": 60,
+              "reason": "信里的寄存牌成了只有自己知道的线索"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "邻居阵亡儿子的信里夹着一张北站寄存牌，日期在阵亡后第三周",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "拆开了一封不该拆的信"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "opened_the_misdelivered_letter",
+              "add": true,
+              "reason": "在灶台边拆开了错送的信"
+            }
+          ]
+        },
+        {
+          "id": "leaves-it-on-the-stairs",
+          "weight": 0.35,
+          "text": "{subject}把信放回楼梯口的信箱上面，用一只空奶瓶压住。第二天早上，信不见了，{neighbor}却站在楼道里问有没有看见一个穿灰大衣的女人。{subject}说没有；那天以后，每次上楼都能听见{neighbor}在门后停一下。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "把信留在楼梯口后开始互相回避",
+              "trust": -0.02,
+              "fear": 0.03
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "明知道信在谁手里却说了没有"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_the_letter_on_the_stairs",
+              "add": true,
+              "reason": "把错送的信留在楼梯口"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-letter.wrong-address",
+      "title": "第二封写错门牌的信",
+      "domain": "home",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 82
+      },
+      "tags": [
+        "letter",
+        "secret",
+        "neighbor",
+        "investigation",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-letter",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "sm18-town-secret",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 82
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 85
+        },
+        {
+          "key": "postman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-same-hand",
+          "weight": 0.35,
+          "text": "第二封信和第一封笔迹相同，连邮票都贴歪在同一边。{subject}把两封信并排放到窗前的光里，发现寄信人把{neighbor}家的门牌写成了对门。{neighbor}看完没有否认，只说那个地址是战前用的；{subject}注意到信封背面还有第三个名字。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "proof",
+              "reason": "两封信的笔迹和门牌对上了",
+              "delta": 12
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "第二个名字让秘密更具体",
+              "delta": 8
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "两封错送的信出自同一只手，门牌是战前旧地址",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "第三个名字不在任何人的解释里"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "matched_two_wrong_addresses",
+              "add": true,
+              "reason": "把两封错送的信并排比对"
+            }
+          ]
+        },
+        {
+          "id": "asks-the-postman",
+          "weight": 0.3,
+          "text": "{subject}拿着信去问每天经过的邮差。邮差记得一个戴灰手套的女人，每月十五把信投进街角的邮筒，从不写寄件人。{subject}问到第三次，邮差从票夹里抽出一张旧回执，上面的地址已经改成一家当铺。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "proof",
+              "reason": "邮差认出了寄信人的习惯",
+              "delta": 8
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "当铺的地址把信和钱连在一起",
+              "delta": 5
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "每月十五有一个戴灰手套的女人往街角邮筒投信，旧回执上的地址是一家当铺",
+              "confidence": 0.75,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$postman",
+              "kind": "acquaintance",
+              "reason": "向邮差打听错送的信",
+              "trust": 0.04
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "给邮差买烟的钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "asked_the_postman_about_the_letters",
+              "add": true,
+              "reason": "向邮差追问第二封信"
+            }
+          ]
+        },
+        {
+          "id": "burns-it",
+          "weight": 0.35,
+          "text": "{subject}把第二封信塞进炉子，看火苗把邮票上的城堡舔黑。{neighbor}第二天在门口放了一小袋面粉，没有留字条；{subject}知道这是封口费，也知道自己从此少了一条可以问的路。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "烧掉信暂时压住了话头",
+              "delta": -10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "proof",
+              "reason": "烧掉信也烧掉了证据",
+              "delta": -8
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "少了一封信，少了一处可能被翻出来的东西",
+              "delta": -5
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居放在门口的一小袋面粉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "收下了一袋没有字条的面粉",
+              "trust": -0.03,
+              "obligation": 0.08
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "收下了封口费"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "burned_the_second_letter",
+              "add": true,
+              "reason": "把第二封错送的信烧掉"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-object.heirloom-missing",
+      "title": "少了一只银胸针",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 35,
+        "max": 80
+      },
+      "tags": [
+        "object",
+        "loss",
+        "inheritance",
+        "family",
+        "suspicion",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-object",
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 80
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 82
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "reported-before-the-will-is-read",
+          "weight": 0.35,
+          "text": "律师刚走，{sibling}就在祖母的针线盒里发现少了一只银胸针。{subject}记得最后一次见它是在遗嘱签字那天，胸针别在祖母的灰披肩上。{sibling}说先别声张，免得帮佣听见；{subject}却已经把空盒子端到了厨房门口。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "parameters": {
+                "attachment": 80,
+                "leads": 20,
+                "suspicion": 10,
+                "object": "祖母的银胸针"
+              },
+              "durationMonths": 90,
+              "reason": "祖母的银胸针在遗嘱签字后不见了"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "在祖母的针线盒前商量要不要声张",
+              "trust": -0.02,
+              "obligation": 0.05
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "空首饰盒比葬礼更像一个结尾"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "heirloom_reported_missing",
+              "add": true,
+              "reason": "把空首饰盒端到了厨房门口"
+            }
+          ]
+        },
+        {
+          "id": "searches-the-bedroom-first",
+          "weight": 0.3,
+          "text": "葬礼后的第三天，{subject}把祖母的房间从上到下搜了一遍：枕头套、药瓶后面、冬天大衣的内袋。只在床脚找到一枚断掉的别针。{sibling}说也许该去当铺问；{subject}把别针收进口袋，决定先不告诉任何人。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "parameters": {
+                "attachment": 65,
+                "leads": 35,
+                "suspicion": 25,
+                "object": "祖母的银胸针"
+              },
+              "durationMonths": 75,
+              "reason": "祖母的房间被彻底搜过，只找到一枚断别针"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "一起翻找祖母的房间",
+              "trust": 0.03
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "断掉的别针不是要找的东西"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "searched_grandmothers_room",
+              "add": true,
+              "reason": "独自搜过祖母的卧室"
+            }
+          ]
+        },
+        {
+          "id": "the-new-help-is-watched",
+          "weight": 0.35,
+          "text": "来帮忙的{neighbor}把茶端进客厅时，{subject}正盯着空首饰盒。{neighbor}多问了一句“是不是少了东西”，{sibling}的脸立刻沉下来。那天晚上，{subject}听见{neighbor}在厨房里翻自己的箱子，声音很轻，却一直翻到很晚。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "parameters": {
+                "attachment": 70,
+                "leads": 10,
+                "suspicion": 65,
+                "object": "祖母的银胸针"
+              },
+              "durationMonths": 60,
+              "reason": "新来帮忙的邻居被当成了最方便怀疑的人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "在厨房里听见邻居翻箱子",
+              "trust": -0.12,
+              "fear": 0.08
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "怀疑一个来帮忙的人"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "neighbor_suspected_without_proof",
+              "add": true,
+              "reason": "在没有证据时怀疑了来帮忙的邻居"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-object.pawn-ticket",
+      "title": "当票背面有药房的印章",
+      "domain": "economy",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 80
+      },
+      "tags": [
+        "object",
+        "loss",
+        "pawn",
+        "illness",
+        "money",
+        "family"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-object",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "sm18-missing-object",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "chronic-illness",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 80
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "redeems-it-with-the-last-savings",
+          "weight": 0.3,
+          "text": "当票夹在药袋和体温计之间，背面盖着药房的蓝印章。{subject}认出那是自己发烧最厉害的那周，{partner}替他去抓药时留下的。赎回期限只剩两天；{partner}说可以把结婚戒指先押上，{subject}没有答话。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "赎回银胸针和支付当铺利息"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "reason": "银胸针在赎回期限内被取回"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "reason": "一起凑钱赎回祖母的胸针",
+              "trust": 0.05,
+              "obligation": 0.1
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "胸针回到了首饰盒里"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "redeemed_the_pawned_heirloom",
+              "add": true,
+              "reason": "用最后的积蓄赎回了银胸针"
+            }
+          ]
+        },
+        {
+          "id": "the-date-is-too-late",
+          "weight": 0.35,
+          "text": "当票上的日期正是{subject}昏睡的那几天。{partner}最后承认，胸针已经过期被当铺卖掉了，钱换成了退烧药和半袋煤。{subject}把空首饰盒放回抽屉，发现盒底还粘着一小片灰披肩的线头。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "reason": "胸针已过赎回期，被当铺卖掉了"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "祖母的胸针换成了退烧药和煤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "reason": "知道了胸针被卖掉换药",
+              "trust": -0.04,
+              "obligation": 0.05
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "祖母的银胸针在家人生病期间被当掉，已过赎回期",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "learned_the_heirloom_was_sold_for_medicine",
+              "add": true,
+              "reason": "知道了胸针换成了药和煤"
+            }
+          ]
+        },
+        {
+          "id": "hides-the-ticket-in-the-medicine-box",
+          "weight": 0.35,
+          "text": "{subject}把当票翻过来，又翻回去，最后塞进药盒最底层。{partner}问今天感觉怎么样，{subject}说好多了。那张纸在药盒里留了整整一个冬天，每次取药都能听见它和玻璃瓶碰一下。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "suspicion",
+              "reason": "把当票藏起来让怀疑留在家里",
+              "delta": 12
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "attachment",
+              "reason": "明知下落却不肯说出口",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "leads",
+              "reason": "药盒里的当票成了唯一的线索",
+              "delta": 5
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "把当票和药瓶放在一起"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "hid a pawn ticket from the household",
+              "add": true,
+              "reason": "hid a pawn ticket from the household"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hid_the_pawn_ticket",
+              "add": true,
+              "reason": "把当票藏进药盒最底层"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-object.false-accusation",
+      "title": "被叫到厨房的帮工",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 30,
+        "max": 80
+      },
+      "tags": [
+        "object",
+        "accusation",
+        "servant",
+        "family",
+        "reputation",
+        "consequence"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-object",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "sm18-missing-object",
+          "owner": "person",
+          "parameter": "suspicion",
+          "min": 30
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-help-is-dismissed",
+          "weight": 0.35,
+          "text": "{subject}把{neighbor}叫到厨房，桌上放着空首饰盒和一只从她围裙口袋里掉出来的绒布。{neighbor}说那是擦银器的布，{subject}没有听。当天下午，{neighbor}卷起铺盖走了，工钱结到月底，介绍信没有给。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$neighbor",
+              "reason": "被东家认定偷了银胸针而辞退"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "reason": "在没有证据时辞退了帮工",
+              "trust": -0.2,
+              "fear": 0.1
+            },
+            {
+              "type": "condition",
+              "personId": "$neighbor",
+              "condition": "dismissed without a reference",
+              "add": true,
+              "reason": "dismissed without a reference"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "suspicion",
+              "reason": "把人赶走以后，怀疑暂时有了出口",
+              "delta": -10
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "厨房里的事传到了巷子里"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "没有证据还是把人辞了"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fired_servant_over_missing_object",
+              "add": true,
+              "reason": "因失物辞退了帮工"
+            }
+          ]
+        },
+        {
+          "id": "the-apology-comes-too-late",
+          "weight": 0.3,
+          "text": "一个星期后，{subject}在祖母旧大衣的夹层里摸到那只银胸针，针扣还缠着一截灰线。{neighbor}已经去了另一条街帮工；{subject}提着点心找到那户人家，站在后门口把道歉说了两遍，{neighbor}才把门开大一点。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "reason": "银胸针在旧大衣夹层里被找到"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "找到胸针后上门道歉",
+              "trust": -0.05,
+              "respect": -0.03
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "提着点心去道歉"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "辞退帮工的事已经传开"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "道歉说得太晚"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "apologized_after_false_accusation",
+              "add": true,
+              "reason": "找到胸针后向被辞退的帮工道歉"
+            }
+          ]
+        },
+        {
+          "id": "kept-on-but-not-forgiven",
+          "weight": 0.35,
+          "text": "{subject}没有辞退{neighbor}，只把首饰盒挪到卧室，夜里把门闩上。{neighbor}照常来做饭，切菜的刀落在案板上比平时重。两个人都不提那只胸针；直到月底，{neighbor}自己说想换个东家。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "被怀疑后继续做工，但关系已经变了",
+              "trust": -0.08,
+              "fear": 0.04
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "suspicion",
+              "reason": "没有辞退，但也没有真正相信",
+              "delta": -5
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "厨房里的刀声比平时重"
+            },
+            {
+              "type": "condition",
+              "personId": "$neighbor",
+              "condition": "looking for another place",
+              "add": true,
+              "reason": "looking for another place"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "servant_left_after_being_suspected",
+              "add": true,
+              "reason": "帮工自己提出要换东家"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-object.attic-search",
+      "title": "阁楼上的空盒子",
+      "domain": "family",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 86
+      },
+      "tags": [
+        "object",
+        "loss",
+        "attic",
+        "memory",
+        "elder",
+        "unresolved"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-object",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "sm18-missing-object",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 86
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 62
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-coat-pocket",
+          "weight": 0.35,
+          "text": "阁楼的木箱一打开，樟脑味冲得{subject}直咳。那件东西裹在一件旧大衣的口袋里，旁边还有一张一九三一年的电车票。{child}把它放到窗前的光里，说原来一直都在；{subject}摸了很久，才想起这是谁的大衣。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "reason": "失物在阁楼旧大衣的口袋里被找到"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "失物在旧大衣里等了几十年"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "一起在阁楼找到了旧物",
+              "trust": 0.06,
+              "affection": 0.08
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那件失物一直在一九三一年的旧大衣口袋里",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_the_object_in_the_attic",
+              "add": true,
+              "reason": "在阁楼旧大衣里找到了失物"
+            }
+          ]
+        },
+        {
+          "id": "a-different-secret",
+          "weight": 0.35,
+          "text": "箱底没有那件东西，只有一捆用麻绳扎紧的信。最上面一封的收信人不是{subject}家任何人的名字，信封里却夹着一张{subject}年轻时的照片。{child}问要不要烧掉；{subject}把信按原样扎回去，说再放一放。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "parameters": {
+                "pressure": 20,
+                "danger": 10,
+                "proof": 40,
+                "what": "阁楼木箱里有一捆不属于这家人的信和一张旧照片"
+              },
+              "durationMonths": 90,
+              "reason": "阁楼里翻出了另一桩不属于失物的事"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "leads",
+              "reason": "阁楼里没有那件东西",
+              "delta": -5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "attachment",
+              "reason": "没有找到反而更放不下",
+              "delta": 5
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "旧照片上的自己看着一捆陌生人的信"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_strangers_letters_in_the_attic",
+              "add": true,
+              "reason": "在阁楼找到一捆陌生人的信"
+            }
+          ]
+        },
+        {
+          "id": "nothing-but-mothballs",
+          "weight": 0.3,
+          "text": "箱子里只剩发硬的毛线和几颗断纽扣。{subject}把每一件都翻过来，连衬里都摸了一遍，还是没有。{child}说也许早就丢了；{subject}说明天再去问问旧货商，声音很平，手却一直按着箱盖。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "leads",
+              "reason": "阁楼里没有任何线索",
+              "delta": -10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "suspicion",
+              "reason": "越找不到越觉得有人动过东西",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "attachment",
+              "reason": "不肯把这件事放下",
+              "delta": 5
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "箱子里只有樟脑和断纽扣"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "孩子劝老人别再找了",
+              "trust": 0.02
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "attic_search_found_nothing",
+              "add": true,
+              "reason": "翻遍阁楼还是没有找到"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-object.tram-lost",
+      "title": "电车座位下的纸包",
+      "domain": "everyday",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 75
+      },
+      "tags": [
+        "object",
+        "loss",
+        "child",
+        "tram",
+        "family",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-object",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 14
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "advertises-in-the-paper",
+          "weight": 0.35,
+          "text": "{subject}在《新维也纳日报》的失物栏里登了三行小字，花了四十个铜板。第二天，一个卖旧货的人说在电车终点站见过那样的铜牌。{child}放学后跟着{subject}去找，一路上把书包带绕在手指上，绕得发白。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "在报纸上登失物启事"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "parameters": {
+                "attachment": 55,
+                "leads": 25,
+                "suspicion": 5,
+                "object": "孩子的洗礼铜牌"
+              },
+              "durationMonths": 45,
+              "reason": "孩子在电车上丢了洗礼铜牌"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "一起沿着电车路线找铜牌",
+              "trust": 0.03
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "登了启事也只能等"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "advertised_for_the_childs_medal",
+              "add": true,
+              "reason": "在报纸上登了失物启事"
+            }
+          ]
+        },
+        {
+          "id": "accuses-the-conductor",
+          "weight": 0.3,
+          "text": "{subject}认定是电车售票员把纸包收进了自己的口袋，在站台上拦住他，声音大得整条街都回头。售票员把票夹和口袋都翻出来，里面只有几张旧票和一只坏表。{child}站在后面，把脸埋进围巾里。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "parameters": {
+                "attachment": 60,
+                "leads": 5,
+                "suspicion": 45,
+                "object": "孩子的洗礼铜牌"
+              },
+              "durationMonths": 40,
+              "reason": "在站台上指控售票员拿了铜牌"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "reason": "在电车站台上指控售票员",
+              "trust": -0.15,
+              "fear": 0.05
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "站台上的争吵被整条街看见"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "孩子把脸埋进了围巾"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "accused_the_tram_conductor",
+              "add": true,
+              "reason": "在电车站台上指控了售票员"
+            }
+          ]
+        },
+        {
+          "id": "says-it-was-only-metal",
+          "weight": 0.35,
+          "text": "{subject}摸了摸空口袋，说那不过是块旧铜，丢了就丢了。晚上，{child}睡着以后，{subject}又去电车站走了一趟，沿着白天的路线低头看每一块石板。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "parameters": {
+                "attachment": 25,
+                "leads": 10,
+                "suspicion": 0,
+                "object": "孩子的洗礼铜牌"
+              },
+              "durationMonths": 45,
+              "reason": "嘴上说算了，夜里又沿着电车路线找"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "对孩子说算了，自己却睡不着"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "没有当着孩子把失物说成大事",
+              "trust": 0.02
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "searched_the_tram_route_at_night",
+              "add": true,
+              "reason": "夜里独自沿电车路线找铜牌"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-object.child-schoolbag",
+      "title": "书包里的银顶针",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 30,
+        "max": 55
+      },
+      "tags": [
+        "child",
+        "school",
+        "object",
+        "accusation",
+        "misunderstanding",
+        "reputation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-object",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 55
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 15
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "searched-in-front-of-the-class",
+          "weight": 0.35,
+          "text": "缝纫课上，{teacher}让每个孩子把口袋翻出来。那只银顶针从{child}的书包夹层里滚到桌上，教室里一下安静了。{child}说是捡的，{teacher}看着{subject}，等一个大人拿主意。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "parameters": {
+                "attachment": 45,
+                "leads": 15,
+                "suspicion": 60,
+                "object": "邻居家的银顶针"
+              },
+              "durationMonths": 45,
+              "reason": "孩子的书包里翻出了邻居家的银顶针"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "在教室里被老师等着拿主意",
+              "trust": -0.06,
+              "fear": 0.05
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "孩子被当成拿了东西的人"
+            },
+            {
+              "type": "condition",
+              "personId": "$child",
+              "condition": "accused in front of the class",
+              "add": true,
+              "reason": "accused in front of the class"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_accused_of_taking_the_thimble",
+              "add": true,
+              "reason": "孩子在全班面前被翻出银顶针"
+            }
+          ]
+        },
+        {
+          "id": "asks-where-she-found-it",
+          "weight": 0.3,
+          "text": "{subject}没有当场骂{child}，只让{teacher}把顶针先收好，自己蹲下来问是在哪里捡的。{child}说在楼梯拐角，旁边还有一只装纽扣的铁盒。{subject}记得那只铁盒是邻居家的，心里反而更沉。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "parameters": {
+                "attachment": 50,
+                "leads": 40,
+                "suspicion": 30,
+                "object": "邻居家的银顶针"
+              },
+              "durationMonths": 45,
+              "reason": "孩子说顶针是在楼梯拐角捡的"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "先问孩子在哪里捡到顶针",
+              "trust": 0.05
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "reason": "请老师先把顶针收好",
+              "trust": 0.02
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子说顶针是在楼梯拐角捡的，旁边有一只装纽扣的铁盒",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_said_she_found_the_thimble",
+              "add": true,
+              "reason": "先问孩子顶针是在哪里捡的"
+            }
+          ]
+        },
+        {
+          "id": "the-thimble-is-our-own",
+          "weight": 0.35,
+          "text": "{teacher}把顶针举到灯下，发现内圈刻着两个字：不是邻居家的姓，是{subject}婆婆的姓。{subject}这才想起，这只顶针是{child}从家里针线篮拿去学校做手工的，昨天还说过。教室里有人笑了一声。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "原来顶针是自家的，虚惊一场"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "reason": "顶针的刻字解开了误会",
+              "trust": -0.02
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "教室里的一场误会很快过去"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "银顶针内圈刻着自家婆婆的姓，是孩子从家里拿去做手工的",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "thimble_was_our_own",
+              "add": true,
+              "reason": "发现顶针原来是自己家的"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-object.lost-property",
+      "title": "失物招领处的长队",
+      "domain": "daily",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 82
+      },
+      "tags": [
+        "object",
+        "loss",
+        "office",
+        "search",
+        "bureaucracy",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-object",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "sm18-missing-object",
+          "owner": "person",
+          "parameter": "leads",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 82
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-object-is-in-the-drawer",
+          "weight": 0.35,
+          "text": "失物招领处在一间半地下室里，架子上按月份捆着纸包。{clerk}翻到第三本登记簿，把一只用麻线扎紧的小包推过来。{subject}报出针扣上的刻字，{clerk}点头，收了两克朗保管费。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "失物招领处的保管费"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "reason": "失物在失物招领处被领回"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "失物从半地下室的架子上回到了手里"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "acquaintance",
+              "reason": "在失物招领处领回了东西",
+              "trust": 0.04
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "失物一直在失物招领处的第三本登记簿下面",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "recovered_object_at_lost_property",
+              "add": true,
+              "reason": "在失物招领处领回了失物"
+            }
+          ]
+        },
+        {
+          "id": "someone-else-claimed-it",
+          "weight": 0.3,
+          "text": "登记簿上已经有人替这件东西签了字，笔迹很熟。{clerk}说那人自称是失主的亲戚，还准确说出了针扣背面的一道划痕。{subject}站在柜台前，忽然想不起自己有没有把这道划痕告诉过别人。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "leads",
+              "reason": "登记簿上的签字把线索堵住了",
+              "delta": -10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "suspicion",
+              "reason": "有人知道只有失主才知道的细节",
+              "delta": 15
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "自己的东西被别人先领走了"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "有人替失物签了字，并说出了针扣背面的划痕",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "someone_claimed_the_object_first",
+              "add": true,
+              "reason": "失物被一个自称亲戚的人先领走"
+            }
+          ]
+        },
+        {
+          "id": "the-clerk-remembers-a-boy",
+          "weight": 0.35,
+          "text": "{clerk}翻完最后一页，说没有这样的东西，但记得上个月有个男孩来问过同样的问题。{subject}留下地址，走出门又折回来，把地址栏里的门牌号改成了后院的小门。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "key": "leads",
+              "reason": "上个月有个男孩来问过同样的失物",
+              "delta": 15
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "acquaintance",
+              "reason": "在失物招领处留下地址",
+              "trust": 0.03
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "至少有人也记得那件东西"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "上个月有个男孩来失物招领处问过同样的失物",
+              "confidence": 0.75,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "clerk_remembered_a_boy",
+              "add": true,
+              "reason": "把地址改成了后院小门"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-neighbor.night-light",
+      "title": "对面窗户的第三盏灯",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 80
+      },
+      "tags": [
+        "neighbor",
+        "secret",
+        "night",
+        "window",
+        "suspicion",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-neighbor",
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "watches-until-the-blind-moves",
+          "weight": 0.35,
+          "text": "{subject}连续三夜看见{neighbor}家的地下室亮着灯，窗纸上有人影来回走，却从不见人从前门出来。第四夜，{subject}提着煤桶假装去地窖，听见里面有另一个人的咳嗽声。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "parameters": {
+                "pressure": 35,
+                "danger": 25,
+                "proof": 55,
+                "what": "邻居家的地下室藏着一个没有登记的人"
+              },
+              "durationMonths": 90,
+              "reason": "亲眼看见邻居家的地下室藏着另一个人"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "邻居家的地下室藏着一个没有登记的人，夜里有人影和咳嗽声",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "听见了不该听见的咳嗽声"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saw_the_neighbors_cellar_light",
+              "add": true,
+              "reason": "连续三夜看见邻居家地下室亮灯"
+            }
+          ]
+        },
+        {
+          "id": "knocks-and-asks",
+          "weight": 0.3,
+          "text": "{subject}在楼梯口拦住{neighbor}，问是不是家里来了亲戚。{neighbor}说是远房表弟，病了，怕传染。{subject}注意到{neighbor}说“表弟”时，手指一直捻着围裙边，地下室的灯却在他身后亮了一整夜。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "parameters": {
+                "pressure": 25,
+                "danger": 15,
+                "proof": 35,
+                "what": "邻居家的地下室里住着一个不愿登记的表弟"
+              },
+              "durationMonths": 75,
+              "reason": "邻居说是生病的远房表弟"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "在楼梯口直接问起地下室的灯",
+              "trust": 0.02,
+              "obligation": 0.05
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "邻居说地下室住着生病的远房表弟，但说法不够自然",
+              "confidence": 0.7,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "“表弟”两个字说得太轻"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "asked_the_neighbor_directly",
+              "add": true,
+              "reason": "当面问了邻居地下室的灯"
+            }
+          ]
+        },
+        {
+          "id": "tells-the-concierge",
+          "weight": 0.35,
+          "text": "{subject}把这件事告诉了门房。第二天，整栋楼都在传{neighbor}家藏了人，连菜贩都多问了一句。{neighbor}在院子里遇见{subject}，没有发火，只把手里那袋土豆换到另一只手，像在让路。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "把地下室的事告诉了门房",
+              "trust": -0.08,
+              "fear": 0.04
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "传话的人总会被记住"
+            },
+            {
+              "type": "condition",
+              "personId": "$neighbor",
+              "condition": "under neighborhood suspicion",
+              "add": true,
+              "reason": "under neighborhood suspicion"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "邻居把土豆换到了另一只手"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "told_the_concierge_about_the_neighbor",
+              "add": true,
+              "reason": "把地下室的事告诉了门房"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-neighbor.wall-noise",
+      "title": "墙那边的锤声",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 82
+      },
+      "tags": [
+        "neighbor",
+        "secret",
+        "noise",
+        "misunderstanding",
+        "comic",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-neighbor",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "sm18-town-secret",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 82
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 80
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-crate-is-a-dollhouse",
+          "weight": 0.35,
+          "text": "{subject}听见墙那边一整夜都有锤声，第二天借送火柴的名义敲门。{neighbor}让开身，屋里桌上摆着一座做到一半的玩具屋，小床、小柜子、连窗帘都缝好了。锤子还压在{subject}昨晚想象过的位置。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "锤声原来只是在做玩具屋",
+              "delta": -15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "最坏的想法被一间小房子推翻",
+              "delta": -10
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "看见了邻居做到一半的玩具屋",
+              "trust": 0.06,
+              "affection": 0.05
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "锤声原来是在钉小床"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "the_wall_noise_was_a_dollhouse",
+              "add": true,
+              "reason": "发现墙那边的锤声是在做玩具屋"
+            }
+          ]
+        },
+        {
+          "id": "calls-the-police",
+          "weight": 0.3,
+          "text": "{subject}报了警，说隔壁半夜搬动木箱，可能藏了尸体。{official}来了两个人，在{neighbor}家量了半天，只量出一只给孙女做的木马。围观的人散了以后，{subject}在门口站了很久，听见{neighbor}在屋里把锤子轻轻放下。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "报警把一件小事变成了街上的事",
+              "delta": 15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "proof",
+              "reason": "警察什么也没找到",
+              "delta": -10
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "报警搜查了邻居家",
+              "trust": -0.15,
+              "fear": 0.05
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "一场惊动警察的误会"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "为报假警付的罚款"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "false alarm with the police",
+              "add": true,
+              "reason": "false alarm with the police"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "called_the_police_over_a_dollhouse",
+              "add": true,
+              "reason": "为玩具屋的锤声报了警"
+            }
+          ]
+        },
+        {
+          "id": "helps-carry-the-wood",
+          "weight": 0.35,
+          "text": "{subject}干脆过去帮忙扶木板，才知道{neighbor}在做一只带抽屉的小柜子，抽屉里放的是给孙女攒的硬币。两个人做到半夜，墙那边的锤声变成了两个人的。临走时，{neighbor}塞给{subject}一小袋钉子。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "reason": "一起做了一只小柜子",
+              "trust": 0.08,
+              "affection": 0.06
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "两个人的锤声比一个人的好听"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "一起干活让秘密暂时不那么重",
+              "delta": -8
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.01,
+              "reason": "帮着做了一只小柜子"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "helped_build_the_secret_dollhouse",
+              "add": true,
+              "reason": "帮邻居做了一只小柜子"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-secret.protect-or-tell",
+      "title": "地下室的灯还亮着",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 82
+      },
+      "tags": [
+        "secret",
+        "neighbor",
+        "stairwell",
+        "choice",
+        "risk",
+        "consequence"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-secret",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "sm18-town-secret",
+          "owner": "person",
+          "parameter": "pressure",
+          "min": 30
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 82
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "lets-them-pass",
+          "weight": 0.35,
+          "text": "{subject}在楼梯间撞见第三个人：那人提着一只旧皮箱，见到{subject}就把帽檐压低。{neighbor}从门后出来，手还按在门把上。三个人站了几秒钟，谁也没有先说话；最后{subject}侧过身，让他们过去。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "看见第三个人以后更难装作不知道",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "第三个人也看见了自己",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "proof",
+              "reason": "皮箱和帽檐补上了细节",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "在楼梯间让开了路",
+              "obligation": 0.1
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "侧身让路比质问更难"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saw_the_third_person_on_the_stairs",
+              "add": true,
+              "reason": "在楼梯间撞见提皮箱的第三个人"
+            }
+          ]
+        },
+        {
+          "id": "tells-the-landlord",
+          "weight": 0.3,
+          "text": "{subject}把这件事告诉了房东，说地下室可能住着一个没有登记的人。房东第二天就带着钥匙来了，{neighbor}在门口挡了很久。{subject}站在自己门后，听见皮箱轮子滚过楼道，随后是{neighbor}压低的声音。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "房东带着钥匙来了",
+              "delta": 15
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "reason": "把地下室的事告诉了房东",
+              "trust": -0.2,
+              "fear": 0.05
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "门后传出的声音整层楼都听见了"
+            },
+            {
+              "type": "condition",
+              "personId": "$neighbor",
+              "condition": "given notice to leave",
+              "add": true,
+              "reason": "given notice to leave"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "told_the_landlord_about_the_hidden_man",
+              "add": true,
+              "reason": "把邻居藏人的事告诉了房东"
+            }
+          ]
+        },
+        {
+          "id": "sends-an-anonymous-note",
+          "weight": 0.35,
+          "text": "{subject}写了一封没有署名的信，从门缝塞进{neighbor}家。信里只有一句：地下室的灯太亮了。第二天，窗纸换成了厚的，灯还亮着，但不再照到院子里。两个人在楼梯上碰见，都当没看见对方。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "匿名信把话说了半截",
+              "delta": -10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "灯还亮着，只是不再照到院子里",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "proof",
+              "reason": "没有署名就没有人证",
+              "delta": -5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "从门缝塞了一封匿名信",
+              "trust": -0.05
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "两个人在楼梯上装作没看见对方"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sent_an_anonymous_warning",
+              "add": true,
+              "reason": "给邻居塞了一封匿名警告"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-secret.confession",
+      "title": "咖啡馆角落的坦白",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 30,
+        "max": 84
+      },
+      "tags": [
+        "secret",
+        "neighbor",
+        "cafe",
+        "confession",
+        "obligation",
+        "risk"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-secret",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "sm18-town-secret",
+          "owner": "person",
+          "parameter": "proof",
+          "min": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 84
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-secret-is-older-than-the-street",
+          "weight": 0.35,
+          "text": "{neighbor}在咖啡馆角落坐下，要了两杯最便宜的咖啡，说地下室那个人是他妻子的弟弟，战后一直没有证件。{subject}问为什么不去登记；{neighbor}把杯子转了一圈，说登记表上有一栏叫“原籍”，他填不出来。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "proof",
+              "reason": "邻居把地下室那个人的来历说清了",
+              "delta": 15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "知道了更多，也更难装作不知道",
+              "delta": 10
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "地下室那个人是邻居妻子的弟弟，战后一直没有证件",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "在咖啡馆听完邻居的坦白",
+              "trust": 0.06,
+              "obligation": 0.05
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "“原籍”那一栏让一切都变重了"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "heard_the_neighbors_full_confession",
+              "add": true,
+              "reason": "在咖啡馆听完邻居的坦白"
+            }
+          ]
+        },
+        {
+          "id": "offers-the-coal-room",
+          "weight": 0.3,
+          "text": "{subject}把自己家那间堆煤的小屋腾出一半，让{neighbor}的亲戚白天过来躲一躲。{neighbor}没有说谢，只送来一袋面粉和两把钥匙。当天夜里，{subject}听见院门响了一次，起来看时，雪地上只有一行往地窖去的脚印。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "给地下室的人买面包和煤"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居送来的一袋面粉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "reason": "把堆煤的小屋借给邻居的亲戚",
+              "trust": 0.1,
+              "obligation": 0.15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "把人藏进自家堆煤的小屋",
+              "delta": 12
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "sheltering someone without papers",
+              "add": true,
+              "reason": "sheltering someone without papers"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "雪地上的脚印通向自家地窖"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sheltered_the_hidden_man",
+              "add": true,
+              "reason": "让邻居的亲戚白天躲在堆煤的小屋"
+            }
+          ]
+        },
+        {
+          "id": "asks-for-money-to-keep-quiet",
+          "weight": 0.35,
+          "text": "{subject}没有问那个人的名字，只说以后每月要五克朗，否则就把地下室的事说出去。{neighbor}数钱时手很稳，数完才抬头看了{subject}一眼。那一眼之后，两个人再在院子里碰见，都绕着走。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "邻居每月给的封口钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "reason": "拿邻居的秘密换钱",
+              "trust": -0.25,
+              "fear": 0.15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "拿秘密换钱让危险变成长期的",
+              "delta": 15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "钱暂时压住了说出去的冲动",
+              "delta": -5
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "院子里的人开始绕着走"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "数钱时手很稳的那个人不是自己"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "took_money_to_keep_the_secret",
+              "add": true,
+              "reason": "拿邻居的秘密换每月五克朗"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-secret.market-rumor",
+      "title": "菜市场里的半句话",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 82
+      },
+      "tags": [
+        "secret",
+        "rumor",
+        "market",
+        "neighbor",
+        "reputation",
+        "consequence"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-secret",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "sm18-town-secret",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 82
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 80
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-rumor-comes-back-wrong",
+          "weight": 0.35,
+          "text": "{subject}只在菜摊前说了半句“那家人地下室里”，第二天整条街都在传{neighbor}杀了人。{worker}一边称土豆一边问尸体埋在哪；{subject}说不是这么回事，{worker}已经把这话当成了新的版本。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "半句话变成了另一个故事",
+              "delta": 12
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "谣言开始自己长脚",
+              "delta": 10
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "半句话是从自己嘴里出去的"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "传出了关于邻居的谣言",
+              "trust": -0.08
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "街上正在传邻居杀了人，这不是真的",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": false
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "started_a_false_rumor",
+              "add": true,
+              "reason": "一句半截话被传成了杀人案"
+            }
+          ]
+        },
+        {
+          "id": "corrects-it-at-the-bakery",
+          "weight": 0.3,
+          "text": "{subject}在面包房门口把话截住，说地下室里住的是个病人，不是什么死人。{worker}把面包纸袋捏得响了一声，说早讲啊。那天下午，有两个人真的去敲了{neighbor}的门，手里提着牛奶。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "把话截住以后压力轻了一点",
+              "delta": -8
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "proof",
+              "reason": "解释让一些人愿意相信另一个版本",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "在面包房替邻居解释",
+              "trust": 0.03
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "至少有人听见了另一种说法"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "提着牛奶去敲门的人比围观的人多"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "corrected_the_rumor",
+              "add": true,
+              "reason": "在面包房门口纠正了谣言"
+            }
+          ]
+        },
+        {
+          "id": "lets-the-rumor-run",
+          "weight": 0.35,
+          "text": "{subject}没有解释。一个星期后，{neighbor}家的窗户被人用粉笔写了字，门房拿着灰水刷了半天。{neighbor}在院子里看见{subject}，问了一句“你也信吗”，{subject}说“我什么也没说”。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "danger",
+              "reason": "谣言变成了粉笔字",
+              "delta": 15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "key": "pressure",
+              "reason": "“我什么也没说”并不等于没有参与",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "reason": "任由谣言在院子里发酵",
+              "trust": -0.12
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "沉默也被算进了一种态度"
+            },
+            {
+              "type": "condition",
+              "personId": "$neighbor",
+              "condition": "windows marked after a rumor",
+              "add": true,
+              "reason": "windows marked after a rumor"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "粉笔字被灰水刷掉以后还留着印子"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "let_the_rumor_run",
+              "add": true,
+              "reason": "没有解释，让谣言继续传"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-legend.sealed-room",
+      "title": "封了三十年的房间",
+      "domain": "history",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 86
+      },
+      "tags": [
+        "legend",
+        "house",
+        "room",
+        "family",
+        "unresolved",
+        "uncanny"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-legend",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "family-estate",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 86
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 88
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "opens-the-door",
+          "weight": 0.35,
+          "text": "{subject}让人撬开那间封了三十年的房门，里面只有几只空箱、一张没有床垫的铁床，和一扇被壁纸糊住的窄门。窄门后面是一堵砖墙。{neighbor}站在门口说，当年封房的人没有留下钥匙，也没有留下理由。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "parameters": {
+                "pressure": 20,
+                "danger": 5,
+                "proof": 30,
+                "what": "封死的房间后面还有一扇被砖堵住的门"
+              },
+              "durationMonths": 120,
+              "reason": "封死的房间后面还有一扇没有理由的门"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "封死的房间后面有一扇被砖堵住的窄门，没人说得清为什么",
+              "confidence": 0.75,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "空房间比传说更让人不安"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "opened_the_sealed_room",
+              "add": true,
+              "reason": "撬开了封了三十年的房门"
+            }
+          ]
+        },
+        {
+          "id": "leaves-the-nails-in-place",
+          "weight": 0.3,
+          "text": "{subject}把锤子放回工具箱，只让人把门上的钉子重新敲紧。{neighbor}说这样也好，有些房间开着反而更空。那天夜里，{subject}听见那面墙里有东西轻轻响了一下，第二天问木匠，木匠说老房子都会响。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "把门重新钉上以后反而更在意"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "一起决定不打开那间房",
+              "trust": 0.04
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那间封死的房间被重新钉上，夜里墙里会有轻响",
+              "confidence": 0.6,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_the_sealed_room_closed",
+              "add": true,
+              "reason": "把封死的房间重新钉上"
+            }
+          ]
+        },
+        {
+          "id": "asks-the-oldest-neighbor",
+          "weight": 0.35,
+          "text": "{neighbor}记得的版本是：一九二三年冬天，新娘子在婚礼前夜病死，男方家就把房间封了。{subject}去查了堂区记录，只找到一场没有新娘名字的葬礼。记录纸的背面，有人用铅笔写了一个“待查”。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "parameters": {
+                "pressure": 15,
+                "danger": 0,
+                "proof": 45,
+                "what": "堂区记录里有一场没有新娘名字的葬礼"
+              },
+              "durationMonths": 120,
+              "reason": "堂区记录里有一场没有名字的葬礼"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "堂区记录里有一场没有新娘名字的葬礼，背面写着“待查”",
+              "confidence": 0.7,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "查堂区记录的档案费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "“待查”两个字比传说更冷"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "heard_the_bride_legend",
+              "add": true,
+              "reason": "查到了没有新娘名字的葬礼记录"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-legend.well-light",
+      "title": "井口的白灯",
+      "domain": "history",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 86
+      },
+      "tags": [
+        "legend",
+        "well",
+        "light",
+        "neighborhood",
+        "uncanny",
+        "unresolved"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-legend",
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 86
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 50,
+          "maxAge": 86
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-light-is-a-mirror",
+          "weight": 0.35,
+          "text": "{subject}提着灯走到井边，白灯原来是一块嵌在井盖缝里的碎镜片，被月光照得发亮。{neighbor}跟在后头，弯腰看了半天，说去年修井时就有人把镜子打碎在这里；两个人把镜片捡起来，井口一下暗了。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "白灯原来是一块碎镜片"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "一起在井边捡起碎镜片",
+              "trust": 0.05
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "井口的白灯是一块嵌在井盖缝里的碎镜片",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "explained_the_well_light",
+              "add": true,
+              "reason": "在井边找到了碎镜片"
+            }
+          ]
+        },
+        {
+          "id": "the-light-comes-back",
+          "weight": 0.3,
+          "text": "{subject}把镜片扔掉以后，第二个星期井口又亮了。这次碎的是另一块，边缘还带着新茬。{neighbor}说别再去了；{subject}站在院门口看了很久，直到那点白光被雾吞掉。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "井口的白光又回来了"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "井口又出现了一块新的碎镜片，边缘带着新茬",
+              "confidence": 0.65,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "邻居劝不要再去看井口",
+              "trust": 0.02
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "the_well_light_came_back",
+              "add": true,
+              "reason": "扔掉镜片后井口又亮了"
+            }
+          ]
+        },
+        {
+          "id": "tells-the-children",
+          "weight": 0.35,
+          "text": "{subject}把井口的故事讲给巷子里的孩子听，说白灯是洗衣妇的衬裙，也说是一个等不到人的新娘。孩子们第二天就去看，回来时每人手里都拿着一块玻璃。{neighbor}在门口摇头，说这条巷子又多了一个版本。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "巷子里的孩子开始围着讲故事的人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "故事比井口本身更亮"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "把井口的故事讲给了孩子们",
+              "trust": 0.02
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "local storyteller",
+              "add": true,
+              "reason": "local storyteller"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "told_the_well_legend",
+              "add": true,
+              "reason": "把井口的白灯讲成了故事"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-coincidence.same-name",
+      "title": "同名的人",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 82
+      },
+      "tags": [
+        "coincidence",
+        "grief",
+        "name",
+        "letter",
+        "fate",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-coincidence",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "grief",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 82
+        },
+        {
+          "key": "stranger",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 82
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-name-at-the-tax-window",
+          "weight": 0.35,
+          "text": "{clerk}在税务窗口叫号时，喊出了{subject}死去父亲的名字。{subject}愣在柜台前，{clerk}又喊了一遍。当天下午，一封写着同一个名字的信送到家里，信封上的地址是父亲生前住过的那条街。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "在税务窗口听见死去父亲的名字"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "税务窗口叫到了父亲的名字，当天又收到一封写着他名字的信",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "heard_the_dead_fathers_name_at_the_tax_office",
+              "add": true,
+              "reason": "在税务窗口听见父亲的名字"
+            }
+          ]
+        },
+        {
+          "id": "the-stranger-with-the-same-name",
+          "weight": 0.3,
+          "text": "{subject}按信上的地址找过去，开门的是一个和父亲同名同姓的陌生人。那人说最近总收到寄给“老约瑟夫”的信，已经攒了一抽屉。{subject}和他坐在厨房里，把两家的信一封封分开，分到天黑。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$stranger",
+              "kind": "acquaintance",
+              "reason": "和同名陌生人一起分信",
+              "trust": 0.05
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "城里有一个和父亲同名同姓的人，也收到了寄给“老约瑟夫”的信",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "两家的信在厨房桌上分到天黑"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "去城另一头的电车钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "met_a_stranger_with_the_same_name",
+              "add": true,
+              "reason": "找到了一个和父亲同名的人"
+            }
+          ]
+        },
+        {
+          "id": "gives-it-to-the-church",
+          "weight": 0.35,
+          "text": "{subject}把信送到教堂，请神父替自己念一遍。神父念到一半停下，说这是银行催缴一笔旧债的通知，欠款人早已去世。{subject}把通知折好，投进门口的捐款箱，听见纸落在木箱底的声音。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "把催债通知投进捐款箱时放进去的钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "死去父亲的名字下面是一笔旧债"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那封写着父亲名字的信是一张早已过期的催债通知",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "gave_the_coincidence_to_the_church",
+              "add": true,
+              "reason": "把同名人的信投进了教堂捐款箱"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-coincidence.photograph",
+      "title": "旧照片里多出一个人",
+      "domain": "history",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 86
+      },
+      "tags": [
+        "coincidence",
+        "photograph",
+        "memory",
+        "elder",
+        "uncanny",
+        "unresolved"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-coincidence",
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 86
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 88
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-face-is-your-own",
+          "weight": 0.35,
+          "text": "{subject}在旧相册里翻到一张一九一二年的合影，最后一排站着一个和{subject}年轻时一模一样的女人。照片背面只写着“四月，普拉特”。{neighbor}看了很久，说那个人也许是{subject}的姑妈，可{subject}记得姑妈那年还在乡下。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "照片里有一个和自己一模一样的女人"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧照片里有一个和本人年轻时一模一样的女人，背面写着“四月，普拉特”",
+              "confidence": 0.75,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "一起看旧照片",
+              "trust": 0.02
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_a_double_in_the_old_photograph",
+              "add": true,
+              "reason": "在旧照片里看见了自己的脸"
+            }
+          ]
+        },
+        {
+          "id": "the-photographers-mark",
+          "weight": 0.3,
+          "text": "{subject}把照片拿到照相馆，老师傅认出背面的编号，说底片还在，只是那一年拍合影的人家后来搬去了美国。{neighbor}问要不要写信去问；{subject}把照片放回相册，说先等等。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧照片的底片还在照相馆，拍合影的人家后来搬去了美国",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "商量要不要写信去美国问照片的事",
+              "trust": 0.03
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "照相馆查底片的费用"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "至少还有一条可以写信的地址"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "asked_the_photographer_about_the_double",
+              "add": true,
+              "reason": "去照相馆查了旧照片的底片"
+            }
+          ]
+        },
+        {
+          "id": "burns-the-photograph",
+          "weight": 0.35,
+          "text": "{subject}把照片拿到厨房，就着炉火点着。火苗先烧掉最后一排，那个女人的脸卷起来，变成一小块黑灰。{neighbor}在门口看见，什么也没说，只把窗子推开一点。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "把照片烧掉以后屋里有一股胶味"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "邻居看见照片被烧掉",
+              "trust": -0.02
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "burned_the_old_photograph",
+              "add": true,
+              "reason": "把有另一个自己的旧照片烧了"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-detection.ledger-clue",
+      "title": "账本上的第五行",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 80
+      },
+      "tags": [
+        "mystery",
+        "ledger",
+        "amateur_detection",
+        "under_investigation",
+        "neighbor",
+        "consequence"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-detection",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "under-investigation",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-fifth-line-is-a-double-entry",
+          "weight": 0.35,
+          "text": "账本上第五行原本记着两袋面粉，后来被人改成了一袋，差额正好对得上失窃的数目。{subject}把账本翻到背面，发现装订线被拆过。{neighbor}说那页是月底才补的，补账的人不是他。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "reason": "账本第五行的改动解释了失窃差额",
+              "delta": -15
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "账本第五行被改过，差额正好对上失窃数目，补账的人不是店主",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "一起翻看被改过的账本",
+              "trust": 0.05
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "终于有一页纸能替自己说话"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_the_altered_ledger_line",
+              "add": true,
+              "reason": "查出了账本第五行的改动"
+            }
+          ]
+        },
+        {
+          "id": "confronts-the-shopkeeper",
+          "weight": 0.3,
+          "text": "{subject}拿着账本去问{neighbor}，对方先说是记错了，后来干脆把账本夺过去，撕下第五页。{subject}去抢，只抢到半张纸角。当天晚上，{neighbor}的店门口多了一把锁，{subject}的名字被写进了另一本登记簿。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "reason": "账本被撕，调查反而更复杂",
+              "delta": 10
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "reason": "为了账本和店主撕破脸",
+              "trust": -0.2,
+              "fear": 0.1
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "修眼镜和撕坏衣服的钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "只抢到半张纸角"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "抢账本时撞到柜台"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "confronted_the_shopkeeper_over_the_ledger",
+              "add": true,
+              "reason": "为了账本和店主起了冲突"
+            }
+          ]
+        },
+        {
+          "id": "keeps-the-ledger-under-the-bed",
+          "weight": 0.35,
+          "text": "{subject}没有把账本交出去，只把它包在油纸里，放进床下的鞋盒。{neighbor}后来托人送来一袋面粉和一封短信，信上没有署名，只写着“月底之前”。{subject}把面粉收下，账本没有还。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "parameters": {
+                "pressure": 30,
+                "danger": 15,
+                "proof": 70,
+                "what": "账本第五行被人改过，和失窃数目对得上"
+              },
+              "durationMonths": 90,
+              "reason": "把能洗清自己的账本藏了起来"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "reason": "账本没有交出去，但改动已经被记住",
+              "delta": -5
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "店主托人送来的一袋面粉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "收下面粉，留下账本",
+              "obligation": 0.1
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "把能救自己的纸压在鞋盒里"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_the_ledger_from_the_shopkeeper",
+              "add": true,
+              "reason": "把账本藏进床下的鞋盒"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-detection.office-file",
+      "title": "档案室里缺的一页",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 68
+      },
+      "tags": [
+        "office",
+        "file",
+        "patronage",
+        "amateur_detection",
+        "bureaucracy",
+        "consequence"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-detection",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "office-patronage",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 68
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-page-names-a-nephew",
+          "weight": 0.35,
+          "text": "档案室缺的那一页正好是委任名单的附件，上面写着一位科长的外甥名字。{subject}把空档的位置记在袖口上，回到桌前，发现{clerk}已经把自己的抽屉锁了两道。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "缺页的委任名单附件上写着一位科长的外甥名字",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "exposure",
+              "reason": "查缺页让办公室的人开始注意自己",
+              "delta": 10
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "acquaintance",
+              "reason": "档案室的缺页让两个人互相提防",
+              "trust": -0.05
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "袖口上的字迹比档案更清楚"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_the_missing_appointment_page",
+              "add": true,
+              "reason": "查到了委任名单缺页的内容"
+            }
+          ]
+        },
+        {
+          "id": "copies-it-at-noon",
+          "weight": 0.3,
+          "text": "{subject}趁着午休把整份卷宗抄了一遍，抄到第三页时，{clerk}端着咖啡站在门口。{clerk}没有问，只把门带上，说“你还有二十年才退休”。{subject}把抄件折好，塞进内袋。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "整份委任卷宗被抄了一遍，缺页对应科长的外甥",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "exposure",
+              "reason": "抄卷宗被同事看见",
+              "delta": 15
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "acquaintance",
+              "reason": "抄卷宗时被同事撞见",
+              "trust": -0.1,
+              "respect": 0.05
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "多买的一包咖啡"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "“你还有二十年才退休”"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "copied_the_patronage_file",
+              "add": true,
+              "reason": "午休时抄了委任卷宗"
+            }
+          ]
+        },
+        {
+          "id": "puts-the-page-back",
+          "weight": 0.35,
+          "text": "{subject}把缺页的事写在一张便条上，夹进上司每天要看的文件夹。第二天，文件夹原样退回，便条不见了，桌上多了一盒雪茄。{subject}把雪茄分给同事，自己留了一根，放在抽屉里没有抽。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "reason": "一盒雪茄把缺页的事压了下去",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "exposure",
+              "reason": "把便条夹进文件夹后反而被安抚",
+              "delta": -5
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "分雪茄的举动被同事记住了"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "抽屉里那根雪茄一直没抽"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reported_the_missing_page_and_was_bought_off",
+              "add": true,
+              "reason": "上报缺页后收到一盒雪茄"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-fame.anonymous-letter",
+      "title": "成名后的第十一封匿名信",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 32,
+        "max": 78
+      },
+      "tags": [
+        "fame",
+        "letter",
+        "anonymous",
+        "secret",
+        "reputation",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-fame",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 32,
+          "maxAge": 78
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-childs-drawing",
+          "weight": 0.35,
+          "text": "{subject}拆开第十一封匿名信，里面没有威胁，只有一张孩子画的{subject}，背面写着“我妈妈每天都听你的节目”。{neighbor}站在门口，搓着手说孩子病了一个月，想问能不能签个名。{subject}把信纸翻过来，在画旁边签了名。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "匿名信原来是一张孩子的画"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "给邻居生病的孩子签了名",
+              "trust": 0.06,
+              "affection": 0.05
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "签名的事在院子里传成了好话"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "第十一封匿名信是邻居孩子画的，不是威胁",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "the_anonymous_letter_was_a_childs_drawing",
+              "add": true,
+              "reason": "发现匿名信是一张孩子的画"
+            }
+          ]
+        },
+        {
+          "id": "it-knows-too-much",
+          "weight": 0.3,
+          "text": "第十一封匿名信里写着{subject}成名前在印刷厂的一次事故，连工头的名字都没写错。{subject}把信读了三遍，最后把它锁进写字台。第二天，{neighbor}来借酱油，眼睛一直往写字台上看。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "parameters": {
+                "pressure": 35,
+                "danger": 20,
+                "proof": 60,
+                "what": "匿名信里写着成名前的一桩旧事故"
+              },
+              "durationMonths": 90,
+              "reason": "匿名信知道成名前那桩旧事故的所有细节"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "匿名信里写着成名前印刷厂事故的细节，连工头名字都对",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "邻居来借酱油时一直看写字台",
+              "trust": -0.03
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "把信锁进写字台以后还是觉得有人在看"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "received_a_knowing_anonymous_letter",
+              "add": true,
+              "reason": "收到一封知道旧事故细节的匿名信"
+            }
+          ]
+        },
+        {
+          "id": "answers-it-in-the-paper",
+          "weight": 0.35,
+          "text": "{subject}把信交给报社，让他们登一则声明，说匿名信将原样退回。声明登出来的当天，邮差又送来一封，信封上贴着同一天的邮票，里面只有一句话：“你终于回信了。”",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "公开回应匿名信让名气更稳了一点"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "“你终于回信了”"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "匿名信的作者把公开声明当成了一封回信",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "answered_the_anonymous_letter_publicly",
+              "add": true,
+              "reason": "在报纸上公开回应了匿名信"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sm18-estate.sealed-desk",
+      "title": "书房里锁着的抽屉",
+      "domain": "family",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 86
+      },
+      "tags": [
+        "estate",
+        "desk",
+        "letters",
+        "family",
+        "secret",
+        "inheritance"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "familyId": "sm18-estate",
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "family-estate",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 86
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 52,
+          "maxAge": 86
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "opens-the-drawer",
+          "weight": 0.35,
+          "text": "书房的抽屉锁着，钥匙却在壁炉钟的底座下面。{subject}打开抽屉，里面是一叠用蓝丝带扎着的信和一本存折，收信人的名字不是{subject}的祖母。{sibling}站在门口，问要不要叫律师；{subject}把最上面一封抽了出来。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-town-secret",
+              "parameters": {
+                "pressure": 25,
+                "danger": 15,
+                "proof": 65,
+                "what": "祖父在另一条街还有一家人"
+              },
+              "durationMonths": 120,
+              "reason": "抽屉里的信和存折指向另一家人"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "祖父的书房抽屉里有寄给另一个女人的信和一本存折",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "在书房里一起看见抽屉里的信",
+              "trust": -0.02
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "蓝丝带下面不是祖母的名字"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "opened_the_locked_desk",
+              "add": true,
+              "reason": "用壁炉钟下的钥匙打开了书房抽屉"
+            }
+          ]
+        },
+        {
+          "id": "locks-it-again",
+          "weight": 0.3,
+          "text": "{subject}把抽屉原样锁回去，把钥匙放回钟座下面。{sibling}问里面是什么；{subject}说是一些旧账，等过了冬天再看。那天夜里，{subject}听见{sibling}在书房门口站了一会儿，门把轻轻响了一声，又静了。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "把抽屉锁回去以后反而睡不踏实"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "没有把抽屉里的东西告诉手足",
+              "trust": -0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_the_locked_desk_closed",
+              "add": true,
+              "reason": "把书房抽屉原样锁了回去"
+            }
+          ]
+        },
+        {
+          "id": "the-drawer-is-already-empty",
+          "weight": 0.35,
+          "text": "抽屉里只剩一只空信封，封口撕得很整齐，里面的东西已经被人取走。{subject}在抽屉底板摸到一张当票，日期是上个月，物件一栏写着“金怀表”。{sibling}说自己也是第一次见这把钥匙。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "sm18-missing-object",
+              "parameters": {
+                "attachment": 45,
+                "leads": 20,
+                "suspicion": 40,
+                "object": "抽屉里的金怀表"
+              },
+              "durationMonths": 90,
+              "reason": "书房抽屉里的金怀表只剩一张当票"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "书房抽屉里的东西已经被人取走，只剩一张上个月的金怀表当票",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "抽屉空了，两个人都说自己第一次见钥匙",
+              "trust": -0.08
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "空信封的封口撕得太整齐"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_an_empty_desk_and_a_pawn_ticket",
+              "add": true,
+              "reason": "在书房抽屉里只找到一张当票"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "mystery",
+    "everyday_life",
+    "neighborhood",
+    "secrecy",
+    "loss",
+    "coincidence"
+  ],
+  "tone": [
+    "suspense",
+    "everyday",
+    "uncanny",
+    "comic"
+  ],
+  "scope": [
+    "person",
+    "household"
+  ],
+  "rarity": "common",
+  "contentWarnings": [
+    "false accusation",
+    "dismissal without reference",
+    "death of a family member",
+    "eviction",
+    "political surveillance",
+    "mild supernatural ambiguity",
+    "blackmail"
+  ]
+}

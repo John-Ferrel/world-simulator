@@ -1,0 +1,6471 @@
+{
+  "id": "pack-odd-jobs",
+  "version": 1,
+  "title": "奇职志：夜班、胶片与无名死者",
+  "description": "把守夜人、放映员、动物园饲养员、夜班司机、入殓工、香水学徒、无线电修理匠、医院担架工、电梯员和街头摄影师写成会持续改变选择的职业。这里没有抽象的“工作”，只有具体的钥匙、胶片、兽栏、遗体、柜台、天线和楼层；奇职可以带来信任与传说，也可以带来黑名单、失窃和无法解释的夜班。",
+  "author": "phase18-content-author/odd-jobs",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-07",
+  "sourceBriefId": "phase18-odd-jobs",
+  "rationale": "Phase 17 的职场内容集中在作坊、工厂和办公室，缺少城市里那些介于手艺、服务和夜间劳动之间的奇职。这一包让奇职成为可查询的状态，并用现有工厂雇佣、学徒契约、出师工匠、黑名单、受围职位、名望和慢性病作为入口；每个职业都落在具体工作场所、真实职位或组织上，传说不替代机制。",
+  "themes": [
+    "odd_jobs",
+    "night_work",
+    "workplace_lore",
+    "cinema",
+    "custody_of_the_dead",
+    "city"
+  ],
+  "era": "Vienna, 1912-1955",
+  "tone": [
+    "everyday",
+    "comic",
+    "suspense"
+  ],
+  "scope": [
+    "adulthood",
+    "urban occupations",
+    "Vienna"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "death",
+    "funeral work",
+    "animal injury",
+    "police surveillance",
+    "mild body horror"
+  ],
+  "states": [
+    {
+      "id": "oj18-odd-apprenticeship",
+      "version": 1,
+      "packId": "pack-odd-jobs",
+      "title": "奇职学徒",
+      "description": "一个人正在学习一门不合常理的营生：守夜人、放映员、入殓工、电梯员或香水柜台后的鼻子。师傅教的不只是手艺，还有哪扇门不能开、哪位死者不能问、哪句话只能留在楼梯间。",
+      "owner": "person",
+      "slot": "work",
+      "conflict": "replace",
+      "tags": [
+        "work",
+        "odd_job",
+        "apprenticeship",
+        "night",
+        "trust",
+        "secrecy"
+      ],
+      "parameters": {
+        "trust": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        },
+        "strangeKnowledge": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        },
+        "reliability": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        "nightsWorked": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 600
+        },
+        "post": {
+          "type": "string",
+          "default": "夜班学徒"
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "odd_job",
+            "night",
+            "work",
+            "apprentice",
+            "secret"
+          ],
+          "multiplier": 1.45
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "night",
+            "odd_job"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "odd_job_apprentice",
+          "add": true,
+          "reason": "entered an odd-job apprenticeship"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "odd_job_apprentice",
+          "add": true,
+          "reason": "entered an odd-job apprenticeship"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "odd_job_apprentice",
+          "add": false,
+          "reason": "left the odd-job apprenticeship"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "odd_job_apprentice",
+          "add": false,
+          "reason": "left the odd-job apprenticeship"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "strange-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "cunning",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "trusted-with-the-keys",
+              "result": "success",
+              "weight": 3,
+              "text": "一年过去，{subject}已经能闭着眼说出哪块地板会响、哪盏煤气灯该在几点关。师傅把备用钥匙交下来，没有解释为什么第三把钥匙磨得最亮；{subject}也没有问，只在巡查簿最后一页画了一个小小的记号。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-odd-apprenticeship",
+                  "key": "trust",
+                  "delta": 5,
+                  "reason": "a year of reliable night work"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-odd-apprenticeship",
+                  "key": "strangeKnowledge",
+                  "delta": 5,
+                  "reason": "learned the building's night habits"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-odd-apprenticeship",
+                  "key": "nightsWorked",
+                  "delta": 12,
+                  "reason": "another year of night shifts"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "night-shift wages"
+                },
+                {
+                  "type": "skill",
+                  "personId": "$subject",
+                  "skill": "craft",
+                  "amount": 0.02,
+                  "reason": "practical knowledge of locks and lamps"
+                }
+              ]
+            },
+            {
+              "id": "blamed-for-the-noise",
+              "result": "failure",
+              "weight": 2,
+              "text": "楼上住户投诉夜里有人拖椅子，管事的把巡查簿翻到{subject}的那一页，说签字太潦草，看不出巡过几趟。{subject}想辩解，却想起那晚确实在楼梯间多站了一刻钟；扣掉的工钱刚好够买一双不漏水的鞋。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-odd-apprenticeship",
+                  "key": "trust",
+                  "delta": -8,
+                  "reason": "the night log was questioned"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-odd-apprenticeship",
+                  "key": "reliability",
+                  "delta": -5,
+                  "reason": "a complaint stuck to the record"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "a night of suspicion"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "odd_job_scare",
+                  "add": true,
+                  "reason": "was blamed for a night noise"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "become-a-workplace-legend",
+          "to": "oj18-workplace-legend",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameter": "strangeKnowledge",
+              "min": 60
+            },
+            {
+              "kind": "hasState",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameter": "reliability",
+              "min": 55
+            }
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "colleagues began repeating the apprentice's stories"
+            }
+          ],
+          "reason": "the odd-job apprentice became the subject of workplace stories"
+        }
+      ],
+      "reactions": [
+        {
+          "id": "the-thing-in-the-basement",
+          "onTags": [
+            "death",
+            "funeral",
+            "missing"
+          ],
+          "chance": 0.35,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 8,
+              "reason": "a night incident explained part of the building's lore"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": -3,
+              "reason": "the story made the apprentice seem unreliable"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "something happened in the basement"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "地下室那扇门后面有东西被搬动过，但巡查簿上没有记录。",
+              "confidence": 0.6,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "text": "夜班结束前，{subject}听见地下室传来拖拽声。下去时，门开着，地上只有一道湿拖把的痕迹；第二天，所有人都说那间屋子锁了十年。",
+          "significance": 0.5,
+          "cooldownMonths": 18
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/odd-jobs",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把奇职写成有信任、夜班经验、可靠性和具体岗位的持续状态；它既能转为职场传说，也会因失窃或投诉而受损。"
+      }
+    },
+    {
+      "id": "oj18-workplace-legend",
+      "version": 1,
+      "packId": "pack-odd-jobs",
+      "title": "职场传说",
+      "description": "一个人已经不只是某份工作的持有者，而是同事、顾客和街坊口中的故事。传说能打开门、换来一杯酒，也会把一件小事说成预兆；真相越薄，故事越厚。",
+      "owner": "person",
+      "slot": "reputation",
+      "conflict": "replace",
+      "tags": [
+        "work",
+        "legend",
+        "odd_job",
+        "rumor",
+        "identity",
+        "night"
+      ],
+      "parameters": {
+        "legend": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "truth": {
+          "type": "number",
+          "default": 60,
+          "min": 0,
+          "max": 100
+        },
+        "oddity": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        },
+        "toldCount": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 200
+        }
+      },
+      "durationMonths": {
+        "min": 18,
+        "max": 240
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "legend",
+            "rumor",
+            "work",
+            "odd_job",
+            "night"
+          ],
+          "multiplier": 1.4
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "legend",
+            "rumor"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "workplace_legend",
+          "add": true,
+          "reason": "became a workplace legend"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "workplace_legend",
+          "add": true,
+          "reason": "became a workplace legend"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "workplace_legend",
+          "add": false,
+          "reason": "stopped being a workplace legend"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "workplace_legend",
+          "add": false,
+          "reason": "stopped being a workplace legend"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "story-year",
+          "everyMonths": 18,
+          "check": {
+            "attribute": "willpower",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "story-holds",
+              "result": "success",
+              "weight": 3,
+              "text": "又有人来问那个老故事。{subject}把烟按灭，从头讲了一遍，连哪天下雨、哪盏灯坏了都没有改。听的人散了以后，学徒在门口说“跟上次一样”；{subject}知道，至少这一版还能再撑几年。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-workplace-legend",
+                  "key": "legend",
+                  "delta": 3,
+                  "reason": "the story was retold"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-workplace-legend",
+                  "key": "truth",
+                  "delta": 2,
+                  "reason": "the details stayed consistent"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-workplace-legend",
+                  "key": "toldCount",
+                  "delta": 1,
+                  "reason": "another retelling"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "the story held together"
+                }
+              ]
+            },
+            {
+              "id": "story-grows-teeth",
+              "result": "failure",
+              "weight": 2,
+              "text": "故事传到第三个街区时，已经多出一只会说话的猫和两具没有头的尸体。{subject}想纠正，发现自己越解释，听的人越兴奋；酒馆老板干脆把最离谱的版本写在黑板上，下面画了一个箭头：本店常客。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-workplace-legend",
+                  "key": "legend",
+                  "delta": 8,
+                  "reason": "the story grew in the telling"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-workplace-legend",
+                  "key": "truth",
+                  "delta": -5,
+                  "reason": "the story drifted from what happened"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-workplace-legend",
+                  "key": "toldCount",
+                  "delta": 2,
+                  "reason": "the story spread further"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "the story no longer belonged to the teller"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "legend_exaggerated",
+                  "add": true,
+                  "reason": "the workplace story became a tall tale"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "legend-becomes-fame",
+          "to": "fame",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "oj18-workplace-legend",
+              "parameter": "legend",
+              "min": 85
+            },
+            {
+              "kind": "hasState",
+              "stateId": "oj18-workplace-legend",
+              "parameter": "truth",
+              "min": 55
+            }
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the workplace story reached the newspapers"
+            }
+          ],
+          "reason": "a well-told workplace legend crossed into public fame"
+        }
+      ],
+      "reactions": [
+        {
+          "id": "the-story-turns",
+          "onTags": [
+            "rumor",
+            "scandal",
+            "betrayal"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "legend",
+              "delta": 5,
+              "reason": "a new rumor attached itself to the legend"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "truth",
+              "delta": -3,
+              "reason": "the new rumor was not true"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the story took an ugly turn"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "有人把另一件旧事算在了我头上，只因为我的名字已经成了一个故事。",
+              "confidence": 0.7,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "text": "酒馆里有人把另一件旧事也讲成了{subject}的遭遇：同样的雨夜、同样的钥匙，连结尾都差不多。{subject}听见时没有打断，只把杯子往桌角推了推。",
+          "significance": 0.5,
+          "cooldownMonths": 12
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/odd-jobs",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让职场传说成为有传颂度、真实度和奇诡度的持续状态；它可能变成公众名望，也可能被夸饰到无法收拾。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "oj18-watch.hire",
+      "title": "夜班的第一串钥匙",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 64
+      },
+      "tags": [
+        "work",
+        "night",
+        "watchman",
+        "keys",
+        "factory",
+        "trust",
+        "odd_job"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "factory-employment",
+          "owner": "person"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 64
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 74
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "theatre-keys",
+          "weight": 0.4,
+          "text": "雇主把一串黄铜钥匙放在丝绒托盘上，先让{subject}复述三条规矩：午夜锁侧门、两点查煤气灯、听见后台有脚步先敲三下。{subject}接过钥匙，指腹碰到一枚磨得发亮的“正门”牌，知道上一任看守至少用了二十年。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "theatre:$subject-$eventId",
+                "name": "环形大道旧剧院",
+                "kind": "other",
+                "treasury": 0,
+                "authorityRules": [
+                  "午夜锁侧门",
+                  "两点查煤气灯",
+                  "钥匙不外借"
+                ]
+              },
+              "reason": "the old theatre kept a night-watch team"
+            },
+            {
+              "type": "position",
+              "organizationId": "theatre:$subject-$eventId",
+              "title": "夜班看守",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "巡夜",
+                "保管钥匙",
+                "开关煤气灯"
+              ],
+              "reason": "the theatre's night-watch post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "theatre:$subject-$eventId",
+              "add": true,
+              "reason": "joined the theatre night-watch team"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 35,
+                "strangeKnowledge": 15,
+                "reliability": 55,
+                "nightsWorked": 0,
+                "post": "剧院夜班看守"
+              },
+              "durationMonths": 36,
+              "reason": "took the theatre's night-watch apprenticeship"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "night-watch wages"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "learned the locks and gas lamps of an old theatre"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "theatre_night_watch",
+              "add": true,
+              "reason": "became a theatre night watchman"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧剧院有三条夜班规矩，正门钥匙的铜牌被上一任看守磨得发亮。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "warehouse-keys",
+          "weight": 0.35,
+          "text": "雇主把{subject}领到多瑙运河边的咖啡仓。麻袋堆到天花板，空气里是烤豆和老鼠屎的味道；上一任看守留下一本潮气卷边的巡查簿，最后一页写着“别在下雨夜数麻袋”。{subject}还是接过了钥匙，因为工厂的班次已经缩到每周三天。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "warehouse:$subject-$eventId",
+                "name": "码头咖啡仓",
+                "kind": "other",
+                "treasury": 0,
+                "authorityRules": [
+                  "每夜两次巡仓",
+                  "湿货单独记账",
+                  "火烛小心"
+                ]
+              },
+              "reason": "the coffee warehouse kept a night watch"
+            },
+            {
+              "type": "position",
+              "organizationId": "warehouse:$subject-$eventId",
+              "title": "夜班看守",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "巡仓",
+                "记录湿货",
+                "锁门"
+              ],
+              "reason": "the warehouse night-watch post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "warehouse:$subject-$eventId",
+              "add": true,
+              "reason": "joined the warehouse night watch"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 25,
+                "strangeKnowledge": 20,
+                "reliability": 50,
+                "nightsWorked": 0,
+                "post": "仓库夜班看守"
+              },
+              "durationMonths": 24,
+              "reason": "took the coffee warehouse's night watch"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "night-watch wages"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "night work",
+              "add": true,
+              "reason": "began working nights at the warehouse"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "warehouse_night_watch",
+              "add": true,
+              "reason": "became a coffee warehouse night watchman"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "咖啡仓的巡查簿最后一页写着：别在下雨夜数麻袋。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "substitute-three-nights",
+          "weight": 0.25,
+          "text": "上一任看守拄着拐杖回来了，说自己只是摔了腿，还没退休。{employer}让{subject}先顶三个夜班，工钱按夜结。{subject}把钥匙揣进围裙口袋，听见老看守在背后嘟囔：别动第三排的铜锁。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 20,
+                "strangeKnowledge": 10,
+                "reliability": 60,
+                "nightsWorked": 0,
+                "post": "代班守夜人"
+              },
+              "durationMonths": 6,
+              "reason": "substituted for three nights"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "three nights of substitute pay"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.05,
+              "respect": 0.05,
+              "reason": "was trusted with a short night shift"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "老看守说第三排的铜锁不能动，但没有解释为什么。",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "substitute_watchman",
+              "add": true,
+              "reason": "worked as a substitute night watchman"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-watch.keys",
+      "title": "钥匙串上少了一把",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 68
+      },
+      "tags": [
+        "work",
+        "night",
+        "watchman",
+        "keys",
+        "theft",
+        "trust",
+        "suspense"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "position",
+          "titleIncludes": "看守"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 68
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 74
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 66
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "prop-room-family",
+          "weight": 0.4,
+          "text": "少的那把钥匙开的是道具间。{subject}推门进去，看见清洁女工{neighbor}和她的小儿子裹在旧幕布里，炉子上煮着偷接的电水壶。{subject}把门重新锁上，第二天在巡查簿上写“道具间门锁已换”。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": 8,
+              "reason": "kept a night secret for the cleaner"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 5,
+              "reason": "learned who slept in the props room"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "covered for the cleaner's family"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "bought coal for the props-room stove"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "covered_for_cleaner",
+              "add": true,
+              "reason": "protected a family sleeping in the theatre"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "道具间的钥匙是清洁女工拿去用的，她和小儿子夜里睡在旧幕布后面。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "key-in-the-canal",
+          "weight": 0.35,
+          "text": "钥匙在一场雨后出现在运河闸口的淤泥里，钥匙圈上还挂着上一任看守的铜牌。{subject}把铜牌擦干净交给{employer}；{employer}盯着那个名字看了很久，只说“他一九二九年就不干了”。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "returned a lost key and an old name tag"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.08,
+              "reason": "handled the old key honestly"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": 5,
+              "reason": "the employer trusted the report"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 8,
+              "reason": "the old key opened a story about a vanished watchman"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "上一任看守一九二九年就不干了，但他的钥匙牌还在运河里。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_old_key",
+              "add": true,
+              "reason": "found the old watchman's key in the canal"
+            }
+          ]
+        },
+        {
+          "id": "blamed-for-the-loss",
+          "weight": 0.25,
+          "text": "第二周，储物柜里少了一只银烟盒，{employer}让{subject}把钥匙全部交出来。{subject}数了三遍，确实少一把，却想不起最后一次用它是什么时候。工钱扣了两克朗，巡查簿上多了一行“待查”。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": -20,
+              "reason": "a missing key was blamed on the watchman"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "reliability",
+              "delta": -10,
+              "reason": "the log now carried a question mark"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a silver cigarette case disappeared on the watch"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "wages deducted for the missing key"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "could not prove innocence"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "blamed_for_lost_key",
+              "add": true,
+              "reason": "was blamed for a missing key"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "钥匙确实少了一把，但最后一次用它是在哪个门，我记不清了。",
+              "confidence": 0.8,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-watch.second-job",
+      "title": "部里的印章，仓库的钥匙",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 64
+      },
+      "tags": [
+        "work",
+        "night",
+        "watchman",
+        "office",
+        "scandal",
+        "double_life",
+        "suspense"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "office-under-siege",
+          "owner": "person"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 64
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 68
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "double-shift-holds",
+          "weight": 0.4,
+          "text": "白天在部里盖章，夜里去仓库守门，{subject}把两套制服挂在同一只衣柜里。{clerk}在走廊里闻见煤油味，只问了一句“家里还好吧”，就把一叠待签的文件推过来。{subject}签完字，赶最后一班电车去换岗。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 30,
+                "strangeKnowledge": 10,
+                "reliability": 45,
+                "nightsWorked": 0,
+                "post": "化名守夜人"
+              },
+              "durationMonths": 18,
+              "reason": "took a second job as a night watchman"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "second-job wages"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.01,
+              "reason": "learned to keep two sets of hours"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "exposure",
+              "delta": 5,
+              "reason": "the double shift left a small trail"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "double_job",
+              "add": true,
+              "reason": "worked an official post and a night watch"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我把两套制服挂在同一只衣柜里，煤油味和印泥味混在一起。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "reporter-recognizes",
+          "weight": 0.35,
+          "text": "一个夜班记者在电车终点站认出了{subject}，第二天报纸上出现“受查官员夜里替人看仓库”的小标题。部里没有立刻免职，只把{subject}的办公室从二楼换到地下室；仓库那边也换了锁。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a newspaper exposed the night job"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "exposure",
+              "delta": 15,
+              "reason": "the night job became a public detail"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": -8,
+              "reason": "colleagues avoided the basement office"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "lost the night job and paid for the move"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the second life was exposed"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "double_job_exposed",
+              "add": true,
+              "reason": "the night job was printed in a newspaper"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "报纸没有写我的名字，但地下室的新办公室已经说明了一切。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "clerk-recruits-the-watchman",
+          "weight": 0.25,
+          "text": "{clerk}把一张夜间通行证放在{subject}桌上，说部里需要有人盯着那间仓库，看谁在半夜搬箱子。{subject}继续守夜，只是巡查簿上多了一栏要交给{clerk}的编号；工钱没有涨，责任却换了一边。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": 6,
+              "reason": "the office gave the subject a quiet task"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "exposure",
+              "delta": -3,
+              "reason": "the night work became useful to the office"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 35,
+                "strangeKnowledge": 18,
+                "reliability": 50,
+                "nightsWorked": 0,
+                "post": "领双份名单的守夜人"
+              },
+              "durationMonths": 18,
+              "reason": "kept the night watch as an office informant"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "night-watch wages"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "colleague",
+              "trust": 0.1,
+              "obligation": 0.1,
+              "reason": "accepted a quiet reporting task"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "watchman_informant",
+              "add": true,
+              "reason": "reported night movements to the office"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "巡查簿上多了一栏编号，{clerk}每周五来取。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-cinema.reel",
+      "title": "第十一本胶片",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 62
+      },
+      "tags": [
+        "cinema",
+        "film",
+        "projection",
+        "night",
+        "censorship",
+        "work",
+        "odd_job"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "projectionist",
+          "kind": "worker",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 68
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "cut-the-reel",
+          "weight": 0.4,
+          "text": "放映到第十一本，胶片在片门里卷成一团。{subject}剪掉烧焦的一截，发现后面接的是一卷没送审的新闻片：军靴踏过广场，镜头扫过一张张被按下去的脸。{projectionist}在黑暗里说“接回正片”，{subject}照做了。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "cinema:$subject-$eventId",
+                "name": "小巷电影院",
+                "kind": "household_firm",
+                "treasury": 1,
+                "authorityRules": [
+                  "先放正片",
+                  "胶片不外借",
+                  "散场锁门"
+                ]
+              },
+              "reason": "the small cinema kept a projection booth"
+            },
+            {
+              "type": "position",
+              "organizationId": "cinema:$subject-$eventId",
+              "title": "放映员",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "放映",
+                "保管胶片",
+                "锁放映室"
+              ],
+              "reason": "the cinema's projectionist post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "cinema:$subject-$eventId",
+              "add": true,
+              "reason": "joined the cinema staff"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 30,
+                "strangeKnowledge": 18,
+                "reliability": 50,
+                "nightsWorked": 0,
+                "post": "放映学徒"
+              },
+              "durationMonths": 30,
+              "reason": "learned the projection booth"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "projectionist wages"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "spliced a damaged reel under pressure"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cut_the_reel",
+              "add": true,
+              "reason": "cut a banned newsreel out of the show"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "第十一本胶片里夹着没送审的新闻片，{projectionist}让我接回正片。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "show-the-reel",
+          "weight": 0.35,
+          "text": "{subject}没有剪，让那卷新闻片继续走。观众先以为这是加映，直到有人站起来喊“这不是我们买的票”。警察在散场前堵住侧门；{employer}说是放映员接错了本，{subject}被记了名字。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "some viewers remembered the forbidden footage"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "lost wages and paid a fine"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "police record",
+              "add": true,
+              "reason": "was named after the forbidden screening"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 20,
+                "strangeKnowledge": 30,
+                "reliability": 40,
+                "nightsWorked": 0,
+                "post": "放映员"
+              },
+              "durationMonths": 24,
+              "reason": "kept working in the projection booth after the scandal"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the audience turned and the police came"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "showed_banned_reel",
+              "add": true,
+              "reason": "screened an unapproved newsreel"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那卷新闻片里有一张被按下去的脸，散场前警察就堵住了侧门。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "burned-frame",
+          "weight": 0.25,
+          "text": "胶片在片门里起火，火苗顺着观察窗舔进大厅。{subject}没有先去拿灭火沙，而是把后排的孩子往侧门推；{projectionist}用湿毯子捂住片盒，手背烧掉一层皮。第二天，{employer}把烧黑的片盒留在柜台上，说“留着，提醒我们”。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "burned while clearing the audience from the fire"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "burn scar",
+              "add": true,
+              "reason": "a nitrate fire left a burn scar"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "got the audience out of the burning cinema"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 40,
+                "strangeKnowledge": 10,
+                "reliability": 65,
+                "nightsWorked": 0,
+                "post": "放映员"
+              },
+              "durationMonths": 36,
+              "reason": "stayed on as a projectionist after the fire"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "emergency pay for the fire shift"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cinema_fire",
+              "add": true,
+              "reason": "survived a projection-booth fire"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "硝酸片起火时，观察窗像一只被点燃的眼睛。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-cinema.censor",
+      "title": "最后一排的审查员",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 66
+      },
+      "tags": [
+        "cinema",
+        "film",
+        "censorship",
+        "projection",
+        "suspense",
+        "work",
+        "odd_job"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "position",
+          "titleIncludes": "放映"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 66
+        },
+        {
+          "key": "censor",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "cuts-made",
+          "weight": 0.4,
+          "text": "{censor}坐在最后一排，用铅笔在节目单上画线：接吻的镜头太长，街垒的镜头太真，结尾的国旗只能留半面。{subject}照着剪了四十米，晚上{censor}在许可证上盖章，顺手把两张票钱压在放映室的窗台上。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "censor's ticket money"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": 5,
+              "reason": "cooperated with the censor"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "reliability",
+              "delta": 5,
+              "reason": "delivered the cut version on time"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$censor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "made the required cuts"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "license_renewed",
+              "add": true,
+              "reason": "kept the cinema's license"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "审查员用铅笔在节目单上画了三条线，国旗只能留半面。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "reel-hidden",
+          "weight": 0.3,
+          "text": "{subject}把那卷胶片带回家，藏在面粉桶后面。第三天，{censor}带着两个便衣回来，放映室里只剩下正片。{subject}被吊销放映资格，名字上了剧院的黑名单；那卷胶片最后出现在警察局的证物架上。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "blacklisted",
+              "parameters": {
+                "reason": "私藏被禁新闻片",
+                "severity": 0.55
+              },
+              "durationMonths": 24,
+              "reason": "the cinema blacklisted the projectionist"
+            },
+            {
+              "type": "position",
+              "holderId": "$subject",
+              "title": "放映员",
+              "remove": true,
+              "reason": "lost the projectionist post"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "reason": "the projection booth apprenticeship ended in disgrace"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "fine and lost wages"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "was named in the cinema blacklist"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the hidden reel was found"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hid_banned_reel",
+              "add": true,
+              "reason": "hid a banned newsreel at home"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "便衣从面粉桶后面拿走了胶片，放映室的锁当天就换了。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "censor-was-projectionist",
+          "weight": 0.3,
+          "text": "{censor}在黑暗里忽然说，自己一九一九年也在这间放映室干过，放过同一卷新闻片，只是那时候观众还在喊“共和国”。他让{subject}把声音调低，剪掉三帧，然后在许可证背面写了一个只有老放映员才认得的记号。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$censor",
+              "kind": "friend",
+              "trust": 0.15,
+              "respect": 0.1,
+              "reason": "shared the old projectionist's mark"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 8,
+              "reason": "learned an old booth secret"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": 6,
+              "reason": "the censor trusted the projectionist"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "found an unexpected ally"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "censor_was_projectionist",
+              "add": true,
+              "reason": "learned the censor's old booth secret"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "审查员一九一九年也放过那卷新闻片，他在许可证背面画了一个老放映员的记号。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-cinema.legend",
+      "title": "散场后的放映室",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 68
+      },
+      "tags": [
+        "cinema",
+        "projection",
+        "legend",
+        "apprentice",
+        "fire",
+        "work",
+        "odd_job"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
+        },
+        {
+          "kind": "position",
+          "titleIncludes": "放映"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 68
+        },
+        {
+          "key": "apprentice",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 30
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "taught-by-touch",
+          "weight": 0.4,
+          "text": "学徒{apprentice}问{subject}，怎么能不看片头就知道哪本胶片装反了。{subject}让他闭眼，用手指摸片孔的边缘；两个人蹲在放映室的地上，摸完了一整本。散场后，{apprentice}在日志上写：师傅的手比机器准。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "taught splicing by touch"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$apprentice",
+              "kind": "colleague",
+              "trust": 0.12,
+              "respect": 0.1,
+              "reason": "taught the apprentice the booth by touch"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "legend",
+              "delta": 5,
+              "reason": "the apprentice repeated the lesson"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "truth",
+              "delta": 5,
+              "reason": "the story stayed close to the craft"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the apprentice vouched for the projectionist"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "taught_splicing_by_touch",
+              "add": true,
+              "reason": "taught a apprentice to splice by touch"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "片孔边缘的毛刺能告诉我胶片装反了，不需要看片头。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "imperial-story",
+          "weight": 0.35,
+          "text": "学徒把{subject}当年给皇帝放电影的故事讲给售票员听，三天后传成了“皇帝亲自来换过片”。{subject}没有纠正，只在有人问起时把烟按灭；放映室门口开始有人探头，场务只好多卖站票。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "legend",
+              "delta": 10,
+              "reason": "the imperial story grew"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "truth",
+              "delta": -10,
+              "reason": "the emperor never changed a reel"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "toldCount",
+              "delta": 2,
+              "reason": "the story was repeated at the ticket window"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the story drew more standing tickets"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "extra standing-ticket sales"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "imperial_story",
+              "add": true,
+              "reason": "let the emperor story stand"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "皇帝没有来换过片，但售票员已经把这个版本讲给了半条街。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "saved-the-apprentice",
+          "weight": 0.25,
+          "text": "硝酸片在片盒里自己烧起来，{subject}先把{apprentice}推出门，再去关总闸。火没有烧到大厅，{subject}的眉毛和袖口却焦了；第二天，学徒在门口挂了一块手写的牌子：放映室重地，师傅说了算。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "stayed in the booth to shut off the fire"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "burn scar",
+              "add": true,
+              "reason": "a nitrate fire singed the face and sleeve"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "saved the apprentice from the fire"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "legend",
+              "delta": 8,
+              "reason": "the fire story spread"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "truth",
+              "delta": 6,
+              "reason": "the rescue was witnessed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$apprentice",
+              "kind": "friend",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "pushed the apprentice out of the burning booth"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saved_apprentice_from_fire",
+              "add": true,
+              "reason": "saved the apprentice from a nitrate fire"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "硝酸片烧起来时没有烟，只有一股甜味，然后才是火。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-zoo.night",
+      "title": "狮子的断牙",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 64
+      },
+      "tags": [
+        "zoo",
+        "animals",
+        "night",
+        "keeper",
+        "work",
+        "odd_job",
+        "suspense"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 64
+        },
+        {
+          "key": "keeper",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 66
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "broken-tooth",
+          "weight": 0.4,
+          "text": "夜里十一点，母狮不肯碰桶里的马肉。{subject}举着煤油灯绕到兽栏后面，看见它右槽牙断了一截，牙龈肿得发亮。{subject}把肉切碎，又去敲{keeper}的门；第二天兽医来了，{official}在晨会上第一次记住{subject}的名字。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "zoo:$subject-$eventId",
+                "name": "普拉特动物园夜班队",
+                "kind": "other",
+                "treasury": 0,
+                "authorityRules": [
+                  "夜班喂食",
+                  "病兽报告",
+                  "熊池双人巡查"
+                ]
+              },
+              "reason": "the zoo formed a night keeper team"
+            },
+            {
+              "type": "position",
+              "organizationId": "zoo:$subject-$eventId",
+              "title": "夜班饲养员",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "喂食",
+                "夜巡兽栏",
+                "报告病兽"
+              ],
+              "reason": "the zoo night keeper post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "zoo:$subject-$eventId",
+              "add": true,
+              "reason": "joined the zoo night team"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 30,
+                "strangeKnowledge": 20,
+                "reliability": 55,
+                "nightsWorked": 0,
+                "post": "动物园夜班饲养员"
+              },
+              "durationMonths": 36,
+              "reason": "became a night keeper"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "diagnosed a broken tooth in a lioness"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the director remembered the keeper's name"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "zoo:$subject-$eventId",
+              "amount": -2,
+              "reason": "the vet's night visit"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "zoo_night_shift",
+              "add": true,
+              "reason": "worked the zoo night shift"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "母狮的右槽牙断了，牙龈肿得发亮，夜里不肯吃马肉。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "meat-ledger",
+          "weight": 0.35,
+          "text": "肉商的账本上少了二十公斤马肉，{official}要{subject}签字认账。{subject}知道是夜班门房把肉转卖给了普拉特的香肠摊，但门房是{official}的小舅子。{subject}不签，第二天被调去扫兽栏；臭味洗了三遍还在指甲缝里。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "refused to sign the meat ledger"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "lost the night-shift supplement"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "was moved to the dirty work"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 18,
+                "strangeKnowledge": 22,
+                "reliability": 55,
+                "nightsWorked": 0,
+                "post": "动物园夜班饲养员"
+              },
+              "durationMonths": 24,
+              "reason": "stayed on at the zoo despite the demotion"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "zoo_night_shift",
+              "add": true,
+              "reason": "kept working the zoo night shift"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_meat_ledger",
+              "add": true,
+              "reason": "refused to sign a false meat ledger"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "少掉的二十公斤马肉被夜班门房卖给了香肠摊，门房是园长的亲戚。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "child-at-the-bear-pit",
+          "weight": 0.25,
+          "text": "一个男孩翻过熊池的矮栏去捡帽子。{subject}没有喊，怕惊动母熊，只提着装苹果的桶绕到下风处，把桶敲得咚咚响。母熊转身时，孩子被{keeper}一把拽了上来；{subject}的腿在后来的很多年里还会在梦里发软。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the bear-pit rescue left the legs shaking"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "lured the bear away from a child"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$keeper",
+              "kind": "friend",
+              "trust": 0.15,
+              "reason": "pulled the child out together"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "reward from the child's parents"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 38,
+                "strangeKnowledge": 18,
+                "reliability": 65,
+                "nightsWorked": 0,
+                "post": "动物园夜班饲养员"
+              },
+              "durationMonths": 36,
+              "reason": "became a trusted night keeper after the rescue"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the near miss stayed in the body"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "zoo_night_shift",
+              "add": true,
+              "reason": "worked the zoo night shift"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saved_child_at_zoo",
+              "add": true,
+              "reason": "saved a child from the bear pit"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "母熊被苹果桶引开时，孩子已经挂在{keeper}的胳膊上了。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-zoo.escape",
+      "title": "第二道门",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 66
+      },
+      "tags": [
+        "zoo",
+        "animals",
+        "escape",
+        "night",
+        "blame",
+        "work",
+        "odd_job"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "hasFlag",
+          "flag": "zoo_night_shift"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 66
+        },
+        {
+          "key": "keeper",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 66
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "chimp-on-the-prater",
+          "weight": 0.35,
+          "text": "黑猩猩“卡斯帕”用一根弯钉挑开第二道门，顺着排水沟跑进普拉特。{subject}提着一桶苹果追到旋转木马后面，看见它坐在售票亭顶上，正把一张张票根往嘴里塞。{keeper}赶来时，{subject}已经用苹果把它引进了送货马车。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "brought the escaped chimpanzee back"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": 8,
+              "reason": "handled the escape without panic"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 5,
+              "reason": "learned how the chimpanzee opened the gate"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "apples used to lure the chimpanzee"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$keeper",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "retrieved the chimpanzee together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "monkey_returned",
+              "add": true,
+              "reason": "returned the escaped chimpanzee"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "卡斯帕会用弯钉挑门闩，苹果比网子管用。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "blamed-for-the-gate",
+          "weight": 0.35,
+          "text": "园长在晨会上说，第二道门的锁是夜班没扣好。{subject}知道那锁早就坏了，报修单还压在办公室抽屉里，但没有人替{subject}说话。当天下午，{subject}的工牌被收走，兽栏钥匙交给了新来的临时工。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "position",
+              "holderId": "$subject",
+              "title": "夜班饲养员",
+              "remove": true,
+              "reason": "was blamed for the broken gate"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": -20,
+              "reason": "the zoo blamed the night keeper"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "reliability",
+              "delta": -10,
+              "reason": "the lost keys ended the night shift"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "lost the zoo job"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "was dismissed after the escape"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "took the blame for a broken lock"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "dismissed_after_escape",
+              "add": true,
+              "reason": "was dismissed after the zoo escape"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "第二道门的报修单还在办公室抽屉里，出事时没有人提它。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "hid-the-chimp",
+          "weight": 0.3,
+          "text": "马戏班老板{neighbor}在普拉特门口拦住{subject}，说愿意出三十克朗买那只黑猩猩，还缺一个懂它脾气的驯养人。{subject}没有答应，也没有报告；夜里，{subject}把卡斯帕藏进废弃的鸟舍，每天多带一份面包。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "bread for the hidden chimpanzee"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "refused the showman's offer"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 8,
+              "reason": "learned to hide and feed an escaped animal"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "parameters": {
+                "legend": 20,
+                "truth": 55,
+                "oddity": 35,
+                "toldCount": 0
+              },
+              "durationMonths": 24,
+              "reason": "the hidden chimpanzee became a workplace story"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the secret animal is a daily worry"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hid_chimp",
+              "add": true,
+              "reason": "hid the escaped chimpanzee"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "卡斯帕藏在废弃鸟舍里，听见面包纸响就会从梁上下来。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-taxi.night-fare",
+      "title": "夜班的第一位客人",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 64
+      },
+      "tags": [
+        "taxi",
+        "night",
+        "driver",
+        "passenger",
+        "work",
+        "odd_job",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 64
+        },
+        {
+          "key": "dispatcher",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 68
+        },
+        {
+          "key": "passenger",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 72
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "coop-keys",
+          "weight": 0.4,
+          "text": "合作社的调度{dispatcher}把一枚铜牌和一把车钥匙推过柜台，说夜班只跑环城路，十一点以后不接去普拉特的车。{subject}把铜牌挂在后视镜上，第一晚就拉了七个客人，最后一个在车上睡着，打鼾像一台小马达。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "taxi:$subject-$eventId",
+                "name": "第二区夜班出租合作社",
+                "kind": "other",
+                "treasury": 1,
+                "authorityRules": [
+                  "夜班只跑环城路",
+                  "十一点后不接普拉特",
+                  "车钥匙交班"
+                ]
+              },
+              "reason": "the night taxi cooperative took on a driver"
+            },
+            {
+              "type": "position",
+              "organizationId": "taxi:$subject-$eventId",
+              "title": "夜班司机",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "接客",
+                "保管车钥匙",
+                "记里程"
+              ],
+              "reason": "the cooperative's night driver post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "taxi:$subject-$eventId",
+              "add": true,
+              "reason": "joined the night taxi cooperative"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 30,
+                "strangeKnowledge": 10,
+                "reliability": 55,
+                "nightsWorked": 0,
+                "post": "夜班出租车司机"
+              },
+              "durationMonths": 30,
+              "reason": "started the night taxi shift"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "night taxi fares"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "taxi_night_shift",
+              "add": true,
+              "reason": "drove the night taxi shift"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "夜班只跑环城路，十一点以后不接去普拉特的车。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "fare-without-address",
+          "weight": 0.35,
+          "text": "一个穿黑纱的妇人上车，只说“往前开”。车过同一座教堂三次，她才报出一个门牌；那里是家已经关门的帽子店。{subject}没有催她，只把计价器按停。她下车时多留了一克朗，说这是给“愿意绕路的人”。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "a generous night fare"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 5,
+              "reason": "learned that some passengers buy distance, not speed"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": 5,
+              "reason": "kept the meter stopped for a grieving passenger"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$passenger",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "drove the long way without pressing"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a small kindness in the night"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fare_without_address",
+              "add": true,
+              "reason": "drove a passenger who could not name the address"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "黑纱妇人要到一家已经关门的帽子店，她在门口站了很久才下车。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "left-doctor-bag",
+          "weight": 0.25,
+          "text": "客人在环城路突然拉门跳车，丢下一只医生出诊包。{subject}追了两步，捡起包，里面除了听诊器还有一张当票。第二天，{subject}把包送到诊所，护士说那位医生已经三天没来上班。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "lost the fare and paid the tram to the clinic"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 5,
+              "reason": "found a doctor's pawn ticket in a abandoned bag"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the abandoned bag left a bad aftertaste"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_doctor_bag",
+              "add": true,
+              "reason": "found a doctor's abandoned bag"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "出诊包里有听诊器和一张当票，医生三天没去诊所。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-taxi.famous-fare",
+      "title": "后座上的旧名字",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 66
+      },
+      "tags": [
+        "taxi",
+        "fame",
+        "night",
+        "passenger",
+        "identity",
+        "work",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "owner": "person"
+        },
+        {
+          "kind": "position",
+          "titleIncludes": "司机"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 66
+        },
+        {
+          "key": "passenger",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 66
+        },
+        {
+          "key": "reporter",
+          "kind": "official",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "recognized-by-fare",
+          "weight": 0.4,
+          "text": "后座的客人{passenger}盯着后视镜看了半条街，忽然叫出{subject}当年的艺名。{subject}说认错人了，手却把车开过了该拐弯的路口。客人在下车前把一张纸币压在座位上，说“我年轻时买过你的站票”。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a passenger remembered the old stage name"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a generous fare"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$passenger",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "was recognized from the old stage"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "parameters": {
+                "legend": 20,
+                "truth": 60,
+                "oddity": 30,
+                "toldCount": 0
+              },
+              "durationMonths": 24,
+              "reason": "the old stage name began to circulate among fares"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "recognized_by_fare",
+              "add": true,
+              "reason": "a passenger recognized the old stage name"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "后座客人记得我的旧艺名，还记得他买过站票。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "newspaper-ride",
+          "weight": 0.35,
+          "text": "{reporter}在副驾上认出了{subject}，第二天写出一篇《夜班出租车里的旧明星》，把{subject}当年的角色和现在的车牌并排印在版面上。有人打电话到合作社点名要坐那辆车，也有人向公司投诉“不安全”。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "parameters": {
+                "legend": 40,
+                "truth": 40,
+                "oddity": 50,
+                "toldCount": 0
+              },
+              "durationMonths": 36,
+              "reason": "a newspaper column made the night driver a story"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the newspaper column named the old stage role"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "passengers asked for the famous night car"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the old fame came back with a complaint"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "newspaper_ride",
+              "add": true,
+              "reason": "a reporter wrote about the night taxi"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "报纸把我的旧角色和车牌印在同一版上，合作社接到表扬也接到投诉。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "refused-the-old-theatre",
+          "weight": 0.25,
+          "text": "客人报出旧剧院的地址，说想去看最后一场戏。{subject}把车停在街角，说剧院一九三八年就烧了；客人不信，付了钱，自己走进那条黑巷。{subject}没有追，只把空车开回环城路，收音机里正好放到当年的序曲。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the fare to the old theatre"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the old theatre was gone and the passenger would not believe it"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "parameters": {
+                "legend": 25,
+                "truth": 55,
+                "oddity": 40,
+                "toldCount": 0
+              },
+              "durationMonths": 24,
+              "reason": "the refused theatre fare became a night story"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_old_theatre",
+              "add": true,
+              "reason": "refused to drive into the burnt theatre street"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧剧院一九三八年就烧了，但还有客人相信那里在演戏。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-mortuary.first-body",
+      "title": "第一具没有名字的死者",
+      "domain": "health",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 62
+      },
+      "tags": [
+        "death",
+        "mortuary",
+        "funeral",
+        "work",
+        "odd_job",
+        "night",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "master",
+          "kind": "worker",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 72
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 68
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "coffin-coop",
+          "weight": 0.4,
+          "text": "师傅{master}把一块冷毛巾塞进{subject}手里，让{subject}先擦死者的脸，再擦自己的。殡葬合作社的规矩写在门背后：先入殓，后结账；无名者也要有一块写着日期的木牌。{subject}做完第一具，手抖得点不着烟。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "mortuary:$subject-$eventId",
+                "name": "圣马克斯殡葬合作社",
+                "kind": "other",
+                "treasury": 2,
+                "authorityRules": [
+                  "先入殓后结账",
+                  "无名者登记",
+                  "不替死者改名"
+                ]
+              },
+              "reason": "the burial cooperative took on an apprentice"
+            },
+            {
+              "type": "position",
+              "organizationId": "mortuary:$subject-$eventId",
+              "title": "入殓工",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "净身",
+                "缝合",
+                "保管遗物"
+              ],
+              "reason": "the cooperative's mortuary post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "mortuary:$subject-$eventId",
+              "add": true,
+              "reason": "joined the burial cooperative"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 25,
+                "strangeKnowledge": 25,
+                "reliability": 55,
+                "nightsWorked": 0,
+                "post": "入殓学徒"
+              },
+              "durationMonths": 36,
+              "reason": "began the mortuary apprenticeship"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "first mortuary wages"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "learned to wash and sew a body"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mortuary_worker",
+              "add": true,
+              "reason": "worked in a burial cooperative"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "殡葬合作社的规矩：先入殓，后结账；无名者也要有一块日期木牌。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "municipal-mortuary",
+          "weight": 0.35,
+          "text": "市立太平间缺一个夜班杂役，{official}只问{subject}怕不怕冷。地下室的抽屉一排十二个，有的拉开了就不再推回去；{subject}的工作是登记遗物、给无名尸挂上编号，再在天亮前把地拖干净。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "morgue:$subject-$eventId",
+                "name": "市立太平间",
+                "kind": "state",
+                "treasury": 1,
+                "authorityRules": [
+                  "无名尸编号",
+                  "遗物登记",
+                  "天亮前交接"
+                ]
+              },
+              "reason": "the municipal mortuary hired a night worker"
+            },
+            {
+              "type": "position",
+              "organizationId": "morgue:$subject-$eventId",
+              "title": "太平间杂役",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "接收尸体",
+                "登记遗物",
+                "夜间看守"
+              ],
+              "reason": "the municipal mortuary's night post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "morgue:$subject-$eventId",
+              "add": true,
+              "reason": "joined the municipal mortuary staff"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 20,
+                "strangeKnowledge": 30,
+                "reliability": 50,
+                "nightsWorked": 0,
+                "post": "太平间杂役"
+              },
+              "durationMonths": 30,
+              "reason": "took the municipal mortuary night shift"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "municipal night wages"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "night work",
+              "add": true,
+              "reason": "worked nights in the municipal mortuary"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mortuary_worker",
+              "add": true,
+              "reason": "worked in the municipal mortuary"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "太平间地下室的抽屉一排十二个，无名尸也要有编号。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "refused-the-child",
+          "weight": 0.25,
+          "text": "{subject}跟着{master}进到后间，看见一具孩子的棺材，尺寸只比鞋盒大一点。{subject}把毛巾放回盆里，说自己做不了。{master}没有劝，只把当天的工钱数给{subject}；那枚铜板在口袋里响了一路，像有人在后面跟着。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a day's mortuary pay"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "could not touch the child's coffin"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "refused the child's burial work"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "sleepless",
+              "add": true,
+              "reason": "the child's coffin stayed in the mind"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_mortuary",
+              "add": true,
+              "reason": "refused to work on a child's body"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那具孩子的棺材只比鞋盒大一点，{master}没有劝我留下。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-mortuary.estate",
+      "title": "无名死者的遗嘱",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 68
+      },
+      "tags": [
+        "death",
+        "mortuary",
+        "inheritance",
+        "will",
+        "work",
+        "odd_job",
+        "suspense"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "hasFlag",
+          "flag": "mortuary_worker"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 68
+        },
+        {
+          "key": "notary",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 72
+        },
+        {
+          "key": "claimant",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.11,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "will-names-subject",
+          "weight": 0.35,
+          "text": "无名死者在前一天下葬，今天却有一封律师信追到殡仪馆：死者把一只铁盒留给“替我合上眼睛的人”。{notary}打开盒子，里面是六克朗、三张从未寄出的明信片和一枚女式胸针；{subject}只拿了明信片，把钱留给公墓买一块便宜的石牌。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "a small legacy from the unclaimed dead"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$notary",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "handled the unclaimed will"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "parameters": {
+                "legend": 25,
+                "truth": 70,
+                "oddity": 25,
+                "toldCount": 0
+              },
+              "durationMonths": 30,
+              "reason": "the unclaimed man's bequest became a mortuary story"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the dead man's postcards were never sent"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "inherited_letters",
+              "add": true,
+              "reason": "received an unclaimed man's letters"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "无名死者把铁盒留给替他合眼的人，里面有三张没有寄出的明信片。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "claimant-appears",
+          "weight": 0.35,
+          "text": "一个自称死者妹妹的女人{claimant}找来，说铁盒里应有房契和一枚金戒指。{subject}把遗物清单摊在桌上：只有一只旧表、三张明信片和半包烟。{claimant}不信，坐在殡仪馆门口哭到天黑，最后把旧表拿走了。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$claimant",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "reason": "the claimant did not believe the inventory"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": 5,
+              "reason": "kept the inventory honest"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "遗物清单上只有一只旧表、三张明信片和半包烟，没有房契和金戒指。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the claimant cried at the mortuary door"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "claimant_took_watch",
+              "add": true,
+              "reason": "gave the old watch to the claimant"
+            }
+          ]
+        },
+        {
+          "id": "will-is-forged",
+          "weight": 0.3,
+          "text": "{notary}把遗嘱对着灯看了很久，说签名和死者登记簿上的笔迹不是同一只手。{subject}想起死者右手缺了三根手指，根本握不住笔。遗嘱被扣下，殡仪馆却收到一封问询函；{subject}的名字第一次和“伪造”写在同一行。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 15,
+                "charge": "无名死者的遗嘱疑云"
+              },
+              "durationMonths": 12,
+              "reason": "a forged will drew the police to the mortuary"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "was named in a forgery inquiry"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the inquiry letter arrived at the mortuary"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "forged_will_suspicion",
+              "add": true,
+              "reason": "was questioned about a forged will"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "死者右手缺了三根手指，遗嘱上的签名却不是用左手写的。",
+              "confidence": 0.9,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-mortuary.legend",
+      "title": "会说话的死人",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 70
+      },
+      "tags": [
+        "death",
+        "mortuary",
+        "legend",
+        "rumor",
+        "work",
+        "odd_job",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
+        },
+        {
+          "kind": "hasFlag",
+          "flag": "mortuary_worker"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "apprentice",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 30
+        },
+        {
+          "key": "priest",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 76
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "rigor-mortis-story",
+          "weight": 0.35,
+          "text": "{apprentice}说，夜里有具尸体坐起来了。{subject}没有笑，只让他把灯提近一点：那是尸僵，肩膀被门板卡住，看起来像在起身。学徒还是把故事讲给了守夜人听，第二天，全殡仪馆都在传“入殓工能和死人说话”。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "legend",
+              "delta": 10,
+              "reason": "the corpse story spread through the mortuary"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "truth",
+              "delta": -5,
+              "reason": "the story exaggerated what happened"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the mortuary staff repeated the story"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$apprentice",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "explained rigor mortis to the apprentice"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "talking_to_corpses",
+              "add": true,
+              "reason": "became known for talking to the dead"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那具尸体只是尸僵，肩膀卡在门板上，学徒却讲成了坐起来。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "corpse-sighed",
+          "weight": 0.4,
+          "text": "{subject}在给一具老妇净身时，听见她喉咙里发出一声长叹，吓得把铜盆打翻。{priest}赶来念经，说是气没有走干净；{subject}后来每次进那间屋子都先敲三下门。故事传出去，连街角的卖花女都来问能不能替死人说句好话。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "legend",
+              "delta": 15,
+              "reason": "the sighing corpse became a neighborhood story"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "truth",
+              "delta": 2,
+              "reason": "the sigh itself was witnessed"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "oddity",
+              "delta": 5,
+              "reason": "the story added a new uncanny detail"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the dead woman's sigh stayed in the room"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$priest",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "the priest came to say the prayers"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a small fee for a private blessing"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "corpse_sighed",
+              "add": true,
+              "reason": "heard a corpse sigh during washing"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "老妇喉咙里的那声长叹，{priest}说是气没有走干净。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "explain-rigor-mortis",
+          "weight": 0.25,
+          "text": "{priest}请{subject}别再讲那些“会动的死人”，说最近来领尸的家属都不敢进后厅。{subject}答应了，把学徒叫到跟前，让他把尸僵、溺水和冻死的区别一条条记在本子上；那天之后，故事少了一半，来问的人却多了。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "legend",
+              "delta": -5,
+              "reason": "the ghost stories were toned down"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "truth",
+              "delta": 8,
+              "reason": "the apprentice wrote down the real signs of death"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$priest",
+              "kind": "friend",
+              "trust": 0.12,
+              "reason": "agreed to stop frightening the mourners"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "taught the signs of rigor, drowning and cold"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the mortuary became easier to enter"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "explained_rigor_mortis",
+              "add": true,
+              "reason": "replaced ghost stories with a written manual"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "尸僵、溺水和冻死看起来都像在动，但原因完全不同。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-perfume.apprentice",
+      "title": "闻不出味道的学徒",
+      "domain": "craft",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 16,
+        "max": 32
+      },
+      "tags": [
+        "perfume",
+        "apprentice",
+        "smell",
+        "shop",
+        "craft",
+        "work",
+        "odd_job"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "apprenticeship-contract",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 32
+        },
+        {
+          "key": "master",
+          "kind": "employer",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 72
+        },
+        {
+          "key": "customer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 68
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "nose-returns",
+          "weight": 0.4,
+          "text": "{subject}感冒了三天，鼻子像塞了棉花。{master}把十二只小瓶排在柜台上，让{subject}闭眼闻；前十一只都答错了，最后一只，{subject}说出“佛手柑和一点旧木头”。{master}把那只瓶子推到一边，说“记住这个味道，它比你的名字值钱”。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 35,
+                "strangeKnowledge": 15,
+                "reliability": 55,
+                "nightsWorked": 0,
+                "post": "香水铺学徒"
+              },
+              "durationMonths": 30,
+              "reason": "passed the scent test"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "learned to name a scent by memory"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the master trusted the apprentice's nose"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": 0.12,
+              "respect": 0.1,
+              "reason": "passed the twelve-bottle test"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "perfume_apprentice",
+              "add": true,
+              "reason": "became a perfume apprentice"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "第十二只瓶子是佛手柑和旧木头，师傅说这个味道比名字值钱。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "sold-the-wrong-bottle",
+          "weight": 0.3,
+          "text": "{subject}把一瓶玫瑰水当成古龙水卖给{customer}，收了两克朗。第二天，{customer}带着发红的脖颈回来，{master}当着人把瓶子摔进垃圾桶，赔了一瓶新的。{subject}被罚擦三天柜台，鼻尖一直留着玫瑰和酒精混在一起的甜味。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 15,
+                "strangeKnowledge": 12,
+                "reliability": 40,
+                "nightsWorked": 0,
+                "post": "香水铺学徒"
+              },
+              "durationMonths": 24,
+              "reason": "stayed on after the wrong-bottle sale"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "paid for the returned bottle"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "sold the wrong scent"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$customer",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "reason": "the customer's neck burned"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": -0.06,
+              "reason": "the master had to apologize"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "perfume_apprentice",
+              "add": true,
+              "reason": "remained a perfume apprentice"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "玫瑰水不能当古龙水卖，{customer}的脖颈第二天就红了。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "master-loses-his-nose",
+          "weight": 0.3,
+          "text": "{master}的鼻子先坏了：闻不出煤气味，也闻不出玫瑰。医生说是常年吸香料的结果。{master}把配方本推到{subject}面前，说“以后你闻，我记账”；柜台后面的椅子第一次让{subject}坐。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 45,
+                "strangeKnowledge": 20,
+                "reliability": 60,
+                "nightsWorked": 0,
+                "post": "调香学徒"
+              },
+              "durationMonths": 36,
+              "reason": "became the shop's remaining nose"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "took over the counter"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "learned the recipe book by nose"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "friend",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "the master trusted the apprentice's nose"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "perfume_apprentice",
+              "add": true,
+              "reason": "became the shop's principal nose"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "师傅闻不出煤气味了，配方本从今天起由我闻、他记。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-perfume.recipe",
+      "title": "柜台的第三只瓶子",
+      "domain": "craft",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 17,
+        "max": 60
+      },
+      "tags": [
+        "perfume",
+        "shop",
+        "recipe",
+        "theft",
+        "customer",
+        "work",
+        "odd_job"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "hasFlag",
+          "flag": "perfume_apprentice"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 60
+        },
+        {
+          "key": "customer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 55
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "recipe-stolen",
+          "weight": 0.35,
+          "text": "对街的店员{rival}抄走了{subject}的配方：前调多放一滴橙花，后调少放半滴麝香，成本就能降一成。{subject}在市场上看见同样的瓶子，标签换了名字；店主没有去告，只在门口挂了一块小牌：本店不卖便宜的味道。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "lost sales to the copied scent"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a cheaper copy appeared in the market"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "the rival copied the formula"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "recipe_stolen",
+              "add": true,
+              "reason": "had a perfume formula copied"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "对街的瓶子用了我的配方，前调多一滴橙花，后调少半滴麝香。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "customer-allergy",
+          "weight": 0.4,
+          "text": "{customer}试了新到的紫罗兰香精，脖颈当天起了一圈红疹。{subject}认出那批香精兑了工业酒精，追到门口把人叫回来，退了钱，又写了一张配方让药房配温和的。{customer}后来带来一篮李子，说是自家树上结的。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "refunded the harsh violet essence"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "caught the industrial alcohol in the scent"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$customer",
+              "kind": "friend",
+              "trust": 0.15,
+              "reason": "warned the customer and made a gentler recipe"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "learned to spot industrial alcohol"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "warned_allergy",
+              "add": true,
+              "reason": "warned a customer about a harsh essence"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那批紫罗兰香精兑了工业酒精，闻起来甜，擦在皮肤上会起疹。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "sold-the-last-violet",
+          "weight": 0.25,
+          "text": "一个穿旧军装的客人要买“紫罗兰”，说他的未婚妻战前就用这个。{subject}翻出最后一瓶存货，瓶塞已经发黄；客人把瓶子贴在胸口，站了很久才问多少钱。{subject}按旧价收了，找零时多放了一颗糖。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "sold the last bottle of violet"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$customer",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "sold the old scent at the old price"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the soldier held the bottle like a photograph"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 3,
+              "reason": "learned what a scent can carry"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_last_violet",
+              "add": true,
+              "reason": "sold the last violet bottle to a veteran"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "最后一瓶紫罗兰卖给了穿旧军装的客人，他说未婚妻战前就用这个。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-radio.repair",
+      "title": "没有声音的收音机",
+      "domain": "craft",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 66
+      },
+      "tags": [
+        "radio",
+        "repair",
+        "craft",
+        "customer",
+        "work",
+        "odd_job",
+        "suspense"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "journeyman",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 66
+        },
+        {
+          "key": "customer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 74
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "cold-joint",
+          "weight": 0.4,
+          "text": "{customer}的收音机只发出炒豆子一样的杂音。{subject}把后板拆开，发现一根接地线被老鼠咬断，焊点冷得像一颗坏牙。修好以后，{customer}留{subject}听完了整点新闻；出门时，{subject}在巷口还听见那台机器在响。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "radio:$subject-$eventId",
+                "name": "屋顶无线电修理铺",
+                "kind": "household_firm",
+                "treasury": 1,
+                "authorityRules": [
+                  "先测试后收钱",
+                  "不修发射机",
+                  "天线不借"
+                ]
+              },
+              "reason": "a journeyman opened a radio repair shop"
+            },
+            {
+              "type": "position",
+              "organizationId": "radio:$subject-$eventId",
+              "title": "无线电修理匠",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "修理接收机",
+                "测试天线",
+                "保管零件"
+              ],
+              "reason": "the radio repair shop's post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "radio:$subject-$eventId",
+              "add": true,
+              "reason": "joined the radio repair shop"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 30,
+                "strangeKnowledge": 10,
+                "reliability": 55,
+                "nightsWorked": 0,
+                "post": "无线电修理匠"
+              },
+              "durationMonths": 36,
+              "reason": "opened a radio repair apprenticeship"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "radio repair fee"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "found a cold solder joint by ear"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the repaired set played the whole news hour"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$customer",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "repaired the customer's radio"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "radio_repairer",
+              "add": true,
+              "reason": "became a radio repairer"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "收音机的接地线被老鼠咬断，焊点冷得像一颗坏牙。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "coil-in-the-cabinet",
+          "weight": 0.3,
+          "text": "{subject}在机壳里摸到一只不属于收音机的线圈，还有一张卷起来的传单。{customer}说是朋友寄存的，让{subject}别多问；第二天，两个穿便衣的人来问谁修过这台机器，{subject}把工钱退回去，说只换了根线。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 10,
+                "charge": "修理过可疑无线电"
+              },
+              "durationMonths": 12,
+              "reason": "a hidden coil drew police questions"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "returned the repair fee"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the police asked about the repaired set"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the customer had lied about the radio"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "radio_repairer",
+              "add": true,
+              "reason": "remained a radio repairer"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "suspicious_radio",
+              "add": true,
+              "reason": "found a hidden coil in a radio"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "收音机里多了一只线圈和一张传单，{customer}说是朋友寄存的。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "repaired-on-credit",
+          "weight": 0.3,
+          "text": "{customer}付不出修理费，{subject}把收音机留下，说等有钱再来取。三个月后，{customer}带来一罐自家腌的酸黄瓜和半张彩票；收音机还在柜台上，落了灰，但一拧开关就响。{subject}把酸黄瓜收下，把彩票还了回去。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$customer",
+              "kind": "friend",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "kept the radio until the customer could pay"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "a jar of pickles from the customer"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the repaired radio still played"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "radio_repairer",
+              "add": true,
+              "reason": "repaired a radio on credit"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "repaired_on_credit",
+              "add": true,
+              "reason": "kept a radio until the owner could pay"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那台收音机在柜台上落了三个月的灰，一拧开关还是响。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-radio.broadcast",
+      "title": "屋顶上的天线",
+      "domain": "media",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 68
+      },
+      "tags": [
+        "radio",
+        "broadcast",
+        "antenna",
+        "police",
+        "night",
+        "work",
+        "suspense"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "journeyman",
+          "owner": "person"
+        },
+        {
+          "kind": "hasFlag",
+          "flag": "radio_repairer"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 68
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 60
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "pirate-broadcast",
+          "weight": 0.35,
+          "text": "{neighbor}把{subject}拉上屋顶，指着一根用晾衣杆绑起来的天线，说自己每晚给码头工人播工会通知。{subject}帮他调准频率，听见自己的焊接点在风里嗡嗡响；下楼时，{neighbor}塞给{subject}一包烟和一句“别说见过我”。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "helped tune a rooftop broadcast"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 8,
+              "reason": "learned how far a rooftop antenna could reach"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a pack of cigarettes and a small fee"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.12,
+              "reason": "tuned the rooftop transmitter together"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the rooftop signal worked"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "pirate_radio",
+              "add": true,
+              "reason": "helped a pirate radio broadcast"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "晾衣杆天线能送到码头，{neighbor}每晚播工会通知。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "direction-finder",
+          "weight": 0.35,
+          "text": "{official}带着测向车在巷口转了三夜。{subject}把天线拆下来藏进烟囱，又在{neighbor}的门上画了一道粉笔线。第四天，警察带走了隔壁的钢琴调音师；{subject}没有去解释，只在修理簿上把那一页撕掉。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "lost the rooftop work"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "police record",
+              "add": true,
+              "reason": "was questioned about the rooftop antenna"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 8,
+                "charge": "屋顶天线"
+              },
+              "durationMonths": 12,
+              "reason": "the direction-finder vans came to the lane"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the neighbors saw the police vans"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the wrong neighbor was taken"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "questioned_about_radio",
+              "add": true,
+              "reason": "was questioned about the rooftop signal"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "测向车在巷口转了三夜，最后带走的是隔壁的钢琴调音师。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "stayed-legal",
+          "weight": 0.3,
+          "text": "{subject}没有上屋顶，只把{neighbor}的天线图折好，塞进《无线电年鉴》里。第二天，{subject}去给税务局修了一台官方收音机，顺手把音量调到最大；走廊里的人都听见了整点报时，没有人听见屋顶上的事。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "official radio repair fee"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "repaired the tax office radio"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "reason": "refused to join the rooftop broadcast"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "stayed_legal",
+              "add": true,
+              "reason": "kept the radio work legal"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "税务局那台收音机的声音开得很大，走廊里的人都听见了整点报时。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-porter.night",
+      "title": "夜班担架",
+      "domain": "health",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 62
+      },
+      "tags": [
+        "hospital",
+        "porter",
+        "night",
+        "illness",
+        "work",
+        "odd_job",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "chronic-illness",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "nurse",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 58
+        },
+        {
+          "key": "patient",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 82
+        },
+        {
+          "key": "daughter",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 55
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "fever-ward",
+          "weight": 0.4,
+          "text": "{subject}的咳嗽在夜里更响，但担架还是要抬。{nurse}让{subject}把口罩蘸湿，说这样能少吸一点石灰；两个人把{patient}从三层推到手术室，轮子在地砖上响得像一列小火车。天亮时，{subject}在楼梯间睡着了，手里还攥着病历夹。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "hospital:$subject-$eventId",
+                "name": "市立医院夜班担架队",
+                "kind": "other",
+                "treasury": 1,
+                "authorityRules": [
+                  "病人先于病历",
+                  "夜班双人抬担架",
+                  "电梯优先"
+                ]
+              },
+              "reason": "the hospital night stretcher team took on a porter"
+            },
+            {
+              "type": "position",
+              "organizationId": "hospital:$subject-$eventId",
+              "title": "夜班担架工",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "推送病人",
+                "保管担架",
+                "夜间传话"
+              ],
+              "reason": "the hospital's night stretcher post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "hospital:$subject-$eventId",
+              "add": true,
+              "reason": "joined the night stretcher team"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 30,
+                "strangeKnowledge": 25,
+                "reliability": 50,
+                "nightsWorked": 0,
+                "post": "医院夜班担架工"
+              },
+              "durationMonths": 30,
+              "reason": "began the hospital night shift"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the night shift worsened the cough"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "night porter wages"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$nurse",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "carried patients through the night together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hospital_porter",
+              "add": true,
+              "reason": "worked as a hospital night porter"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "夜班担架的轮子在地砖上响得像一列小火车，口罩蘸湿能少吸一点石灰。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "wrong-ward",
+          "weight": 0.35,
+          "text": "{subject}把{patient}推错了楼层。等发现时，手术室的灯已经为另一个人亮了；{nurse}没有骂，只让{subject}去把病历重新抄一遍。那天夜里，{subject}咳得弯下腰，仍听见病人家属在走廊尽头问“怎么还没轮到我”。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the cough worsened during the double shift"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "delivered a patient to the wrong ward"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "lost the shift bonus"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$nurse",
+              "kind": "colleague",
+              "trust": -0.1,
+              "reason": "the wrong-ward mistake delayed a surgery"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the family kept asking when it would be their turn"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 18,
+                "strangeKnowledge": 22,
+                "reliability": 35,
+                "nightsWorked": 0,
+                "post": "医院夜班担架工"
+              },
+              "durationMonths": 24,
+              "reason": "stayed on the night shift after the mistake"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hospital_porter",
+              "add": true,
+              "reason": "kept working as a hospital porter"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wrong_ward",
+              "add": true,
+              "reason": "delivered a patient to the wrong ward"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "三层的手术室和四层的手术室只差一层，但那晚的灯为另一个人亮了。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "carried-last-letter",
+          "weight": 0.25,
+          "text": "一个快不行的老人让{subject}把一封信送到城北的{daughter}手里。{subject}下夜班后坐了四站电车，找到那间公寓；{daughter}读完信，没有哭，只把一罐咖啡粉塞给{subject}。回程时，{subject}在电车最后一排睡着了，坐过了三站。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$daughter",
+              "kind": "acquaintance",
+              "trust": 0.12,
+              "reason": "delivered her dying father's letter"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a jar of coffee from the daughter"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the letter was read without tears"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the tram fare to the north of the city"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 36,
+                "strangeKnowledge": 20,
+                "reliability": 60,
+                "nightsWorked": 0,
+                "post": "医院夜班担架工"
+              },
+              "durationMonths": 30,
+              "reason": "earned trust by carrying a dying man's letter"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hospital_porter",
+              "add": true,
+              "reason": "worked as a hospital porter"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "carried_last_letter",
+              "add": true,
+              "reason": "carried a dying patient's last letter"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "老人给女儿的信只有一页，女儿读完没有哭，给我一罐咖啡粉。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-porter.files",
+      "title": "三层走廊的公文包",
+      "domain": "health",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 66
+      },
+      "tags": [
+        "hospital",
+        "porter",
+        "papers",
+        "police",
+        "work",
+        "odd_job",
+        "suspense"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "hasFlag",
+          "flag": "hospital_porter"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 66
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 68
+        },
+        {
+          "key": "nurse",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 58
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "returned-briefcase",
+          "weight": 0.35,
+          "text": "{official}出院时把一只公文包落在候诊椅上。{subject}追到门口，{official}接过包，先看拉链，再看{subject}的脸，然后从钱包里抽出一张钞票。{subject}收下了，因为那张钞票正好够买一个月的止咳糖浆。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "a reward for returning the briefcase"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "returned the official's briefcase"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": 5,
+              "reason": "handled the lost briefcase discreetly"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "returned_briefcase",
+              "add": true,
+              "reason": "returned a patient's briefcase"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "公文包的主人先检查拉链，再检查我的脸，然后才给钱。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "warned-the-nurse",
+          "weight": 0.4,
+          "text": "公文包没有扣好，{subject}看见里面是一叠裁员名单，护士站的人名被红笔圈了六个。{subject}把名单交给{nurse}，让他提前告诉被圈的人；第二天，名单上的名字少了一个，{subject}的排班表却多了三个夜班。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "warned the nurses about the dismissal list"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$nurse",
+              "kind": "friend",
+              "trust": 0.15,
+              "reason": "shared the dismissal list with the nurse"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "paid for the extra night shifts"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "one name was removed from the list"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "warned_nurse",
+              "add": true,
+              "reason": "warned a nurse about the dismissal list"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "裁员名单上圈了六个护士的名字，第二天少了一个。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "questioned-at-the-morgue-door",
+          "weight": 0.25,
+          "text": "两个便衣在停尸房门口拦住{subject}，问有没有见过一只棕色公文包。{subject}说夜班太忙，记不清；他们让{subject}在一张纸上按了手印。回到病房后，{subject}发现自己的储物柜被打开过，止咳糖浆的瓶子倒在里面。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 10,
+                "charge": "医院公文包"
+              },
+              "durationMonths": 12,
+              "reason": "the police questioned the porter about the briefcase"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the cough syrup was spilled"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "was seen with the police at the morgue door"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "someone had searched the locker"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "questioned_about_briefcase",
+              "add": true,
+              "reason": "was questioned about the brown briefcase"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "便衣让我在纸上按了手印，回病房时储物柜已经被打开过。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-lift.stuck",
+      "title": "停在四楼半的电梯",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 62
+      },
+      "tags": [
+        "lift",
+        "building",
+        "work",
+        "night",
+        "passenger",
+        "odd_job",
+        "suspense"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "passenger",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 68
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "hand-crank",
+          "weight": 0.4,
+          "text": "电梯停在四楼半，门缝里只看见一截电线。{subject}让{passenger}抓紧扶手，自己摇动手柄，一格一格把轿厢放下来。门开时，{passenger}的白大褂后背全湿了；他塞给{subject}两张钞票，说手术室里还有人等着。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "building:$subject-$eventId",
+                "name": "环城大道写字楼管理处",
+                "kind": "other",
+                "treasury": 1,
+                "authorityRules": [
+                  "电梯先载病人",
+                  "钥匙随身",
+                  "故障先报修"
+                ]
+              },
+              "reason": "the building management kept a lift operator"
+            },
+            {
+              "type": "position",
+              "organizationId": "building:$subject-$eventId",
+              "title": "电梯员",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "开电梯",
+                "保管钥匙",
+                "报修"
+              ],
+              "reason": "the building's lift operator post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "building:$subject-$eventId",
+              "add": true,
+              "reason": "joined the building staff"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 30,
+                "strangeKnowledge": 10,
+                "reliability": 60,
+                "nightsWorked": 0,
+                "post": "电梯员"
+              },
+              "durationMonths": 30,
+              "reason": "became the building lift operator"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the doctor's reward"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "brought the stuck lift down safely"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$passenger",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "was trusted with the stuck lift"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lift_operator",
+              "add": true,
+              "reason": "became a lift operator"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "电梯停在四楼半时，手动柄要一格一格放，不能一次松到底。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "heard-the-resignation",
+          "weight": 0.35,
+          "text": "电梯卡在两层之间时，{official}忽然说，自己口袋里有一封辞职信，还没有递出去。{subject}一边摇手柄，一边听他讲那间办公室里的账；门开以后，两个人谁也没有再提这件事，但{subject}记住了那个名字。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a quiet tip from the official"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "obligation": 0.05,
+              "reason": "heard the official's resignation secret"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "电梯卡住时，{official}说口袋里有一封没递出去的辞职信。",
+              "confidence": 0.85,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 5,
+              "reason": "learned how much people say in a stuck lift"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "heard_resignation",
+              "add": true,
+              "reason": "heard an official's resignation secret"
+            }
+          ]
+        },
+        {
+          "id": "blackout-lift",
+          "weight": 0.25,
+          "text": "停电来得毫无预兆，轿厢里只剩一盏应急蜡。{subject}用手动闸把轿厢停在最近的楼层，又用肩膀顶开门；乘客一个个跨出去，最后一个人回头说“你该去当消防员”。{subject}的胳膊酸了三天，管理处的维修单上却只写“正常”。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "forced the lift door open with a shoulder"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "got the passengers out during the blackout"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "blackout shift pay"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 35,
+                "strangeKnowledge": 15,
+                "reliability": 65,
+                "nightsWorked": 0,
+                "post": "电梯员"
+              },
+              "durationMonths": 30,
+              "reason": "handled the lift during the blackout"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lift_operator",
+              "add": true,
+              "reason": "worked as a lift operator"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "blackout_lift",
+              "add": true,
+              "reason": "got passengers out of a blacked-out lift"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "停电时轿厢里只剩一盏应急蜡，手动闸要停在最近的楼层。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-lift.night",
+      "title": "电梯只停第九层",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 66
+      },
+      "tags": [
+        "lift",
+        "building",
+        "night",
+        "secrecy",
+        "office",
+        "work",
+        "suspense"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "position",
+          "titleIncludes": "电梯"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 66
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 66
+        }
+      ],
+      "baseRate": 0.11,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "ninth-floor-errand",
+          "weight": 0.35,
+          "text": "{official}每天晚上九点进电梯，只说“九层”。那座楼没有九层的办公室，只有一扇钉死的防火门；{subject}把电梯停稳，等他敲三下门再开。月底，{official}把一只信封塞进电梯操作盘后面，里面是两张钞票。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "payment for the ninth-floor errand"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.08,
+              "reason": "kept the ninth-floor errand quiet"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "九层没有办公室，只有一扇钉死的防火门，{official}每晚九点上去敲三下。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "trust",
+              "delta": 5,
+              "reason": "kept the official's routine secret"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the ninth-floor errand felt wrong"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ninth_floor_errand",
+              "add": true,
+              "reason": "ran the official's ninth-floor errand"
+            }
+          ]
+        },
+        {
+          "id": "refused-ninth-floor",
+          "weight": 0.35,
+          "text": "{subject}说九层的按钮坏了，只能停在八层。{official}看了{subject}一眼，自己爬楼梯上去；第二天，管理处把{subject}的班次调到了地下室的货梯。{neighbor}在楼梯间悄悄说，上一个不肯去九层的电梯员，三个月后就辞职了。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "refused the ninth-floor errand"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "was seen refusing the sealed floor"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "reliability",
+              "delta": 5,
+              "reason": "kept to the building's stated floors"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "was moved to the freight lift"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "九层的按钮没有坏，但上一个肯去九层的电梯员三个月后辞职了。",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_ninth_floor",
+              "add": true,
+              "reason": "refused to stop at the ninth floor"
+            }
+          ]
+        },
+        {
+          "id": "sealed-floor",
+          "weight": 0.3,
+          "text": "{neighbor}告诉{subject}，九层从一九三四年起就封了，里面堆着被撤掉的人留下的档案。{subject}有一天趁没人，用万能钥匙打开防火门，看见一地纸箱和一只没喝完的茶杯；回来时，电梯停在了九层，门怎么也关不上。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "key": "strangeKnowledge",
+              "delta": 10,
+              "reason": "saw the sealed ninth floor"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "九层从一九三四年起封了，里面堆着被撤掉的人留下的纸箱和一只茶杯。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the lift would not close on the ninth floor"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "sleepless",
+              "add": true,
+              "reason": "the sealed floor stayed in the mind"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "told the lift operator about the sealed floor"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sealed_floor",
+              "add": true,
+              "reason": "opened the sealed ninth floor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-photo.blacklist",
+      "title": "不许拍的脸",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 64
+      },
+      "tags": [
+        "photography",
+        "street",
+        "blacklist",
+        "press",
+        "work",
+        "odd_job",
+        "everyday"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "blacklisted",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 64
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 68
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 62
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "street-corner-portraits",
+          "weight": 0.4,
+          "text": "{subject}在玛丽亚希尔费街角支起三脚架，布景是一块画着棕榈树的白布。{worker}想给老家的母亲寄一张像样的照片，{subject}让他把工装领子翻好，又用梳子蘸水压平他的头发。照片洗出来，{worker}的耳朵还是红的，但他说这样才像自己。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "photo:$subject-$eventId",
+                "name": "街角照相摊",
+                "kind": "household_firm",
+                "treasury": 1,
+                "authorityRules": [
+                  "先付钱后拍照",
+                  "底片保管七天",
+                  "不拍警车"
+                ]
+              },
+              "reason": "the blacklisted photographer opened a street stall"
+            },
+            {
+              "type": "position",
+              "organizationId": "photo:$subject-$eventId",
+              "title": "街头摄影师",
+              "holderId": "$subject",
+              "wage": 1,
+              "authority": [
+                "拍照",
+                "冲洗",
+                "定价"
+              ],
+              "reason": "the street photographer's stall"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "photo:$subject-$eventId",
+              "add": true,
+              "reason": "ran the street photography stall"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 25,
+                "strangeKnowledge": 10,
+                "reliability": 50,
+                "nightsWorked": 0,
+                "post": "街头摄影师"
+              },
+              "durationMonths": 30,
+              "reason": "started a street photography apprenticeship"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "portrait fees"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "learned to pose a worker for a family portrait"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "made a portrait for the worker's mother"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "street_photographer",
+              "add": true,
+              "reason": "became a street photographer"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "工人把领子翻好，耳朵还是红的，但他说这样才像自己。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "destroyed-negative",
+          "weight": 0.35,
+          "text": "{official}把一张照片放在{subject}的摊子上：画面里是罢工工人被拖上警车，{subject}的倒影在玻璃橱窗里。{official}说只要交出底片，黑名单的事可以不再提；{subject}把底片抽出来，当着他的面曝光在太阳底下。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "destroyed the negative rather than hand it over"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "refused the official's deal"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "lost the press work"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the negative was exposed in daylight"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 28,
+                "strangeKnowledge": 12,
+                "reliability": 55,
+                "nightsWorked": 0,
+                "post": "街头摄影师"
+              },
+              "durationMonths": 30,
+              "reason": "kept working as a street photographer after refusing the deal"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "street_photographer",
+              "add": true,
+              "reason": "worked as a street photographer"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "destroyed_negative",
+              "add": true,
+              "reason": "destroyed a protest negative in front of an official"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "照片里是罢工工人被拖上警车，橱窗玻璃上有我的倒影。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "press-card-refused",
+          "weight": 0.25,
+          "text": "报社的摄影部把{subject}的证件退了回来，信封上盖着“暂不录用”。{subject}把证件剪成两半，改在普拉特门口给游客拍骑马照；一个下午下来，赚的钱比在报社一天还多，只是再也没有人叫他“记者”。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "Prater tourist photographs"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the press card was refused"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-odd-apprenticeship",
+              "parameters": {
+                "trust": 20,
+                "strangeKnowledge": 15,
+                "reliability": 45,
+                "nightsWorked": 0,
+                "post": "街头摄影师"
+              },
+              "durationMonths": 24,
+              "reason": "kept working as a street photographer after the refusal"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "street_photographer",
+              "add": true,
+              "reason": "worked at the Prater as a street photographer"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "press_card_refused",
+              "add": true,
+              "reason": "was refused a press card"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "报社的信封上盖着“暂不录用”，普拉特的游客照却比报社一天赚得多。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oj18-photo.legend",
+      "title": "照片里多了一个人",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 68
+      },
+      "tags": [
+        "photography",
+        "legend",
+        "dead",
+        "grief",
+        "work",
+        "odd_job",
+        "eerie"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
+        },
+        {
+          "kind": "hasFlag",
+          "flag": "street_photographer"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 68
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 72
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "extra-face",
+          "weight": 0.35,
+          "text": "{subject}给一家人拍合影，洗出来却发现后排多了一个穿旧式校服的男孩。底片上看不见他，只有相纸上有一团灰。{subject}把照片挂在摊子前，第二天就有人从三条街外赶来，问能不能也拍出“多一个人”的相片。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "legend",
+              "delta": 10,
+              "reason": "the extra face drew a crowd"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "truth",
+              "delta": -5,
+              "reason": "the story of the extra face grew"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "portrait fees from the curious"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the extra-face photograph became known"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the grey shape on the print would not explain itself"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "extra_face",
+              "add": true,
+              "reason": "printed a photograph with an extra face"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "底片上没有那个男孩，相纸上却有一团灰，像一件旧式校服。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "grieving-mother",
+          "weight": 0.4,
+          "text": "{neighbor}在照片里认出了自己死去的儿子，手指抖得按不住相纸。{subject}把底片找出来，放大了三倍，又陪她坐到天黑。{neighbor}临走时要付钱，{subject}没有收，只把那张照片装进硬纸套，用胶水封好。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "legend",
+              "delta": 5,
+              "reason": "the grieving mother's photograph became a story"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "truth",
+              "delta": 10,
+              "reason": "the mother recognized her son"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.15,
+              "reason": "gave the grieving mother the print"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the mother sat until dark"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the print and the hard-paper sleeve were given away"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "grieving_mother_print",
+              "add": true,
+              "reason": "gave a grieving mother the photograph"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那位母亲在照片里认出了死去的儿子，我把放大的一张封进硬纸套送给她。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "cracked-plate-miracle",
+          "weight": 0.25,
+          "text": "一块玻璃底片在冲洗前裂成两半，{subject}却把裂纹印成了一道闪电。故事传开后，有人说那是显灵，也有人说那是骗术；{subject}把照片标价五克朗，卖出三张，其中一张被一个戴黑帽的人当场撕了。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "sold three cracked-plate photographs"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "some called the cracked plate a fraud"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "legend",
+              "delta": 8,
+              "reason": "the cracked-plate miracle spread"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "oj18-workplace-legend",
+              "key": "truth",
+              "delta": -8,
+              "reason": "the crack was sold as a sign"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cracked_plate_miracle",
+              "add": true,
+              "reason": "sold a cracked negative as a miracle photograph"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "玻璃底片的裂纹印成了一道闪电，三张照片卖出五克朗，一张被人当场撕掉。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

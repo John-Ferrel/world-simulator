@@ -229,3 +229,18 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - **测试/DB**：89 files / 526 pass / 37 skip；typecheck/build；15 packs validate；PG state/macro 2 passed；e2e 1 passed；test DB beforeAll archive 残留 running world。
 - **未完成**：new→new 组合、签名状态可达性、家庭/伴侣/生育连续性、历史日期/组织类型、horizon、稳定批量 Content Factory、20k 新内容 profile；不是所有状态都在自然人生中出现。
 - 交付：`docs/v4/phase-17-content-architecture.md`、`phase-17-research.md`、`phase-17-content-coverage.md`、`phase-17-report.md`、`phase-17-critique.md`、`phase-17-content-factory.json`。
+
+## Phase 18 执行状态（2026-11-07）
+
+- **目标**：Content Expansion Phase；不重写 Engine，不增加平行 Director；扩大故事空间并建立创作检索。
+- **Creative Index**：`scripts/v4-creative-index.ts`；中文 bigram/trigram + Latin word TF-IDF；支持 `--query` / `--kernel` / `--gaps` / `--duplicates` / `--pack`；输出 `docs/v4/creative-index.json` / `.md`。阈值校准到 0.20；Latin 词边界；tone 从作者 tags 而非全 prose 提取。
+- **内容规模**：79 / 1,740 / 15 → **99 states / 1,973 kernels / 25 packs**；10 个新 Pack、233 Kernel、710 Outcome、20 State。
+- **新 Pack**：infant-wonder、youth-fire、elder-memory、odd-jobs、black-comedy、dark-fantasy、history-street、love-desire、small-mysteries、money-luck。
+- **阶段**：infancy 2→4、childhood 63→82、adolescence 143→165、elderhood 21→53；非成年新增占 32.2%。Stage effective number 1.66→1.81；tone effective number 7.25→8.28。
+- **验证**：25 packs 全部 validate；`tests/v4-phase18-content.test.ts` 覆盖 10 Pack 注册、规模、State creation/consumer、Outcome、compile；Creative Index 测试通过。全库 `pnpm test` 91 files / 533 pass / 37 skip；typecheck/build 通过。
+- **自然人生**：A/B/C 3×45 年，60,074 events / 5,067 focal events；新 Pack 9.65% 世界事件、8.37% focal（Phase 17 3.1%）；20/20 新 State 至少出现一次；185/232 新 Kernel 触发；repeatRate ~0.220。
+- **修订**：A/B 中 `em18-family-archive` 缺席；新增 `em18-setup.cellar-box`（45–70 岁，无外部 State）后 D seed 20/20 State，archive 1 add / 9 ticks / 6 reactions。
+- **测试修复**：全库测试发现并修复重复标题 `楼梯间的第三个人`（small-mysteries 改名 `地下室的灯还亮着`）与 `{link:beloved}` / `{link:other}` 未解析 token；修复后 target tests 通过。
+- **独立 Critic**：Life 17/30（Phase 17 16/30）、Scene 22/30；结构重复三组（官僚幽灵/奇职秘密测试/横财抽成）；focal 层面仅 113/232 Kernel 到达。
+- **未达标**：focal share 8.37% < 12%；repeatRate 0.220 > 0.1965 + 0.01；47 个 Kernel 零触发；archive 仍稀有。不能声称生活质量问题已解决。
+- 交付：`docs/v4/phase-18-content-design.md`、`phase-18-content-diversity.md`、`phase-18-report.md`、`phase-18-critique.md`、`docs/decisions/ADR-018-creative-index-and-content-production.md`。

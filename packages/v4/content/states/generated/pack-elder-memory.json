@@ -1,0 +1,5959 @@
+{
+  "id": "pack-elder-memory",
+  "version": 1,
+  "title": "晚年记忆：迟开的花、旧纸箱与未寄出的信",
+  "description": "把六十岁以后的第二次开始、迟来的亲密、身体的否决、成年子女的反对，以及一个家庭积攒几十年的信件、地契、洗礼证和照片，做成两种可持续、可消费的处境。它补强老年阶段，让 lc17-empty-nest、chronic-illness、fame、office-patronage、family-estate、grief 与 wc17-master-craftsperson 在同一段晚年里继续起作用。",
+  "author": "phase18-content-author/elder-memory",
+  "model": "deepseek-v4.1-flash-subagent",
+  "sourceBriefId": "phase18-elder-memory",
+  "rationale": "Phase 18 的目录里 elderhood 只有 21 个 kernel，晚年故事多半停在养老金、取暖和丧亲。这个包不复制 widowhood、care-sick-parent、remarriage 或 late-recognition：迟开的花写的是六十岁后重新安排住处、身体、名声和成年子女的关系；家里的旧纸箱写的是文件如何影响养老金、房产、身世叙述和遗产分割。Creative Index 的三个查询（晚年爱情、继承与记忆、老年秘密）最近邻都是养老院、未寄出的信和照相馆底片；本包把冲突移到同居与继承、文件与公证、公开朗读与家族谎话上，避免同名换皮的浪漫重逢。",
+  "themes": [
+    "elderhood",
+    "memory",
+    "late_love",
+    "legacy",
+    "inheritance",
+    "family",
+    "reinvention"
+  ],
+  "era": "1912–1955",
+  "tone": [
+    "melancholy",
+    "warm",
+    "comic"
+  ],
+  "scope": [
+    "person",
+    "household"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "death",
+    "estrangement",
+    "family conflict",
+    "illness",
+    "inheritance dispute",
+    "ageism"
+  ],
+  "states": [
+    {
+      "id": "em18-late-bloom",
+      "version": 1,
+      "packId": "pack-elder-memory",
+      "title": "迟开的花",
+      "description": "六十岁以后重新开始的一件事：一段不被成年子女看好的亲密关系、一间迟开的小店、一次公开表演或一门新手艺。它带来活气，也把体力、住处、养老金、名声和家人的耐心一起摆上桌面。",
+      "owner": "person",
+      "slot": "late_life",
+      "conflict": "replace",
+      "tags": [
+        "elderhood",
+        "late_life",
+        "reinvention",
+        "love",
+        "work",
+        "legacy",
+        "risk"
+      ],
+      "parameters": {
+        "nerve": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        "stamina": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "tether": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        },
+        "publicness": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 60,
+          "max": 95
+        }
+      ],
+      "durationMonths": {
+        "min": 12,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "elderhood",
+            "late_life",
+            "courtship",
+            "craft",
+            "performance",
+            "legacy",
+            "memory"
+          ],
+          "multiplier": 1.45
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "factory",
+            "commute"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "late_life",
+            "courtship",
+            "performance"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "late-life-year",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "takes-root",
+              "weight": 2,
+              "text": "又一年过去，{subject}把新生活的开销记在一本旧账簿背面：房租、药、车票，还有一件为公开场合买的衬衫。事情没有变轻，但{subject}已经知道每周哪几天有力气，哪几天只适合坐在窗边。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "em18-late-bloom",
+                  "key": "nerve",
+                  "delta": 4,
+                  "reason": "another year of the new life"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "em18-late-bloom",
+                  "key": "stamina",
+                  "delta": -3,
+                  "reason": "the body paid for the new routine"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "em18-late-bloom",
+                  "key": "tether",
+                  "delta": -2,
+                  "reason": "the household grew used to the new routine"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "small receipts from the new work"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "the new life has a weekly shape"
+                }
+              ]
+            },
+            {
+              "id": "body-interrupts",
+              "weight": 1,
+              "text": "入冬后，{subject}在楼梯上停了三次。医生把“减少劳累”写在纸条上，{subject}把它折好，放进装车票的口袋；第二天仍去开门，只是把营业时间改短了一小时。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "em18-late-bloom",
+                  "key": "stamina",
+                  "delta": -8,
+                  "reason": "winter stairs and shortened hours"
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "the body is interrupting the new life"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "em18-late-bloom",
+                  "key": "tether",
+                  "delta": 5,
+                  "reason": "the household asked for shorter hours"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "the doctor's note in the ticket pocket"
+                }
+              ]
+            },
+            {
+              "id": "family-pressure",
+              "weight": 1,
+              "text": "成年子女来了一趟，把账本翻到最后一页，说这年纪不该再折腾。{subject}没有争，只把钥匙从桌上收进围裙口袋；那天晚上，新生活仍按原计划继续，只是没有再提。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "em18-late-bloom",
+                  "key": "tether",
+                  "delta": 8,
+                  "reason": "adult children questioned the new life"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "em18-late-bloom",
+                  "key": "nerve",
+                  "delta": -4,
+                  "reason": "the argument was left unfinished"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "the keys went into the apron pocket"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "public-eyes",
+          "onTags": [
+            "public",
+            "performance",
+            "scandal"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "publicness",
+              "delta": 6,
+              "reason": "the new life was seen by strangers"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a name in the social column"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the curtain was pulled shut and opened again"
+            }
+          ],
+          "text": "有人在报纸的社交栏里看见{subject}的名字，连旧住址都写对了。第二天，杂货店老板多问了一句，{subject}笑着把话岔开；回家后，{subject}把窗帘拉上，又打开。",
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        },
+        {
+          "id": "a-death-in-the-household",
+          "onTags": [
+            "death"
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "tether",
+              "delta": 10,
+              "reason": "a death pulled the household back"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "stamina",
+              "delta": -4,
+              "reason": "the funeral and the empty room"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the new life had to wait"
+            }
+          ],
+          "text": "家里少了一个人以后，{subject}把新生活里最花钱的那一项划掉了。不是因为不想，而是因为账单、葬礼和空出来的房间都需要有人管；{subject}把划掉的那一行又抄到另一张纸上。",
+          "cooldownMonths": 60,
+          "maxPerYear": 1
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-late-bloom",
+          "parameter": "stamina",
+          "max": 5
+        },
+        {
+          "kind": "age",
+          "min": 95
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "late_bloom_active",
+          "add": true,
+          "reason": "a new life began after sixty"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "late_bloom_active",
+          "add": false,
+          "reason": "the late bloom ended or changed shape"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/elder-memory",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase18-elder-memory"
+        ],
+        "rationale": "Late-life reinvention needs a persistent trade-off among nerve, stamina, family tether and public visibility. The state can cover a late courtship, a small shop, a performance or a craft, but always consumes the same limited body and the same household claims."
+      }
+    },
+    {
+      "id": "em18-family-archive",
+      "version": 1,
+      "packId": "pack-elder-memory",
+      "title": "家里的旧纸箱",
+      "description": "一个家庭积攒下来的信件、照片、地契、洗礼证、欠条和没寄出的明信片。它们既是记忆，也是办养老金、分房产、证明身份和拆穿家族谎话时要用的纸。谁保管、谁先看、谁有权烧掉，会改变以后每一次继承和团聚。",
+      "owner": "household",
+      "slot": "memory",
+      "conflict": "replace",
+      "tags": [
+        "elderhood",
+        "family",
+        "archive",
+        "memory",
+        "inheritance",
+        "documents",
+        "secret"
+      ],
+      "parameters": {
+        "order": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "secrets": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        },
+        "quarrel": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "access": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 35,
+          "max": 100
+        }
+      ],
+      "durationMonths": {
+        "min": 24,
+        "max": 240
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "family",
+            "archive",
+            "memory",
+            "inheritance",
+            "documents",
+            "elderhood"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "courtship",
+            "travel"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "archive",
+            "inheritance",
+            "documents"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "archive-year",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "a-box-gets-opened",
+              "weight": 2,
+              "text": "又一年过去，{subject}从柜顶取下一只纸箱，里面的信封按年份捆着，绳子一碰就碎。{subject}把出生证、地契和一张没寄出的明信片分开，桌上多出三小堆纸；最小的那一堆，{subject}没有让别人看。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "em18-family-archive",
+                  "key": "order",
+                  "delta": 4,
+                  "reason": "another box was sorted by year"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "em18-family-archive",
+                  "key": "secrets",
+                  "delta": 3,
+                  "reason": "a postcard was found in the box"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "the papers have a shape again"
+                },
+                {
+                  "type": "knowledge",
+                  "holderId": "$subject",
+                  "proposition": "家里的纸箱里有一张没有寄出的明信片。",
+                  "confidence": 0.8,
+                  "sourceKind": "document",
+                  "visibility": "private",
+                  "trueInWorld": true
+                }
+              ]
+            },
+            {
+              "id": "damp-and-mice",
+              "weight": 1,
+              "text": "雨季过后，箱底的文件粘在一起，边角被老鼠咬掉。{subject}用熨斗隔着布把纸烘干，字迹还是淡了一半；一张能证明工龄的收据，从此只剩下半个印章。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "em18-family-archive",
+                  "key": "order",
+                  "delta": -4,
+                  "reason": "damp and mice destroyed part of the archive"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "em18-family-archive",
+                  "key": "quarrel",
+                  "delta": 2,
+                  "reason": "a work record was lost"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "new paper and a visit to the notary"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "the half stamp on the receipt"
+                }
+              ]
+            },
+            {
+              "id": "a-relative-asks",
+              "weight": 1,
+              "text": "一个亲戚来借住，顺手问起那只箱子。{subject}说钥匙不在手边；对方走后，{subject}把箱子从柜顶搬到床下，又觉得床下太潮。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "em18-family-archive",
+                  "key": "access",
+                  "delta": -4,
+                  "reason": "the key was kept out of a relative's reach"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "em18-family-archive",
+                  "key": "quarrel",
+                  "delta": 5,
+                  "reason": "the relative kept asking about the box"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "the box was moved twice in one evening"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "death-in-the-family",
+          "onTags": [
+            "death"
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "secrets",
+              "delta": 5,
+              "reason": "a death brought the papers back to the table"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "quarrel",
+              "delta": 8,
+              "reason": "relatives asked about the deeds and the photographs"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": -3,
+              "reason": "the box was searched before it was sorted"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "archive_opened_after_death",
+              "add": true,
+              "reason": "the archive was opened after a funeral"
+            }
+          ],
+          "text": "葬礼结束，亲戚们回到屋里，有人问起地契，有人问起那张全家福。{subject}把箱子搬到桌上，却没有立刻开锁；屋里安静得能听见纸在箱子里滑动。",
+          "cooldownMonths": 36,
+          "maxPerYear": 1
+        },
+        {
+          "id": "inheritance-claim",
+          "onTags": [
+            "inheritance"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "quarrel",
+              "delta": 8,
+              "reason": "an inheritance claim mentioned the archive"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": -5,
+              "reason": "the key was withheld during the dispute"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "遗产清单上有一张已经泛黄的收据，后来不见了。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "text": "律师念到“旧信件与照片归……”时停了一下，因为清单上没有写清楚。{subject}回家后把箱子重新翻了一遍，发现少了一张已经泛黄的收据；没有人承认拿过。",
+          "cooldownMonths": 36,
+          "maxPerYear": 1
+        }
+      ],
+      "exitWhen": null,
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "family_archive_active",
+          "add": true,
+          "reason": "the family papers became an active household matter"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "family_archive_active",
+          "add": false,
+          "reason": "the archive was settled or handed over"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/elder-memory",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase18-elder-memory"
+        ],
+        "rationale": "Family memory is not a mood; it is a household cache of documents with order, secrets, access and quarrels. The same box can prove a pension claim, reopen an inheritance dispute, supply a granddaughter's question, or be donated to an archive."
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "em18-setup.deferred-dream",
+      "title": "抽屉里的报名表",
+      "domain": "identity",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 44,
+        "max": 58
+      },
+      "tags": [
+        "adulthood",
+        "late_life",
+        "dream",
+        "family",
+        "savings",
+        "work"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 44,
+          "maxAge": 58
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "keeps-the-form",
+          "weight": 0.4,
+          "text": "夜校的招生单夹在旧账簿里，纸张已经发黄。{subject}在厨房桌上把它抚平，算了一遍学费和孩子的鞋钱，最后把单子折成四折，放进钱包最里层；那天夜里，{subject}没有告诉{partner}。",
+          "significance": 0.62,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "deferred_dream_kept",
+              "add": true,
+              "reason": "the old application was kept in a wallet"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the first crown set aside for the course"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the form was smoothed flat"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": -0.02,
+              "reason": "the application was kept secret"
+            }
+          ]
+        },
+        {
+          "id": "uses-it-for-the-rent",
+          "weight": 0.3,
+          "text": "房东来收租时，{subject}把招生单从钱包里抽出来，垫在缺角的桌脚下。桌子稳了，单子上的字却被压得看不清；{partner}问那是什么，{subject}说是一张旧收据。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "deferred_dream_shelved",
+              "add": true,
+              "reason": "the form became a table shim"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the rent was paid before the course"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the old receipt answer"
+            }
+          ]
+        },
+        {
+          "id": "shows-the-partner",
+          "weight": 0.3,
+          "text": "{subject}把招生单推到{partner}面前，说想去学一门手艺。{partner}先问学费，再问家里的晚饭谁来管；两个人算到灯芯烧短，最后在单子背面写下每月能省下的数目，字迹一个深一个浅。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "deferred_dream_shared",
+              "add": true,
+              "reason": "the old dream was shown to the partner"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.08,
+              "reason": "the household budget was discussed honestly"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a first payment on the course"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the figures were written on the back of the form"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "家里每月能省下一小笔钱，但晚饭和学费必须一起算。",
+              "confidence": 0.8,
+              "sourceKind": "inferred",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-setup.funeral-bill",
+      "title": "葬礼后的账单",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 45,
+        "max": 59
+      },
+      "tags": [
+        "adulthood",
+        "death",
+        "inheritance",
+        "family",
+        "archive",
+        "debt"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 59
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 65
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "papers-in-the-iron-box",
+          "weight": 0.4,
+          "text": "父亲的葬礼花了三克朗，办事员把账单和一只铁盒一起递过来。盒里有洗礼证、房租收据和一张一九〇八年的储蓄存单；{sibling}说先别翻，{official}却已经把清单念到第二页。{subject}把盒子抱回家，放在衣柜最上层。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "parameters": {
+                "order": 15,
+                "secrets": 35,
+                "quarrel": 20,
+                "access": 45
+              },
+              "durationMonths": 120,
+              "reason": "the father's papers came home in an iron box"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the undertaker's bill"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.05,
+              "reason": "the siblings carried the box home together"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "铁盒里有洗礼证、房租收据和一张一九〇八年的储蓄存单。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "family_archive_received",
+              "add": true,
+              "reason": "the family archive arrived after a funeral"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-clock",
+          "weight": 0.3,
+          "text": "丧事办完，{subject}把客厅的座钟卖给旧货商，换来的钱刚好付清棺材铺的尾款。{sibling}把父亲的信件装进面粉袋带走，说等有空再分；{subject}没有争，只把袋口系紧，记下了里面有几捆。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "parameters": {
+                "order": 5,
+                "secrets": 25,
+                "quarrel": 35,
+                "access": 30
+              },
+              "durationMonths": 120,
+              "reason": "the father's letters were divided after the funeral"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the clock was sold to pay the undertaker"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.05,
+              "reason": "the sibling took the letters without sorting them"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the clock and the letters left together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "archive_split_after_funeral",
+              "add": true,
+              "reason": "the papers were split into a flour sack"
+            }
+          ]
+        },
+        {
+          "id": "sibling-takes-the-box",
+          "weight": 0.3,
+          "text": "{sibling}把铁盒抱走，说长子的家才是东西该放的地方。{subject}只留下父亲的旧钱包和一张全家福；半年后，{subject}去串门，发现盒子被塞在煤堆旁边，锁已经锈住。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "parameters": {
+                "order": 10,
+                "secrets": 30,
+                "quarrel": 45,
+                "access": 15
+              },
+              "durationMonths": 120,
+              "reason": "the archive stayed with the sibling's household"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.1,
+              "reason": "the box was left beside the coal pile"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the rusted lock on the family box"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "父亲的铁盒被兄弟姐妹放在煤堆旁边，锁已经锈住。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "archive_in_sibling_house",
+              "add": true,
+              "reason": "the archive was kept in the sibling's house"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 2,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-setup.estranged-child",
+      "title": "饭桌上的空椅子",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 42,
+        "max": 56
+      },
+      "tags": [
+        "adulthood",
+        "family",
+        "estrangement",
+        "child",
+        "quarrel",
+        "inheritance"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 42,
+          "maxAge": 56
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 32
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 58
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-child-leaves",
+          "weight": 0.4,
+          "text": "饭桌上只有一把空椅子。{child}说要搬到城另一头，和一个人合住；{subject}问了一句对方家里做什么，{child}把汤匙放下，说“你从来没问过我想要什么”。门关得很轻，楼道的灯却亮了很久。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "the child left after a quarrel about the move"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "estranged_child",
+              "add": true,
+              "reason": "the child moved out and stopped visiting"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the empty chair at the table"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a sleepless night after the quarrel"
+            }
+          ]
+        },
+        {
+          "id": "a-cooler-house",
+          "weight": 0.3,
+          "text": "{child}没有搬走，但把晚饭端回自己房间吃。{subject}在厨房里多摆了一副碗筷，第二天又收起来；两个人共用一个煤炉，却像隔着一条街。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.12,
+              "affection": -0.08,
+              "reason": "the quarrel cooled without being settled"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "estranged_child",
+              "add": true,
+              "reason": "the child stayed but stopped eating with the family"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the extra bowl was put away again"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the cold meals and the silence"
+            }
+          ]
+        },
+        {
+          "id": "the-partner-intervenes",
+          "weight": 0.3,
+          "text": "{partner}把两个人按在桌边，说先把话说清楚再谈搬不搬。{child}说到一半哭了，{subject}才发现自己一直攥着桌布；那天没有人搬走，但门没有再锁死。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "reason": "the quarrel was talked through at the table"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.05,
+              "reason": "the partner forced a conversation"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "estrangement_patched",
+              "add": true,
+              "reason": "the family talked instead of separating"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the door was left unlocked"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 2,
+      "cooldownYears": 15
+    },
+    {
+      "id": "em18-setup.closed-workshop",
+      "title": "关掉的作坊",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 45,
+        "max": 59
+      },
+      "tags": [
+        "adulthood",
+        "craft",
+        "work",
+        "closing",
+        "tools",
+        "late_life"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 59
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 50
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "keeps-the-tools",
+          "weight": 0.4,
+          "text": "作坊关门那天，{employer}让每个人挑一件带不走的东西。{subject}要了那台用惯的脚踏车床，又花两克朗买下几把刀具；{worker}帮着把机器搬进院子，问这年头谁还需要这样的手艺。{subject}说，先放着。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the lathe and a set of tools"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "the old tools were kept in working order"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_tools",
+              "add": true,
+              "reason": "the workshop tools were carried home"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.05,
+              "reason": "the worker helped move the lathe"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the tools were still usable"
+            }
+          ]
+        },
+        {
+          "id": "sells-the-tools",
+          "weight": 0.3,
+          "text": "旧货商来院子里看货，把车床摸了一遍，开出三克朗。{subject}把工具一件件递出去，最后留下的只有一把小锉刀；{employer}站在门口抽烟，什么也没说。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "the second-hand dealer bought the tools"
+            },
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "the workshop closed and the tools were sold"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_tools",
+              "add": true,
+              "reason": "the workshop tools were sold"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "only a small file was left"
+            }
+          ]
+        },
+        {
+          "id": "takes-the-ledger",
+          "weight": 0.3,
+          "text": "{subject}把作坊的客户簿带回家，上面记着谁欠几把椅子、谁家的门框要修。{employer}说这东西现在没用，{subject}还是用布包好；晚上，{subject}在最后一页添上自己的地址，字写得比平时慢。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_ledger",
+              "add": true,
+              "reason": "the workshop ledger was kept"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "作坊的客户簿上记着几笔还没做完的活。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "the employer let the ledger go"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "copying the old accounts"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the last page had a new address"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 2,
+      "cooldownYears": 15
+    },
+    {
+      "id": "em18-late-bloom.first-dance",
+      "title": "散场后的围巾",
+      "domain": "social",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 78
+      },
+      "tags": [
+        "elderhood",
+        "late_life",
+        "love",
+        "courtship",
+        "dance",
+        "memory",
+        "empty_nest"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc17-empty-nest",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 78
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 58,
+          "maxAge": 80
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "a-second-wardrobe",
+          "weight": 0.35,
+          "text": "成年子女搬走后的第三年，{subject}在社区舞会上和{neighbor}跳了一支慢舞。乐队奏的是十年前的电车广告歌，{neighbor}记得每一句；散场时，{subject}把大衣扣子扣错了一颗，回家才发现。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 55,
+                "stamina": 50,
+                "tether": 35,
+                "publicness": 25
+              },
+              "durationMonths": 60,
+              "reason": "a dance led to a new attachment"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.12,
+              "affection": 0.1,
+              "reason": "the third dance at the community hall"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the coat button was in the wrong hole"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a new shirt for the dance"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "late_love_started",
+              "add": true,
+              "reason": "a late attachment began at a dance"
+            }
+          ]
+        },
+        {
+          "id": "dance-and-go-home",
+          "weight": 0.35,
+          "text": "舞会结束后，{subject}和{neighbor}在电车站分开。两个人都没有提下次，但{neighbor}把围巾借给了{subject}；{subject}回家后把围巾叠好，放在成年子女留下的空房间里，没有告诉{child}。",
+          "significance": 0.64,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 35,
+                "stamina": 45,
+                "tether": 60,
+                "publicness": 10
+              },
+              "durationMonths": 60,
+              "reason": "a quiet late attachment began"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "affection": 0.06,
+              "reason": "the scarf was lent at the tram stop"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the scarf was folded in the empty room"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "late_love_quiet",
+              "add": true,
+              "reason": "the attachment was kept quiet"
+            }
+          ]
+        },
+        {
+          "id": "the-child-sees-them",
+          "weight": 0.3,
+          "text": "{child}来送药，正好看见{subject}和{neighbor}在咖啡馆靠窗的位置。那天晚上，{child}把药放在桌上，说“这个年纪别让人看笑话”；{subject}把围巾从椅背上拿下来，第一次没有解释。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 30,
+                "stamina": 45,
+                "tether": 65,
+                "publicness": 20
+              },
+              "durationMonths": 60,
+              "reason": "the adult child discovered the attachment"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.08,
+              "reason": "the child called the attachment a joke"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the scarf was taken off the chair"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "late_love_discovered",
+              "add": true,
+              "reason": "the adult child saw the couple in the cafe"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 8
+    },
+    {
+      "id": "em18-late-bloom.shop-sign",
+      "title": "挂上去的旧招牌",
+      "domain": "work",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 75
+      },
+      "tags": [
+        "elderhood",
+        "late_life",
+        "shop",
+        "craft",
+        "work",
+        "reinvention",
+        "neighborhood"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 75
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 40
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "a-repair-bench",
+          "weight": 0.3,
+          "text": "修鞋铺隔壁的小门面空了出来，{subject}用两克朗付了押金，把旧车床搬进去。招牌是请街角的老漆匠写的，只写了“修理”两个字；第一天来了三个人，一个修伞，一个修锁，还有一个只是进来躲雨。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 55,
+                "stamina": 55,
+                "tether": 30,
+                "publicness": 20
+              },
+              "durationMonths": 60,
+              "reason": "a small repair shop opened after sixty"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the deposit on the narrow shop"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "the lathe was set up again"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the hand-painted repair sign"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shop_opened",
+              "add": true,
+              "reason": "the repair shop opened"
+            }
+          ]
+        },
+        {
+          "id": "the-cooperative-shop",
+          "weight": 0.25,
+          "text": "{worker}提议合租门面：{subject}修旧家具，{worker}修钟表，房租对半。{subject}把工具摆到靠窗的一边，又在墙上钉了一排钩子；{worker}说这样像从前师傅的作坊，{subject}说先别急着像。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 45,
+                "stamina": 50,
+                "tether": 45,
+                "publicness": 30
+              },
+              "durationMonths": 60,
+              "reason": "a shared shop opened with a younger craftsperson"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "half of the first month's rent"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "the shop was shared"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shop_shared",
+              "add": true,
+              "reason": "the shop was shared with a younger worker"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the tools were arranged by the window"
+            }
+          ]
+        },
+        {
+          "id": "the-lease-is-refused",
+          "weight": 0.25,
+          "text": "房东把{subject}的押金推回来，说这年纪要有担保人，还要一次付清半年房租。{subject}在门口站了一会儿，把写好的招牌尺寸纸折起来；回家路上，{subject}经过那扇空门面，里面已经挂上了成衣铺的布帘。",
+          "significance": 0.62,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the deposit was returned after a day"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the empty shop had a dressmaker's curtain"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lease_refused",
+              "add": true,
+              "reason": "the landlord refused a tenant over sixty"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "房东要求半年房租一次付清，才肯把空门面租给六十岁以上的人。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-ledger-finds-them",
+          "weight": 0.2,
+          "conditions": [
+            {
+              "kind": "hasFlag",
+              "flag": "kept_ledger"
+            }
+          ],
+          "text": "旧客户簿上的名字还有效。{subject}照着地址写了几张明信片，第三天就有人扛着一把断腿的椅子来；{worker}说这年头还认手写账本的人不多了，{subject}把新地址写在旧名字旁边。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 50,
+                "stamina": 50,
+                "tether": 35,
+                "publicness": 20
+              },
+              "durationMonths": 60,
+              "reason": "the old customer ledger brought the first jobs"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the first repair jobs from the old ledger"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "the worker helped with the first customers"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shop_opened",
+              "add": true,
+              "reason": "the old ledger opened the shop"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧客户簿上的地址还能找到人，第三天就有人扛着断腿椅子来修。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 8
+    },
+    {
+      "id": "em18-late-bloom.radio-hour",
+      "title": "电台里认错了人",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 65,
+        "max": 85
+      },
+      "tags": [
+        "elderhood",
+        "late_life",
+        "fame",
+        "radio",
+        "comedy",
+        "mistaken_identity",
+        "absurd"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "fame",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 65,
+          "maxAge": 85
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-wrong-name",
+          "weight": 0.35,
+          "text": "电台的年轻编导把{subject}请进录音间，说听众点名的就是这位“老歌手”。{subject}没有纠正，只在麦克风前讲了一段旧城的手艺和一首走调的广告歌；节目播出后，街角有人叫{subject}“大师”，还送来一罐咖啡。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 70,
+                "stamina": 45,
+                "tether": 20,
+                "publicness": 55
+              },
+              "durationMonths": 60,
+              "reason": "a radio mistake turned into a small public life"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "parameters": {
+                "level": 0.25,
+                "notoriety": false
+              },
+              "durationMonths": 24,
+              "reason": "the radio audience remembered the wrong name"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the radio appearance fee"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the corner greeted the new radio voice"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "radio_impostor",
+              "add": true,
+              "reason": "the wrong name was not corrected"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the jar of coffee from a listener"
+            }
+          ]
+        },
+        {
+          "id": "the-real-singer-arrives",
+          "weight": 0.3,
+          "text": "真正的歌手在节目中途推门进来，手里还拿着同一份报纸。编导的脸白了；{subject}把麦克风往那边推了推，说“那就让她唱”。节目没有停，第二天报纸的广播栏里多了一行笑话，{subject}的名字被拼错了。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 60,
+                "stamina": 40,
+                "tether": 30,
+                "publicness": 40
+              },
+              "durationMonths": 60,
+              "reason": "the radio mistake ended in a public joke"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "parameters": {
+                "level": 0.15,
+                "notoriety": false
+              },
+              "durationMonths": 18,
+              "reason": "the newspaper joke made the name visible"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the broadcast column misspelled the name"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the real singer took the microphone"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "radio_exposed",
+              "add": true,
+              "reason": "the real singer arrived during the broadcast"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "电台曾把一位六十多岁的普通人错认成旧歌手。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "refuses-the-microphone",
+          "weight": 0.35,
+          "text": "{subject}在录音间门口站了很久，最后说嗓子不行，转身下了楼。编导追出来，把录音费塞进{subject}的口袋；当天晚上，电台还是播了那段走廊里的脚步声和一句“算了”。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the broadcast fee was pressed into a pocket"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "radio_refused",
+              "add": true,
+              "reason": "the microphone was refused"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the corridor footsteps were broadcast"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the radio played the refusal"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "电台没有经过同意，就播出了走廊里的脚步声。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-late-bloom.last-apprentice",
+      "title": "最后一个学徒",
+      "domain": "work",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 80
+      },
+      "tags": [
+        "elderhood",
+        "late_life",
+        "craft",
+        "apprentice",
+        "legacy",
+        "work",
+        "teaching"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "wc17-master-craftsperson",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 80
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 30
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "teaches-the-hand",
+          "weight": 0.4,
+          "text": "{worker}来学徒的第一天，{subject}没有让他碰刨子，只让他磨了三个小时的凿刀。{child}在门口看了两次，第三次进来问这间作坊以后归谁；{subject}把磨刀石转了个方向，说“先把手上的活做完”。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 40,
+                "stamina": 55,
+                "tether": 35,
+                "publicness": 15
+              },
+              "durationMonths": 60,
+              "reason": "a last apprentice gave the workshop another year"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "teaching sharpened the old hand"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.12,
+              "respect": 0.1,
+              "reason": "the apprentice was taught from the first stone"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.03,
+              "reason": "the child asked who would inherit the workshop"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "last_apprentice",
+              "add": true,
+              "reason": "a last apprentice was taken on"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the sharpening stone turned again"
+            }
+          ]
+        },
+        {
+          "id": "the-child-sells-the-bench",
+          "weight": 0.3,
+          "text": "{child}带来一个买主，说作坊的地段能改成两间出租房。{subject}把车床擦了最后一遍，报了一个比买主高的价；买主走了，{child}说“你总不能干到八十岁”。那天晚上，{subject}把学徒的工钱提前结了。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 30,
+                "stamina": 40,
+                "tether": 60,
+                "publicness": 10
+              },
+              "durationMonths": 60,
+              "reason": "the workshop was nearly sold for flats"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the apprentice's wages were paid in advance"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.1,
+              "reason": "the child brought a buyer for the workshop"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "workshop_sold",
+              "add": true,
+              "reason": "the workshop was put up for sale"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the lathe was wiped for a buyer"
+            }
+          ]
+        },
+        {
+          "id": "apprentice-leaves",
+          "weight": 0.3,
+          "text": "{worker}只干了四个月，说修理旧家具养不活人，要去工厂。{subject}把最后一月的工钱和一把旧锉刀一起给他，没有挽留；作坊里又只剩下一台车床和两个人的脚步声，其中一个是自己的。",
+          "significance": 0.62,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the last month's wages"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.05,
+              "reason": "the apprentice left for a factory"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "apprentice_left",
+              "add": true,
+              "reason": "the last apprentice went to a factory"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "最后一个学徒说，修理旧家具养不活人。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the workshop had only one set of footsteps"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-late-bloom.courting-family",
+      "title": "成年子女的投票",
+      "domain": "family",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 62,
+        "max": 85
+      },
+      "tags": [
+        "elderhood",
+        "late_life",
+        "love",
+        "family",
+        "inheritance",
+        "conflict",
+        "cohabitation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-late-bloom",
+          "owner": "person",
+          "parameter": "nerve",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 62,
+          "maxAge": 85
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 58,
+          "maxAge": 85
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "separate-rooms",
+          "weight": 0.35,
+          "text": "{subject}把{neighbor}带到家里吃饭，饭后却宣布两个人各住各的：白天一起看店，晚上回各自的房间。{child}把筷子放下，问这算什么；{subject}说，算一个不用把房子写进谁名下的办法。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "tether",
+              "delta": 8,
+              "reason": "the separate rooms kept the household peace"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "publicness",
+              "delta": -5,
+              "reason": "the arrangement stayed private"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "nerve",
+              "delta": 3,
+              "reason": "a boundary was stated at the table"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.05,
+              "reason": "the child accepted the separate rooms"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "affection": 0.1,
+              "reason": "the companion accepted the arrangement"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the extra dinner and the separate keys"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "living_apart_together",
+              "add": true,
+              "reason": "the couple kept separate rooms"
+            }
+          ]
+        },
+        {
+          "id": "the-child-threatens-the-will",
+          "weight": 0.35,
+          "text": "{child}把一份旧遗嘱的抄件放在桌上，说如果{neighbor}搬进来，房子就该先写清楚归谁。{subject}没有去看那张纸，只问{child}还记不记得小时候是谁在夜里背着去医院；{child}说记得，但那是两回事。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "tether",
+              "delta": 15,
+              "reason": "the adult child threatened the inheritance"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "nerve",
+              "delta": -8,
+              "reason": "the old will was put on the table"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.15,
+              "reason": "the child treated the companion as a claimant"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "the companion was defended"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "inheritance_threat",
+              "add": true,
+              "reason": "the child tied the relationship to the will"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "成年子女把旧遗嘱抄件放在桌上，要求先写清楚房子归谁。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the old will was called a separate matter"
+            }
+          ]
+        },
+        {
+          "id": "move-in-anyway",
+          "weight": 0.3,
+          "text": "{subject}把朝北的房间腾出来，给{neighbor}放了一张床和一只旧五斗柜。{child}知道后，把过年要送来的东西托邻居转交；{subject}把东西收下，在厨房多摆了一副碗筷，谁也没有再提那副碗筷是给谁的。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "tether",
+              "delta": -10,
+              "reason": "the companion moved in despite the child"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "publicness",
+              "delta": 10,
+              "reason": "the household changed visibly"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "nerve",
+              "delta": 8,
+              "reason": "the room was cleared for the companion"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "affection": 0.15,
+              "reason": "the companion moved into the north room"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.2,
+              "reason": "the child sent the New Year gifts through a neighbor"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a bed and a chest for the north room"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cohabitation",
+              "add": true,
+              "reason": "the companion moved in without a marriage"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 3,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-late-bloom.body-says-no",
+      "title": "楼梯上的第三次停顿",
+      "domain": "health",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 65,
+        "max": 88
+      },
+      "tags": [
+        "elderhood",
+        "late_life",
+        "illness",
+        "body",
+        "chronic_illness",
+        "work",
+        "care"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-late-bloom",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "chronic-illness",
+          "owner": "person",
+          "parameter": "severity",
+          "min": 0.2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 65,
+          "maxAge": 88
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "adapts-the-work",
+          "weight": 0.35,
+          "text": "医生把“不能久站”写在处方背面，{subject}把它钉在柜台里面。{subject}把营业时间改成上午，添了一张高脚凳，又把重活留给{neighbor}；账本上的收入少了一截，但门还开着。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "stamina",
+              "delta": -12,
+              "reason": "short hours and a high stool"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "nerve",
+              "delta": 4,
+              "reason": "the work was adapted instead of abandoned"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "tether",
+              "delta": 6,
+              "reason": "the neighbor took over the heavy work"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "standing less helped but did not cure"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "shorter hours and a new stool"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "adapted_work",
+              "add": true,
+              "reason": "the shop hours were shortened"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the door was still open"
+            }
+          ]
+        },
+        {
+          "id": "closes-the-shop",
+          "weight": 0.3,
+          "text": "第二次在楼梯上喘不过气以后，{subject}把“修理”招牌摘下来，靠在门后。工具一件件卖掉，只有那把旧锉刀留下；{neighbor}来帮忙搬东西，临走时把门钥匙放在窗台上，谁也没有说话。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "reason": "the body forced the shop to close"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the tools were sold"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "another bad stair climb"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the sign was leaning behind the door"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "late_bloom_closed",
+              "add": true,
+              "reason": "the late-life shop closed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "医生说过不能再久站，第二次在楼梯上喘不过气后，修理铺关了门。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "hires-help",
+          "weight": 0.35,
+          "text": "{neighbor}介绍来一个刚出师的年轻人，工钱按天算。{subject}起初不肯，后来在柜台后加了一把椅子，把量尺寸的活交出去；第一个月月底，账本上多了一笔工钱，也少了一笔药费。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "stamina",
+              "delta": -5,
+              "reason": "the heavy work was handed over"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "tether",
+              "delta": 5,
+              "reason": "a young helper joined the shop"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the helper's daily wages"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "the neighbor found a reliable helper"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hired_help",
+              "add": true,
+              "reason": "a young helper was hired"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the chair behind the counter"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 8
+    },
+    {
+      "id": "em18-late-bloom.encore",
+      "title": "慈善晚会上的旧歌",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 65,
+        "max": 90
+      },
+      "tags": [
+        "elderhood",
+        "late_life",
+        "fame",
+        "performance",
+        "memory",
+        "charity",
+        "theatre"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "owner": "person",
+          "parameter": "level",
+          "min": 0.1
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 65,
+          "maxAge": 90
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sings-anyway",
+          "weight": 0.35,
+          "text": "慈善晚会的主办人把旧海报翻出来，上面还有{subject}三十年前的名字。{subject}在后台试了一个音，嗓子比记忆里低，台下却已经坐满；那一晚，{subject}唱了两段就停下，掌声还是响了很久。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 65,
+                "stamina": 45,
+                "tether": 20,
+                "publicness": 55
+              },
+              "durationMonths": 60,
+              "reason": "an old performer returned to the stage"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "key": "level",
+              "delta": 0.05,
+              "reason": "the charity encore was reviewed"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the applause lasted after the second song"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the charity fee"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "encore_performed",
+              "add": true,
+              "reason": "the old performer sang again"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the old poster had the right name"
+            }
+          ]
+        },
+        {
+          "id": "the-voice-is-gone",
+          "weight": 0.3,
+          "text": "{subject}在后台开口，第一句就破了音。主办人装作没听见，把节目单往后挪；{subject}还是走上台，讲了五分钟旧剧院的规矩，然后下来。第二天，报纸只写了“某位老演员到场”。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 30,
+                "stamina": 30,
+                "tether": 40,
+                "publicness": 25
+              },
+              "durationMonths": 60,
+              "reason": "the voice failed at the charity evening"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the papers called the appearance a visit"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the first note broke"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the strain of the attempt"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "encore_failed",
+              "add": true,
+              "reason": "the old performer could not sing"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "慈善晚会的报纸只写了“某位老演员到场”，没有提破音。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "sends-a-letter-instead",
+          "weight": 0.35,
+          "text": "{subject}没有去晚会，只写了一封信，请主办人念给台下听。信里没有提当年的名声，只写了后台那只总也修不好的暖气片；信被念完，台下有人笑，也有人回头找写信的人。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "parameters": {
+                "nerve": 40,
+                "stamina": 50,
+                "tether": 30,
+                "publicness": 15
+              },
+              "durationMonths": 60,
+              "reason": "a letter replaced the stage appearance"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the letter was read aloud"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the broken radiator got a laugh"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "letter_instead",
+              "add": true,
+              "reason": "the stage was replaced by a letter"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "信里写的是后台的暖气片，不是当年的名声。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 3,
+      "cooldownYears": 12
+    },
+    {
+      "id": "em18-late-bloom.rent-increase",
+      "title": "房东的新租约",
+      "domain": "economy",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 85
+      },
+      "tags": [
+        "elderhood",
+        "late_life",
+        "housing",
+        "rent",
+        "shop",
+        "money",
+        "risk"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-late-bloom",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "pays-the-increase",
+          "weight": 0.35,
+          "text": "房东把新租约摊在柜台上，说煤价涨了，房租每月多加一克朗。{subject}把账本翻到最后一页，算了一遍修一把椅子的工钱，最后还是在租约上签了字；那天下午，{subject}把修理价目也重新写了一张。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "the rent and the new price list"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "tether",
+              "delta": 8,
+              "reason": "the shop rent rose"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "stamina",
+              "delta": -3,
+              "reason": "more work to cover the rent"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the lease was signed without argument"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rent_paid",
+              "add": true,
+              "reason": "the higher rent was accepted"
+            }
+          ]
+        },
+        {
+          "id": "moves-to-the-courtyard",
+          "weight": 0.3,
+          "text": "{subject}把工具装进两只木箱，搬到后院一间更小的棚屋。新地方没有临街的窗，但房租少了一半；{neighbor}来帮忙，说这里冬天会冷，{subject}说先把招牌挂上，冷了再想办法。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the move and the new sign"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "publicness",
+              "delta": -10,
+              "reason": "the workshop moved away from the street"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "nerve",
+              "delta": 5,
+              "reason": "the move was made on the subject's own terms"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "the neighbor helped carry the tools"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the courtyard workshop had no street window"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "moved_workshop",
+              "add": true,
+              "reason": "the workshop moved to a cheaper courtyard"
+            }
+          ]
+        },
+        {
+          "id": "shares-with-the-neighbor",
+          "weight": 0.35,
+          "text": "{neighbor}提出把两家铺子中间的墙打通，合用一盏灯和一台暖炉。{subject}起初嫌吵，后来发现客人等修鞋时会顺手看家具；月底分账，{subject}第一次在账本上画了一条向上的线。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the shared lamp and stove"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "tether",
+              "delta": 5,
+              "reason": "the two shops shared a wall and a stove"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "publicness",
+              "delta": 5,
+              "reason": "more customers passed through the shared shop"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "the shops were joined"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shop_shared",
+              "add": true,
+              "reason": "the wall between the shops was opened"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the first upward line in the ledger"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 2,
+      "cooldownYears": 6
+    },
+    {
+      "id": "em18-late-bloom.legacy-walk",
+      "title": "带女儿走一遍旧街",
+      "domain": "family",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 70,
+        "max": 90
+      },
+      "tags": [
+        "elderhood",
+        "late_life",
+        "legacy",
+        "memory",
+        "family",
+        "child",
+        "neighborhood"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-late-bloom",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 70,
+          "maxAge": 90
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-child-remembers-differently",
+          "weight": 0.35,
+          "text": "{subject}带着{child}走了一遍旧街：原来的面包房成了鞋店，学校的铁门刷了新漆。{child}记得的是另一条路线，还有一次走丢时挨的那顿骂；两个人在街角站了一会儿，谁也没有把记忆改口。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "tether",
+              "delta": -5,
+              "reason": "the walk let an old disagreement rest"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "nerve",
+              "delta": 3,
+              "reason": "the child heard the old street story"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.08,
+              "reason": "two versions of the same street were told"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "成年子女记得的旧街路线和老人记得的不一样。",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the corner held two memories"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "legacy_walk",
+              "add": true,
+              "reason": "the old neighborhood was walked with an adult child"
+            }
+          ]
+        },
+        {
+          "id": "the-subject-gets-lost",
+          "weight": 0.3,
+          "text": "走到第三条巷子时，{subject}忽然认不出方向。{child}没有说“你不是住了一辈子吗”，只把胳膊伸过来；两个人慢慢走回大路，{subject}一路都在看门牌，像在核对别人的地址。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the old streets became strange"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the door numbers looked like someone else's"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.05,
+              "reason": "the child offered an arm without a lecture"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "stamina",
+              "delta": -5,
+              "reason": "the walk ended in confusion"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "got_lost",
+              "add": true,
+              "reason": "the subject lost the way in the old neighborhood"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "第三条巷子让老人忽然认不出方向。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-child-refuses",
+          "weight": 0.35,
+          "text": "{child}说周末要加班，改天再去。{subject}把准备好的路线图收回抽屉，图上用铅笔画了三个圈：旧居、作坊、学校；后来那张图被压在玻璃板下，边角慢慢卷起来。",
+          "significance": 0.62,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.1,
+              "reason": "the child postponed the walk again"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the route map was put away"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "tether",
+              "delta": 5,
+              "reason": "the walk depended on the child's free time"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "walk_refused",
+              "add": true,
+              "reason": "the legacy walk was postponed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "路线图上用铅笔画了旧居、作坊和学校三个圈。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 2,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-late-bloom.public-reading",
+      "title": "咖啡馆里的朗读会",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 65,
+        "max": 88
+      },
+      "tags": [
+        "elderhood",
+        "late_life",
+        "archive",
+        "memory",
+        "performance",
+        "public",
+        "family"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-late-bloom",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "em18-family-archive",
+          "owner": "household",
+          "parameter": "order",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 65,
+          "maxAge": 88
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "reads-the-letters",
+          "weight": 0.35,
+          "text": "咖啡馆的老板娘把后间腾出来，摆了十二把椅子。{subject}从纸箱里挑出几封信，念到一半才发现其中一封是写给自己、却从未寄出的；台下有人笑，有人低头看杯子，{neighbor}把灯芯调亮了一点。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "publicness",
+              "delta": 12,
+              "reason": "the letters were read in public"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "nerve",
+              "delta": 5,
+              "reason": "an unposted letter was read aloud"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 3,
+              "reason": "the letters were selected and ordered"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "secrets",
+              "delta": -2,
+              "reason": "the unposted letter was made public"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the cafe reading was talked about"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a small collection after the reading"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "public_reading",
+              "add": true,
+              "reason": "the family letters were read aloud"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "朗读会上念到了一封写给老人自己、却从未寄出的信。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-family-story-cracks",
+          "weight": 0.3,
+          "text": "{subject}念到一封旧信，信里提到一个家里从未承认的名字。{child}在最后一排站起来，问那封信为什么会在箱子里；{subject}说，因为有人没有把它烧掉。散场后，两个人一前一后走回家，谁也没有开灯。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "secrets",
+              "delta": -3,
+              "reason": "a name the family never acknowledged was read aloud"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "quarrel",
+              "delta": 8,
+              "reason": "the child challenged the letter's presence"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.1,
+              "reason": "the reading exposed a family name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "tether",
+              "delta": 6,
+              "reason": "the family story cracked in public"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "story_cracked",
+              "add": true,
+              "reason": "the public reading exposed a family secret"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧信里提到一个家里从未承认的名字。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the walk home was in darkness"
+            }
+          ]
+        },
+        {
+          "id": "the-cafe-empties",
+          "weight": 0.35,
+          "text": "朗读会定在下午三点，来了四个人，其中两个是等朋友的。{subject}还是把信念完，声音在空椅子之间显得太大；结束后，老板娘退了一半场地费，说下次可以换个时间。",
+          "significance": 0.58,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the reading was heard by four people"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the cafe was mostly empty"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the room rental"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "em18-late-bloom",
+              "key": "publicness",
+              "delta": -4,
+              "reason": "the empty chairs cooled the public life"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "empty_chairs",
+              "add": true,
+              "reason": "the reading had more chairs than listeners"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "朗读会来了四个人，其中两个在等朋友。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 8
+    },
+    {
+      "id": "em18-late-bloom.old-patron-calls",
+      "title": "旧部下打来的电话",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 62,
+        "max": 82
+      },
+      "tags": [
+        "elderhood",
+        "late_life",
+        "office",
+        "patronage",
+        "politics",
+        "obligation",
+        "legacy"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "office-patronage",
+          "owner": "person",
+          "parameter": "favorDebt",
+          "min": 10
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 62,
+          "maxAge": 82
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "calls-in-the-favor",
+          "weight": 0.35,
+          "text": "旧部下在电话里说，档案室有个空缺，问{subject}的侄孙愿不愿意去。{subject}翻出多年前的任命名单，看见自己的名字还在上面；第二天回了电话，只说“让他先去试试”。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "delta": -10,
+              "reason": "an old favor was called in for a relative"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "exposure",
+              "delta": 5,
+              "reason": "another appointment went through the old network"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "the old subordinate was answered"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a small gift from the relative"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "favor_called",
+              "add": true,
+              "reason": "an old patronage favor was used"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "档案室的空缺由旧部下经手，任命名单上还有老人的旧名字。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "refuses-the-call",
+          "weight": 0.35,
+          "text": "{subject}在电话里听完，沉默了一会儿，说这年头别再往档案室塞人。旧部下笑了一声，说“你以前可不是这么讲的”；挂断后，{subject}把任命名单从抽屉里拿出来，撕掉了最下面一页。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "loyalty",
+              "delta": -5,
+              "reason": "the old network was refused"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "delta": 5,
+              "reason": "the refusal left an unpaid obligation"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the refusal was remembered"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_patronage",
+              "add": true,
+              "reason": "the old patronage call was refused"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧部下说“你以前可不是这么讲的”，然后挂了电话。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the last page of the appointment list was torn"
+            }
+          ]
+        },
+        {
+          "id": "the-file-is-opened",
+          "weight": 0.3,
+          "text": "电话打完没几天，一份旧档案被翻了出来，上面有{subject}当年的签字。{official}来家里问了几句，走时把名片留在桌上；{subject}把名片翻过来，背面是空的。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "exposure",
+              "delta": 12,
+              "reason": "an old appointment file was opened"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the old signature was questioned"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "old_file_opened",
+              "add": true,
+              "reason": "the old patronage file was opened"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧档案上有一份老人当年签过字的任命文件。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the blank back of the official's card"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 2,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-family-archive.sorting-day",
+      "title": "卖房前的清点",
+      "domain": "family",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 85
+      },
+      "tags": [
+        "elderhood",
+        "family",
+        "archive",
+        "memory",
+        "house",
+        "child",
+        "inheritance"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc17-empty-nest",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 50
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-house-inventory",
+          "weight": 0.35,
+          "text": "{child}带着房屋测量员来，说卖房前要把旧文件清出来。{subject}从柜顶搬下三只纸箱，里面是地契、税单、成年子女小时候的成绩单和一叠没有寄出的明信片；{worker}把箱子按年份排好，{subject}却把最旧的那只留在手边。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "parameters": {
+                "order": 25,
+                "secrets": 35,
+                "quarrel": 20,
+                "access": 50
+              },
+              "durationMonths": 120,
+              "reason": "the house inventory turned up the family papers"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "reason": "the child came to inventory the house"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "the worker sorted the boxes by year"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the oldest box stayed within reach"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "archive_inventoried",
+              "add": true,
+              "reason": "the archive was inventoried before a house sale"
+            }
+          ]
+        },
+        {
+          "id": "the-locked-drawer",
+          "weight": 0.35,
+          "text": "整理到第三天，{subject}发现书桌最下面一格抽屉锁着，钥匙早已不见。{child}说撬开算了，{subject}不肯；最后是{worker}用一根铁丝拨开，里面只有一叠旧邮票和一张写着陌生地址的纸条。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "parameters": {
+                "order": 15,
+                "secrets": 55,
+                "quarrel": 25,
+                "access": 35
+              },
+              "durationMonths": 120,
+              "reason": "a locked drawer was opened during the inventory"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the old stamps were sold"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the stranger's address in the drawer"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "locked_drawer_opened",
+              "add": true,
+              "reason": "the locked drawer was opened"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "书桌最下面的抽屉里有一叠旧邮票和一张写着陌生地址的纸条。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-child-takes-charge",
+          "weight": 0.3,
+          "text": "{child}把纸箱按“留、卖、烧”分成三堆，动作很快。{subject}从“烧”的那堆里抽出一张全家福，说这张不能烧；{child}看了一眼，说照片里少了一个人。那天下午，两个人都没有再动那只箱子。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "parameters": {
+                "order": 40,
+                "secrets": 30,
+                "quarrel": 45,
+                "access": 40
+              },
+              "durationMonths": 120,
+              "reason": "the child sorted the archive into keep, sell and burn"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.05,
+              "reason": "the child put a family photograph in the burn pile"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the photograph was missing a person"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "archive_sorted_by_child",
+              "add": true,
+              "reason": "the child took charge of the archive"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "全家福里少了一个人，孩子一眼就看了出来。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-family-archive.birth-certificate",
+      "title": "窗口要的那张纸",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 62,
+        "max": 88
+      },
+      "tags": [
+        "elderhood",
+        "archive",
+        "documents",
+        "pension",
+        "bureaucracy",
+        "identity",
+        "family"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-family-archive",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 62,
+          "maxAge": 88
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-clerk-finds-it",
+          "weight": 0.35,
+          "text": "养老金办事处要一张出生证明，{subject}回家翻纸箱。{official}在窗口等到快下班，终于看见{subject}把一张发脆的洗礼证递进来；证上的名字拼错了一个字母，但印章还清楚。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 4,
+              "reason": "the baptism certificate was found and filed"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": -2,
+              "reason": "the certificate was handed to the office"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the pension payment went through"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "birth_certificate_found",
+              "add": true,
+              "reason": "the baptism certificate satisfied the pension office"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "the clerk waited past closing"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the stamp was still legible"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "洗礼证上的名字拼错了一个字母，但印章还清楚。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-name-does-not-match",
+          "weight": 0.3,
+          "text": "{official}把洗礼证和保险册并排放在灯下，说两个名字差一个字母，不能办。{subject}回家又翻了一遍，找到一张旧户口纸，上面的名字和保险册一样；洗礼证上的那个拼法，从此成了家里没人解释的旧事。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "secrets",
+              "delta": 5,
+              "reason": "a second spelling of the family name surfaced"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 2,
+              "reason": "the old residence paper was filed with the certificate"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "office fees and a second trip"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "name_mismatch",
+              "add": true,
+              "reason": "the certificate and the insurance book disagreed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "洗礼证上的姓氏和保险册上的姓氏差一个字母。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the unexplained spelling in the family papers"
+            }
+          ]
+        },
+        {
+          "id": "the-box-is-empty",
+          "weight": 0.35,
+          "text": "{subject}记得那张证明一直放在箱底，可现在只剩下一个空信封。{child}说上次整理时见过，{subject}问放在哪里，{child}说“可能在那堆要烧的里面”；两个人在冷掉的炉子前翻到天黑。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": -5,
+              "reason": "the certificate was missing from the box"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "quarrel",
+              "delta": 8,
+              "reason": "the child admitted it might have been in the burn pile"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.08,
+              "reason": "the missing certificate became a family quarrel"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "certificate_missing",
+              "add": true,
+              "reason": "the birth certificate could not be found"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "出生证明只剩一个空信封，孩子说可能在那堆要烧的纸里。",
+              "confidence": 0.7,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the search lasted until dark"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 2,
+      "cooldownYears": 8
+    },
+    {
+      "id": "em18-family-archive.grandchild-photo",
+      "title": "照片背面的另一个名字",
+      "domain": "family",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 65,
+        "max": 90
+      },
+      "tags": [
+        "elderhood",
+        "archive",
+        "memory",
+        "grandchild",
+        "photograph",
+        "family",
+        "secret"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-family-archive",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 65,
+          "maxAge": 90
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-other-name",
+          "weight": 0.35,
+          "text": "{child}带着女儿来看{subject}，小姑娘从箱子里翻出一张洗衣房的合影，背面用铅笔写着一个不是祖母的名字。{subject}看了很久，说那是当年一起做工的同伴；{child}把照片翻过来，发现那个名字的笔迹和{subject}平时记账的字一模一样。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "secrets",
+              "delta": 5,
+              "reason": "a granddaughter found an unexplained name on a photograph"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": -2,
+              "reason": "the photograph was pulled out of order"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "reason": "the child saw the water-stained name"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "grandchild_found_photo",
+              "add": true,
+              "reason": "a granddaughter found the old photograph"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "洗衣房合影背面有一个不是祖母的名字，笔迹却和老人平时记账的字一样。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the name looked like the subject's own hand"
+            }
+          ]
+        },
+        {
+          "id": "the-story-that-changes",
+          "weight": 0.35,
+          "text": "{subject}第一次把照片背面的名字讲完：那是洗衣房一个没有户口的同伴，借用了{subject}的姓去领工钱。{child}问为什么从来没听过；{subject}说，因为每次想说，都有人把话岔开。小姑娘把照片放回箱子，又把它拿出来。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "secrets",
+              "delta": -3,
+              "reason": "the story behind the photograph was told"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 3,
+              "reason": "the photograph was given a place in the story"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.08,
+              "reason": "the child heard the whole story"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "family_story_told",
+              "add": true,
+              "reason": "the photograph's story was told to the family"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "照片背面的名字属于一个借老人姓氏领工钱的洗衣房同伴。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the story was finally said aloud"
+            }
+          ]
+        },
+        {
+          "id": "the-child-takes-the-photo",
+          "weight": 0.3,
+          "text": "{child}说这张照片该由她保管，放进自己的相册。{subject}没有反对，只要求先把背面的名字抄下来；照相馆的旧机器坏了，{child}用钢笔把那个名字抄在纸上，字迹比原件清楚得多。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": -5,
+              "reason": "the photograph was taken to the child's album"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 2,
+              "reason": "a handwritten copy was filed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.02,
+              "reason": "the photograph was copied before it left"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "paper and ink for the copy"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "photo_copied",
+              "add": true,
+              "reason": "the photograph was copied by hand"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "照片背面的名字被孩子用钢笔抄在纸上，字迹比原件清楚。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the copy was legible"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 3,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-family-archive.sibling-claim",
+      "title": "兄弟姐妹来借地契",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 62,
+        "max": 88
+      },
+      "tags": [
+        "elderhood",
+        "archive",
+        "inheritance",
+        "siblings",
+        "family_estate",
+        "deed",
+        "land",
+        "quarrel",
+        "documents"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-family-archive",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "family-estate",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 62,
+          "maxAge": 88
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 90
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-deed-is-requested",
+          "weight": 0.35,
+          "text": "{official}把遗产清单念到“仓房西边那块地”时，{sibling}说地契应该由自己保管，因为地一直是他种的。{subject}把钥匙放在桌上，说地契可以看，不能拿走；{official}把这句话也记进了笔录。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "quarrel",
+              "delta": 8,
+              "reason": "the sibling wanted to keep the land deed"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": -4,
+              "reason": "the archive key was put on the table"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "contested",
+              "value": true,
+              "reason": "the land deed was pulled into the estate dispute"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.1,
+              "reason": "the sibling called the papers worthless"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "deed_requested",
+              "add": true,
+              "reason": "the sibling asked to keep the land deed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "遗产清单念到仓房西边那块地时，兄弟姐妹提出地契应该由自己保管。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "a-copy-with-a-boundary",
+          "weight": 0.3,
+          "text": "{subject}同意让{official}复印地契，但要求把梨树所在的那条边界也复印进去。{sibling}说{subject}在故意找麻烦；{official}把两张纸并排放在灯下，发现旧图上的界线比现在的篱笆往东偏了一尺。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": -3,
+              "reason": "a copy of the deed was made with the old boundary"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "secrets",
+              "delta": 3,
+              "reason": "the old map showed a boundary east of the fence"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "quarrel",
+              "delta": 4,
+              "reason": "the sibling called the boundary request trouble"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.02,
+              "reason": "the division was agreed before the certificates appeared"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "deed_copied",
+              "add": true,
+              "reason": "the land deed was copied with its old boundary"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧地契上的界线比现在的篱笆往东偏了一尺。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "leave-the-deed-with-the-notary",
+          "weight": 0.35,
+          "text": "{subject}不愿再争，把地契交给{official}保管，等遗产分割完再说。{sibling}骂{subject}把家丑交给外人；{subject}只把装地契的信封重新封好，说“总比丢了强”。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": -10,
+              "reason": "the land deed was left with the notary"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 5,
+              "reason": "the notary took charge of the deed"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "quarrel",
+              "delta": -5,
+              "reason": "the dispute moved out of the house"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "contested",
+              "value": true,
+              "reason": "the estate dispute continued through the notary"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the notary's storage fee"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.05,
+              "reason": "the sibling called the notary an outsider"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "deed_to_notary",
+              "add": true,
+              "reason": "the deed was deposited with the notary"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "地契被留在公证人的办公室，等遗产分割完再取。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 2,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-family-archive.museum-offer",
+      "title": "市立档案馆的收购单",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 65,
+        "max": 90
+      },
+      "tags": [
+        "elderhood",
+        "archive",
+        "memory",
+        "museum",
+        "legacy",
+        "documents",
+        "family"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-family-archive",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 65,
+          "maxAge": 90
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-institute-wants-it",
+          "weight": 0.35,
+          "text": "{official}代表市立档案馆来看纸箱，说这些都是“城市记忆”，愿意给一笔收购费。{subject}问以后还能不能看，{official}说可以预约；{subject}把箱子推到桌子中间，又拉回来一点。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": -8,
+              "reason": "the archive was offered to the city"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 5,
+              "reason": "the archivist described how the papers would be kept"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "the city's purchase offer"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the family papers were called city memory"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "the archivist made an offer"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "archive_offer",
+              "add": true,
+              "reason": "the city offered to buy the archive"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "市立档案馆愿意收购纸箱，但以后查看需要预约。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "donate-with-conditions",
+          "weight": 0.35,
+          "text": "{subject}同意捐出信件和照片，但要求把{child}的名字写在捐赠记录上，还要留一只空箱子在家里。{official}说空箱子不能入藏，{subject}说那就放在门厅，谁来了都能看见。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": -5,
+              "reason": "the papers were donated to the city"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 8,
+              "reason": "the donated papers were catalogued"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a small donation grant"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the donation was recorded under the family name"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.05,
+              "reason": "the child's name was put on the donation record"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "archive_donated",
+              "add": true,
+              "reason": "the archive was donated with conditions"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "捐赠记录上写了孩子的名字，门厅里留了一只空箱子。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "refuse-the-institute",
+          "weight": 0.3,
+          "text": "{subject}把纸箱抱回柜顶，说这些东西还没到该进档案馆的时候。{official}留下名片走了；{child}问以后谁来管，{subject}说“你先记住钥匙放在哪里”。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": 3,
+              "reason": "the archive stayed in the household"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": -2,
+              "reason": "the box was put back on top of the wardrobe"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the city offer was refused"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.02,
+              "reason": "the key was described to the child"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "archive_refused",
+              "add": true,
+              "reason": "the city archive offer was refused"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "市立档案馆留下了一张名片，纸箱仍在柜顶。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 2,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-family-archive.house-sale",
+      "title": "卖房合同上的纸箱",
+      "domain": "family",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 65,
+        "max": 90
+      },
+      "tags": [
+        "elderhood",
+        "archive",
+        "house",
+        "family_estate",
+        "sale",
+        "inheritance",
+        "family"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-family-archive",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "family-estate",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 65,
+          "maxAge": 90
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "sell-with-the-house",
+          "weight": 0.35,
+          "text": "买主来看房，说院子里的梨树和仓房都要留下，屋里的旧纸箱不在此列。{subject}在合同边上加了一行：纸箱跟人走。{child}觉得多余，{worker}却帮{subject}把箱子搬上了手推车。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "upkeep",
+              "delta": -10,
+              "reason": "the house and its upkeep were sold"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 2,
+              "reason": "the boxes were moved with the household"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "the house sale"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "reason": "the child thought the clause was unnecessary"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "the worker moved the boxes"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "house_sold_archive_kept",
+              "add": true,
+              "reason": "the house was sold and the boxes went with the subject"
+            }
+          ]
+        },
+        {
+          "id": "the-buyer-wants-the-papers",
+          "weight": 0.35,
+          "text": "买主说旧纸箱可以留下，但要先看看里面有没有地契。{subject}把箱子打开，让他看最上面一层；{child}在旁边小声说“别让他翻”，{worker}已经把箱盖合上。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the buyer's deposit"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "secrets",
+              "delta": 4,
+              "reason": "the buyer saw the top layer of papers"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": -6,
+              "reason": "the box was closed in front of the buyer"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "contested",
+              "value": true,
+              "reason": "the buyer questioned the deed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.02,
+              "reason": "the child warned against the buyer"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "buyer_saw_papers",
+              "add": true,
+              "reason": "the buyer saw the top layer of the archive"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "买主坚持先看纸箱里有没有地契，工人把箱盖合上了。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-sale-falls-through",
+          "weight": 0.3,
+          "text": "买主临签合同前反悔，说屋顶要修的地方太多。{subject}把已经打包的纸箱重新搬回柜顶，{child}气得把合同揉成一团；{subject}却松了一口气，晚上把箱子里的照片又看了一遍。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the notary and the failed contract"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 3,
+              "reason": "the boxes were unpacked again"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "upkeep",
+              "delta": 4,
+              "reason": "the roof still needed repairs"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.02,
+              "reason": "the child crumpled the contract"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the photographs were looked at again"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sale_fell_through",
+              "add": true,
+              "reason": "the house sale fell through"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 2,
+      "cooldownYears": 8
+    },
+    {
+      "id": "em18-family-archive.estrangement-return",
+      "title": "箱底的成绩单",
+      "domain": "family",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 62,
+        "max": 88
+      },
+      "tags": [
+        "elderhood",
+        "archive",
+        "estrangement",
+        "grief",
+        "funeral",
+        "family",
+        "child",
+        "documents"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-family-archive",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "grief",
+          "owner": "person"
+        },
+        {
+          "kind": "hasFlag",
+          "flag": "estranged_child"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 62,
+          "maxAge": 88
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-child-returns-for-the-funeral",
+          "weight": 0.35,
+          "text": "葬礼后的第三天，{subject}把纸箱搬到桌上，翻到{child}小时候的成绩单和一张没寄出的明信片。{child}站在门口没有进来，先问“他走的时候疼不疼”；{subject}把成绩单推过去，{child}没有接。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.08,
+              "reason": "the estranged child returned for the funeral"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "secrets",
+              "delta": 3,
+              "reason": "the child's old school reports were in the box"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": -2,
+              "reason": "the box was opened at the table"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the child stood at the door"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "estranged_child_returned",
+              "add": true,
+              "reason": "the estranged child came back for the funeral"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子问的第一句话是“他走的时候疼不疼”，没有先看纸箱。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-old-quarrel-reopens",
+          "weight": 0.35,
+          "text": "{child}翻到一封旧信，信里写着当年那场争吵的另一个版本。{subject}说事情不是那样，{child}说“你每次都这么说”；两个人把箱子里的纸摊了一桌，最后谁也没有把信放回去。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "quarrel",
+              "delta": 10,
+              "reason": "the old quarrel was reopened by a letter"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "secrets",
+              "delta": 5,
+              "reason": "the letter gave another version of the quarrel"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.1,
+              "reason": "the child said the subject always told the same story"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "quarrel_reopened",
+              "add": true,
+              "reason": "the old family quarrel was reopened"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧信里写着当年那场争吵的另一个版本。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the papers were left spread across the table"
+            }
+          ]
+        },
+        {
+          "id": "a-place-to-sleep",
+          "weight": 0.3,
+          "text": "{subject}把朝北的房间收拾出来，铺上干净的床单。{child}说只住一晚，第二天却去市场买了菜；晚上，两个人坐在箱子上吃饭，谁也没有提那些纸该归谁。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.1,
+              "reason": "the child stayed a second night"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": 5,
+              "reason": "the child was given access to the house again"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the north room had clean sheets"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the market groceries"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_stayed",
+              "add": true,
+              "reason": "the estranged child stayed overnight"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子说只住一晚，第二天却去市场买了菜。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 2,
+      "cooldownYears": 10
+    },
+    {
+      "id": "em18-family-archive.will-revision",
+      "title": "新遗嘱里的一行字",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 68,
+        "max": 90
+      },
+      "tags": [
+        "elderhood",
+        "archive",
+        "inheritance",
+        "will",
+        "family_estate",
+        "death_settlement",
+        "documents"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "em18-family-archive",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "family-estate",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 68,
+          "maxAge": 90
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 60
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-will-names-the-archive",
+          "weight": 0.35,
+          "text": "{official}把新遗嘱念到一半，{subject}让他停下来，加了一句：纸箱里的信件和照片，由{child}保管，但不得烧毁。{child}在门外听见，没有进来；{official}把这句话写得很慢。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 5,
+              "reason": "the archive was given a clause in the will"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": 5,
+              "reason": "the child was named as custodian"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "heirNamed",
+              "value": true,
+              "reason": "the will named the child"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.05,
+              "reason": "the child was given the archive"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "will_archive_clause",
+              "add": true,
+              "reason": "the will included the archive clause"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "遗嘱里加了一句：纸箱由孩子保管，但不得烧毁。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-child-wants-it-settled",
+          "weight": 0.3,
+          "text": "{child}带着自己写的清单来，要{subject}在遗嘱里写明每只箱子的归属。{subject}说有些东西还没想好；{child}把清单留在桌上，说“那你现在想”。{subject}独自坐到天黑，只在一只箱子上写了{child}的名字。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "quarrel",
+              "delta": 5,
+              "reason": "the child brought a list of every box"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 2,
+              "reason": "one box was labelled with the child's name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "contested",
+              "value": true,
+              "reason": "the child wanted every box assigned"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.03,
+              "reason": "the child left the list on the table"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "will_contested",
+              "add": true,
+              "reason": "the child wanted the archive settled in the will"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子留下一张清单，要老人写明每只箱子的归属。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "only one box got a name"
+            }
+          ]
+        },
+        {
+          "id": "the-will-goes-to-the-notary",
+          "weight": 0.35,
+          "text": "{subject}把遗嘱和纸箱一起送到{official}的办公室，说等自己走了再打开。{official}给了收据，{subject}把收据折好，放进装车票的口袋；回家路上，{subject}觉得口袋比来时轻了一点。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "access",
+              "delta": -8,
+              "reason": "the archive was deposited with the notary"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "key": "order",
+              "delta": 6,
+              "reason": "the will and the boxes were filed together"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "heirNamed",
+              "value": true,
+              "reason": "the will named an heir"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the notary's fee"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "will_deposited",
+              "add": true,
+              "reason": "the will and archive were deposited"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "遗嘱和纸箱一起留在了公证人的办公室，收据在车票口袋里。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the ticket pocket felt lighter"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 3,
+      "cooldownYears": 12
+    },
+    {
+      "id": "em18-setup.cellar-box",
+      "title": "地窖里的铁盒",
+      "domain": "housing",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 45,
+        "max": 70
+      },
+      "tags": [
+        "adulthood",
+        "housing",
+        "archive",
+        "family",
+        "memory",
+        "ordinary"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "carry-the-box-upstairs",
+          "weight": 0.4,
+          "text": "房东要卖楼，限住户在周末前清空地窖。{subject}在煤堆后面拖出一只生锈的铁盒，盒盖内侧写着一个陌生的名字，里面是旧洗礼证、三张欠租单和一张早已停演的戏票。{subject}把盒子搬上楼，放在餐桌中央，先没有打开第二层。",
+          "significance": 0.62,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "parameters": {
+                "order": 25,
+                "secrets": 30,
+                "quarrel": 10,
+                "access": 60
+              },
+              "durationMonths": 120,
+              "reason": "a tenant box came up from the cellar"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "地窖铁盒里有旧洗礼证、欠租单和一张停演的戏票。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cellar_archive_kept",
+              "add": true,
+              "reason": "the cellar box was carried upstairs"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the strange name inside the lid"
+            }
+          ]
+        },
+        {
+          "id": "let-the-landlord-take-it",
+          "weight": 0.3,
+          "text": "收废铁的人把铁盒踩扁前，{subject}抽出那张戏票。房东说上一任房客没有留下地址，盒子归楼里处理。{subject}把戏票夹进房租本，铁盒被扔上车；晚上想起盒盖内侧的名字，却怎么也想不全。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "parameters": {
+                "order": 5,
+                "secrets": 20,
+                "quarrel": 20,
+                "access": 25
+              },
+              "durationMonths": 120,
+              "reason": "only a theatre ticket was kept from the cellar box"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "地窖铁盒被收废铁的人带走，只留下一张戏票。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cellar_archive_discarded",
+              "add": true,
+              "reason": "the box went onto the scrap cart"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the name could not be remembered in full"
+            }
+          ]
+        },
+        {
+          "id": "ask-the-neighbor",
+          "weight": 0.3,
+          "text": "隔壁的老太太看见盒盖上的名字，说那是战前住在地下室的一家人，后来没人回来。她没有再说下去，只让{subject}把盒子收好。{subject}把盒子藏进衣柜，从此每次找冬衣都会碰到它。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "em18-family-archive",
+              "parameters": {
+                "order": 10,
+                "secrets": 50,
+                "quarrel": 35,
+                "access": 15
+              },
+              "durationMonths": 120,
+              "reason": "a neighbor recognized the name on the cellar box"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "盒盖上的名字属于战前住在地下室、后来没有回来的一家人。",
+              "confidence": 0.7,
+              "sourceKind": "testimony",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cellar_archive_hidden",
+              "add": true,
+              "reason": "the box was hidden after the neighbor spoke"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the family that did not come back"
+            }
+          ]
+        }
+      ],
+      "cooldownYears": 20
+    }
+  ]
+}

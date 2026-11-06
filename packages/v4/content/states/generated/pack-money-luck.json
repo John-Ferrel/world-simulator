@@ -1,0 +1,6044 @@
+{
+  "id": "pack-money-luck",
+  "version": 1,
+  "title": "钱与运气：横财、赌桌和倒转的账本",
+  "description": "把突然到手的钱写成一种会改变家庭决定的处境，而不是一笔结算数字：亲戚来分，骗子来借，银行来问，孩子在学校被另眼相看。另一条线让赔掉的钱、押错的马和倒闭的银行变成可追踪的运势倒转，再由旧合伙人和街角小摊决定它是彻底沉下去，还是慢慢翻回来。",
+  "author": "phase18-content-author/money-luck",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-07",
+  "sourceBriefId": "phase18-money-luck",
+  "rationale": "Phase 17 的荒诞运气包处理了捡到的钱包、外套里的彩票和错认的继承人，却没有把一笔真正的横财当作家庭处境来写，也没有给连续的赔钱与翻身建立可查询的状态。本包用 ml18-sudden-fortune 记录本金、已花掉的数目、上门讨份的人和是否见报；用 ml18-reversal 记录一次赔本之后的紧张、摆动方向和公开程度。彩票、遗产、赌桌、诈骗、银行挤兑、专利和诊所都落在既有经济制度里，并由债务束缚、发财执念、职位受围、公开丑闻、家产、工厂雇佣和抚养孩子这些旧状态提供入口或后果。",
+  "themes": [
+    "money",
+    "luck",
+    "windfall",
+    "gambling",
+    "debt",
+    "inheritance",
+    "scam",
+    "reversal"
+  ],
+  "era": "Vienna, 1912-1955",
+  "tone": [
+    "absurd",
+    "triumphant",
+    "dark",
+    "comic"
+  ],
+  "scope": [
+    "adulthood",
+    "urban",
+    "vienna",
+    "household",
+    "economy"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "sudden wealth",
+    "gambling",
+    "debt",
+    "family conflict",
+    "fraud",
+    "financial ruin",
+    "child distress",
+    "public shaming"
+  ],
+  "states": [
+    {
+      "id": "ml18-sudden-fortune",
+      "version": 1,
+      "packId": "pack-money-luck",
+      "title": "一笔突然到手的钱",
+      "description": "这个家庭得到了一笔明显高于日常开销的现钱：彩票、遗产、赔偿、专利或赌桌都可能带来它。钱不会自动改变阶层，却会改变谁上门、谁被信任、谁觉得自己有份；它也会被花掉、被骗走、被亲戚分走。",
+      "owner": "household",
+      "slot": "ml18_fortune",
+      "conflict": "replace",
+      "tags": [
+        "money",
+        "windfall",
+        "sudden_fortune",
+        "household",
+        "luck",
+        "inheritance",
+        "lottery",
+        "risk"
+      ],
+      "parameters": {
+        "principal": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 500
+        },
+        "spent": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 500
+        },
+        "claims": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 20
+        },
+        "public": {
+          "type": "boolean",
+          "default": false
+        },
+        "source": {
+          "type": "string",
+          "default": "一笔意外之财"
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 60
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "money",
+            "windfall",
+            "inheritance",
+            "lottery",
+            "investment",
+            "debt",
+            "family",
+            "scam",
+            "charity"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "factory",
+            "ordinary"
+          ],
+          "multiplier": 0.85
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "sudden_fortune",
+          "add": true,
+          "reason": "a household received a large sum"
+        },
+        {
+          "type": "reputation",
+          "personId": "$subject",
+          "amount": 0.02,
+          "reason": "neighbors begin to treat the household differently"
+        },
+        {
+          "type": "mood",
+          "personId": "$subject",
+          "amount": 0.03,
+          "reason": "the immediate relief of a large sum"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "sudden_fortune",
+          "add": false,
+          "reason": "the household no longer holds the windfall"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "fortune-year",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "money-keeps-working",
+              "weight": 3,
+              "text": "一年过去，钱没有变多，却也没有一下花完。{subject}把一部分存进邮局储蓄所，一部分借给楼下的鞋匠；鞋匠每月送来一双补好的鞋，利息就夹在鞋垫下面。街口的杂货商开始把好面粉留到{subject}来的时候。",
+              "effects": [
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 2,
+                  "reason": "interest and small repayments on the windfall"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "ml18-sudden-fortune",
+                  "key": "claims",
+                  "delta": 1,
+                  "reason": "one more neighbor has a claim on the money"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "the money is still there"
+                }
+              ]
+            },
+            {
+              "id": "money-slips-away",
+              "weight": 2,
+              "text": "钱在一年里薄了一层：屋顶要修，姐夫来借，彩票站的老主顾说有个稳赚的买卖。{subject}把账本翻到最后一页，发现写下的支出比记得的多出四克朗；窗外有人在敲铁皮，声音像在催账。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "ml18-sudden-fortune",
+                  "key": "principal",
+                  "delta": -5,
+                  "reason": "repairs, loans and a bad bargain"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "ml18-sudden-fortune",
+                  "key": "spent",
+                  "delta": 5,
+                  "reason": "money spent without a clear account"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "the account does not balance"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "the money is thinner than expected"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-relative-remembers",
+          "onTags": [
+            "family",
+            "inheritance",
+            "debt"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "claims",
+              "delta": 1,
+              "reason": "a relative asks for a share"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "windfall_claim_by_relative",
+              "add": true,
+              "reason": "a relative came with an old story about the family"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the money has made old family stories expensive"
+            }
+          ],
+          "text": "一个多年没走动的亲戚提着一盒点心上门，先问{subject}的身体，再问那笔钱是怎么来的。临走时他说起小时候替{subject}家垫过一冬天的煤钱，数字记不清了，但意思很清楚。",
+          "significance": 0.45,
+          "cooldownMonths": 18,
+          "maxPerYear": 1
+        },
+        {
+          "id": "the-papers-hear-about-it",
+          "onTags": [
+            "scandal",
+            "media",
+            "public"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "public",
+              "value": true,
+              "reason": "the windfall reached the newspapers"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "claims",
+              "delta": 2,
+              "reason": "strangers now know there is money"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the household is discussed in public"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "windfall_went_public",
+              "add": true,
+              "reason": "a newspaper printed the household address"
+            }
+          ],
+          "text": "报纸的社会版把{subject}家的门牌号和那笔钱的数目印在一起，标题是“一笔不该有的好运”。第二天门口多了两个陌生人，一个说是远亲，一个说代表一家孤儿院。",
+          "significance": 0.5,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        }
+      ],
+      "transitions": [
+        {
+          "id": "fortune-ends-in-debt",
+          "to": "debt-bondage",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "ml18-sudden-fortune",
+              "owner": "household",
+              "parameter": "principal",
+              "max": 5
+            },
+            {
+              "kind": "hasState",
+              "stateId": "ml18-sudden-fortune",
+              "owner": "household",
+              "parameter": "claims",
+              "min": 4
+            }
+          ],
+          "chance": 0.65,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fortune_ended_in_debt",
+              "add": true,
+              "reason": "the windfall is gone and its claimants remain"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the last payments on the windfall's promises"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the fortune left behind its obligations"
+            }
+          ],
+          "reason": "the principal is gone but the people who were promised a share are still at the door"
+        }
+      ],
+      "historicalBasis": "彩票、遗产、专利转让和赌桌横财在战前维也纳的城市经济中都真实存在；本状态只记录一笔钱进入家庭之后的社会关系，不保证它带来阶层跃升。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/money-luck",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让横财成为有本金、支出、讨份人和公开度的家庭处境，而不是一次性加钱。"
+      }
+    },
+    {
+      "id": "ml18-reversal",
+      "version": 1,
+      "packId": "pack-money-luck",
+      "title": "运势倒转",
+      "description": "这个人的钱运在一个具体的方向上转过了头：一次赔本的投资、一场输掉的赌局、一家倒闭的银行，或者一桩后来被证明是骗局的买卖。每一次试图补回来，都可能把摆动推得更大；旁观者开始把这个故事当成谈资。",
+      "owner": "person",
+      "slot": "ml18_reversal",
+      "conflict": "replace",
+      "tags": [
+        "money",
+        "luck",
+        "reversal",
+        "risk",
+        "debt",
+        "reputation",
+        "loss"
+      ],
+      "parameters": {
+        "strain": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        },
+        "swing": {
+          "type": "number",
+          "default": -25,
+          "min": -100,
+          "max": 100
+        },
+        "public": {
+          "type": "boolean",
+          "default": false
+        },
+        "story": {
+          "type": "string",
+          "default": "一次赔本的投资"
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 48
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "money",
+            "gambling",
+            "debt",
+            "investment",
+            "scam",
+            "luck",
+            "reversal"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "quiet",
+            "ordinary"
+          ],
+          "multiplier": 0.85
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "fortune_reversed",
+          "add": true,
+          "reason": "a loss changed the direction of the subject's money luck"
+        },
+        {
+          "type": "mood",
+          "personId": "$subject",
+          "amount": -0.01,
+          "reason": "the first accounting after a loss"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "fortune_reversed",
+          "add": false,
+          "reason": "the reversal no longer shapes the subject's money decisions"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "reversal-half-year",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "resilience",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "the-swing-holds",
+              "result": "success",
+              "weight": 3,
+              "text": "半年里没有新的坏消息。{subject}把零钱分成三份：房租、还账、留一点在抽屉里。旧债主没有上门，咖啡馆里的人也不再每见一次就提那件赔本的事；日子没有变好，但至少不再往下滑。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ml18-reversal",
+                  "key": "swing",
+                  "delta": 6,
+                  "reason": "the situation stopped getting worse"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ml18-reversal",
+                  "key": "strain",
+                  "delta": -4,
+                  "reason": "a little pressure lifted"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "small economies and an odd job"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "the ground feels level again"
+                }
+              ]
+            },
+            {
+              "id": "another-turn-of-the-screw",
+              "result": "failure",
+              "weight": 2,
+              "text": "补洞的钱又从另一个洞漏出去：煤价涨了，房东换了锁，那个说好下月还钱的人搬走了。{subject}在账本上把同一笔支出记了两次，第二次是因为不相信第一次。夜里听见楼梯响，就以为是债主。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ml18-reversal",
+                  "key": "swing",
+                  "delta": -8,
+                  "reason": "the reversal deepened"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ml18-reversal",
+                  "key": "strain",
+                  "delta": 8,
+                  "reason": "another loss and another creditor"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -2,
+                  "reason": "coal, a new lock and a missing debtor"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "the same story repeats"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "the-story-gets-told",
+          "onTags": [
+            "rumor",
+            "failure",
+            "scandal"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "key": "public",
+              "value": true,
+              "reason": "the reversal became a story told in public"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "key": "strain",
+              "delta": 4,
+              "reason": "being a cautionary tale is its own pressure"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the loss is retold with embellishments"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reversal_story_public",
+              "add": true,
+              "reason": "the loss became a coffeehouse story"
+            }
+          ],
+          "text": "咖啡馆里有人把{subject}赔钱的事讲成了三段，最后一段里{subject}押上了房子、妻子的首饰和一条不存在的船。{subject}坐在角落听完，没有纠正；纠正只会让故事更长。",
+          "significance": 0.45,
+          "cooldownMonths": 18,
+          "maxPerYear": 1
+        },
+        {
+          "id": "a-second-chance-arrives",
+          "onTags": [
+            "windfall",
+            "lottery",
+            "inheritance"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "key": "swing",
+              "delta": 10,
+              "reason": "a small piece of luck arrived after the loss"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "key": "strain",
+              "delta": -5,
+              "reason": "a second chance loosened the pressure"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a door opened a crack"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reversal_second_chance",
+              "add": true,
+              "reason": "the reversal may yet turn back"
+            }
+          ],
+          "text": "一封没有署名的信里夹着一张彩票，号码是{subject}上个月随口说过的。信纸是廉价的学生用纸，字迹却写得很慢。{subject}把彩票翻过来，背面只写着一句：这次别再押上房租。",
+          "significance": 0.4,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        }
+      ],
+      "transitions": [
+        {
+          "id": "reversal-becomes-debt",
+          "to": "debt-bondage",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "ml18-reversal",
+              "owner": "person",
+              "parameter": "strain",
+              "min": 80
+            },
+            {
+              "kind": "hasState",
+              "stateId": "ml18-reversal",
+              "owner": "person",
+              "parameter": "swing",
+              "max": -40
+            }
+          ],
+          "chance": 0.7,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reversal_became_debt",
+              "add": true,
+              "reason": "the losses hardened into a debt relationship"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the first payment demanded by the new creditor"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the reversal now has a name and an address"
+            }
+          ],
+          "reason": "the strain and the downward swing have become a creditor's claim"
+        }
+      ],
+      "historicalBasis": "战前和战间的维也纳家庭会同时使用储蓄所、当铺、私人借贷和股票经纪；一次失败的投资往往通过借新债来补旧债，本状态只把这条链条写成可追踪的参数。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/money-luck",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让赔钱和翻身成为有紧张度、摆动方向和公开故事的持续状态，并能转入债务束缚。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "ml18-lottery.syndicate-row",
+      "title": "更衣室里的合买彩票",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 62
+      },
+      "tags": [
+        "lottery",
+        "work",
+        "factory",
+        "money",
+        "windfall",
+        "friendship",
+        "luck"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "factory-employment",
+          "owner": "person"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "coworker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "foreman",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 68
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "include-the-absent",
+          "weight": 0.4,
+          "significance": 0.8,
+          "text": "夜班散后，更衣室里的人围着一张合买彩票。{coworker}昨天说家里有事，没有交那一克朗，号码却是他念出来的。{foreman}把兑奖单翻过来，问这一份算谁的；铁柜门在半空里晃了一下。最后大家还是把那一份留了出来，用信封压在他的饭盒下面。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "the subject's share of the syndicate win"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 12,
+                "spent": 0,
+                "claims": 0,
+                "public": false,
+                "source": "工厂合买彩票"
+              },
+              "durationMonths": 12,
+              "reason": "a modest factory windfall entered the household"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$coworker",
+              "kind": "friend",
+              "trust": 0.15,
+              "obligation": 0.08,
+              "reason": "the syndicate kept the absent man's share"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the syndicate was seen to keep its word"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "syndicate_shared_win",
+              "add": true,
+              "reason": "voted to include the coworker who had not paid"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "a small win shared without a quarrel"
+            }
+          ]
+        },
+        {
+          "id": "vote-the-absent-out",
+          "weight": 0.35,
+          "significance": 0.72,
+          "text": "多数人说不交钱就没有份。奖金按八个人分，每人九克朗；{coworker}在门口站了一会儿，把工牌翻到背面，没有进来。此后他在车间里只跟机器说话，{foreman}排班时也总把他排到最吵的那台压机旁边。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 9,
+              "reason": "the subject's larger share after excluding the coworker"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 14,
+                "spent": 0,
+                "claims": 1,
+                "public": false,
+                "source": "工厂合买彩票"
+              },
+              "durationMonths": 12,
+              "reason": "a factory windfall entered the household at a social cost"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$coworker",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.05,
+              "reason": "the syndicate voted the coworker out"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the changing room remembers who voted how"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "syndicate_voted_out",
+              "add": true,
+              "reason": "excluded the coworker who had not paid"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "more money, less ease at work"
+            }
+          ]
+        },
+        {
+          "id": "the-ticket-is-a-sample",
+          "weight": 0.25,
+          "significance": 0.65,
+          "text": "兑奖窗口的人把票举到灯下，说这是印刷厂流出来的样票，号码对，纸不对。九个人凑的九克朗只换回一句“下回看清楚”。{foreman}把样票折成一只纸船，放进洗手池；{coworker}笑得最大声，说这比他交钱还划算。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the lost syndicate contribution"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "both were fooled by the same sample ticket"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "learned to check the paper and the printer's mark"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lottery_sample_ticket",
+              "add": true,
+              "reason": "the syndicate ticket was a printer's sample"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "印刷厂流出的样票号码与真票相同，但纸张和背面印记不同。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "nine crowns turned into a paper boat"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-inheritance.uncles-press",
+      "title": "叔父留下的印刷所",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 72
+      },
+      "tags": [
+        "inheritance",
+        "family",
+        "business",
+        "debt",
+        "legal",
+        "money"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 72
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        },
+        {
+          "key": "relative",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 72
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "sell-the-subscription-list",
+          "weight": 0.4,
+          "significance": 0.8,
+          "text": "公证人把一封厚信推到桌子中央：{subject}的叔父在第二区留下一间小印刷所、一台坏掉的压机和十四克朗的欠账。{relative}说那台压机早该当废铁，但订阅名单上还有三百个名字。{subject}把名单卖给对街的印厂，替叔父还了债，剩下的钱刚好够换一套冬衣。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 12,
+              "reason": "sale of the print shop subscription list"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 18,
+                "spent": 0,
+                "claims": 1,
+                "public": false,
+                "source": "叔父的印刷所"
+              },
+              "durationMonths": 18,
+              "reason": "an inheritance turned into ready money"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "the relative advised against keeping the press"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.03,
+              "reason": "valued a subscription list against a press and its debts"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "inherited_print_shop",
+              "add": true,
+              "reason": "inherited and sold a print shop's subscription list"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the inheritance paid for a winter coat"
+            }
+          ]
+        },
+        {
+          "id": "refuse-and-let-the-cousin",
+          "weight": 0.3,
+          "significance": 0.7,
+          "text": "{subject}在公证处坐了很久，最后说自己没有力气再经营一间铺子。{relative}接过钥匙，脸上先是惊讶，随后是一种被托付的沉重。半年后，那间印刷所改了招牌，{relative}在门口看见{subject}，只点了点头，没有提请客吃饭的事。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the notary's fee for refusing the inheritance"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "rival",
+              "trust": -0.1,
+              "obligation": 0.1,
+              "reason": "the refused inheritance passed to the relative"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_print_shop",
+              "add": true,
+              "reason": "refused the print shop and its debts"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "叔父的印刷所欠着十四克朗，订阅名单是唯一还值钱的东西。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "relief and a small shame at the notary's desk"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-press-for-scrap",
+          "weight": 0.3,
+          "significance": 0.62,
+          "text": "{subject}把压机拆开卖给收废铁的人，得了八克朗；还掉六克朗欠账，剩下两克朗。订阅名单被{subject}带回家，夹在电话簿里，偶尔拿出来看看那些名字。印刷所的门从里面锁上，窗户上贴了一张招租纸，风把纸角吹得一直响。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "scrap value of the press after paying its debts"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "the relative helped move the press"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_the_press",
+              "add": true,
+              "reason": "sold the inherited press for scrap"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那台压机卖作废铁只值八克朗，订阅名单却可能值更多。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a shop closed quietly"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-gambling.card-system",
+      "title": "纸牌桌上的翻倍法",
+      "domain": "leisure",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 21,
+        "max": 68
+      },
+      "tags": [
+        "gambling",
+        "luck",
+        "money",
+        "casino",
+        "risk",
+        "absurd"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 21,
+          "maxAge": 68
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "stop-while-ahead",
+          "weight": 0.4,
+          "significance": 0.82,
+          "text": "纸牌桌上连开三把庄。{subject}按自己写在烟盒背面的翻倍法，把最后十五克朗押在闲上。庄家翻开一张四，闲家九点；{partner}的手在桌下抓住{subject}的袖子；{subject}把赢回的三十克朗换成现钱，数出十克朗塞进袜筒，剩下的放进内袋，说今晚到此为止。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 30,
+              "reason": "winnings taken off the card table"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 30,
+                "spent": 0,
+                "claims": 1,
+                "public": true,
+                "source": "纸牌桌上的翻倍法"
+              },
+              "durationMonths": 18,
+              "reason": "a casino win entered the household"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.1,
+              "affection": 0.05,
+              "reason": "they left the table together while ahead"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the croupier saw the subject stop"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_the_table_ahead",
+              "add": true,
+              "reason": "walked away from a winning table"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "a rare clean win"
+            }
+          ]
+        },
+        {
+          "id": "double-to-recover",
+          "weight": 0.35,
+          "significance": 0.9,
+          "text": "第四把庄，{subject}把家里的房租也押了上去。庄家翻出九点，闲家只有三点；{partner}没有哭，只把戒指从手上摘下来放在桌边。{subject}在天亮前走出赌场，口袋里剩下一枚筹码和一张写着地址的借条；街上的扫雪人已经开始工作。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -40,
+              "reason": "rent and savings lost at the card table"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "parameters": {
+                "strain": 55,
+                "swing": -50,
+                "public": false,
+                "story": "纸牌桌上的三连庄"
+              },
+              "durationMonths": 24,
+              "reason": "a gambling loss changed the subject's money luck"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.1,
+              "reason": "the rent money was lost at the table"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "gambling debt",
+              "add": true,
+              "reason": "a marker was signed before dawn"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lost_the_rent_at_cards",
+              "add": true,
+              "reason": "lost the rent money trying to recover a loss"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "纸牌没有记忆，三把庄之后闲仍然不是必然。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "the walk home at dawn"
+            }
+          ]
+        },
+        {
+          "id": "casino-bans-the-system",
+          "weight": 0.25,
+          "significance": 0.78,
+          "text": "赌场经理把{subject}请到柜台后面，端来一杯咖啡，说这套法子已经在别的桌上被用过了。他们不查牌，只请{subject}以后别再来；作为补偿，柜台退给{subject}十二克朗的车马费。{partner}在门口笑出声，说这是{subject}第一次靠赢钱被赶出去。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 12,
+              "reason": "the casino's travel compensation"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 12,
+                "spent": 0,
+                "claims": 0,
+                "public": true,
+                "source": "赌场的车马费"
+              },
+              "durationMonths": 12,
+              "reason": "a small casino payout entered the household"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "friend",
+              "trust": 0.1,
+              "affection": 0.08,
+              "reason": "the absurd ban became a shared joke"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the story of the ban amused the coffeehouse"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "banned_from_casino",
+              "add": true,
+              "reason": "banned for a betting system the casino had seen before"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a ridiculous ending to a serious plan"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-investment.sugar-bonds",
+      "title": "糖厂债券的行情",
+      "domain": "economy",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "investment",
+        "money",
+        "debt",
+        "risk",
+        "finance",
+        "bond",
+        "speculation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "wish-wealth",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-refinery-defaults",
+          "weight": 0.35,
+          "significance": 0.9,
+          "text": "{worker}把一份印着糖厂全景的债券说明书摊在餐桌上，说年息八厘，比邮局储蓄所稳当。{subject}把两人攒了三年的四十克朗交给他；六个月后，糖厂的甜菜地已经抵押给另一家银行，利息单一张也没有兑付。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -40,
+              "reason": "the sugar refinery bonds defaulted"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "parameters": {
+                "strain": 60,
+                "swing": -60,
+                "public": false,
+                "story": "糖厂债券的违约"
+              },
+              "durationMonths": 24,
+              "reason": "a sugar refinery bond default changed the subject's money luck"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "the joint savings went into the refinery bonds"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "bad investment",
+              "add": true,
+              "reason": "the sugar refinery bonds defaulted"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sugar_bond_default",
+              "add": true,
+              "reason": "lost the savings in a sugar refinery bond default"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "糖厂债券的利息停付时，糖厂的甜菜地已经抵押给了另一家银行。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "the coupons were not paid"
+            }
+          ]
+        },
+        {
+          "id": "sell-before-the-default",
+          "weight": 0.4,
+          "significance": 0.82,
+          "text": "电报上的两个数字被报务员抄反了，{subject}把它读成“立即卖出”。{subject}在午饭前把糖厂债券全部转给了交易所里的一个熟人，两周后糖厂宣布停付利息。{worker}在门口找到{subject}，脸上还有一种没来得及收起的羡慕；{subject}请他喝了咖啡，没有说自己也不确定。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 45,
+              "reason": "sold sugar refinery bonds before the default"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 35,
+                "spent": 0,
+                "claims": 1,
+                "public": false,
+                "source": "糖厂债券的误读"
+              },
+              "durationMonths": 18,
+              "reason": "a mistranscribed telegram produced a windfall"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "learned to compare a telegram against the market board"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "rumor credited the subject with foresight"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_before_default",
+              "add": true,
+              "reason": "sold sugar bonds before the default"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "a lucky escape disguised as judgment"
+            }
+          ]
+        },
+        {
+          "id": "the-bonds-are-forged",
+          "weight": 0.25,
+          "significance": 0.85,
+          "text": "三个月后，{subject}拿着债券去银行兑息，柜员把纸举到灯下，说这是石印的，不是钢印。{worker}的办公室已经换了锁，房东说他欠了两个月房租。{partner}把债券一张张铺在床上，纸边整齐得像刚从印刷所出来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -25,
+              "reason": "money lost on forged sugar bonds"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "parameters": {
+                "strain": 45,
+                "swing": -35,
+                "public": false,
+                "story": "石印的糖厂债券"
+              },
+              "durationMonths": 18,
+              "reason": "a forged investment deepened the subject's reversal"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "rival",
+              "trust": -0.3,
+              "reason": "the broker sold forged certificates and vanished"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "fraud victim",
+              "add": true,
+              "reason": "bought forged sugar bonds"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "forged_sugar_bonds",
+              "add": true,
+              "reason": "discovered the sugar bonds were lithographs"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "真正的债券证书有钢印，那个经纪人给的是石印纸。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "the bonds were beautiful and worthless"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-scam.spanish-prisoner",
+      "title": "西班牙牢里的贵族",
+      "domain": "crime",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 75
+      },
+      "tags": [
+        "scam",
+        "money",
+        "fraud",
+        "letter",
+        "absurd",
+        "crime"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "wish-wealth",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 75
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "send-the-bail",
+          "weight": 0.35,
+          "significance": 0.78,
+          "text": "信是用很讲究的西班牙体写的：一位贵族被关在马德里监狱，只要二十克朗的保释金，就能分到一只装满金器的箱子。{subject}把钱汇到指定地址，又在信里附了一张自己的名片。三周后，名片被退回来，背面盖着“查无此人”，邮戳却是维也纳南站。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -20,
+              "reason": "bail money sent to the Spanish prisoner"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "parameters": {
+                "strain": 35,
+                "swing": -25,
+                "public": false,
+                "story": "西班牙牢里的贵族"
+              },
+              "durationMonths": 12,
+              "reason": "a confidence trick became a money reversal"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "fraud victim",
+              "add": true,
+              "reason": "sent bail money to a fictitious prisoner"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sent_bail_to_prisoner",
+              "add": true,
+              "reason": "mailed bail money for a Spanish nobleman"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那封西班牙来信承诺以二十克朗换一箱金器，回信地址却在中转站附近。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the returned business card was the whole answer"
+            }
+          ]
+        },
+        {
+          "id": "spot-the-handwriting",
+          "weight": 0.4,
+          "significance": 0.75,
+          "text": "{subject}把信翻到最后一页，认出那个向左歪的“g”和{neighbor}记账时一模一样。{official}在邮局后间听完，没笑，只让{subject}把信和信封都留下。两周后，邮局给了三克朗的赏钱；{neighbor}在楼梯口遇见{subject}，把帽子压得很低。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "postal reward for exposing the letter scam"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "the subject recognized the neighbor's handwriting"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the postal inspector credited the subject with the warning"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "learned how the bait money and the promised trunk were priced"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "exposed_spanish_prisoner",
+              "add": true,
+              "reason": "recognized the scam letter's handwriting"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那封西班牙来信是邻居写的，邮戳来自维也纳南站而不是马德里。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the trap was seen before the money left"
+            }
+          ]
+        },
+        {
+          "id": "the-crate-of-buttons",
+          "weight": 0.25,
+          "significance": 0.8,
+          "text": "{subject}还是汇了十克朗，想看看对方能寄来什么。四周后，一只木箱到了，里面是两百枚黄铜纽扣和一张写着“余款后补”的纸条。{subject}把纽扣卖给戏服铺，得了十五克朗；戏服铺老板问还有没有，{subject}说大概没有了。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 5,
+              "reason": "profit from selling the scammer's brass buttons"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "brass_button_crate",
+              "add": true,
+              "reason": "received a crate of brass buttons instead of a gold trunk"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "西班牙牢里的贵族寄来的是一只装满黄铜纽扣的木箱。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the scam turned a small profit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-debt.pawnshop-clock",
+      "title": "当铺柜台上的座钟",
+      "domain": "economy",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 75
+      },
+      "tags": [
+        "debt",
+        "pawnshop",
+        "money",
+        "family",
+        "ordinary",
+        "quiet"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "debt-bondage",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 72
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 17
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "redeem-it-in-time",
+          "weight": 0.35,
+          "significance": 0.72,
+          "text": "房东在门上用粉笔写了第三次催租。{subject}把走廊里的座钟抱到当铺，{worker}给了六克朗；{child}踩着凳子给钟上弦，问今天为什么不上发条。{subject}接了一周的夜班，第七天把钟赎回来，钟摆晃了两下，又慢慢走起来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the difference between the pawn loan and the redemption"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": -3,
+              "reason": "the night work paid down part of the debt"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.1,
+              "affection": 0.08,
+              "reason": "the clock came home"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "clock_redeemed",
+              "add": true,
+              "reason": "redeemed the family clock from the pawnshop"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the hallway clock is ticking again"
+            }
+          ]
+        },
+        {
+          "id": "lose-the-clock",
+          "weight": 0.35,
+          "significance": 0.68,
+          "text": "{subject}没有凑够赎金。当票到期那天，{worker}把座钟从架子上取下来，说可以再宽限三天；三天后，钟已经摆进橱窗，标价十二克朗。{child}每天路过都往里看，回家后把手指放在墙上原来挂钟的位置，那里有一块颜色较浅的墙皮。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "the pawn loan for the clock"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.1,
+              "affection": -0.05,
+              "reason": "the child watched the clock disappear"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "clock_lost",
+              "add": true,
+              "reason": "could not redeem the family clock"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "household goods pawned",
+              "add": true,
+              "reason": "the clock was sold by the pawnbroker"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the wall where the clock used to hang"
+            }
+          ]
+        },
+        {
+          "id": "the-clock-is-worth-more",
+          "weight": 0.15,
+          "significance": 0.8,
+          "text": "{worker}把钟翻过来，看见底板上的铜牌，手停了一下。他叫来老板，老板戴上眼镜，说这是布尔诺一个老匠人的作品，愿意给二十五克朗。{subject}先还了房租，又把当票赎回来；剩下的钱放在桌上，{child}伸手去拨钟摆，被轻轻挡住。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 25,
+              "reason": "sale of a clock recognized as a rare piece"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 18,
+                "spent": 7,
+                "claims": 0,
+                "public": false,
+                "source": "座钟底板上的铜牌"
+              },
+              "durationMonths": 12,
+              "reason": "a household object turned into an unexpected sum"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": -10,
+              "reason": "rent and part of the debt were paid from the clock sale"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "the pawnbroker recognized the clock's maker"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "座钟底板上的铜牌是布尔诺老匠人的印记，当铺愿意出二十五克朗。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "clock_was_valuable",
+              "add": true,
+              "reason": "discovered the pawned clock was a rare piece"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "a household object was worth more than the rent"
+            }
+          ]
+        },
+        {
+          "id": "the-pawnbroker-is-the-creditor",
+          "weight": 0.15,
+          "significance": 0.7,
+          "text": "{worker}把当票和一张旧借条并排放在柜台上，说这两笔账可以一起算。{subject}这才认出他是债主的表弟。座钟被留下，借条上划掉了四克朗；{worker}把钟摆拆下来，说这样下次赎回时不会走得太快。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "debt written off against the clock"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": -4,
+              "reason": "the pawnbroker credited the clock against the debt"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "rival",
+              "trust": -0.1,
+              "fear": 0.05,
+              "reason": "the pawnbroker was related to the creditor"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "pawnbroker_was_creditor",
+              "add": true,
+              "reason": "the pawnbroker and the creditor were working together"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "当铺老板是债主的表弟，座钟被折进同一本账。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the debt had more than one address"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-family.fortune-split",
+      "title": "分钱的那顿晚饭",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 72
+      },
+      "tags": [
+        "family",
+        "money",
+        "windfall",
+        "inheritance",
+        "conflict",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ml18-sudden-fortune",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 72
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 72
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 72
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 4,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "split-it-equally",
+          "weight": 0.35,
+          "significance": 0.72,
+          "text": "星期天的晚饭多摆了一副刀叉。{sibling}带着一本记账簿来，说钱是大家的运气，不该只落在一个人家里。{subject}把二十四克朗分成三份，{sibling}数了两遍；{partner}把烤肉端上桌，谁也没有再提那本账簿。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -24,
+              "reason": "the windfall was divided among the family"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "principal",
+              "delta": -24,
+              "reason": "three shares left the household"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "claims",
+              "delta": 2,
+              "reason": "the sibling and partner were given shares"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "the money was divided without a lawsuit"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fortune_split_equally",
+              "add": true,
+              "reason": "divided the windfall among the family"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the argument ended before coffee"
+            }
+          ]
+        },
+        {
+          "id": "keep-it-for-the-children",
+          "weight": 0.35,
+          "significance": 0.78,
+          "text": "{sibling}想把钱拿去盘下街角的小酒馆，{subject}却把十五克朗直接交到学校，替孩子续了下一年的学费。{sibling}把餐巾摔在桌上，说这家人永远只会把钱埋进土里。{partner}没有劝，只把汤碗往{subject}那边推了推。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -15,
+              "reason": "school fees paid from the windfall"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "principal",
+              "delta": -15,
+              "reason": "the money went into the child's schooling"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolProgress",
+              "delta": 12,
+              "reason": "the school fees secured another year"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "the sibling wanted the money for a tavern"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "careDebt",
+              "delta": 5,
+              "reason": "the fees were paid but the household is still short"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fortune_kept_for_child",
+              "add": true,
+              "reason": "spent the windfall on the child's school instead of the sibling's tavern"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a hard choice that protected the child"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "raising-child",
+              "owner": "household"
+            }
+          ]
+        },
+        {
+          "id": "the-sibling-takes-it",
+          "weight": 0.3,
+          "significance": 0.9,
+          "text": "晚饭后的第三天，{subject}去邮局取钱，发现存折上少了三十克朗。{sibling}在母亲的旧照片前承认拿了钱，说这些年照顾母亲的情分总该折成数目。{partner}去叫了警察；{subject}站在两个最熟悉的人中间，听见楼下有人把留声机开得很响。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -30,
+              "reason": "the sibling took thirty crowns from the savings book"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "principal",
+              "delta": -30,
+              "reason": "the windfall was stolen by a relative"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "claims",
+              "delta": 3,
+              "reason": "the theft created more family claims"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "rival",
+              "trust": -0.3,
+              "fear": 0.1,
+              "reason": "the sibling took the money and called it a debt"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "family rupture",
+              "add": true,
+              "reason": "the theft split the family"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "family_fortune_stolen",
+              "add": true,
+              "reason": "a sibling took part of the windfall"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "存折上少了三十克朗，取款单上的签名是模仿的。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "the family photograph fell face down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-family.orchard-mortgage",
+      "title": "果园的抵押",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 72
+      },
+      "tags": [
+        "family",
+        "estate",
+        "money",
+        "loan",
+        "rural",
+        "inheritance"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ml18-sudden-fortune",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "family-estate",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 72
+        },
+        {
+          "key": "relative",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 72
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "lend-and-save-the-orchard",
+          "weight": 0.4,
+          "significance": 0.78,
+          "text": "{relative}带来一篮去年腌的梨，说果园的抵押下个月到期，银行只肯续一半。{official}把两张数字并排写在纸上：一张是欠款，一张是今年的霜冻损失。{subject}从横财里拿出二十克朗，{relative}在借据上按手印时，手指上还沾着梨汁。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -20,
+              "reason": "loan to save the relative's orchard"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "principal",
+              "delta": -20,
+              "reason": "part of the windfall was lent to the orchard"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": -10,
+              "reason": "the orchard mortgage was partly paid down"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "friend",
+              "trust": 0.2,
+              "obligation": 0.15,
+              "reason": "the loan saved the family orchard"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "orchard_saved",
+              "add": true,
+              "reason": "lent money to save the family orchard"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the orchard would see another spring"
+            }
+          ]
+        },
+        {
+          "id": "buy-the-land-cheap",
+          "weight": 0.3,
+          "significance": 0.86,
+          "text": "{relative}走后，{subject}让{official}把抵押文件再念一遍，第二天带着三十克朗去找银行，买下了那片果园的优先受偿权。{relative}在村口拦住{subject}，问是不是从一开始就在等这一天。{subject}说不是，但也没有把文件收起来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -30,
+              "reason": "bought the orchard's mortgage from the bank"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "acres",
+              "delta": 6,
+              "reason": "the orchard was added to the family estate"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "contested",
+              "value": true,
+              "reason": "the relative disputes the purchase"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": 15,
+              "reason": "the purchase was financed with new debt"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "rival",
+              "trust": -0.25,
+              "fear": 0.1,
+              "reason": "the subject bought the relative's mortgage"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the village heard how the orchard changed hands"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bought_cousins_orchard",
+              "add": true,
+              "reason": "bought the family orchard through its mortgage"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the land was acquired without a quarrel in public"
+            }
+          ]
+        },
+        {
+          "id": "lend-for-a-share-of-the-crop",
+          "weight": 0.3,
+          "significance": 0.66,
+          "text": "{official}建议写一份分成契约，而不是一张借据。{subject}借出十二克朗，换来果园明年苹果收成的三成；{relative}在契约上多加了一条：若霜冻再来，分成减半。两个人在公证处门口握手，手都插在袖子里，握得不算热。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -12,
+              "reason": "loan for a share of the orchard's crop"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "principal",
+              "delta": -12,
+              "reason": "part of the windfall went into the orchard contract"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": -4,
+              "reason": "the loan covered part of the orchard debt"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "upkeep",
+              "delta": 5,
+              "reason": "the orchard was repaired before the harvest"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "the loan was written as a crop share"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "orchard_share",
+              "add": true,
+              "reason": "took a share of the orchard's next crop instead of interest"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a careful compromise was signed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-office.envelope-under-the-file",
+      "title": "公文下面的信封",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 70
+      },
+      "tags": [
+        "office",
+        "corruption",
+        "money",
+        "scandal",
+        "legal",
+        "risk"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "office-under-siege",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 72
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "take-the-envelope",
+          "weight": 0.35,
+          "significance": 0.85,
+          "text": "{neighbor}把一只没有字的信封压在审计文件下面，说这是“朋友之间的周转”，等风头过去再还。{subject}把信封收进抽屉，{official}第二天来问账目时，{subject}第一次没有把每一页都摊开。抽屉合上时发出一声很轻的响。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 15,
+              "reason": "the envelope left under the audit file"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": 10,
+              "reason": "the envelope bought a little breathing room"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "exposure",
+              "delta": 15,
+              "reason": "a hidden cash payment increased the risk"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "accepted_office_loan",
+              "add": true,
+              "reason": "accepted cash hidden under an audit file"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "信封是那个中间人替一个承包商送来的，条件是审计报告晚两周提交。",
+              "confidence": 0.85,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the drawer no longer closes easily"
+            }
+          ]
+        },
+        {
+          "id": "refuse-and-report",
+          "weight": 0.4,
+          "significance": 0.82,
+          "text": "{subject}把信封推回去，{neighbor}的手在桌沿停了一下。当天下午，{subject}把这件事写成一份两页的说明，连同信封一起交给{official}。审计没有因此停止，但第二次听证会结束时，{official}在走廊里对{subject}点了点头。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "reported an attempted bribe during an audit"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": 15,
+              "reason": "the report won the subject a few defenders"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "exposure",
+              "delta": 5,
+              "reason": "the report put the offer on the record"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.25,
+              "reason": "the intermediary was named in the report"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reported_the_envelope",
+              "add": true,
+              "reason": "reported cash left under an audit file"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the drawer was empty and the record was clean"
+            }
+          ]
+        },
+        {
+          "id": "the-envelope-is-a-trap",
+          "weight": 0.25,
+          "significance": 0.88,
+          "text": "信封里不是钞票，是裁成钞票大小的报纸。{official}带着两名记录员从侧门进来，桌上还摊着{subject}没有合上的审计文件。{subject}说这是有人栽赃，{official}把信封翻过来，背面写着一个只有{subject}知道的编号。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 20,
+                "charge": "行贿未遂"
+              },
+              "durationMonths": 18,
+              "reason": "an attempted bribery trap opened an investigation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "exposure",
+              "delta": 25,
+              "reason": "the trap was staged in front of witnesses"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": -15,
+              "reason": "colleagues stepped away from the subject"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the newspaper cuttings looked like a bribe"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bribery_trap",
+              "add": true,
+              "reason": "was caught in a staged bribery trap"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "信封里装的是报纸剪成的假钞，背面有我的办公室编号。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "the trap was prepared before the meeting"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-scandal.public-win",
+      "title": "报纸上的中奖者",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 75
+      },
+      "tags": [
+        "scandal",
+        "lottery",
+        "money",
+        "media",
+        "reputation",
+        "public"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 75
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "prove-the-ticket",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "{worker}把报纸拍在柜台上：中奖者的名字和{subject}的丑闻印在同一版，标题暗示这笔钱来路不正。{subject}回家取来彩票、邮局收据和当天的开奖公告，{official}逐张核对，最后在报纸边上写了一行更正。更正只有三行，但足够让咖啡馆换一个话题。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 25,
+              "reason": "the verified lottery prize"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 25,
+                "spent": 0,
+                "claims": 1,
+                "public": true,
+                "source": "被报纸核对过的彩票"
+              },
+              "durationMonths": 18,
+              "reason": "a public lottery win entered the household"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the ticket was proved genuine"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "the official verified the ticket and the receipt"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "proved_lottery_win",
+              "add": true,
+              "reason": "proved a lottery win during a public scandal"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "彩票的邮局收据和开奖公告能证明中奖发生在丑闻之前。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a correction in three lines"
+            }
+          ]
+        },
+        {
+          "id": "pay-the-hush",
+          "weight": 0.35,
+          "significance": 0.78,
+          "text": "{worker}在报馆后门拦住{subject}，说只要十五克朗，这篇稿子可以压到下周；下周又有新的价钱。{subject}付了第一次，第二次没有付。稿子见报时，结尾多了一句“当事人曾试图以现金阻止刊登”，比原来的丑闻更难看。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -15,
+              "reason": "hush money paid to a newspaper man"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.1,
+              "reason": "the journalist kept raising the price"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the hush money became part of the story"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_hush_money",
+              "add": true,
+              "reason": "paid a journalist to delay a story"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "报馆后门的价钱可以压一周稿子，但压不住下一周。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the story got worse after the payment"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-story",
+          "weight": 0.3,
+          "significance": 0.82,
+          "text": "{subject}给{worker}倒了一杯酒，说与其让别人写，不如自己讲：中奖是真的，丑闻也是真的，两件事碰巧赶在同一周。第二天的专访登在周末版，稿费二十克朗；音乐厅的滑稽演员把它编进段子，{subject}去听了一次，笑到咳嗽。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 20,
+              "reason": "payment for a weekend interview"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 20,
+                "spent": 0,
+                "claims": 1,
+                "public": true,
+                "source": "报纸专访的稿费"
+              },
+              "durationMonths": 12,
+              "reason": "selling the story produced a small windfall"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "reason": "the subject took control of the scandal's story"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the interview made the scandal a joke"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "the journalist got an exclusive interview"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_the_scandal_story",
+              "add": true,
+              "reason": "sold an interview about the lottery and the scandal"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the joke was finally on the subject's terms"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-luck.wrong-horse",
+      "title": "押错的那匹马",
+      "domain": "leisure",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 72
+      },
+      "tags": [
+        "gambling",
+        "luck",
+        "money",
+        "horse_race",
+        "absurd",
+        "windfall"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 72
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 72
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 72
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-wrong-horse-wins",
+          "weight": 0.35,
+          "significance": 0.85,
+          "text": "{subject}把“蓝多瑙”看成了“蓝星期一”，在柜台前把五克朗押在一匹没人看好的马上。最后一道弯，那匹马从外道切进来，{neighbor}手里的铅笔停在票面上。赔率是一赔十二；{partner}把赢来的钱数了两遍，{subject}还在看自己的票，像不相信上面的名字。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 60,
+              "reason": "winnings from the wrong horse at long odds"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 50,
+                "spent": 0,
+                "claims": 2,
+                "public": true,
+                "source": "押错的马"
+              },
+              "durationMonths": 24,
+              "reason": "a misread bet produced a large windfall"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "the bookmaker paid out but did not enjoy it"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the racecourse talked about the misread ticket"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wrong_horse_won",
+              "add": true,
+              "reason": "won on a horse bet by mistake"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.09,
+              "reason": "the wrong name paid better than the right one"
+            }
+          ]
+        },
+        {
+          "id": "split-it-with-the-bookmaker",
+          "weight": 0.35,
+          "significance": 0.74,
+          "text": "{neighbor}把票翻过来，说这行字本来该写“蓝星期一”，{subject}要是咬住不放，他也没办法。{subject}想了一会儿，说一人一半，但下次写清楚。{neighbor}先是不信，随后从抽屉里数出三十克朗，手比平时慢。{partner}在门外听见，回家路上一直没说话，进门才说这比全拿走强。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 30,
+              "reason": "half the winnings shared with the bookmaker"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 25,
+                "spent": 0,
+                "claims": 0,
+                "public": false,
+                "source": "分给马票经纪人的一半"
+              },
+              "durationMonths": 18,
+              "reason": "a shared racecourse win entered the household"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.2,
+              "obligation": 0.1,
+              "reason": "the subject shared a winnings dispute instead of pressing it"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "the bookmaker told the story of the fair split"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "split_the_winnings",
+              "add": true,
+              "reason": "split a disputed horse-race win"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "the money was clean enough to spend"
+            }
+          ]
+        },
+        {
+          "id": "the-horse-is-disqualified",
+          "weight": 0.3,
+          "significance": 0.7,
+          "text": "马冲过终点，{subject}的票已经举到半空；广播里却说骑师过磅轻了半公斤，成绩作废。{neighbor}把票收回去，在背面盖了一个“无效”的章，又给{subject}倒了一杯李子酒。{partner}说至少酒是免费的；{subject}喝了一口，觉得比输钱还难受。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "the losing stake on a disqualified horse"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "parameters": {
+                "strain": 20,
+                "swing": -10,
+                "public": false,
+                "story": "被取消资格的那匹马"
+              },
+              "durationMonths": 6,
+              "reason": "a racecourse reversal left a small sour mark"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "the bookmaker poured a consolation drink"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "horse_disqualified",
+              "add": true,
+              "reason": "the winning horse was disqualified at the weigh-in"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那匹马第一个冲线，但骑师过磅轻了半公斤。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a win was taken away after the fact"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-business.bottle-cap-patent",
+      "title": "无人要的瓶盖专利",
+      "domain": "business",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 70
+      },
+      "tags": [
+        "business",
+        "patent",
+        "money",
+        "windfall",
+        "invention",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.11,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "sell-the-patent-outright",
+          "weight": 0.35,
+          "significance": 0.86,
+          "text": "破产拍卖会上，{subject}用四克朗买下一张没人举牌的瓶盖专利，只因为图纸画得好看。三个月后，{employer}的矿泉水厂找上门：那圈软木垫正好能解决他们的漏气问题。{official}核对完专利号，{employer}当场开出八十克朗的支票。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 80,
+              "reason": "sale of the bottle-cap patent"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 70,
+                "spent": 0,
+                "claims": 0,
+                "public": true,
+                "source": "瓶盖专利"
+              },
+              "durationMonths": 24,
+              "reason": "a cheap patent turned into a large windfall"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "respect": 0.15,
+              "reason": "the factory bought the patent outright"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "the patent sale was reported in the trade paper"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_patent",
+              "add": true,
+              "reason": "sold the bottle-cap patent for eighty crowns"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "a joke purchase paid for a year"
+            }
+          ]
+        },
+        {
+          "id": "license-it-and-keep-the-patent",
+          "weight": 0.35,
+          "significance": 0.74,
+          "text": "{subject}没有卖断，而是和{employer}签了按瓶抽成的许可：每卖出一千瓶，付两克朗。第一年只卖了四千瓶，{subject}拿到八克朗，却保住了专利。{official}在许可书上盖了一个小章，说这种条款以后会值钱；{subject}把章看了一会儿，没敢笑。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "first royalty payment on the bottle-cap patent"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 20,
+                "spent": 0,
+                "claims": 0,
+                "public": false,
+                "source": "瓶盖专利的许可费"
+              },
+              "durationMonths": 24,
+              "reason": "a patent license produced a steady small windfall"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "colleague",
+              "trust": 0.1,
+              "respect": 0.1,
+              "reason": "the factory signed a royalty agreement"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "learned to price a royalty against an outright sale"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "licensed_patent",
+              "add": true,
+              "reason": "licensed the bottle-cap patent instead of selling it"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the patent still belongs to the subject"
+            }
+          ]
+        },
+        {
+          "id": "the-patent-is-contested",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "许可合同签下两周，另一家瓶盖厂拿出一张更早的图纸，说{subject}的专利只是把软木垫换了个方向。{official}把两份图纸并排看了很久，最后让双方先停售。{subject}付了十二克朗的律师费，{employer}把订单转给了出价更低的那家。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -12,
+              "reason": "legal fees for the patent dispute"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "parameters": {
+                "strain": 35,
+                "swing": -20,
+                "public": false,
+                "story": "瓶盖专利的官司"
+              },
+              "durationMonths": 12,
+              "reason": "a patent dispute turned a small success into a reversal"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "the factory moved the order to a cheaper supplier"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "patent_disputed",
+              "add": true,
+              "reason": "the bottle-cap patent was challenged by an earlier drawing"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "另一家厂拿出的图纸日期比我的专利申请早两个月。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the patent is not as solid as the paper looked"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-bank.run-on-the-savings",
+      "title": "银行门口的队伍",
+      "domain": "economy",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 75
+      },
+      "tags": [
+        "bank",
+        "money",
+        "crisis",
+        "savings",
+        "risk",
+        "reversal"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 75
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "withdraw-in-time",
+          "weight": 0.35,
+          "significance": 0.72,
+          "text": "天还没亮，银行门口已经排到街角。{worker}在门里喊，说只是谣言，存款都在；排队的人没有散，反而把箱子放在脚边。{subject}排到中午，取出了四十克朗，回家把钱分成三份藏好。第二天银行照常开门，{partner}说白排了一天；{subject}说排一天总比排三年强。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 40,
+              "reason": "savings withdrawn during the bank run"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.1,
+              "reason": "the savings were brought home before the bank failed"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "learned to read a bank's cash reserve against a rumor"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "withdrew_savings",
+              "add": true,
+              "reason": "withdrew savings during the bank run"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the money was in hand before the doors closed"
+            }
+          ]
+        },
+        {
+          "id": "leave-it-and-lose-it",
+          "weight": 0.35,
+          "significance": 0.9,
+          "text": "{worker}把{subject}拉到一边，说银行只是缺现钱，资产还在，别去挤兑。{subject}信了他，把存折放回抽屉。两周后，银行关门，玻璃上贴着一张白纸，写着清算人的地址；{partner}把存折翻到最后一页，发现最后一笔利息停在三个月前。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -35,
+              "reason": "savings lost when the bank closed"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "parameters": {
+                "strain": 50,
+                "swing": -45,
+                "public": true,
+                "story": "银行门口的队伍"
+              },
+              "durationMonths": 24,
+              "reason": "a bank failure reversed the household's savings"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "reason": "the bank clerk advised against withdrawing"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "bank failure",
+              "add": true,
+              "reason": "the household's savings were frozen in a failed bank"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "savings_lost_in_bank",
+              "add": true,
+              "reason": "kept savings in a bank that closed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "银行关门时，最后一笔利息停在三个月前，清算人只留了一个地址。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "the savings book became a piece of paper"
+            }
+          ]
+        },
+        {
+          "id": "buy-the-falling-shares",
+          "weight": 0.3,
+          "significance": 0.84,
+          "text": "队伍旁边有人低声卖银行的股票，价格只有上周的一半。{subject}没有取钱，反而把存折里的三十克朗换成股票；{worker}说这是把最后一件大衣也押上。三个月后，银行被一家大行接手，股票回升，{subject}在柜台前把股票卖出，换回六十克朗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 60,
+              "reason": "profit from buying bank shares during the panic"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 50,
+                "spent": 0,
+                "claims": 0,
+                "public": true,
+                "source": "银行恐慌中的股票"
+              },
+              "durationMonths": 18,
+              "reason": "a contrarian bank investment paid off"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.04,
+              "reason": "learned to read a panic price against a bank's assets"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the coffeehouse called it courage after the fact"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bought_bank_shares",
+              "add": true,
+              "reason": "bought bank shares while the queue waited outside"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "the panic paid the household"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-loan.backroom-moneylender",
+      "title": "酒馆后屋的借条",
+      "domain": "crime",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 21,
+        "max": 70
+      },
+      "tags": [
+        "debt",
+        "loan",
+        "gambling",
+        "crime",
+        "money",
+        "risk"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "debt-bondage",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 21,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 72
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 72
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "win-and-repay",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "{neighbor}把二十克朗推过桌面，借条上写着每周两成利息。{subject}拿这笔钱押了一场球，赢回的数目刚好够还本息；{neighbor}数完钱，把借条撕成两半，说下回别再找他。{subject}把撕碎的纸片收进口袋，回家路上第一次觉得路灯很亮。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 5,
+              "reason": "the small profit left after repaying the moneylender"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": -10,
+              "reason": "part of the old debt was cleared with the winnings"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "fear": 0.05,
+              "reason": "the loan was repaid in full"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "repaid_shark",
+              "add": true,
+              "reason": "repaid a backroom loan and tore up the marker"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a debt ended with a torn slip of paper"
+            }
+          ]
+        },
+        {
+          "id": "the-debt-doubles",
+          "weight": 0.4,
+          "significance": 0.88,
+          "text": "球赛的结果和{subject}记的相反。{neighbor}没有发火，只把借条翻到背面，又写了一个新的数字，把利息也算进了本金。{subject}回到家，发现门口放着一只空煤箱，箱盖上用粉笔写着“下次带钱来”；{partner}没有问，只把晚饭收进了橱柜。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "the lost stake and the first interest payment"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": 25,
+              "reason": "the backroom loan's interest was folded into the principal"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.15,
+              "fear": 0.3,
+              "reason": "the moneylender now has a claim on the household"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "threatened by creditor",
+              "add": true,
+              "reason": "the moneylender left a warning on the coal box"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shark_debt_doubled",
+              "add": true,
+              "reason": "the backroom loan doubled after a lost bet"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "the new number on the back of the slip"
+            }
+          ]
+        },
+        {
+          "id": "work-it-off-as-a-collector",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "{neighbor}说钱可以缓一缓，但{subject}得替他跑几条街：去裁缝铺收一笔，去鞋匠家搬一台缝纫机，去码头找一个欠了三个月的人。{subject}第一次敲开别人的门时，看见桌上摆着和自己家一样的汤碗；第二次，他把话说得很快，不让对方插嘴。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "expenses while collecting for the moneylender"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": -5,
+              "reason": "collection work reduced the debt"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "colleague",
+              "trust": -0.05,
+              "obligation": 0.3,
+              "fear": 0.15,
+              "reason": "the moneylender made the subject a collector"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "collector for a moneylender",
+              "add": true,
+              "reason": "worked off the debt by collecting from others"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "works_for_creditor",
+              "add": true,
+              "reason": "became a collector for the moneylender"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the same soup bowls on other people's tables"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-inheritance.conditional-will",
+      "title": "遗嘱上的三个条件",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 72
+      },
+      "tags": [
+        "inheritance",
+        "legal",
+        "family",
+        "money",
+        "conditions",
+        "cinema",
+        "quiet"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 72
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        },
+        {
+          "key": "relative",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 72
+        }
+      ],
+      "baseRate": 0.11,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "keep-the-candle-workshop-open",
+          "weight": 0.35,
+          "significance": 0.76,
+          "text": "姑婆的遗嘱只有一页：六十克朗留给{subject}，条件是那间放无声电影的小影院再开五年，并且把她的侄孙女送进学校。{official}把三个条件念了两遍；{relative}在门外等着，手里捏着另一份没有拆封的遗嘱。{subject}先领了十克朗，把影院的钥匙挂在腰上。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 10,
+              "reason": "first payment under the conditional will"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 50,
+                "spent": 0,
+                "claims": 1,
+                "public": false,
+                "source": "附条件的遗嘱"
+              },
+              "durationMonths": 60,
+              "reason": "a conditional inheritance entered the household"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "the relative holds the alternative will"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "conditional_heir",
+              "add": true,
+              "reason": "accepted a will with three conditions"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "遗嘱要求小影院再开五年，并把姑婆的侄孙女送进学校。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a small workshop and a school fee"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-workshop-and-forfeit",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "{subject}把影院里的放映机、折叠椅和几卷旧片子一起卖给另一家影院，得了十二克朗；遗嘱里的六十克朗随即转给{relative}。{official}把文件收进皮包，说这是合法的，只是姑婆大概不会喜欢。{subject}用那笔钱换了新窗帘，旧影院的门上钉了一块出租牌。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 22,
+              "reason": "sale of the workshop equipment and the forfeited first payment"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the family heard the workshop was sold"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "the relative received the rest of the inheritance"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "broke_the_will_conditions",
+              "add": true,
+              "reason": "sold the workshop and forfeited the conditional inheritance"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "只要影院关门，剩下的五十克朗就归那个旁支亲戚。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "new curtains in a room that needed no curtains"
+            }
+          ]
+        },
+        {
+          "id": "contest-the-will",
+          "weight": 0.3,
+          "significance": 0.68,
+          "text": "{subject}请了律师，说姑婆立遗嘱时已经认不清人。官司打了八个月，律师费、鉴定费和往返车钱加起来，最后拿到的十五克朗还不到原数的一半。{relative}在法院门口递给{subject}一张圣诞卡，里面没有字；{subject}把它放进大衣内袋，回家路上买了两根蜡烛。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 15,
+              "reason": "the reduced settlement after contesting the will"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$relative",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "the will contest divided the family"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "the notary testified about the signing"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "contested_the_will",
+              "add": true,
+              "reason": "contested the conditional will and settled for less"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "律师费和鉴定费吃掉了遗嘱争议的大部分收益。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a Christmas card with nothing inside"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-family.school-gate-car",
+      "title": "学校门口的车",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 68
+      },
+      "tags": [
+        "family",
+        "money",
+        "child",
+        "school",
+        "reputation",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ml18-sudden-fortune",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 68
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 16
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "move-the-child-to-a-better-school",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "新雇的马车每天把孩子送到校门口，车夫穿得比老师还整齐。第三天，{teacher}把{subject}叫到走廊，说班上有家长联名，要求孩子转学，理由是“这家人突然有钱，来路不明”。{subject}没有争辩，第二周把孩子送进了城另一头的学校，学费贵了一倍。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -30,
+              "reason": "tuition and carriage for the new school"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "principal",
+              "delta": -30,
+              "reason": "the windfall paid for a new school"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolProgress",
+              "delta": 12,
+              "reason": "the child entered a school with better teachers"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "delta": 5,
+              "reason": "the child was removed from the parents' petition"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.1,
+              "reason": "the child changed schools"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_moved_school",
+              "add": true,
+              "reason": "moved the child after a parents' petition"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the child is out of the petition's way"
+            }
+          ]
+        },
+        {
+          "id": "keep-the-child-and-face-the-talk",
+          "weight": 0.4,
+          "significance": 0.72,
+          "text": "{subject}去参加了家长会，把中奖的票据、邮局收据和那张登了地址的报纸一起放在桌上，说钱是运气，不是偷的。没有人鼓掌，但也没有人再提转学。{child}在门外等，书包带子绕在手指上；回家路上，{subject}第一次听见孩子主动说起学校的事。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "the parents' meeting and a small donation to the school"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "delta": 8,
+              "reason": "the child was defended in front of the parents"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.15,
+              "affection": 0.08,
+              "reason": "the parent faced the school instead of hiding"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "some parents still whisper about the money"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_stayed_in_school",
+              "add": true,
+              "reason": "kept the child in school and faced the parents"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the child talked about school again"
+            }
+          ]
+        },
+        {
+          "id": "the-child-leaves-home",
+          "weight": 0.3,
+          "significance": 0.92,
+          "text": "第二个学期，{child}的成绩单上多了两个不及格，家里的争吵从钱转到衣服、朋友和马车。一天早晨，{subject}在餐桌上找到一张字条：{child}去了乡下姨妈家，末尾写着“我更喜欢我们没钱的时候”。{teacher}来家里送作业本，站在门口没有进来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -10,
+              "reason": "travel and expenses after the child left"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "leftHome",
+              "value": true,
+              "reason": "the child left for a relative's house"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "delta": -15,
+              "reason": "the child felt the family had changed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "rival",
+              "trust": -0.3,
+              "affection": -0.1,
+              "reason": "the child left home after the windfall"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "child estrangement",
+              "add": true,
+              "reason": "the child left home over the changes brought by money"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_left_home",
+              "add": true,
+              "reason": "the child left home after the sudden fortune"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "字条上写着孩子更喜欢家里没钱的时候。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "an empty chair at the breakfast table"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-lottery.same-numbers",
+      "title": "同一组号码",
+      "domain": "leisure",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 78
+      },
+      "tags": [
+        "lottery",
+        "luck",
+        "money",
+        "family",
+        "regret",
+        "windfall"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 78
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 78
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-number-wins-without-them",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "{subject}用了十几年同一组号码——父亲当年送奶路线的门牌号。这个月房租涨了，{subject}少买了一张；开奖那天，那组号码中了头奖。{partner}把报纸摊在桌上，{subject}看了很久，最后去厨房把水壶坐上，水开了才发现自己没有拿杯子。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the drink and the extra trip to the newsagent"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "parameters": {
+                "strain": 30,
+                "swing": -20,
+                "public": false,
+                "story": "错过的那组号码"
+              },
+              "durationMonths": 12,
+              "reason": "missing the draw turned the subject's luck inward"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.05,
+              "reason": "the partner sat with the subject after the draw"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "missed_the_numbers",
+              "add": true,
+              "reason": "skipped the week the usual numbers won"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "父亲送奶路线的门牌号中了头奖，而这一期我没有买。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "the kettle boiled and nobody moved"
+            }
+          ]
+        },
+        {
+          "id": "the-partner-bought-it-secretly",
+          "weight": 0.4,
+          "significance": 0.9,
+          "text": "{partner}在开奖前偷偷去了烟草铺，用买菜剩下的钱买了那组号码，把票藏在糖罐后面。号码中了，{partner}把票放在餐桌上，说本来想等{subject}生日再讲。{subject}先是不信，随后笑得把椅子往后推了一截；两个人坐在厨房里数奖金，数到一半又停下来烧水。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 70,
+              "reason": "the lottery prize bought with the grocery money"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 60,
+                "spent": 0,
+                "claims": 1,
+                "public": true,
+                "source": "同一组号码"
+              },
+              "durationMonths": 24,
+              "reason": "a family lottery win entered the household"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.2,
+              "affection": 0.15,
+              "reason": "the partner secretly kept the family numbers alive"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the neighbors heard about the sugar-tin ticket"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "partner_bought_the_ticket",
+              "add": true,
+              "reason": "the partner bought the usual numbers in secret"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "the ticket was in the sugar tin all along"
+            }
+          ]
+        },
+        {
+          "id": "the-newsagent-kept-the-ticket",
+          "weight": 0.3,
+          "significance": 0.82,
+          "text": "开奖后，{neighbor}从柜台下面把票拿出来，说这张是用赊账买的，按老规矩中奖一人一半。{subject}在店里站到天黑，最后拿了三十五克朗；{neighbor}把另一半锁进铁盒，顺手把柜台上的欠账本翻到{subject}那一页，划掉了最后一笔。回家路上，{partner}说这比不中强，{subject}没有说话。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 35,
+              "reason": "the subject's half of the disputed lottery win"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 30,
+                "spent": 0,
+                "claims": 2,
+                "public": true,
+                "source": "赊账买的中奖彩票"
+              },
+              "durationMonths": 18,
+              "reason": "a disputed lottery win entered the household"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.2,
+              "obligation": 0.05,
+              "reason": "the newsagent claimed half the ticket"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ticket_held_on_credit",
+              "add": true,
+              "reason": "the winning ticket had been bought on credit"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "烟草铺老板把赊账买的彩票扣在柜台下面，直到开奖才拿出来。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "half a win and a crossed-out debt"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-investment.transylvanian-mine",
+      "title": "金矿的岩芯",
+      "domain": "business",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 72
+      },
+      "tags": [
+        "investment",
+        "mining",
+        "fraud",
+        "money",
+        "risk",
+        "business"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 72
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 72
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.11,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-mine-strikes-gold",
+          "weight": 0.3,
+          "significance": 0.88,
+          "text": "{worker}把一小截岩芯放在桌上，说特兰西瓦尼亚的矿脉比图纸上厚三倍，只是缺一台抽水机。{official}验过矿样，{subject}把积蓄的一半投进去。八个月后，第一批金砂运到维也纳，{subject}在交易所门口看见自己的名字被写在行情板上，后面跟着一个从未见过的数字。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 90,
+              "reason": "the first gold shipment from the mine"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 80,
+                "spent": 0,
+                "claims": 2,
+                "public": true,
+                "source": "特兰西瓦尼亚金矿"
+              },
+              "durationMonths": 30,
+              "reason": "a mining investment produced a large windfall"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.15,
+              "respect": 0.1,
+              "reason": "the mining engineer's survey was correct"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the trade paper mentioned the subject's name"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mine_struck_gold",
+              "add": true,
+              "reason": "the Transylvanian mine produced gold"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "the rock was worth more than the paper"
+            }
+          ]
+        },
+        {
+          "id": "the-mine-was-salted",
+          "weight": 0.4,
+          "significance": 0.92,
+          "text": "抽水机运到山里才发现，矿洞的岩壁上早被人撒过金粉，岩芯也是挑过的。{worker}在两个月前把股份转给了一家空壳公司，办公室只剩一张桌子和半瓶墨水。{official}把调查报告放在{subject}面前，最后一页写着“建议不予起诉”，因为找不到被告。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -50,
+              "reason": "the investment in a salted mine"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "parameters": {
+                "strain": 55,
+                "swing": -55,
+                "public": true,
+                "story": "特兰西瓦尼亚金矿"
+              },
+              "durationMonths": 24,
+              "reason": "a mining fraud caused a major reversal"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "rival",
+              "trust": -0.3,
+              "reason": "the mining engineer disappeared with the share money"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "fraud victim",
+              "add": true,
+              "reason": "invested in a salted mine"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "salted_mine",
+              "add": true,
+              "reason": "discovered the gold mine had been salted"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "矿洞岩壁上的金粉是撒上去的，岩芯也被挑过。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "the report had no one to prosecute"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-shares-to-a-baron",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "矿山还没出金，{subject}就把股份转给了一个想给女儿做嫁妆的男爵，赚了二十五克朗。半年后，假金矿的消息见报，男爵在俱乐部里拦住{subject}，问知不知道岩芯的事。{subject}说不知道，手却一直放在酒杯后面。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 25,
+              "reason": "profit from selling the mining shares early"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 20,
+                "spent": 0,
+                "claims": 1,
+                "public": false,
+                "source": "转卖的金矿股份"
+              },
+              "durationMonths": 18,
+              "reason": "a timely share sale produced a windfall"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the baron suspected the shares were sold with knowledge"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_mine_shares_early",
+              "add": true,
+              "reason": "sold the mining shares before the fraud was exposed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "男爵买下股份时，矿山还没有出过一克金。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the profit came before the question"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-luck.strongbox-in-the-wall",
+      "title": "墙里的铁盒",
+      "domain": "housing",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 78
+      },
+      "tags": [
+        "money",
+        "luck",
+        "housing",
+        "windfall",
+        "inflation",
+        "ownership"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 78
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 78
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "the-notes-are-still-good",
+          "weight": 0.3,
+          "significance": 0.82,
+          "text": "泥瓦匠敲开卧室的旧墙，掉出一只锈死的铁盒；里面是一叠旧纸币、一枚银扣和一张当票。{neighbor}闻声上楼，说墙是他家的，盒子也该归他。{subject}把当票翻过来，看见上面写着自己外祖母的名字，两个人都安静了一会儿。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 45,
+              "reason": "old banknotes found in the wall"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 40,
+                "spent": 0,
+                "claims": 2,
+                "public": true,
+                "source": "墙里的铁盒"
+              },
+              "durationMonths": 18,
+              "reason": "a hidden strongbox became a household windfall"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "the landlord claimed the strongbox"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "the mason called the subject before pocketing the box"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_strongbox",
+              "add": true,
+              "reason": "found a strongbox inside a wall"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "铁盒里的当票写着外祖母的名字，纸币是很多年前的旧版。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "the wall gave back an old family object"
+            }
+          ]
+        },
+        {
+          "id": "the-inflation-ate-them",
+          "weight": 0.4,
+          "significance": 0.74,
+          "text": "铁盒里的纸币已经作废，银扣也只值几个铜板。{worker}把纸币一张张摊在窗台上，说战前的纸现在只能糊墙；{neighbor}笑得直不起腰，说这盒子在他家墙里藏了二十年，原来是一堆废纸。{subject}把当票收好，去当铺换回一只银勺，勺柄上刻着外祖母的姓。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the silver spoon redeemed with the old pawn ticket"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "the landlord laughed at the worthless notes"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "worthless_strongbox",
+              "add": true,
+              "reason": "opened a strongbox full of expired banknotes"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "墙里的旧纸币已经作废，当票还能换回一只银勺。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a fortune turned out to be wallpaper"
+            }
+          ]
+        },
+        {
+          "id": "let-the-mason-keep-it",
+          "weight": 0.3,
+          "significance": 0.7,
+          "text": "{worker}把铁盒递过来时，手没有松开。他说女儿在疗养院，下个月要交一笔钱。{subject}看了看那只盒子，又看了看墙上新开的洞，说墙是他敲开的，盒子也该归他。{neighbor}想说什么，最后只说了一句“你们商量好了就行”。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the mason told the street who let him keep the box"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "friend",
+              "trust": 0.2,
+              "obligation": 0.1,
+              "reason": "the subject let the mason keep the strongbox"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "gave_strongbox_to_mason",
+              "add": true,
+              "reason": "gave the found strongbox to the mason who opened the wall"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the wall opened and the right person kept what fell out"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-charity.neighborhood-clinic",
+      "title": "诊所门口的红砖",
+      "domain": "welfare",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 75
+      },
+      "tags": [
+        "charity",
+        "money",
+        "clinic",
+        "reputation",
+        "community",
+        "warm"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ml18-sudden-fortune",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 78
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "the-clinic-opens",
+          "weight": 0.4,
+          "significance": 0.9,
+          "text": "诊所设在街角一间改过的铺面里，门口挂着一块红砖色的木牌。{official}每周来两个下午，给孩子量体重、给老人听肺；{neighbor}送来一盆天竺葵，{worker}把候诊室的长凳刨平。{subject}没有剪彩，只把第一张药方折好，放进抽屉最里面。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -30,
+              "reason": "endowment for the neighborhood clinic"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "principal",
+              "delta": -30,
+              "reason": "part of the windfall endowed the clinic"
+            },
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "clinic:$subject-$eventId",
+                "name": "街角诊所",
+                "kind": "other",
+                "treasury": 5,
+                "authorityRules": [
+                  "免费接诊",
+                  "账目公开",
+                  "医生轮班"
+                ]
+              },
+              "reason": "a neighborhood clinic was endowed by the subject"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "the clinic became a neighborhood institution"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "friend",
+              "trust": 0.2,
+              "respect": 0.15,
+              "reason": "the doctor agreed to staff the clinic"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "clinic_opened",
+              "add": true,
+              "reason": "endowed and opened a neighborhood clinic"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "街角诊所的第一张药方锁在抽屉里，药是给孩子退烧的。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.1,
+              "reason": "the clinic opened without a speech"
+            }
+          ]
+        },
+        {
+          "id": "the-committee-buys-a-wagon",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "捐款交出去三个月，诊所还没有开门，先来了一辆新的弹簧马车和一张桃花心木办公桌。{official}把账本摊在桌上，说委员会认为“体面的门面”也是诊所的一部分。{neighbor}在门口骂了一句，{subject}把账本翻到最后一页，发现自己捐的钱只剩一半。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -30,
+              "reason": "the clinic endowment was spent on furniture and a wagon"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "principal",
+              "delta": -30,
+              "reason": "the endowment was spent without opening the clinic"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the stalled clinic damaged the subject's name"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "the doctor approved the committee's spending"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "charity mismanaged",
+              "add": true,
+              "reason": "the clinic fund was spent on furniture"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "clinic_funds_misused",
+              "add": true,
+              "reason": "the clinic endowment was misused"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "诊所的捐款先买了一辆弹簧马车和一张桃花心木办公桌。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the wagon was prettier than the clinic"
+            }
+          ]
+        },
+        {
+          "id": "the-family-blocks-the-donation",
+          "weight": 0.3,
+          "significance": 0.72,
+          "text": "捐款的事刚说出口，家里的兄弟先来了。他说这笔钱该留给自家人，不该拿去给街上的孩子看病。{official}在诊所门口等了半小时，最后把图纸卷起来；{subject}站在空铺面里，听见隔壁肉铺的锯骨声一下一下传过来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the notary's fee for the abandoned clinic deed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "reason": "the family blocked the clinic donation"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "family_blocked_clinic",
+              "add": true,
+              "reason": "the family stopped the clinic donation"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "诊所的铺面已经租下，但家里的兄弟不同意把横财捐出去。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the empty shop and the rolled-up plans"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-tax.audit-of-the-windfall",
+      "title": "税务员的黑皮本",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 75
+      },
+      "tags": [
+        "tax",
+        "legal",
+        "money",
+        "windfall",
+        "bureaucracy",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ml18-sudden-fortune",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 75
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 72
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 68
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "pay-and-regularize",
+          "weight": 0.4,
+          "significance": 0.7,
+          "text": "{official}把黑皮本翻到{subject}那一页，说邮局储蓄的利息没有报，数目不大，但漏了就是漏了。{worker}在旁边把计算尺推来推去，最后算出一个八克朗的数目。{subject}当天去缴了款，把收据贴在账本最后一页；回家的路上，账本第一次没有在口袋里折着。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "back taxes and a small fine on the windfall's interest"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "principal",
+              "delta": -8,
+              "reason": "part of the windfall went to taxes"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the tax receipt was shown to the neighborhood"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "the inspector closed the file"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "taxes_paid",
+              "add": true,
+              "reason": "declared and paid tax on the windfall's interest"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "邮局储蓄的利息也要报税，漏报的八克朗已经补齐。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the file was closed with a receipt"
+            }
+          ]
+        },
+        {
+          "id": "hide-the-ledger",
+          "weight": 0.35,
+          "significance": 0.85,
+          "text": "{worker}把账本塞进钢琴后面的夹层，说等风声过去再拿出来。{official}第二次来时带了一个记录员和一张搜查令；钢琴被挪开时，琴键响了一串不成调的音。{subject}看见黑皮本翻开的那一页上，已经用红笔圈出了三笔利息。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -10,
+              "reason": "the accountant's fee for hiding the ledger"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 15,
+                "charge": "逃税"
+              },
+              "durationMonths": 12,
+              "reason": "a hidden ledger opened a tax investigation"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": -0.1,
+              "obligation": 0.2,
+              "reason": "the accountant hid the ledger and was caught"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "tax_ledger_hidden",
+              "add": true,
+              "reason": "hid the ledger behind the piano"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "黑皮本上被红笔圈出的三笔利息都没有报税。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the piano keys played a sour chord"
+            }
+          ]
+        },
+        {
+          "id": "the-inspector-was-an-old-friend",
+          "weight": 0.25,
+          "significance": 0.68,
+          "text": "{official}进门后没有先翻账本，而是问{subject}是不是在战前服过役。两个人对上了部队编号，{official}把帽子放在桌上，说利息可以按小额储蓄申报，罚款就免了。{worker}松了一口气，手里的计算尺却还停在半空，像是不知道该不该落下去。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the reduced tax assessment"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "key": "principal",
+              "delta": -2,
+              "reason": "a small tax payment on the interest"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "friend",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "the inspector recognized an old army number"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "tax_audit_friendly",
+              "add": true,
+              "reason": "an old army acquaintance handled the tax audit"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the black notebook closed without a fine"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-reversal.market-stall-comeback",
+      "title": "第二次开张",
+      "domain": "business",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 72
+      },
+      "tags": [
+        "reversal",
+        "money",
+        "business",
+        "comeback",
+        "market",
+        "quiet"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ml18-reversal",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 72
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 72
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-stall-works",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "{subject}用借来的钱在集市租了一个摊位，卖伞骨、纽扣和从旧货行收来的铜拉手。第一个月卖掉三十把伞骨，{worker}回来帮忙，两个人分一根香肠；{sibling}在收摊时送来一壶咖啡。账本很小，但每一页都能对上。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 12,
+              "reason": "profit from the first month of the market stall"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "key": "swing",
+              "delta": 20,
+              "reason": "the stall turned the reversal upward"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "key": "strain",
+              "delta": -20,
+              "reason": "a working business relieved the pressure"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "reason": "the stall ended the reversal as a defining condition"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "friend",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "the former employee returned to help"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "stall_worked",
+              "add": true,
+              "reason": "the market stall made a profit"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "a small business that adds up"
+            }
+          ]
+        },
+        {
+          "id": "the-old-debt-follows",
+          "weight": 0.35,
+          "significance": 0.86,
+          "text": "摊子刚有起色，旧债主就带着法警来了。{subject}说再给一个月，债主指了指摊上的铜拉手，说这些够抵第一笔。{sibling}想拦，被{subject}按住；收摊时，卷帘门被钉上一块木条，上面写着清算人的名字。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "the old creditor seized the stall's stock"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "key": "strain",
+              "delta": 15,
+              "reason": "the old debt followed the new business"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "key": "swing",
+              "delta": -10,
+              "reason": "the seizure pushed the swing down again"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "parameters": {
+                "debt": 25,
+                "creditor": "旧债主"
+              },
+              "durationMonths": 24,
+              "reason": "the old debt became a formal debt bondage"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "the sibling tried to stop the seizure"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "stall_seized",
+              "add": true,
+              "reason": "the old creditor seized the market stall"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "the shutter was nailed shut"
+            }
+          ]
+        },
+        {
+          "id": "walk-away-from-the-stall",
+          "weight": 0.3,
+          "significance": 0.66,
+          "text": "{subject}把剩下的货盘给隔壁摊主，换回四克朗，去当了一名夜班看守。工资不高，但每月同一天发；{sibling}说这样也好，至少不用再算利息。晚饭桌上又摆了三副碗筷，没有人提那笔横财，也没有人提集市。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "sale of the remaining stall stock"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "reason": "the subject walked away from the reversal story"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.05,
+              "reason": "the family settled into a smaller life"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_the_stall",
+              "add": true,
+              "reason": "sold the stall stock and took a night watchman's job"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a wage paid on the same day every month"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ml18-reversal.old-partner-returns",
+      "title": "咖啡馆里的旧合伙人",
+      "domain": "business",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 72
+      },
+      "tags": [
+        "reversal",
+        "money",
+        "betrayal",
+        "business",
+        "scam",
+        "comeback"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ml18-reversal",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 72
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 72
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "forgive-and-rebuild",
+          "weight": 0.35,
+          "significance": 0.76,
+          "text": "{neighbor}在咖啡馆角落坐到{subject}喝完第二杯，才把一只旧皮包放在桌上：里面是当年那笔投资的全部账目，还有一张新的合伙契约。{subject}看了很久，最后在契约上改了分成比例，把第一年的利润留给{worker}。{neighbor}笑了一下，说这不像{subject}，又像。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "the first payment under the new partnership"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "key": "swing",
+              "delta": 15,
+              "reason": "the old partner offered a way back"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ml18-reversal",
+              "key": "strain",
+              "delta": -15,
+              "reason": "the old account was reopened and shared"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.2,
+              "obligation": 0.15,
+              "reason": "the old partnership was rebuilt on new terms"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "the first year's profit was assigned to the worker"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rebuilt_with_old_partner",
+              "add": true,
+              "reason": "rebuilt the business with the old partner"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the old account was finally read aloud"
+            }
+          ]
+        },
+        {
+          "id": "report-him",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "{subject}没有碰那只皮包，直接去了警察局，把当年的合同、假收据和{neighbor}的新地址一起交上去。{worker}在门外等着，说这样至少不会再有人上当。案子拖了一年，{neighbor}最后赔了一小笔钱；{subject}拿到钱时，发现自己并没有想象中高兴。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$neighbor",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 20,
+                "charge": "诈骗"
+              },
+              "durationMonths": 18,
+              "reason": "the old partner was reported for investment fraud"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.3,
+              "fear": 0.1,
+              "reason": "the subject reported the old partner"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the police report was seen as a warning to other investors"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reported_old_partner",
+              "add": true,
+              "reason": "reported the old business partner for fraud"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧合伙人把同一批糖厂债券卖给了至少六个人，合同上的公司地址是空的。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the compensation did not feel like a victory"
+            }
+          ]
+        },
+        {
+          "id": "he-was-the-scammer",
+          "weight": 0.3,
+          "significance": 0.84,
+          "text": "{neighbor}喝到第三杯才承认：当年那批糖厂债券是他自己印的，受害者不止{subject}一个。他从皮包里拿出一张名单和三十克朗，说这是六个人凑出来的退款，剩下的大概追不回来了。{subject}把名单折好，没有问那三十克朗里有没有{neighbor}自己的钱。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 30,
+              "reason": "partial refund from the old partner's other victims"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "ml18-sudden-fortune",
+              "parameters": {
+                "principal": 25,
+                "spent": 0,
+                "claims": 1,
+                "public": false,
+                "source": "旧合伙人的退款"
+              },
+              "durationMonths": 12,
+              "reason": "a partial refund became a small windfall"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "rival",
+              "trust": -0.2,
+              "obligation": 0.1,
+              "reason": "the old partner confessed to forging the shares"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "old_partner_confessed",
+              "add": true,
+              "reason": "the old partner confessed he had printed the shares"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧合伙人承认糖厂债券是他自己印的，受害者至少有六个人。",
+              "confidence": 0.95,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a confession and a partial refund"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

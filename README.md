@@ -209,6 +209,28 @@ pnpm v4:phase17-lives -- 45 phase17-final-f
 
 自然人生 final-f：45 年 18,134 events / 347 persons / 51 distinct states / repeatRate 0.1965。独立 Critic 对修订前主样本评为 **16/30**（Phase 16 18/30），指出关系/子女 slot machine、死状态、重复率、无 horizon、组织重复。Phase 17 是内容生产成功、转化仍不足，不是生活质量的最终提升。完整证据见 [report](docs/v4/phase-17-report.md)、[critique](docs/v4/phase-17-critique.md)、[coverage](docs/v4/phase-17-content-coverage.md) 与 [research](docs/v4/phase-17-research.md)。
 
+## Phase 18 故事空间扩张
+
+Phase 18 把内容库从 **79 states / 1,740 kernels / 15 packs** 扩展到 **99 / 1,973 / 25**，新增 10 个主题 Pack、233 个 Kernel、710 个 Outcome、20 个 State，并建立可查询的 Creative Index。
+
+新增 Pack：infant-wonder、youth-fire、elder-memory、odd-jobs、black-comedy、dark-fantasy、history-street、love-desire、small-mysteries、money-luck。覆盖婴幼儿、童年、青春期、老年、荒诞、黑色喜剧、暗色幻想、历史街面、欲望、小谜案与金钱运气。
+
+```bash
+pnpm v4:creative-index
+pnpm v4:creative-index -- --query "一个贫穷裁缝收到律师来信，继承了陌生人的城堡"
+pnpm v4:creative-index -- --gaps
+pnpm v4:creative-index -- --duplicates 0.2
+pnpm v4:creative-index -- --pack packages/v4/content/states/generated/pack-elder-memory.json
+pnpm v4:validate-packs
+pnpm v4:content-catalog
+pnpm v4:phase18-lives 45 phase18-a,phase18-b,phase18-c
+pnpm v4:phase18-coverage docs/v4/phase-15-phase18-a.json
+```
+
+自然人生 A/B/C 合计 60,074 events；新 Pack 贡献 9.65% 世界事件、8.37% focal events（Phase 17 为 3.1%）。20/20 新 State 至少出现一次，185/232 修订前新 Kernel 在世界中触发，但只有 113/232 到达 focal person。独立 Critic 给 Life 17/30（Phase 17 16/30）、Scene 22/30，并指出官僚幽灵/奇职秘密测试/横财抽成三组结构重复。focal share 仍低于 12%，repeatRate 约 0.220 高于 Phase 17 的 0.1965；不能把 233 kernels 当作生活质量已修复。
+
+完整证据见 [report](docs/v4/phase-18-report.md)、[design](docs/v4/phase-18-content-design.md)、[diversity](docs/v4/phase-18-content-diversity.md)、[critique](docs/v4/phase-18-critique.md) 与 [ADR 018](docs/decisions/ADR-018-creative-index-and-content-production.md)。
+
 ## 已知限制与边界
 
 - **内容范围**：静态运行时 183 个事件场景（含 104 个生成场景、519 条生成叙事变体）和 50 个主动 Task（144 outcomes/288 narrations）；另有运行时 content pack 机制，发布后动态加载，仍只是维也纳切片，不是完整 1900 地球人生。离婚、再婚、同性关系、继承和住房容量已有第一版机制，但缺少玩家选择、完整法律程序、再婚/继承分配策略和大规模内容覆盖。

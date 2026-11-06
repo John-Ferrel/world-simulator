@@ -189,6 +189,18 @@ The pack must also include kernels that **consume** `ds17-double-life` (for exam
 
 Declared role keys plus builtins: `subject`, `residence`, `place`, `school`, `workplace`, `age`, `year`, `child`, `milieu`, `context`.
 
+## 6b. Creative Index (Phase 18)
+
+Before writing a new premise, query the Creative Index:
+
+```bash
+pnpm v4:creative-index -- --query "a poor tailor receives a lawyer's letter about a stranger's castle"
+pnpm v4:creative-index -- --kernel <existing-kernel-id>
+pnpm v4:creative-index -- --gaps
+```
+
+Record the nearest existing kernels and explain the divergence in premise, conflict, twist or outcome pattern. Similarity is an editor prompt, not a prohibition. Phase 18 reports 43 pairs >= 0.20 across 1,973 kernels (138 at 0.15); the highest pairs are mechanical near-duplicates, while shared motifs with different engines are allowed.
+
 ## 7. Author workflow
 
 1. Read `docs/v4/content-catalog.md`, this brief, and 2–3 existing packs (`pack-office-influence`, `pack-curse-betrayal`, `pack-family-continuity`).

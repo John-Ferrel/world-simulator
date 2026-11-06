@@ -344,3 +344,21 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 未完成/限制：新包仍主要消费旧 states，new→new 组合弱；`ds17-double-life`、`af17-mistaken-heir`、`af17-cursed-luck`、`cj17-prison-term`、`mb17-stateless`、`thesis-candidate` 等签名状态仍 0/稀有；家庭/伴侣/生育连续性未修；历史日期与组织类型仍有 base 错误；49% focal 样本 25 岁前死亡或活到观察终点无 coda；Content Factory 只验证一个 brief；20k + 79 states 未重新 profile。不得把 79 states/1,740 kernels 当作已演出人生。
 
 未完成/限制：widow-pension / inheritance-division / family-estate 仍零自然触发；office follow-up 0–6 个/seed，`office-patronage` 仅 2–3 adds；love/knowledge/craft 愿望仍弱；final-c repeatRate 0.1543；work-permit 未创建就业；组织 treasury 尺度不合理；历史日期为 1 月占位；生产 DB/API、runtime LLM worker、公网部署未验证；独立 Critic 修订前 19/30，不能把机制激活等同于文学质量提升。
+
+## Phase 18（2026-11-07）— Expanding Possibilities
+
+完整报告：`docs/v4/phase-18-report.md`；设计：`phase-18-content-design.md`；多样性方法：`phase-18-content-diversity.md`；独立批评：`phase-18-critique.md`；ADR：`ADR-018-creative-index-and-content-production.md`。
+
+| 项 | 实测 |
+|---|---|
+| 内容规模 | **99 states / 1,973 kernels / 25 generated packs**（Phase 17: 79 / 1,740 / 15）；新增 **10 packs / 233 kernels / 710 outcomes / 20 states** |
+| 新 Pack | infant-wonder、youth-fire、elder-memory、odd-jobs、black-comedy、dark-fantasy、history-street、love-desire、small-mysteries、money-luck；全部 validator `ok:true` |
+| Creative Index | 1,973 records；中文 char n-gram + Latin word TF-IDF；`--query` / `--kernel` / `--gaps` / `--duplicates` / `--pack`；阈值 0.20；43 对 ≥0.20，0 个新 Kernel 与旧库跨库 ≥0.20 |
+| 阶段/语气 | infancy 2→4、childhood 63→82、adolescence 143→165、elderhood 21→53；stage effective number 1.66→1.81；tone effective number 7.25→8.28 |
+| 自然人生 A/B/C | 3×45 年，60,074 events / 5,067 focal events；新 Pack 9.65% 世界事件、**8.37% focal events**（Phase 17: 3.1%）；20/20 新 State 至少出现一次；185/232 新 Kernel 触发；repeatRate ~0.220 |
+| 修订 | A/B 中 `em18-family-archive` 缺席；新增 `em18-setup.cellar-box`（45–70 岁，无外部 State）；D seed 20/20 State，archive 1 add / 9 ticks / 6 reactions |
+| 测试修复 | 全库测试发现重复标题 `楼梯间的第三个人` 和未解析的 `{link:beloved}` / `{link:other}`；已改名/替换并复测 |
+| 测试 | `pnpm test` **91 files passed / 8 skipped（99 files）；533 pass / 37 skip**；首轮 2 个内容缺陷（重复标题、未解析 link token）修复后通过；typecheck/build 通过；25 packs validate |
+| 独立 Critic | Life **17/30**（Phase 17 16/30）；scene sample **22/30**；最强场景 8 个，结构性重复 3 组；focal 层面仅 113/232 Kernel 到达；未执行 odd-jobs/elder/mystery 的下一轮修订 |
+
+未完成/限制：focal share 8.37% 未达 12%；repeatRate ~0.220 高于 Phase 17 的 0.1965；47 个修订前 Kernel 零触发；`em18-family-archive` 仍稀有；新 State 的 focal 分布不均（2–19 个事件）；Creative Index 是 lexical，不是 semantic embedding；未做 runtime LLM 叙事、生产 DB/公网部署。不得把 99 states/1,973 kernels 或 8.37% focal share 称为生活质量问题已解决。

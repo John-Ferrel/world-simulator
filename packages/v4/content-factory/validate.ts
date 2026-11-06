@@ -144,12 +144,26 @@ function checkEffect(
     errors.push(`${path}: unknown state ${effect.stateId}`);
 }
 
-function checkConditions(conditions: SceneCondition[] | undefined, path: string, errors: string[]) {
+function checkConditions(
+  conditions: SceneCondition[] | undefined,
+  path: string,
+  stateIds: Set<string>,
+  errors: string[],
+) {
   for (const [index, condition] of (conditions ?? []).entries()) {
-    if (!condition || !VALID_CONDITIONS.has(condition.kind))
+    if (!condition || !VALID_CONDITIONS.has(condition.kind)) {
       errors.push(
         `${path}[${index}]: invalid condition ${String((condition as { kind?: unknown })?.kind)}`,
       );
+      continue;
+    }
+    if (
+      (condition.kind === 'hasState' || condition.kind === 'notHasState') &&
+      condition.stateId &&
+      !stateIds.has(condition.stateId)
+    ) {
+      errors.push(`${path}[${index}]: unknown condition state ${condition.stateId}`);
+    }
   }
 }
 
@@ -166,7 +180,7 @@ function checkKernel(
   if (!kernel.roles.some((role) => role.kind === 'subject'))
     errors.push(`${path}: no subject role`);
   if ((kernel.outcomes?.length ?? 0) < 2) warnings.push(`${path}: fewer than 2 outcomes`);
-  checkConditions(kernel.conditions, `${path}.conditions`, errors);
+  checkConditions(kernel.conditions, `${path}.conditions`, stateIds, errors);
   const roleKeys = new Set(kernel.roles.map((role) => role.key));
   for (const [outcomeIndex, outcome] of kernel.outcomes.entries()) {
     const outcomePath = `${path}/${outcome.id ?? outcomeIndex}`;
@@ -177,7 +191,7 @@ function checkKernel(
       errors.push(`${outcomePath}: no effects`);
     for (const [effectIndex, effect] of (outcome.effects ?? []).entries())
       checkEffect(effect, `${outcomePath}.effects[${effectIndex}]`, stateIds, errors);
-    checkConditions(outcome.conditions, `${outcomePath}.conditions`, errors);
+    checkConditions(outcome.conditions, `${outcomePath}.conditions`, stateIds, errors);
     for (const match of outcome.text.matchAll(/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g)) {
       const key = match[1]!;
       if (!roleKeys.has(key) && !BUILTIN_TOKENS.has(key))

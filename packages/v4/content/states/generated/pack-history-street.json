@@ -1,0 +1,5207 @@
+{
+  "id": "pack-history-street",
+  "version": 1,
+  "title": "街面上的历史：报纸、排队与停电",
+  "description": "1910 至 1955 年的历史不从讲台上发生，而在报摊、面包队、电影散场、楼道收音机和停电后的地窖里发生。两套状态记录一个人看见过什么、一条谣言怎样在街区里变形；二十四个场景让普通人面对通货膨胀、难民登记、革命传单、占领、清洗、重建和一张从队伍里认出的脸。",
+  "author": "phase18-content-author/history-street",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-07",
+  "sourceBriefId": "phase18-history-street",
+  "rationale": "现有的历史内容多从占领当局、组织清洗和罢工委员会的高处切入，缺少街道尺度的历史经验：一张被抽掉的报纸版面、一条在停电中变形的消息、一次在面包队里认出历史人物的沉默。这个包把历史写成可查询的日常压力，而不是编年事件表；它消费占领、清洗、丑闻、政治嫌疑、调查、名声、丧亲和办公室人情等既有状态，并新增一个可被审讯、收买、纪念或沉默的目击者状态，以及一个会随恐慌和官方辟谣而变形的街区谣言状态。",
+  "states": [
+    {
+      "id": "hs18-street-witness",
+      "version": 1,
+      "packId": "pack-history-street",
+      "title": "街面上的目击者",
+      "description": "一个人亲眼看见过街上的某件事，并且这段记忆开始被邻居、警察、记者或纪念委员会索取。记忆会磨损，危险会随着讲述增加；沉默也是一种选择，但沉默本身会被别人解释。",
+      "owner": "person",
+      "slot": "memory",
+      "conflict": "replace",
+      "tags": [
+        "witness",
+        "memory",
+        "history",
+        "testimony",
+        "rumor",
+        "risk",
+        "street"
+      ],
+      "parameters": {
+        "certainty": {
+          "type": "number",
+          "default": 70,
+          "min": 0,
+          "max": 100
+        },
+        "danger": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "retellings": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 30
+        },
+        "claim": {
+          "type": "string",
+          "default": "我在街上看见的那件事"
+        },
+        "quiet": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 180
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "witness",
+            "testimony",
+            "memory",
+            "police",
+            "politics",
+            "court"
+          ],
+          "multiplier": 1.6
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "leisure",
+            "courtship",
+            "travel"
+          ],
+          "multiplier": 0.8
+        }
+      ],
+      "ticks": [
+        {
+          "id": "memory-drift",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "willpower",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "holds",
+              "result": "success",
+              "weight": 2,
+              "text": "{subject}又把那天的顺序在脑子里走了一遍：先是门响，再是靴子，最后才是那声喊。细节还在，只是每讲一次，旁边就多出一点别人替你补上的颜色。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "hs18-street-witness",
+                  "key": "certainty",
+                  "delta": 2,
+                  "reason": "the account still holds together"
+                }
+              ]
+            },
+            {
+              "id": "blurs",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}忽然想不起那个人先迈的是左脚还是右脚。邻居说自己记得清清楚楚，还补了一个细节；{subject}听着，竟分不清那是自己看见的，还是后来听来的。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "hs18-street-witness",
+                  "key": "certainty",
+                  "delta": -8,
+                  "reason": "the memory blurs with other people's versions"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "the account no longer feels entirely his own"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "interrogation-pressure",
+          "onTags": [
+            "interrogation",
+            "denunciation"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "danger",
+              "delta": 10,
+              "reason": "someone official asked about the account"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the memory became a risk"
+            }
+          ],
+          "text": "又有人来问那天的事。{subject}把同一段话重说了一遍，对方却只记住其中两个名字；走的时候，门没有关严，楼道里的风把纸吹得直响。",
+          "significance": 0.45,
+          "cooldownMonths": 6,
+          "maxPerYear": 1
+        },
+        {
+          "id": "retold-in-public",
+          "onTags": [
+            "publication",
+            "testimony",
+            "memorial"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "retellings",
+              "delta": 2,
+              "reason": "the account was repeated in public"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "certainty",
+              "delta": 2,
+              "reason": "the public version sharpened some details"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the witness was named in public"
+            }
+          ],
+          "text": "{subject}在报上或会上听见自己的话被转述。句子大致没错，只是“我看见”被改成了“大家都看见”；回家的路上，有陌生人朝{subject}点头。",
+          "significance": 0.4,
+          "cooldownMonths": 12
+        }
+      ],
+      "transitions": [
+        {
+          "id": "too-dangerous",
+          "to": "political-suspect",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "hs18-street-witness",
+              "parameter": "danger",
+              "min": 80
+            }
+          ],
+          "reason": "the witness became more dangerous than the crime",
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "witness_became_political_suspect",
+              "add": true,
+              "reason": "the account attracted political police attention"
+            }
+          ]
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "hs18-street-witness",
+          "parameter": "quiet",
+          "equals": true
+        }
+      ],
+      "historicalBasis": "目击者在占领、清洗和战后清算中同时是证据来源和潜在嫌疑人；本状态只描述记忆、危险和讲述之间的压力，不指向任何具体案件。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/history-street",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让“看见过”成为可持续改变选择的状态：讲述会增加危险，沉默会结束状态，危险过高则转入政治嫌疑。"
+      }
+    },
+    {
+      "id": "hs18-blackout-rumor",
+      "version": 1,
+      "packId": "pack-history-street",
+      "title": "停电中的街区谣言",
+      "description": "一次停电、一次搜查或一段广播之后，街区里开始流传一个未经证实的消息。它可能关于粮食、逮捕、货币或前线；官方辟谣会让它变小，也可能让它变得更像真的。",
+      "owner": "place",
+      "slot": "political",
+      "conflict": "replace",
+      "tags": [
+        "rumor",
+        "blackout",
+        "fear",
+        "politics",
+        "street",
+        "place",
+        "shortage"
+      ],
+      "parameters": {
+        "credibility": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "panic": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "officialDenial": {
+          "type": "boolean",
+          "default": false
+        },
+        "source": {
+          "type": "string",
+          "default": "巷口的修鞋摊"
+        },
+        "mutation": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 10
+        }
+      },
+      "durationMonths": {
+        "min": 1,
+        "max": 8
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "rumor",
+            "blackout",
+            "queue",
+            "police",
+            "politics",
+            "shortage"
+          ],
+          "multiplier": 1.7
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "leisure",
+            "courtship",
+            "sleep"
+          ],
+          "multiplier": 0.7
+        }
+      ],
+      "ticks": [
+        {
+          "id": "rumor-mutates",
+          "everyMonths": 2,
+          "outcomes": [
+            {
+              "id": "grows",
+              "weight": 2,
+              "text": "消息又换了一个版本：昨天说面包要断，今天说水也要停。传话的人越说越具体，连哪条街先停都编好了；听的人一边摇头，一边把水桶提到厨房。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "place",
+                  "ownerId": "$subjectPlace",
+                  "stateId": "hs18-blackout-rumor",
+                  "key": "credibility",
+                  "delta": 5,
+                  "reason": "the rumor gained concrete detail"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "place",
+                  "ownerId": "$subjectPlace",
+                  "stateId": "hs18-blackout-rumor",
+                  "key": "panic",
+                  "delta": 8,
+                  "reason": "the street began to prepare for the worst"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "place",
+                  "ownerId": "$subjectPlace",
+                  "stateId": "hs18-blackout-rumor",
+                  "key": "mutation",
+                  "delta": 1,
+                  "reason": "the story changed shape"
+                }
+              ]
+            },
+            {
+              "id": "thins",
+              "weight": 1,
+              "text": "第二天太阳出来，水龙头照常出水，面包房也开了门。巷口的人开始笑自己昨夜的慌张；只有传话的人还坚持说，那是他们提前得了消息。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "place",
+                  "ownerId": "$subjectPlace",
+                  "stateId": "hs18-blackout-rumor",
+                  "key": "credibility",
+                  "delta": -8,
+                  "reason": "the predicted shortage did not arrive"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "place",
+                  "ownerId": "$subjectPlace",
+                  "stateId": "hs18-blackout-rumor",
+                  "key": "mutation",
+                  "delta": 1,
+                  "reason": "the story survived in a weaker form"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "official-denial",
+          "onTags": [
+            "denial",
+            "authority_statement"
+          ],
+          "chance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "officialDenial",
+              "value": true,
+              "reason": "an official notice denied the rumor"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "credibility",
+              "delta": -10,
+              "reason": "the denial made the story less respectable"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "panic",
+              "delta": 6,
+              "reason": "some people trusted the denial less than the rumor"
+            }
+          ],
+          "text": "官方的告示贴出来了，说昨夜只是线路故障。围观的人读完，反而压低声音交换起另一件事：如果只是故障，为什么十七号的门一直没有开？",
+          "significance": 0.5,
+          "cooldownMonths": 4
+        },
+        {
+          "id": "raid-confirms",
+          "onTags": [
+            "arrest",
+            "raid",
+            "search"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "panic",
+              "delta": 12,
+              "reason": "a real search made the rumor feel true"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "credibility",
+              "delta": 8,
+              "reason": "the search matched part of the story"
+            }
+          ],
+          "text": "巡逻队真的来了，敲开三扇门，带走一个人。巷口没有人再问消息是从哪里来的；大家只是把窗帘拉严，记住那三扇门的位置。",
+          "significance": 0.55,
+          "cooldownMonths": 4
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "hs18-blackout-rumor",
+          "parameter": "credibility",
+          "max": 5
+        }
+      ],
+      "historicalBasis": "停电、配给和军事管制时期，街区谣言常以“某条街被搜查”“某类粮食要断”的形式传播；官方辟谣并不总能恢复信任。本状态不绑定具体城市或事件。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase18-content-author/history-street",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "用地点所有状态承载谣言，让恐慌、可信度和官方辟谣在同一街区持续互动，而不是把谣言写成一次性传闻。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "hs18-paper.pulled-column",
+      "title": "被抽掉的最后一栏",
+      "domain": "media",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 59
+      },
+      "tags": [
+        "newspaper",
+        "censorship",
+        "reading",
+        "daily",
+        "rumor",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1910,
+          "max": 1938
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "read-the-blank",
+          "weight": 0.4,
+          "text": "{subject}站在报摊前，把那份报纸翻到最后一栏。原先登连载的位置只剩一块空白，边上印着“版面调整”。{worker}低声说，铅版是夜里被抽走的；排队的人却已经开始猜下一期会不会连名字也换掉。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "报纸最后一栏被抽掉，不是因为版面调整。",
+              "confidence": 0.6,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a familiar column disappeared overnight"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "read_pulled_column",
+              "add": true,
+              "reason": "saw the blank space where a serial used to be"
+            }
+          ]
+        },
+        {
+          "id": "wrap-the-fish",
+          "weight": 0.3,
+          "text": "{subject}还是买下了报纸，回家用它包住一条鲱鱼。油墨沾在鱼皮上，连载的字迹倒着贴在盐粒里。晚饭时，隔壁的人问起今天报上写了什么，{subject}说只记得价钱又涨了两格。",
+          "significance": 0.4,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a fish wrapped in yesterday's paper"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "bread and fish for dinner"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the paper still had a use"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wrapped_fish_in_newspaper",
+              "add": true,
+              "reason": "used the censored page as wrapping"
+            }
+          ]
+        },
+        {
+          "id": "ask-the-printer",
+          "weight": 0.3,
+          "text": "{subject}绕到印刷所后门，找到一个手上全是铅灰的{worker}。对方说抽掉的那一栏不是新闻，是一份名单；说完就把门关上。{subject}回家时特意换了一条街，耳朵里还响着机器退纸的声音。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "被抽掉的不是新闻，是一份名单。",
+              "confidence": 0.55,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "fear": 0.05,
+              "reason": "asked the printer about the missing column"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saw_pulled_list",
+              "add": true,
+              "reason": "learned that a list was removed from the paper"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the blank column had a name behind it"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-cinema.newsreel",
+      "title": "新闻片里的自家街口",
+      "domain": "media",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 59
+      },
+      "tags": [
+        "cinema",
+        "newsreel",
+        "neighbor",
+        "recognition",
+        "media",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1910,
+          "max": 1955
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "companion",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "recognize-a-neighbor",
+          "weight": 0.4,
+          "text": "银幕上是城西的街口，镜头扫过一排晾衣绳。{subject}认出绳下站着{companion}，也认出旁边那个被两名便衣夹住的人。散场灯亮时，{companion}还在笑，{subject}却把围巾往上拉了拉。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "新闻片里那个被便衣夹住的人，我认识。",
+              "confidence": 0.7,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$companion",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "fear": 0.04,
+              "reason": "saw the same newsreel together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "recognized_neighbor_on_newsreel",
+              "add": true,
+              "reason": "saw a familiar face in a newsreel arrest"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the newsreel came too close to home"
+            }
+          ]
+        },
+        {
+          "id": "clap-with-the-crowd",
+          "weight": 0.3,
+          "text": "新闻片放到新修的桥，观众跟着鼓掌。{subject}也拍了两下手，掌心却停在半空——画面角落里那家面包店，昨天还排着另一条队。{companion}说下回还来，{subject}说票价太贵。",
+          "significance": 0.4,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "two cinema tickets"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a few hours in the dark"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "clapped_at_the_newsreel",
+              "add": true,
+              "reason": "applauded the official newsreel with the crowd"
+            }
+          ]
+        },
+        {
+          "id": "leave-early",
+          "weight": 0.3,
+          "text": "{subject}在第二本胶片放到一半时起身，摸黑从侧门出去。{worker}在门口抽烟，问是不是片子太旧。{subject}说不是，是座位太硬；街上的雨刚停，海报被泡得只剩半张脸。",
+          "significance": 0.45,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "left the cinema before the newsreel ended"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "talked to the projectionist at the side door"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_newsreel_early",
+              "add": true,
+              "reason": "walked out before the newsreel finished"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-radio.crystal",
+      "title": "屋里的矿石收音机",
+      "domain": "media",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 59
+      },
+      "tags": [
+        "radio",
+        "neighbor",
+        "comic",
+        "daily",
+        "media",
+        "shortage"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1925,
+          "max": 1938
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "charge-pennies",
+          "weight": 0.4,
+          "text": "{subject}把矿石收音机放在窗台上，邻居们自带小板凳，挤得屋里没有下脚处。有人往桌上放两枚铜币，有人带半块糖。{neighbor}说这比电影院便宜；话音刚落，天线碰到铁栏，声音又没了。",
+          "significance": 0.5,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "neighbors paid a few coins to listen"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "shared the crystal set with the building"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the room with the radio"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.01,
+              "reason": "hosting a room full of neighbors"
+            }
+          ]
+        },
+        {
+          "id": "hide-from-landlord",
+          "weight": 0.3,
+          "text": "房东上楼时，{subject}把收音机塞进被窝，{neighbor}们装作在补袜子。耳机线从床单下露出来，像一根细蛇。房东闻到烟味，罚了{subject}一盏灯的煤油钱，却没有发现声音从哪里来。",
+          "significance": 0.5,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "landlord fined the household for the lamp"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.06,
+              "obligation": 0.05,
+              "reason": "the neighbors kept the secret together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hidden_radio_from_landlord",
+              "add": true,
+              "reason": "hid the crystal set under the blanket"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the little conspiracy worked"
+            }
+          ]
+        },
+        {
+          "id": "invite-the-official",
+          "weight": 0.3,
+          "text": "街区的查执照的人来查无线电执照。{subject}干脆请他坐下，把音量调小，正好播到天气预报。对方听完一段，说下次记得去登记，没有开罚单；{neighbor}在门口撇嘴，说这机器以后归大家听。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "handled the radio inspection calmly"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "radio_official_visit",
+              "add": true,
+              "reason": "the licensing officer listened before writing anything"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-radio.rumor",
+      "title": "停电时收音机里的消息",
+      "domain": "media",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 59
+      },
+      "tags": [
+        "radio",
+        "blackout",
+        "rumor",
+        "panic",
+        "neighbor",
+        "politics"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1938,
+          "max": 1948
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "hs18-blackout-rumor",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "turn-it-up",
+          "weight": 0.45,
+          "text": "停电后的第三个小时，{neighbor}把收音机搬到楼道，电池快没电了。女播音员说“请市民保持镇静”，随后是一段军乐。{subject}听见有人开始收拾行李；楼下的铁门被风撞了三次，像有人在敲。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "parameters": {
+                "credibility": 60,
+                "panic": 45,
+                "officialDenial": false,
+                "source": "楼道里的收音机",
+                "mutation": 1
+              },
+              "durationMonths": 4,
+              "reason": "a radio broadcast turned a blackout into a rumor"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "fear": 0.05,
+              "reason": "listened to the radio together in the dark"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the broadcast sounded like an evacuation notice"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "heard_radio_rumor",
+              "add": true,
+              "reason": "heard the unconfirmed broadcast during the blackout"
+            }
+          ]
+        },
+        {
+          "id": "switch-it-off",
+          "weight": 0.3,
+          "text": "{subject}伸手关掉收音机，说电池要留给夜里的急救。{neighbor}不同意，两人在黑暗里摸到同一只旋钮。最后谁也没有再开；楼道里只剩邻居的怀表在走，每一下都像在催人下楼。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "parameters": {
+                "credibility": 35,
+                "panic": 20,
+                "officialDenial": false,
+                "source": "半句话和一块怀表",
+                "mutation": 0
+              },
+              "durationMonths": 2,
+              "reason": "a half-heard broadcast still left a rumor behind"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "argued over the radio switch in the dark"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the silence was not reassuring"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "silenced_radio_during_blackout",
+              "add": true,
+              "reason": "switched off the radio before the broadcast ended"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-news",
+          "weight": 0.25,
+          "text": "{subject}把听到的消息带到街角，换了两支蜡烛和一包盐。不到半小时，杂货店门口排起队；巡街的人赶来问消息从哪里来，{subject}说收音机里，大家都听见了。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "parameters": {
+                "credibility": 75,
+                "panic": 55,
+                "officialDenial": false,
+                "source": "杂货店门口",
+                "mutation": 2
+              },
+              "durationMonths": 5,
+              "reason": "the broadcast was traded for candles and salt"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "candles and salt for the news"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "salt kept the household going"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "known as the person who spread the blackout news"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "spread_radio_rumor",
+              "add": true,
+              "reason": "traded the unconfirmed broadcast at the street corner"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-revolution.leaflet",
+      "title": "印在电影票背面的传单",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 59
+      },
+      "tags": [
+        "revolution",
+        "leaflet",
+        "cinema",
+        "neighbor",
+        "politics",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1918,
+          "max": 1934
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "hide-the-stack",
+          "weight": 0.4,
+          "text": "{subject}在电影院后门捡到一叠传单，纸背还印着上周的片名。上面写着罢工和面包，字迹歪斜。{neighbor}说警察已经到街口，{subject}把传单塞进煤箱，只留下一张垫桌脚。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "传单是用电影票纸印的，印的人就在附近。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "fear": 0.04,
+              "reason": "hid the leaflets together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hid_revolution_leaflets",
+              "add": true,
+              "reason": "stuffed the leaflets into the coal box"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the police were already at the corner"
+            }
+          ]
+        },
+        {
+          "id": "deliver-to-the-printer",
+          "weight": 0.3,
+          "text": "{subject}按传单上的暗号找到印刷所。印刷所的人正在洗版，手上全是墨，说今晚还要再印五百张。{subject}帮忙把纸捆上自行车，换回一句“别走正街”。回家时，{subject}绕了三座桥，车链子响得像打鼓。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a few coins for carrying the paper bundles"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.01,
+              "reason": "found the print shop through a coded leaflet"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "delivered_revolution_leaflets",
+              "add": true,
+              "reason": "delivered a stack of leaflets by bicycle"
+            }
+          ]
+        },
+        {
+          "id": "burn-them",
+          "weight": 0.3,
+          "text": "{subject}把传单一张张塞进炉子，火苗窜到烟囱口。{neighbor}在门外问有没有闻到纸味，{subject}说是在烧旧账本。第二天，街口的墙上贴出新的告示，纸色和昨晚烧掉的一模一样。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "新告示的纸和昨夜传单是同一种纸。",
+              "confidence": 0.6,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "burned_revolution_leaflets",
+              "add": true,
+              "reason": "burned the leaflets in the stove"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the same paper appeared on the street the next day"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-queue.bread",
+      "title": "面包店门口的粉笔价",
+      "domain": "economy",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 59
+      },
+      "tags": [
+        "inflation",
+        "queue",
+        "bread",
+        "money",
+        "shortage",
+        "neighbor"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1919,
+          "max": 1923
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": false,
+          "minAge": 5,
+          "maxAge": 14
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "buy-two-and-give-one",
+          "weight": 0.4,
+          "text": "柜台后的{worker}拿粉笔把价目牌又改了一次。{subject}排了四十分钟，前面那位太太把一帽盒钞票推上柜台，只换回两小块黑面包。{subject}买了两块，把其中一块塞给身后的孩子，孩子没有道谢，先咬了一口。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "bread at the morning price"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "one loaf came home"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the child ate first"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fed_child_in_bread_queue",
+              "add": true,
+              "reason": "gave a loaf to the child behind him"
+            }
+          ]
+        },
+        {
+          "id": "wait-for-the-price-to-fall",
+          "weight": 0.3,
+          "text": "{subject}退出队伍，站在对面看粉笔字。中午时价格又涨了一格，下午面包却卖完了。{worker}把空筐摞在门口，说“明天早点来”。{subject}摸了摸口袋，钱还在，能买的东西已经少了一半。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "money lost value while waiting"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "no bread came home"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "stood hungry in the bread queue until the afternoon"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "排队等降价，只会等到面包卖完。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the price rose while he waited"
+            }
+          ]
+        },
+        {
+          "id": "barter-a-ring",
+          "weight": 0.3,
+          "text": "{subject}摘下手上的银戒指，放在柜台上。{worker}看了看成色，切了半条面包，又找给{subject}一叠刚印出来的钞票。{subject}把钞票塞进口袋时，听见身后有人笑：这钱到明天只够买一盒火柴。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "change from the silver ring"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "half a loaf for the ring"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the ring bought less than expected"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bartered_ring_for_bread",
+              "add": true,
+              "reason": "traded a silver ring at the bakery counter"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-queue.refugee",
+      "title": "车站登记桌前的担保人",
+      "domain": "migration",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 59
+      },
+      "tags": [
+        "refugee",
+        "queue",
+        "station",
+        "papers",
+        "official",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1914,
+          "max": 1950
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 59
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 75
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": false,
+          "minAge": 3,
+          "maxAge": 14
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "sign-as-guarantor",
+          "weight": 0.35,
+          "text": "登记桌后面，{official}把表格推过来，说这一家人缺一个本地担保人。{neighbor}抱着一只藤箱，箱角用绳子捆了三道。{subject}写下自己的名字和门牌号，笔尖顿了一下；{official}盖章时没有抬头，只说“出了事找你”。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "signed as the refugee family's local guarantor"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "guaranteed_refugee_family",
+              "add": true,
+              "reason": "put his name and address on a refugee registration form"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "担保人要替被担保的人负责。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the registration office now knows the address"
+            }
+          ]
+        },
+        {
+          "id": "give-a-false-address",
+          "weight": 0.3,
+          "text": "{subject}把隔壁空屋的门牌号写在表格上。{official}看了一眼，居然没有追问。{neighbor}千恩万谢，提着箱子往那条街走；{subject}没有提醒那屋已经塌了半边，只把围巾拉高，转身去赶电车。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "fear": 0.05,
+              "reason": "gave the refugee family an address that was not his"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "空屋的门牌号也能通过登记。",
+              "confidence": 0.7,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "gave_false_refugee_address",
+              "add": true,
+              "reason": "wrote a ruined house's number on the form"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the family walked toward a ruined house"
+            }
+          ]
+        },
+        {
+          "id": "slip-food-and-leave",
+          "weight": 0.35,
+          "text": "{subject}没有填表，只把半块面包和一张电车票塞进孩子的口袋。{official}敲了敲桌子，叫下一个。{neighbor}追到门口，问姓名；{subject}摆摆手，说名字写在票背面。其实票背面什么也没有。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "gave bread to the refugee child"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "gave away a tram ticket"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "helped without giving a name"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "helped_refugee_without_papers",
+              "add": true,
+              "reason": "gave food and a ticket instead of a signature"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the child had something to eat"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-queue.figure",
+      "title": "面包队里的那张脸",
+      "domain": "history",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 59
+      },
+      "tags": [
+        "historical_figure",
+        "queue",
+        "recognition",
+        "bread",
+        "witness",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1914,
+          "max": 1939
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 59
+        },
+        {
+          "key": "historical",
+          "kind": "historical",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 90
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "give-your-place",
+          "weight": 0.35,
+          "text": "队伍往前挪时，{subject}认出前面那个把帽檐压低的人——报纸上见过那张脸，{historical}。对方手里也攥着一张配给证，指节冻得发白。{subject}把自己的位置让出来，说自己去另一条队；{historical}点了一下头，没有报名字。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "parameters": {
+                "certainty": 80,
+                "danger": 30,
+                "retellings": 0,
+                "claim": "我在面包队里认出了那张脸，并把位置让给了他。",
+                "quiet": false
+              },
+              "durationMonths": 48,
+              "reason": "recognized a historical figure in a bread queue"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$historical",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.1,
+              "reason": "gave up a place in the bread queue"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "gave up the place and went home with less bread"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "yielded_place_to_historical_figure",
+              "add": true,
+              "reason": "let the historical figure keep the place in line"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-sighting",
+          "weight": 0.3,
+          "text": "{subject}没有排队，转身去找街角的记者。{official}在后面喊“别堵路”，{subject}已经钻进电话亭。第二天，小报角落里登了一句话：某人在面包队里看见了那张脸。{subject}拿到几张钞票，也记住了记者没有问消息是真是假。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "sold the sighting to a newspaper"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "parameters": {
+                "certainty": 65,
+                "danger": 55,
+                "retellings": 1,
+                "claim": "我把在面包队里看见的那张脸卖给了记者。",
+                "quiet": false
+              },
+              "durationMonths": 60,
+              "reason": "turned the sighting into a newspaper item"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$historical",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "fear": 0.1,
+              "reason": "the sighting appeared in a scandal sheet"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "known as someone who sells what he sees"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_historical_sighting",
+              "add": true,
+              "reason": "sold a queue sighting to a reporter"
+            }
+          ]
+        },
+        {
+          "id": "pretend-not-to-see",
+          "weight": 0.35,
+          "text": "{subject}把头转向橱窗，假装在看一双标价离谱的鞋。{official}从队伍旁走过，靴跟敲得很慢。{historical}往前挪了一步，帽檐仍压着；两人之间隔着三个人和一整条街的沉默。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "parameters": {
+                "certainty": 75,
+                "danger": 20,
+                "retellings": 0,
+                "claim": "我在面包队里看见了那张脸，但没有出声。",
+                "quiet": false
+              },
+              "durationMonths": 36,
+              "reason": "chose not to acknowledge the historical figure"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "保持沉默也需要记住每一个细节。",
+              "confidence": 0.7,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ignored_historical_figure_in_queue",
+              "add": true,
+              "reason": "looked away from the historical figure"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the silence felt like a choice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-queue.pension",
+      "title": "楼梯间的抚恤窗口",
+      "domain": "welfare",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 62,
+        "max": 88
+      },
+      "tags": [
+        "pension",
+        "elder",
+        "grief",
+        "official",
+        "paperwork",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1919,
+          "max": 1938
+        },
+        {
+          "kind": "hasState",
+          "stateId": "grief"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 62,
+          "maxAge": 88
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 50,
+          "maxAge": 90
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "pay-the-clerk",
+          "weight": 0.35,
+          "text": "{official}把表格翻到背面，说缺一张阵亡证明，补办要交手续费。{subject}从手绢里数出几张钞票，指尖沾了口水。旁边排队的{neighbor}小声说，她上个月也交过，收据到现在没来。{subject}把钱推过窗口，听见印章落下的声音。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "fee for reissuing a wartime death certificate"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "paid a fee that came with no receipt"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_pension_certificate_fee",
+              "add": true,
+              "reason": "paid to replace a missing wartime certificate"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "补办阵亡证明要交手续费，收据不一定来。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the stamp fell without a word"
+            }
+          ]
+        },
+        {
+          "id": "accept-a-smaller-pension",
+          "weight": 0.35,
+          "text": "{subject}说那张证明在逃难时烧了。{official}把金额改小一档，重新盖章。{neighbor}在后面替{subject}作证，说他们同一年收到过同样的信封。{official}没有抬头，只说“下一个”。{subject}把少了的那几张钞票折好，放进内衣口袋。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "a smaller pension was approved"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "the other widow vouched for the same envelope"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "accepted_smaller_pension",
+              "add": true,
+              "reason": "accepted a reduced pension without the missing certificate"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the missing papers cost more than money"
+            }
+          ]
+        },
+        {
+          "id": "organize-the-queue",
+          "weight": 0.3,
+          "text": "{subject}没有签表，转身问队伍里还有谁缺同样的证明。{neighbor}第一个举手，后面又举起三只。{official}敲窗口说不要堵楼梯；{subject}把名字和住址记在一张旧信封背面，答应明天一起去市政厅。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "pension_petitioner",
+              "add": true,
+              "reason": "began collecting other pension claimants"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "spoke for the people in the stairwell"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.12,
+              "obligation": 0.05,
+              "reason": "agreed to go to the city office together"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.01,
+              "reason": "turned a queue into a small delegation"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "organized_pension_queue",
+              "add": true,
+              "reason": "wrote down the names of other claimants"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-refugee.return",
+      "title": "同一扇门",
+      "domain": "migration",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 30,
+        "max": 59
+      },
+      "tags": [
+        "refugee",
+        "return",
+        "housing",
+        "neighbor",
+        "postwar",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "postwar",
+        "reform"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1945,
+          "max": 1950
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "share-the-room",
+          "weight": 0.35,
+          "text": "{neighbor}提着一只用铁丝捆住的箱子站在门口，说战前就住这间。{subject}让开半步，把厨房的折叠床支起来。两个人把箱子当桌子，分了一碗汤；夜里谁也没有先提房契的事。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "shared dinner with the returning tenant"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "shared the room with the returning tenant"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shared_room_with_returning_tenant",
+              "add": true,
+              "reason": "set up a folding bed for the returning tenant"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the room was crowded but not empty"
+            }
+          ]
+        },
+        {
+          "id": "hide-the-claim",
+          "weight": 0.35,
+          "text": "{neighbor}拿出了一张泡过水的租房纸，{subject}说现在的房管处不认旧纸。{neighbor}在楼梯口坐到天黑，箱子上的绳子勒进手心。{subject}关门前听见箱轮在墙上刮了一下，像有人用指甲划门。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.2,
+              "fear": 0.05,
+              "reason": "refused the returning tenant's old lease"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the stairwell heard the argument"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "denied_returning_tenant",
+              "add": true,
+              "reason": "said the old lease was no longer valid"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the sound of the suitcase against the wall"
+            }
+          ]
+        },
+        {
+          "id": "find-another-room",
+          "weight": 0.3,
+          "text": "{subject}带{neighbor}去街角的房管窗口，把自家厨房让出来作临时登记处。窗口后面的办事员翻了三本册子，找到一间朝北的屋。{neighbor}没有道谢，只问能不能先把箱子寄存一夜；{subject}说可以，别放在门口。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "car fare to the housing office"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "helped find a room for the returning tenant"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the neighbors saw who helped"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "房管册子里还有一间朝北的空屋。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_room_for_returning_tenant",
+              "add": true,
+              "reason": "found a room in the housing office ledger"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-occupation.piano",
+      "title": "钢琴抬上卡车",
+      "domain": "history",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 59
+      },
+      "tags": [
+        "occupation",
+        "piano",
+        "requisition",
+        "witness",
+        "neighbor",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1938,
+          "max": 1945
+        },
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 59
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "sign-the-receipt",
+          "weight": 0.35,
+          "text": "两名工人把{neighbor}家的钢琴抬上卡车，琴腿在门框上磕掉一块漆。{official}把一张纸塞给{subject}，说只要签“屋内无人认领”，就不必再搬第二趟。{subject}签了名，看见{neighbor}站在对面窗帘后，手一直按在玻璃上。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "parameters": {
+                "certainty": 85,
+                "danger": 45,
+                "retellings": 0,
+                "claim": "我签字证明那架钢琴是无人认领的。",
+                "quiet": false
+              },
+              "durationMonths": 60,
+              "reason": "signed a receipt for a neighbor's confiscated piano"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.2,
+              "fear": 0.05,
+              "reason": "signed the piano away as unclaimed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "签字比争辩更快，也比争辩更难忘。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "signed_abandoned_piano_receipt",
+              "add": true,
+              "reason": "signed a receipt calling the piano unclaimed"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the neighbor's hand stayed on the glass"
+            }
+          ]
+        },
+        {
+          "id": "refuse-to-sign",
+          "weight": 0.35,
+          "text": "{subject}把笔推回去，说钢琴的主人就住在隔壁。{official}没有争，只让工人把琴盖也搬走，又记下{subject}的门牌号。卡车开走时，{neighbor}家的窗子开了又关；{subject}站在空出来的门洞前，听见自己的呼吸声。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "parameters": {
+                "certainty": 90,
+                "danger": 60,
+                "retellings": 0,
+                "claim": "我没签字，但看见是谁搬走了钢琴。",
+                "quiet": false
+              },
+              "durationMonths": 72,
+              "reason": "refused to sign and watched the piano being taken"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "reason": "refused to call the piano unclaimed"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the neighbors saw who refused"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_piano_receipt",
+              "add": true,
+              "reason": "refused to sign the confiscation receipt"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the empty doorway echoed"
+            }
+          ]
+        },
+        {
+          "id": "buy-it-back",
+          "weight": 0.3,
+          "text": "{subject}把两条舍不得抽的烟塞给{official}，说这琴是替邻居保管的。{official}掂了掂烟，让工人把琴抬回门厅，却把琴凳留下了。{neighbor}晚上来道谢，{subject}说别谢，明天要是再来，就说不认识我。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "two packs of cigarettes for the officer"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.2,
+              "obligation": 0.1,
+              "reason": "bought the piano back from the requisition truck"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "parameters": {
+                "certainty": 80,
+                "danger": 35,
+                "retellings": 0,
+                "claim": "我用两条烟换回了邻居的钢琴，琴凳还在他们手里。",
+                "quiet": false
+              },
+              "durationMonths": 48,
+              "reason": "bought back a piano and saw what the officer kept"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bought_back_neighbors_piano",
+              "add": true,
+              "reason": "traded cigarettes to keep the piano in the building"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the piano came back without its bench"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-occupation.lineup",
+      "title": "门洞里的指认",
+      "domain": "history",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 59
+      },
+      "tags": [
+        "occupation",
+        "lineup",
+        "witness",
+        "denunciation",
+        "police",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1938,
+          "max": 1945
+        },
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "hs18-street-witness"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 59
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "identify-the-man",
+          "weight": 0.35,
+          "text": "{subject}指了指最左边那个人的鞋——鞋帮上有一道白灰，和那晚翻墙时蹭的一模一样。{official}把名字记下，挥手让其余人走。{neighbor}被带走时回头看了一眼，{subject}没有避开那道目光。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "danger",
+              "delta": 20,
+              "reason": "identified a man in an occupation lineup"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "certainty",
+              "delta": 5,
+              "reason": "the white plaster on the shoe matched the memory"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "retellings",
+              "delta": 1,
+              "reason": "the identification became an official story"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.3,
+              "fear": 0.2,
+              "reason": "pointed him out in the lineup"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "identified_man_in_lineup",
+              "add": true,
+              "reason": "identified the man with white plaster on his shoe"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the man looked back"
+            }
+          ]
+        },
+        {
+          "id": "protect-him",
+          "weight": 0.35,
+          "text": "{subject}说那天太黑，只看见一件湿外套，记不清脸。{official}盯了很久，把照片收回口袋，说“想起什么再来”。{neighbor}从门洞里出来时没有道谢，只把一包湿火柴塞进{subject}手里。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "danger",
+              "delta": 15,
+              "reason": "refused to identify a man in the lineup"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "certainty",
+              "delta": -5,
+              "reason": "the refusal made the memory feel less solid"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.2,
+              "obligation": 0.1,
+              "fear": 0.05,
+              "reason": "protected him from identification"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "拒绝指认也会被记住。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "protected_man_in_lineup",
+              "add": true,
+              "reason": "said the light was too dark to identify anyone"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the wet matches in his hand"
+            }
+          ]
+        },
+        {
+          "id": "name-someone-else",
+          "weight": 0.3,
+          "text": "{subject}指向中间那个很少出门的会计，说他那晚从墙边走过。{official}没有核实，只让人把会计带走。{neighbor}低下头，肩膀松了一点；{subject}回家后才发现，自己的手一直在抖。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "danger",
+              "delta": 25,
+              "reason": "gave a false identification to protect another man"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "certainty",
+              "delta": -10,
+              "reason": "the false identification poisoned the memory"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "fear": 0.1,
+              "reason": "named another man instead of him"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the street learned that a name was given"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "falsely_identified_man",
+              "add": true,
+              "reason": "pointed at the accountant to protect the neighbor"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "his hands would not stop shaking"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-purge.ration-list",
+      "title": "配给名单上被划掉的一行",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 59
+      },
+      "tags": [
+        "purge",
+        "ration",
+        "organization",
+        "denunciation",
+        "neighbor",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1938,
+          "max": 1948
+        },
+        {
+          "kind": "hasState",
+          "stateId": "institution-purge",
+          "owner": "organization"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 59
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "cross-out-the-line",
+          "weight": 0.35,
+          "text": "{official}把名单推到{subject}面前，说这一户的男人在审查名单上，配给卡从今天起作废。{subject}用尺子比着划掉那一行，铅笔芯断在纸上。下午，{neighbor}带着孩子来领面包，{subject}说册子上没有名字；孩子把手里的空罐子摇了摇。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "institution-purge",
+              "key": "intensity",
+              "delta": 0.03,
+              "reason": "the purge reached the ration ledger"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "institution-purge",
+              "key": "denunciations",
+              "delta": 2,
+              "reason": "a family's ration card was cancelled"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.2,
+              "fear": 0.1,
+              "reason": "struck the family from the ration list"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "struck_family_from_ration_list",
+              "add": true,
+              "reason": "crossed out a family's ration line"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "名单上的一行能让孩子空手回家。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the empty tin rattled"
+            }
+          ]
+        },
+        {
+          "id": "restore-under-a-dead-name",
+          "weight": 0.35,
+          "text": "{subject}把{neighbor}一家挪到一栏已经注销的名字下面，重新抄了门牌。{official}下午来核对，翻到那一页时停了一下，最终什么也没说。{neighbor}领到面包，问要不要写张欠条；{subject}说不用，别在窗口提这件事。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "institution-purge",
+              "key": "denunciations",
+              "delta": -1,
+              "reason": "one name was quietly restored to the ration book"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "institution-purge",
+              "key": "intensity",
+              "delta": -0.02,
+              "reason": "the clerk found a way around the list"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "moved the family under a cancelled name"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the ledger now carries a quiet correction"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hid_family_on_ration_list",
+              "add": true,
+              "reason": "restored a family under a dead person's name"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the family left with bread"
+            }
+          ]
+        },
+        {
+          "id": "warn-the-family",
+          "weight": 0.3,
+          "text": "{subject}趁午休跑到{neighbor}家，说今天别去窗口，名单上已经没有了。{neighbor}把桌上的面包收进柜子，问是谁划的。{subject}没有回答。第二天，{official}在办公室门口等着，手里拿着那张名单，边上多了一道折痕。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "institution-purge",
+              "key": "intensity",
+              "delta": 0.04,
+              "reason": "a warning tightened the office review"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "institution-purge",
+              "key": "denunciations",
+              "delta": 3,
+              "reason": "the leaked list produced new denunciations"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.2,
+              "obligation": 0.05,
+              "reason": "warned the family before the ration window opened"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "泄密会留下折痕。",
+              "confidence": 0.85,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "warned_family_about_ration_list",
+              "add": true,
+              "reason": "told the family to stay away from the ration window"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the list was folded differently the next day"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-purge.doorman",
+      "title": "门房与旧同事的大衣",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 75
+      },
+      "tags": [
+        "purge",
+        "elder",
+        "doorman",
+        "organization",
+        "colleague",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1934,
+          "max": 1948
+        },
+        {
+          "kind": "hasState",
+          "stateId": "institution-purge",
+          "owner": "organization"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 75
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 4,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "let-him-in",
+          "weight": 0.35,
+          "text": "{neighbor}站在门厅外，说只上去取一件大衣和一张全家照。{official}在登记本上敲了敲笔，说名单上的人不能进。{subject}把门开了一条缝，让{neighbor}贴着墙走；楼梯间的灯坏了，两个人摸黑上了三层。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "colleague",
+              "trust": 0.2,
+              "obligation": 0.05,
+              "reason": "let the purged colleague climb the stairs"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "institution-purge",
+              "key": "intensity",
+              "delta": 0.03,
+              "reason": "the doorman broke the access rule"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "admitted_purged_colleague",
+              "add": true,
+              "reason": "let a purged colleague into the building"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "名单上的人还能走楼梯。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "climbed three flights in the dark at sixty"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the dark stairwell"
+            }
+          ]
+        },
+        {
+          "id": "bring-the-coat-down",
+          "weight": 0.35,
+          "text": "{subject}让{neighbor}在门外等，自己上楼把大衣抱下来。口袋里有一副旧手套和半张电车票。{official}问包里是什么，{subject}说是一件没人要的旧衣服。{neighbor}接过包，没有当场打开。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "colleague",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "carried the coat down to the purged colleague"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "institution-purge",
+              "key": "intensity",
+              "delta": -0.01,
+              "reason": "the doorman kept the visit outside the building"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "carried_coat_for_purged_colleague",
+              "add": true,
+              "reason": "brought the coat down instead of letting him in"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the coat still fit in the bag"
+            }
+          ]
+        },
+        {
+          "id": "call-security",
+          "weight": 0.3,
+          "text": "{subject}按了桌下的铃。{official}出来时，{neighbor}已经退到台阶下。登记本上多了一行时间和来客姓名。{subject}回到门房，把大衣挂回墙钩；那件衣服到下班都没有人来取。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "colleague",
+              "trust": -0.3,
+              "fear": 0.15,
+              "reason": "called security on the purged colleague"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "institution-purge",
+              "key": "denunciations",
+              "delta": 3,
+              "reason": "the doorman's log recorded another suspect"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the office saw a reliable doorman"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reported_purged_colleague_at_door",
+              "add": true,
+              "reason": "rang the security bell on a purged colleague"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the coat stayed on its hook"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-scandal.sheet",
+      "title": "小报上的门牌号",
+      "domain": "media",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 59
+      },
+      "tags": [
+        "scandal",
+        "newspaper",
+        "reputation",
+        "neighbor",
+        "reporter",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1920,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        },
+        {
+          "key": "reporter",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "buy-up-the-copies",
+          "weight": 0.3,
+          "text": "{subject}在报摊前把那一摞小报全买下来，抱回家塞进炉子。纸烧得慢，烟从炉盖缝里钻出来。{neighbor}敲门问是不是烤糊了面包；{subject}说是在清理旧账。第二天，同一家报纸又多印了一版。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "bought every copy of the scandal sheet"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the second edition still carried the address"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "买得完报摊，买不完印刷机。",
+              "confidence": 0.9,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bought_up_scandal_sheets",
+              "add": true,
+              "reason": "burned a stack of scandal sheets"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the smoke smelled of printer's ink"
+            }
+          ]
+        },
+        {
+          "id": "trade-a-better-story",
+          "weight": 0.4,
+          "text": "{subject}把{reporter}请进厨房，倒了一杯很淡的咖啡，讲了一个关于邻居家猫的故事。记者记了两页，笑得笔都停了。第二天登出来的标题温和了许多；{neighbor}却问，为什么报上还有自己的门牌号。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "coffee for the reporter"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the follow-up story was gentler"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$reporter",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "traded a harmless story for a softer headline"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "the neighbor's address stayed in the paper"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "traded_story_with_reporter",
+              "add": true,
+              "reason": "gave a reporter a safer story"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "小报要的是故事，不是真相。",
+              "confidence": 0.8,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "complain-to-the-police",
+          "weight": 0.3,
+          "text": "{subject}带着报纸去警局，说门牌号写错了。值班警察把报纸翻来覆去看了两遍，最后在边角写了一个日期，说“这类事不归我们管”。回家路上，{subject}看见报摊把同一版报纸摆到了最显眼的位置。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the complaint did not change the story"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "complained_about_scandal_sheet",
+              "add": true,
+              "reason": "reported the wrong address to the police"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "警察不会为小报的错字立案。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the paper was displayed more prominently"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-suspect.photo",
+      "title": "照片上的一个圈",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 59
+      },
+      "tags": [
+        "political_suspect",
+        "photograph",
+        "police",
+        "neighbor",
+        "surveillance",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "reform",
+        "crisis"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1925,
+          "max": 1945
+        },
+        {
+          "kind": "hasState",
+          "stateId": "political-suspect"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 59
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "circle-yourself",
+          "weight": 0.3,
+          "text": "{official}把一张游行合影推到{subject}面前，说只要圈出自己，就算配合。照片里{subject}站在第二排，手里举着一面没有字的旗。{subject}用铅笔在脸上画了一个圈，笔芯压得很重；{official}把照片收进档案袋，说“回去等通知”。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "political-suspect",
+              "key": "heat",
+              "delta": 0.1,
+              "reason": "admitted presence at the march"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "circled_self_in_photo",
+              "add": true,
+              "reason": "circled his own face in a police photograph"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "照片里的旗没有字，也能算证据。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the pencil pressed too hard"
+            }
+          ]
+        },
+        {
+          "id": "spare-the-neighbor",
+          "weight": 0.4,
+          "text": "{subject}的铅笔停在一个熟悉的肩膀上。那是{neighbor}，那天只是路过，手里还提着一袋土豆。{subject}最终没有画下去，说照片太糊。{official}把照片转了个方向，说“再想想”；{neighbor}的名字因此没有进档案，{subject}却记住了自己差点写下去的手势。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "political-suspect",
+              "key": "heat",
+              "delta": 0.03,
+              "reason": "refused to name the neighbor in the photograph"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "fear": 0.05,
+              "reason": "did not circle the neighbor's face"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "spared_neighbor_in_photo",
+              "add": true,
+              "reason": "left the neighbor's face unmarked"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "不写名字也会被记住。",
+              "confidence": 0.7,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the pencil hovered before it stopped"
+            }
+          ]
+        },
+        {
+          "id": "refuse-to-look",
+          "weight": 0.3,
+          "text": "{subject}把照片推回去，说那天不在城里。{official}没有追问，只把照片和一张车票放在一起。{subject}看见车票上的日期，正是游行那天；票根却来自另一个方向。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "political-suspect",
+              "key": "heat",
+              "delta": 0.12,
+              "reason": "refused to discuss the photograph"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_photo_identification",
+              "add": true,
+              "reason": "denied being in the city on the day of the march"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "他们手里还有一张车票。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the ticket was from the other direction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-investigation.repair",
+      "title": "修理单上的第二个地址",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 59
+      },
+      "tags": [
+        "investigation",
+        "radio",
+        "paperwork",
+        "worker",
+        "police",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1934,
+          "max": 1950
+        },
+        {
+          "kind": "hasState",
+          "stateId": "under-investigation"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 59
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "produce-the-duplicate",
+          "weight": 0.35,
+          "text": "{official}把一张修理单放在桌上，上面有{subject}的签名，还有一个陌生地址。{subject}从抽屉里找出复写纸的副本，上面只写着一个地址。{official}把两张纸并排放好，用指甲刮了刮蓝印，说“这张是后补的”。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "delta": 10,
+              "reason": "the duplicate repair slip raised more questions"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "paid for a copy of the repair record"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "produced_repair_duplicate",
+              "add": true,
+              "reason": "showed the carbon copy of the repair slip"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "复写纸的蓝印比钢笔更难改。",
+              "confidence": 0.75,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the two addresses did not match"
+            }
+          ]
+        },
+        {
+          "id": "say-the-records-burned",
+          "weight": 0.3,
+          "text": "{subject}说修理铺去年失过火，底单都烧了。{official}没有反驳，只问火是哪个月。{subject}答得太快，对方在纸上记了一个圈。{worker}后来听说这件事，托人带话：那场火只烧了后院。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "delta": 15,
+              "reason": "the investigator caught the inconsistency"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "lied about the repair shop fire"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "claimed_repair_records_burned",
+              "add": true,
+              "reason": "said the repair records were destroyed in a fire"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "谎话最怕被问月份。",
+              "confidence": 0.8,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the investigator drew a circle"
+            }
+          ]
+        },
+        {
+          "id": "name-the-real-customer",
+          "weight": 0.35,
+          "text": "{subject}报出一个老主顾的名字，说那台收音机是他送修的。{official}合上本子，当天下午就去了那条街。{worker}晚上来问怎么回事，{subject}说只是照实说；{worker}把工具箱放下，又提起来，最终什么也没拿。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "delta": -10,
+              "reason": "the investigation moved to another customer"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": -0.2,
+              "reason": "gave the repair customer's name to the investigator"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "cooperated with the investigator"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "named_repair_customer",
+              "add": true,
+              "reason": "named the radio owner to end the inquiry"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the toolbox was put down and picked up again"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-witness.reporter",
+      "title": "记者买一段记忆",
+      "domain": "media",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 59
+      },
+      "tags": [
+        "witness",
+        "reporter",
+        "memory",
+        "money",
+        "risk",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1938,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "hs18-street-witness"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 59
+        },
+        {
+          "key": "reporter",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "sell-the-account",
+          "weight": 0.35,
+          "text": "{reporter}把几张钞票压在咖啡杯底下，说只要一段能上版的细节。{subject}讲了钢琴、门洞和那件湿外套；对方记得很快，临走前问能不能用真名。{subject}说用化名，记者笑了一下，说化名也得像真的。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "sold a witness account to a reporter"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "retellings",
+              "delta": 2,
+              "reason": "the account was written down for publication"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "danger",
+              "delta": 15,
+              "reason": "the reporter wanted a name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "certainty",
+              "delta": 3,
+              "reason": "telling it aloud fixed some details"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the account was published under a pseudonym"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_witness_account",
+              "add": true,
+              "reason": "sold a street account to a reporter"
+            }
+          ]
+        },
+        {
+          "id": "tell-a-safer-version",
+          "weight": 0.35,
+          "text": "{subject}把最危险的部分删掉，只说看见一辆卡车和一块掉漆的琴腿。{reporter}听完，把钞票收回一半，说这样的故事登不出头版。{subject}收下另一半，觉得口袋比刚才轻了，也比刚才安全。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "half payment for a safer account"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "retellings",
+              "delta": 1,
+              "reason": "a safer version entered circulation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "danger",
+              "delta": -5,
+              "reason": "the dangerous details were left out"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "certainty",
+              "delta": -5,
+              "reason": "the safer version felt less true"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "gave_safer_witness_version",
+              "add": true,
+              "reason": "left the dangerous names out of the story"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the pocket felt lighter and safer"
+            }
+          ]
+        },
+        {
+          "id": "refuse-and-warn",
+          "weight": 0.3,
+          "text": "{subject}把钞票推回去，说那个人还住在这条街上。{reporter}收起本子，问是不是有人威胁。{subject}说没有，只是不想在下一个门洞里再认出谁。出门时，{subject}绕到{neighbor}家，把记者来过的事说了一遍。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "danger",
+              "delta": 10,
+              "reason": "refusing a reporter drew attention"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "retellings",
+              "delta": 1,
+              "reason": "the account was repeated as a warning"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "reason": "warned the neighbor that a reporter had come"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the reporter left without a story"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_witness_payment",
+              "add": true,
+              "reason": "refused to sell the account and warned the street"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the reporter's notebook stayed closed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-witness.memorial",
+      "title": "纪念牌上的名字",
+      "domain": "memory",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 85
+      },
+      "tags": [
+        "witness",
+        "memorial",
+        "elder",
+        "memory",
+        "reconstruction",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "postwar",
+        "reform"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1945,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "hs18-street-witness"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "confirm-the-name",
+          "weight": 0.35,
+          "text": "{official}把一块样牌放在桌上，上面只刻了一个姓。委员会需要有人证明那个名字确实在这条街上住过。{subject}看了很久，说门牌是十七号，不是十九号；{official}把牌翻过来，让石匠重刻。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "certainty",
+              "delta": 5,
+              "reason": "the address was confirmed for the memorial"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "retellings",
+              "delta": 1,
+              "reason": "the witness account entered the memorial record"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the committee accepted the testimony"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "confirmed the family name for the plaque"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "confirmed_memorial_name",
+              "add": true,
+              "reason": "corrected the address on a memorial plaque"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the name would be cut correctly"
+            }
+          ]
+        },
+        {
+          "id": "admit-uncertainty",
+          "weight": 0.35,
+          "text": "{subject}说不确定是十七号还是十九号，只记得门口有一棵接骨木。{official}把牌子收回盒子，说那就先不刻。{neighbor}在走廊里等，问是不是没成；{subject}说名字没错，门牌错了，牌子上刻不下两棵树。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "certainty",
+              "delta": -5,
+              "reason": "admitted uncertainty about the address"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "danger",
+              "delta": -5,
+              "reason": "uncertainty made the account less useful"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "told the family the truth about the address"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "admitted_memorial_uncertainty",
+              "add": true,
+              "reason": "refused to invent a house number"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "纪念牌只刻得下一个门牌。",
+              "confidence": 0.7,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the plaque went back into its box"
+            }
+          ]
+        },
+        {
+          "id": "refuse-to-testify",
+          "weight": 0.3,
+          "text": "{subject}说那天看见的人太多，记不清谁是谁。{official}没有再问，把盒子合上。{neighbor}追到门口，说家里只剩这一块牌能证明父亲住过；{subject}停了一下，还是下了楼。楼梯间的灯比战时亮，照得每一级台阶都很清楚。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "quiet",
+              "value": true,
+              "reason": "chose silence before the memorial committee"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "reason": "refused to confirm the family name"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_memorial_testimony",
+              "add": true,
+              "reason": "said the faces could no longer be separated"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the stairwell light was too clear"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-blackout.bakery",
+      "title": "停电后的面包队",
+      "domain": "economy",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 59
+      },
+      "tags": [
+        "blackout",
+        "queue",
+        "bread",
+        "rumor",
+        "neighbor",
+        "shortage"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1939,
+          "max": 1948
+        },
+        {
+          "kind": "hasState",
+          "stateId": "hs18-blackout-rumor",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 59
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "share-the-lamp",
+          "weight": 0.4,
+          "text": "面包店里只剩一盏罩着蓝布的小灯。{worker}把最后一筐面包放在柜台上，队伍却越挤越紧。{subject}把带来的煤油灯举高，照见每张脸；有人开始按顺序报数，声音从队尾传过来，像一条看不见的绳。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "panic",
+              "delta": -10,
+              "reason": "the queue organized itself under the lamp"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "credibility",
+              "delta": 5,
+              "reason": "the shared lamp made the rumor easier to discuss"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "held the lamp over the bread queue"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shared_lamp_in_bread_queue",
+              "add": true,
+              "reason": "lit the blackout bread queue"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the queue found a rhythm"
+            }
+          ]
+        },
+        {
+          "id": "sell-matches",
+          "weight": 0.3,
+          "text": "{subject}在门口卖火柴，一盒顶平时三盒的价。买的人不少，有人划亮一根照路，又舍不得扔掉。{worker}从柜台后喊“别在店里点火”；{subject}把剩下的火柴塞进包里，觉得这钱赚得比面包还快。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "sold matches at blackout prices"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "panic",
+              "delta": 8,
+              "reason": "the match seller profited from the fear"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the queue saw the price of matches"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_matches_during_blackout",
+              "add": true,
+              "reason": "sold matches outside the dark bakery"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the money came faster than bread"
+            }
+          ]
+        },
+        {
+          "id": "close-the-shutters",
+          "weight": 0.3,
+          "text": "{subject}帮{worker}把铁帘拉下来，只留一道缝递面包。队伍在外面敲了两下门，随后安静了。{neighbor}从缝里递进一张写着名字的纸，说家里有病人；{subject}把纸压回对方手里，说从明天起早点来。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "panic",
+              "delta": 5,
+              "reason": "the shutters made the queue feel shut out"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "credibility",
+              "delta": -5,
+              "reason": "the bakery refused to discuss the rumor"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "bread saved from the last basket"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "refused the note from the sick household"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "closed_bakery_during_blackout",
+              "add": true,
+              "reason": "pulled the iron shutter down on the queue"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the knocking stopped"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-blackout.denial",
+      "title": "早晨贴出的辟谣告示",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 59
+      },
+      "tags": [
+        "blackout",
+        "rumor",
+        "denial",
+        "official",
+        "neighbor",
+        "ambiguity"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1939,
+          "max": 1948
+        },
+        {
+          "kind": "hasState",
+          "stateId": "hs18-blackout-rumor",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 59
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "read-it-aloud",
+          "weight": 0.35,
+          "text": "{official}把一张辟谣告示贴在电线杆上，说昨夜只是线路故障，没有人被捕。{subject}站在旁边，把告示从头到尾念给不识字的人听；念到“请勿传播谣言”时，{neighbor}在人群里咳了一声。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "officialDenial",
+              "value": true,
+              "reason": "the denial was read aloud to the street"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "credibility",
+              "delta": -5,
+              "reason": "the official text reduced the rumor's credibility"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "panic",
+              "delta": -5,
+              "reason": "the public reading calmed some listeners"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "read the official notice to the street"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "read_denial_aloud",
+              "add": true,
+              "reason": "read the blackout denial in public"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "告示上的字和昨夜听到的话对不上。",
+              "confidence": 0.6,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "tear-off-a-corner",
+          "weight": 0.3,
+          "text": "{subject}趁{official}转身，把告示从电线杆上撕下一角。纸很薄，背面还印着昨天的电影广告。{neighbor}说别撕，留着还能包东西；{subject}把那一角揉成团，塞进口袋，决定先去地窖看看。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "officialDenial",
+              "value": true,
+              "reason": "the denial was visibly torn"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "credibility",
+              "delta": 5,
+              "reason": "tearing the notice made it look less trustworthy"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "panic",
+              "delta": 8,
+              "reason": "the torn notice fed the fear"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "辟谣告示背面是电影广告。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "tore_denial_notice",
+              "add": true,
+              "reason": "tore a corner from the official denial"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the paper was thinner than it looked"
+            }
+          ]
+        },
+        {
+          "id": "add-a-line",
+          "weight": 0.35,
+          "text": "{subject}借来一支铅笔，在告示下面添了一句：十七号的人昨夜没有回来。写完把笔还给{neighbor}，两个人谁也没有再看对方。中午，告示被雨淋得字迹发毛，只有那一行铅笔字还留在下面。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "officialDenial",
+              "value": true,
+              "reason": "the denial now carried a handwritten contradiction"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "credibility",
+              "delta": 10,
+              "reason": "the handwritten line made the rumor specific"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "hs18-blackout-rumor",
+              "key": "panic",
+              "delta": 10,
+              "reason": "the missing person at number seventeen"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "fear": 0.05,
+              "reason": "wrote the contradiction together in silence"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the pencil line was recognized as his"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "added_line_to_denial",
+              "add": true,
+              "reason": "wrote that number seventeen had not come home"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the pencil line outlasted the printed words"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-blackout.cellar",
+      "title": "地窖里的两桶煤",
+      "domain": "history",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 59
+      },
+      "tags": [
+        "blackout",
+        "cellar",
+        "coal",
+        "neighbor",
+        "denunciation",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1939,
+          "max": 1948
+        },
+        {
+          "kind": "hasState",
+          "stateId": "hs18-blackout-rumor",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 4,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "hide-the-coal",
+          "weight": 0.35,
+          "text": "{subject}在地窖最里面看见两桶煤，桶盖上压着{neighbor}家的旧毯子。{neighbor}说这是给病人留的；楼上的巡逻队正在敲第一扇门。{subject}把毯子重新铺平，又把自家的空桶挪到前面。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "parameters": {
+                "certainty": 90,
+                "danger": 40,
+                "retellings": 0,
+                "claim": "地窖里有两桶煤，是邻居藏的。",
+                "quiet": false
+              },
+              "durationMonths": 48,
+              "reason": "saw the hidden coal during a blackout search"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "helped hide the coal from the patrol"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hid_neighbor_coal",
+              "add": true,
+              "reason": "moved the empty buckets to the front"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "coal dust in the cellar"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the patrol was on the first floor"
+            }
+          ]
+        },
+        {
+          "id": "report-the-coal",
+          "weight": 0.3,
+          "text": "{subject}上楼时对巡逻队的人说地窖里有人囤煤。巡逻队下去，把两桶煤抬走，{neighbor}跟在后面，没有争辩。当天晚上，{subject}家门口多了一小堆碎煤，像是从桶底扫出来的。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "parameters": {
+                "certainty": 90,
+                "danger": 60,
+                "retellings": 1,
+                "claim": "我告诉巡逻队地窖里有煤。",
+                "quiet": false
+              },
+              "durationMonths": 60,
+              "reason": "reported the hidden coal to the patrol"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.3,
+              "fear": 0.15,
+              "reason": "reported the hidden coal"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the patrol considered him cooperative"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reported_hidden_coal",
+              "add": true,
+              "reason": "told the patrol about the coal in the cellar"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the broken coal was left at the door"
+            }
+          ]
+        },
+        {
+          "id": "trade-for-shelter",
+          "weight": 0.35,
+          "text": "{subject}没有告发，也没有白帮忙。{neighbor}把两桶煤分出一桶，换{subject}在搜查时把楼上的孩子领到后院。成交时两人都没有提“煤”字，只说“今晚借个火”。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "parameters": {
+                "certainty": 80,
+                "danger": 45,
+                "retellings": 0,
+                "claim": "我用一桶煤换邻居家孩子躲过了一晚。",
+                "quiet": false
+              },
+              "durationMonths": 48,
+              "reason": "traded coal for sheltering a child during the search"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.2,
+              "obligation": 0.1,
+              "reason": "traded coal for sheltering the child"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "traded_coal_for_shelter",
+              "add": true,
+              "reason": "traded a bucket of coal for the child's safety"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the bargain was sealed with a borrowed fire"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-fame.autograph",
+      "title": "电车上的签名",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 59
+      },
+      "tags": [
+        "fame",
+        "tram",
+        "autograph",
+        "child",
+        "reputation",
+        "daily"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1920,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fame"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 14
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "sign-for-the-child",
+          "weight": 0.4,
+          "text": "电车过弯时，{neighbor}认出{subject}，说孩子听过广播里的声音。{subject}在车票背面签了名，又画了一个歪歪扭扭的星星。孩子把票举到灯下看，问能不能再签一张给妹妹；{neighbor}说别贪心，{subject}却又撕了一张票。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "signed autographs for a child on the tram"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "the family recognized the broadcast voice"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "signed_tram_autographs",
+              "add": true,
+              "reason": "signed two tram tickets for a child"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the child asked for a second ticket"
+            }
+          ]
+        },
+        {
+          "id": "deny-it-politely",
+          "weight": 0.3,
+          "text": "{subject}把帽檐压低，说认错人了。{neighbor}愣了一下，把孩子往身后拉了拉。下车时，孩子还在回头看；{subject}站在车门口，听见售票员报站，忽然希望那声音不是自己的。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "denied being the person on the radio"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "denied the recognition on the tram"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "denied_fame_on_tram",
+              "add": true,
+              "reason": "pulled his hat down and said it was a mistake"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the conductor's voice sounded too familiar"
+            }
+          ]
+        },
+        {
+          "id": "visit-the-sick-child",
+          "weight": 0.3,
+          "text": "{subject}问清地址，第二天带着一包糖去了那户人家。孩子躺在床上，把车票贴在床头。{neighbor}在厨房煮咖啡，杯底有一层渣；{subject}坐了一个小时，没有提广播，也没有提钱。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a bag of sugar for the sick child"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "visited a sick child who listened to the broadcast"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "reason": "sat with the family for an hour"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "visited_sick_fan",
+              "add": true,
+              "reason": "visited the child who kept the tram ticket"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "名声在别人家里是另一件东西。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the ticket was pinned above the bed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hs18-patronage.jam",
+      "title": "楼梯间的果酱罐",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 59
+      },
+      "tags": [
+        "office",
+        "patronage",
+        "neighbor",
+        "favor",
+        "bureaucracy",
+        "history"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1920,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "office-patronage"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 59
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "add-the-name",
+          "weight": 0.35,
+          "text": "{neighbor}在楼梯间拦住{subject}，手里提着一罐果酱，说儿子刚从学校出来，只求一个临时差事。{subject}把果酱推回去，却把名字和地址记在了信封背面。第二天，那张纸进了办公室的推荐名单。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "appointees",
+              "delta": 1,
+              "reason": "a neighbor's son joined the recommendation list"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "delta": 5,
+              "reason": "the favor created another obligation"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "added the son's name to the office list"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "added_neighbor_son_to_list",
+              "add": true,
+              "reason": "wrote the neighbor's son into the recommendation list"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the envelope went into the office bag"
+            }
+          ]
+        },
+        {
+          "id": "take-the-jam-and-refuse",
+          "weight": 0.3,
+          "text": "{subject}收下果酱，说今年编制满了，明年再说。{neighbor}在楼梯口站了一会儿，问能不能把罐子还回来；{subject}说已经开了封，退不了。晚上，果酱抹在面包上很甜，{subject}却吃得很慢。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a jar of jam accepted at the stairwell"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "reason": "took the jam but refused the request"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the stairwell saw the jar change hands"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "took_jam_refused_request",
+              "add": true,
+              "reason": "kept the jam and said the quota was full"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the jam was too sweet"
+            }
+          ]
+        },
+        {
+          "id": "explain-the-waitlist",
+          "weight": 0.35,
+          "text": "{subject}把{neighbor}请进屋，翻开自己的小本子，说名单上已经有七个人，轮到他儿子至少要等两年。{neighbor}问能不能插队；{subject}说能，但得有人从名单上让出来。两个人看着那罐果酱，谁也没有先伸手。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "explained the recommendation list honestly"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "delta": 2,
+              "reason": "the waitlist created a smaller obligation"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "名单上的每个名字都欠着另一个人情。",
+              "confidence": 0.85,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "explained_patronage_waitlist",
+              "add": true,
+              "reason": "showed the neighbor the seven names ahead of him"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the jar stayed on the table"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "era": "1910-1955",
+  "themes": [
+    "street_level_history",
+    "newspaper_radio_cinema",
+    "inflation",
+    "refugee",
+    "revolution",
+    "occupation",
+    "reconstruction",
+    "political_rumor",
+    "memory"
+  ],
+  "tone": [
+    "historical",
+    "political",
+    "gritty",
+    "comic"
+  ],
+  "scope": [
+    "vienna",
+    "urban",
+    "street",
+    "adulthood",
+    "elderhood"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "战争与占领",
+    "政治清洗与告发",
+    "通货膨胀与贫困",
+    "难民与家庭分离",
+    "死亡与丧亲",
+    "警察审讯"
+  ]
+}
