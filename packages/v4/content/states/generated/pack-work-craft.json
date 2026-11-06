@@ -1,0 +1,4001 @@
+{
+  "id": "pack-work-craft",
+  "version": 1,
+  "title": "作坊与车间：手艺、血汗与反叛",
+  "description": "把师傅、作坊主和破坏机器的人写成会持续改变选择的状态，再让学徒、帮工、罢工委员会、黑名单和债务真正进入车间与家庭。这里没有干净的赢家：手艺可以被承认，也可以被偷走；工厂可以给饭吃，也可以把手卷进去。",
+  "author": "phase17-content-author/work-craft",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-06",
+  "sourceBriefId": "phase17-work-craft",
+  "rationale": "Phase 16 的办公室内容处理了职位与文件，却没有处理车间里的手艺、工伤、罢工和职业改行。这一包让师傅身份、血汗作坊主和破坏机器者成为可查询的持续状态，并用十个 kernel 消费学徒契约、出师工匠、失败学徒、工厂雇佣、罢工潮、罢工委员会、黑名单与债务束缚；手艺的承认、失窃、浪费和晚年重学都有不同后果。",
+  "themes": [
+    "craft",
+    "labor",
+    "sweatshop",
+    "strike",
+    "debt",
+    "reinvention"
+  ],
+  "era": "Vienna, 1900-1945",
+  "tone": [
+    "harsh",
+    "material",
+    "ironic"
+  ],
+  "rarity": "uncommon",
+  "states": [
+    {
+      "id": "wc17-master-craftsperson",
+      "version": 1,
+      "packId": "pack-work-craft",
+      "title": "持证师傅",
+      "description": "一个人已经能被主顾、行会和学徒称为师傅：有自己的标准、订单、欠料行的账和一枚可能尚未注册的印记。师傅身份不是终身荣誉，订单、债务和偷走的图样都会改变它。",
+      "owner": "person",
+      "slot": "craft",
+      "conflict": "replace",
+      "tags": [
+        "craft",
+        "work",
+        "master",
+        "workshop",
+        "ownership",
+        "reputation"
+      ],
+      "parameters": {
+        "standards": {
+          "type": "number",
+          "default": 65,
+          "min": 0,
+          "max": 100
+        },
+        "backlog": {
+          "type": "number",
+          "default": 2,
+          "min": 0,
+          "max": 30
+        },
+        "debt": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 50
+        },
+        "markRegistered": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "durationMonths": {
+        "min": 24,
+        "max": 180
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "craft",
+            "workshop",
+            "commission",
+            "apprentice",
+            "master"
+          ],
+          "multiplier": 1.6
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "factory",
+            "unskilled"
+          ],
+          "multiplier": 0.85
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "craft",
+            "workshop"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "master",
+          "add": true,
+          "reason": "recognized as a master craftsperson"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "master_craftsperson",
+          "add": true,
+          "reason": "entered the master craft state"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "master",
+          "add": false,
+          "reason": "no longer working as a recognized master"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "master_craftsperson",
+          "add": false,
+          "reason": "left the master craft state"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "workshop-year",
+          "everyMonths": 24,
+          "check": {
+            "attribute": "resilience",
+            "skill": "craft",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "commissions-arrive",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}的作坊又接了两单：一扇橡木门、一只修到一半的八音盒。{subject}把工钱先付给学徒，自己留下最后一张钞票，用铅笔在账本背面记下欠料行的数目。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "wc17-master-craftsperson",
+                  "key": "backlog",
+                  "delta": 2,
+                  "reason": "new commissions arrived"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 2,
+                  "reason": "workshop commissions"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "the workshop delivered on time"
+                }
+              ]
+            },
+            {
+              "id": "winter-thin",
+              "result": "failure",
+              "weight": 2,
+              "text": "冬天来得早，煤价涨了，主顾却要压价。{subject}守着冷掉的胶锅，把最后一块好木料留给一单可能退掉的活；账本上的欠款又添了一行。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "wc17-master-craftsperson",
+                  "key": "debt",
+                  "delta": 3,
+                  "reason": "coal and materials bought on credit"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "workshop winter costs"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "a thin winter in the workshop"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "grow-into-sweatshop",
+          "to": "wc17-sweatshop-owner",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "wc17-master-craftsperson",
+              "parameter": "standards",
+              "max": 45
+            },
+            {
+              "kind": "hasState",
+              "stateId": "wc17-master-craftsperson",
+              "parameter": "backlog",
+              "min": 10
+            },
+            {
+              "kind": "hasState",
+              "stateId": "wc17-master-craftsperson",
+              "parameter": "debt",
+              "min": 8
+            }
+          ],
+          "reason": "orders and debts outgrew the master's standards",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "former patrons noticed the drop in quality"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the workshop changed character"
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "stolen-pattern",
+          "onTags": [
+            "betrayal",
+            "theft",
+            "apprentice"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-master-craftsperson",
+              "key": "backlog",
+              "delta": -2,
+              "reason": "a copied pattern cost the workshop an order"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a cheaper copy appeared in the market"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the pattern was stolen"
+            }
+          ],
+          "text": "有人拿走了{subject}画在牛皮纸上的榫卯图样，几周后，同样的柜子出现在另一条街的橱窗里，标价更低。{subject}没有去告，只在自家门框上重描了一遍印记。",
+          "significance": 0.5,
+          "cooldownMonths": 12
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/work-craft",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让师傅身份变成有标准、订单、债务和被盗风险的持续状态；当订单和债务压过标准时，它可以变成血汗作坊。"
+      }
+    },
+    {
+      "id": "wc17-sweatshop-owner",
+      "version": 1,
+      "packId": "pack-work-craft",
+      "title": "血汗作坊主",
+      "description": "一个人靠压缩工时、克扣工钱和躲避检查来维持作坊利润。利润、内疚、工人忠诚和检查风险彼此拉扯；没有哪一项会自动让人变成好人或坏人。",
+      "owner": "person",
+      "slot": "business",
+      "conflict": "replace",
+      "tags": [
+        "work",
+        "factory",
+        "ownership",
+        "profit",
+        "guilt",
+        "labor",
+        "sweatshop"
+      ],
+      "parameters": {
+        "profit": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "guilt": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        },
+        "loyalty": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        },
+        "inspectionRisk": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 12,
+        "max": 240
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "factory",
+            "ownership",
+            "union",
+            "inspection",
+            "accident",
+            "sweatshop"
+          ],
+          "multiplier": 1.55
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "family",
+            "leisure",
+            "courtship"
+          ],
+          "multiplier": 0.9
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "bargain",
+            "inspection"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "workshop_owner",
+          "add": true,
+          "reason": "became a workshop owner"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "sweatshop_owner",
+          "add": true,
+          "reason": "entered the sweatshop owner state"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "workshop_owner",
+          "add": false,
+          "reason": "no longer runs the workshop"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "sweatshop_owner",
+          "add": false,
+          "reason": "left the sweatshop owner state"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "ledger-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "cunning",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "ledger-balances",
+              "result": "success",
+              "weight": 3,
+              "text": "账本合上时，{subject}又多出三克朗：少算的工时、扣下的学徒午饭、一批没报税的麻布。车间里没人抬头，机器声盖住了算盘声。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "wc17-sweatshop-owner",
+                  "key": "profit",
+                  "delta": 5,
+                  "reason": "another profitable year of cost-cutting"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "wc17-sweatshop-owner",
+                  "key": "loyalty",
+                  "delta": -2,
+                  "reason": "workers noticed the missing wages"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "wc17-sweatshop-owner",
+                  "key": "guilt",
+                  "delta": 2,
+                  "reason": "the ledger was balanced on other people's time"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 2,
+                  "reason": "workshop profit"
+                }
+              ]
+            },
+            {
+              "id": "inspection-week",
+              "result": "failure",
+              "weight": 2,
+              "text": "检查员在楼梯口闻到了煤烟和汗味，数了数窗边的床位。{subject}把罚单折进账本，转身催工头把剩下的活赶完；这一批货的利润刚好抵掉罚款。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "wc17-sweatshop-owner",
+                  "key": "inspectionRisk",
+                  "delta": 15,
+                  "reason": "an inspection exposed the workshop"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "wc17-sweatshop-owner",
+                  "key": "profit",
+                  "delta": -3,
+                  "reason": "the fine ate the batch's profit"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "inspection fine"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "the inspection left a paper trail"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "inspection-file",
+          "everyMonths": 12,
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "wc17-sweatshop-owner",
+              "parameter": "inspectionRisk",
+              "min": 65
+            }
+          ],
+          "outcomes": [
+            {
+              "id": "case-opened",
+              "weight": 1,
+              "text": "检查员第二次来时带了一个牛皮纸文件夹，里面夹着上次的罚单和两张工人签名。{subject}把账本合上，知道这次不是一只信封能打发的事。",
+              "effects": [
+                {
+                  "type": "state_add",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "under-investigation",
+                  "parameters": {
+                    "progress": 20,
+                    "charge": "作坊违反工时与安全规定"
+                  },
+                  "durationMonths": 12,
+                  "reason": "the workshop inspection became a formal case"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "wc17-sweatshop-owner",
+                  "key": "inspectionRisk",
+                  "delta": -5,
+                  "reason": "the case moved to the investigators"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "the inspection became a case file"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "inspection_case_opened",
+                  "add": true,
+                  "reason": "an inspection file was opened"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "strike-at-the-gate",
+          "onTags": [
+            "strike",
+            "assembly",
+            "union"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "loyalty",
+              "delta": -8,
+              "reason": "the workers stopped the machines together"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "profit",
+              "delta": -3,
+              "reason": "a stopped shift"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "inspectionRisk",
+              "delta": 10,
+              "reason": "a public dispute drew attention"
+            }
+          ],
+          "text": "车间里有人吹了一声口哨，机器一台接一台停下来。{subject}站在办公室门口，先看见的是订单，后看见的是几十张没有表情的脸。",
+          "significance": 0.6,
+          "cooldownMonths": 12
+        },
+        {
+          "id": "blood-on-the-cloth",
+          "onTags": [
+            "injury",
+            "accident",
+            "factory"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "guilt",
+              "delta": 10,
+              "reason": "a worker was hurt on the floor"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "profit",
+              "delta": -2,
+              "reason": "compensation and lost cloth"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "worker compensation"
+            }
+          ],
+          "text": "一个学徒的手指被卷进皮带，血滴在麻布上。{subject}让人把她送去诊所，又吩咐把染红的布裁掉；晚上算账时，赔偿金和那批布的钱写在同一页。",
+          "significance": 0.55,
+          "cooldownMonths": 18
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "wc17-sweatshop-owner",
+          "parameter": "guilt",
+          "min": 85
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/work-craft",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把作坊主写成利润、内疚、忠诚和检查风险互相拉扯的人，而不是单纯的恶人标签；它可以由师傅状态在订单和债务压力下转变而来。"
+      }
+    },
+    {
+      "id": "wc17-machine-breaker",
+      "version": 1,
+      "packId": "pack-work-craft",
+      "title": "破坏机器的人",
+      "description": "一个在夜里剪断皮带、往齿轮里塞木楔的人。破坏、追查和传说同时增长；它可能变成工友口中的义士，也可能变成黑名单上的名字。",
+      "owner": "person",
+      "slot": "resistance",
+      "conflict": "replace",
+      "tags": [
+        "work",
+        "factory",
+        "sabotage",
+        "machine",
+        "arrest",
+        "legend",
+        "crime",
+        "resistance"
+      ],
+      "parameters": {
+        "sabotage": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "heat": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "legend": {
+          "type": "number",
+          "default": 5,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 60
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "sabotage",
+            "strike",
+            "machine",
+            "police",
+            "legend",
+            "factory"
+          ],
+          "multiplier": 1.6
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "family",
+            "courtship",
+            "leisure"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "sabotage",
+            "police"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "machine_breaker",
+          "add": true,
+          "reason": "took direct action against a machine"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "machine_breaker",
+          "add": true,
+          "reason": "entered the machine breaker state"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "machine_breaker",
+          "add": false,
+          "reason": "no longer identified as a machine breaker"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "machine_breaker",
+          "add": false,
+          "reason": "left the machine breaker state"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "net-of-informers",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "cunning",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "not-caught",
+              "result": "success",
+              "weight": 3,
+              "text": "半年里没有警察上门。{subject}换了住处，把磨坏的鞋底扔进多瑙河，只在酒馆里听人低声提起那台停了三天的机器。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "wc17-machine-breaker",
+                  "key": "heat",
+                  "delta": -6,
+                  "reason": "the trail went cold"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "wc17-machine-breaker",
+                  "key": "legend",
+                  "delta": 4,
+                  "reason": "the story grew in the taverns"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "still free"
+                }
+              ]
+            },
+            {
+              "id": "police-visit",
+              "result": "failure",
+              "weight": 2,
+              "text": "巡查队在一个雨夜敲开了门。{subject}说自己在家里补鞋，床底下却露出一截被剪断的皮带；他们记下名字，没有立刻带走人。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "wc17-machine-breaker",
+                  "key": "heat",
+                  "delta": 12,
+                  "reason": "the police found the cut belt"
+                },
+                {
+                  "type": "condition",
+                  "personId": "$subject",
+                  "condition": "police record",
+                  "add": true,
+                  "reason": "the police wrote down the name"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.05,
+                  "reason": "a rainy night visit"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "another-machine-stops",
+          "onTags": [
+            "strike",
+            "assembly",
+            "factory"
+          ],
+          "chance": 0.35,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "key": "sabotage",
+              "delta": 5,
+              "reason": "another machine was stopped"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "key": "heat",
+              "delta": 5,
+              "reason": "the factory guards were alert"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the action continued"
+            }
+          ],
+          "text": "罢工的第二天夜里，{subject}摸进车间，把一把木楔塞进飞轮的护罩。第二天早晨，机器没有转，工头说是“意外”，工人们都没有反驳。",
+          "significance": 0.55,
+          "cooldownMonths": 12
+        },
+        {
+          "id": "a-name-for-sale",
+          "onTags": [
+            "betrayal",
+            "informer",
+            "police"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "key": "heat",
+              "delta": 20,
+              "reason": "an informer sold the route and the hiding place"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "someone talked"
+            }
+          ],
+          "text": "有人把{subject}常去的酒馆、换班的路线和那截皮带一起卖给了厂方。第二天，{subject}的储物格里多了一张没有署名的纸条，上面只写着三个字：别再来了。",
+          "significance": 0.6,
+          "cooldownMonths": 12
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/work-craft",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让破坏机器成为有追查热度、传说和再次行动可能的状态，而不是一次性的暴力事件。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "wc17-commission.masterwork",
+      "title": "主顾的胡桃木书柜",
+      "domain": "craft",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 65
+      },
+      "tags": [
+        "craft",
+        "commission",
+        "masterwork",
+        "workshop",
+        "reputation",
+        "patronage"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "journeyman",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "patron",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "apprentice",
+          "kind": "worker",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 28
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "masterpiece-accepted",
+          "weight": 0.4,
+          "text": "主顾在契约上按了印，要求一把带黄铜镶边的胡桃木书柜。{subject}带着{apprentice}做了四十天，刨花堆到窗台；交货那天，主顾把尾款数了两遍，又在工匠名册上添了{subject}的名字。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "workshop:$subject-$eventId",
+                "name": "师傅作坊",
+                "kind": "household_firm",
+                "treasury": 0,
+                "authorityRules": [
+                  "师傅验收",
+                  "学徒三年",
+                  "按件计酬"
+                ]
+              },
+              "reason": "a journeyman opened a recognized workshop"
+            },
+            {
+              "type": "position",
+              "organizationId": "workshop:$subject-$eventId",
+              "title": "师傅",
+              "holderId": "$subject",
+              "wage": 3,
+              "authority": [
+                "收徒",
+                "验收",
+                "定价"
+              ],
+              "reason": "the workshop's master post"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-master-craftsperson",
+              "parameters": {
+                "standards": 75,
+                "backlog": 3,
+                "debt": 2,
+                "markRegistered": true
+              },
+              "durationMonths": 120,
+              "reason": "the masterwork made the journeyman a recognized master"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "masterwork commission fee"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.06,
+              "reason": "forty days of fine cabinet work"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "the patron added the name to the register"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": 0.12,
+              "respect": 0.2,
+              "reason": "the patron commissioned and praised the work"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "masterwork_accepted",
+              "add": true,
+              "reason": "completed an accepted masterwork"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "主顾把尾款数了两遍，并把我的名字写进了工匠名册。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "design-copied",
+          "weight": 0.3,
+          "text": "图样在交货前被{apprentice}带去另一家作坊。{subject}在市场上看见同样的书柜，铜边更薄，价格低三成；买主不知道差别，只说这家做得快。{subject}把尾款收下，回到作坊把原图锁进柜子。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-master-craftsperson",
+              "parameters": {
+                "standards": 60,
+                "backlog": 1,
+                "debt": 4,
+                "markRegistered": false
+              },
+              "durationMonths": 120,
+              "reason": "the journeyman still set up a workshop after the theft"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "reduced commission payment"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a cheaper copy undercut the workshop"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the design was stolen"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$apprentice",
+              "kind": "colleague",
+              "trust": -0.2,
+              "reason": "the apprentice sold the pattern"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "masterwork_copied",
+              "add": true,
+              "reason": "had a masterwork design copied"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "市场上那把书柜用了我的铜边图样，但榫头更薄。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "commission-withdrawn",
+          "weight": 0.2,
+          "text": "主顾在交货前改了主意：城里时兴更轻的样式，胡桃木太沉。{subject}把做好的柜门卸下来，木料退不掉，只能抵给料行。{apprentice}问还做不做，{subject}说先把欠账还清。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "materials that could not be returned"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the commission was withdrawn"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "the patron changed the order at the last moment"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "commission_lost",
+              "add": true,
+              "reason": "a promised commission was withdrawn"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "胡桃木柜门已经做好，主顾却改要轻样式，木料退不回料行。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "cheap-job-cut-corners",
+          "weight": 0.1,
+          "text": "主顾压价三成，{subject}还是接了。为了赶工，{apprentice}把榫头削薄，{subject}看见了，没有让返工；柜子交出去时很亮，第二年就开始晃。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-master-craftsperson",
+              "parameters": {
+                "standards": 35,
+                "backlog": 4,
+                "debt": 6,
+                "markRegistered": false
+              },
+              "durationMonths": 120,
+              "reason": "the workshop took cheap work and let its standards slip"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "cheap commission payment"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the cabinet began to wobble"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.01,
+              "reason": "learned how fast a cheap job goes out"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the work was not what it should be"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cut_corners",
+              "add": true,
+              "reason": "let thin joinery leave the workshop"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wc17-factory.accident",
+      "title": "压机咬住了手",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 16,
+        "max": 62
+      },
+      "tags": [
+        "factory",
+        "accident",
+        "injury",
+        "work",
+        "safety",
+        "wage"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "factory-employment",
+          "owner": "person"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 62
+        },
+        {
+          "key": "foreman",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 68
+        },
+        {
+          "key": "coworker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 62
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "hand-in-the-press",
+          "weight": 0.4,
+          "text": "皮带在换班时打滑，{subject}的右手被卷进压机的辊子。{foreman}让人去叫厂医，自己先关掉机器；工友们围过来时，{subject}看见自己的血滴在还没裁完的军服布上。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "hand caught in the press"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "work injury",
+              "add": true,
+              "reason": "a machine injury"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "medical fees and lost wages"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "factory-employment",
+              "key": "injured",
+              "value": true,
+              "reason": "the press injury"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "pain and fear"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "factory_accident",
+              "add": true,
+              "reason": "injured on the factory floor"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "压机的皮带在换班时打滑，护罩没有扣紧。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "guard-fitted",
+          "weight": 0.3,
+          "text": "夜班前，{subject}听见飞轮里有细碎的响声，叫{foreman}停了机器。拆开护罩，里面卡着一截断螺栓；{foreman}没有说话，第二天让机修工装了一道新护板，又在工头会上提了{subject}的名字。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "diagnosed a machine fault by ear"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the foreman named the worker at the meeting"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$subjectOrg",
+              "amount": -2,
+              "reason": "a new guard was fitted to the press"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "factory-employment",
+              "key": "seniority",
+              "delta": 1,
+              "reason": "recognized for preventing an accident"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "colleague",
+              "trust": 0.1,
+              "respect": 0.15,
+              "reason": "the foreman listened to the warning"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "safety_guard_fitted",
+              "add": true,
+              "reason": "spotted a cracked bolt before it failed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "飞轮护罩里卡着一截断螺栓，再转一个班就可能飞出来。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "blamed-and-dismissed",
+          "weight": 0.3,
+          "text": "{subject}带着伤回到车间，{foreman}说事故是因为她没按规程上油。工牌当天被收走，赔偿金扣了医药费；{coworker}在门口站了一会儿，最后只把她的饭盒递出来。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "dismissed after the accident"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "factory-employment",
+              "reason": "the factory ended the employment"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "blacklisted",
+              "parameters": {
+                "reason": "工伤后被指操作不当",
+                "severity": 0.6
+              },
+              "durationMonths": 24,
+              "reason": "the employer put the injured worker on a blacklist"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "medical costs deducted from compensation"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "work injury",
+              "add": true,
+              "reason": "the injury was left untreated"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "blamed for an accident"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "employer",
+              "trust": -0.2,
+              "reason": "the foreman shifted the blame"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "blamed_for_accident",
+              "add": true,
+              "reason": "was dismissed and blacklisted after an injury"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "工头说事故是我没上油，但那天机器是换班时自己打滑的。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wc17-union.closed-meeting",
+      "title": "更衣室里的三十个人",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 62
+      },
+      "tags": [
+        "union",
+        "strike",
+        "assembly",
+        "work",
+        "politics",
+        "factory"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "factory-employment",
+          "owner": "person"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "organizer",
+          "kind": "union_member",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "foreman",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 68
+        },
+        {
+          "key": "coworker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 16,
+          "maxAge": 62
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "strike-vote-carries",
+          "weight": 0.4,
+          "text": "夜班散后，三十多个人留在更衣室里。{organizer}把一张写满条件的纸铺在木箱上：十小时工作制、工伤赔偿、承认工友推举的代表。{subject}第一个站起来签名，手心的汗把纸角弄皱了。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-wave",
+              "parameters": {
+                "demands": "十小时工作制、工伤赔偿、承认工友代表",
+                "strength": 0.55
+              },
+              "durationMonths": 6,
+              "reason": "the night shift voted to strike"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-committee",
+              "parameters": {
+                "demand": "恢复工钱并承认工友代表",
+                "solidarity": 0.55,
+                "fund": 6,
+                "daysOut": 0,
+                "blacklistRisk": 0.45,
+                "settlementOffered": false
+              },
+              "durationMonths": 6,
+              "reason": "a strike committee was elected in the changing room"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "union_delegate",
+              "add": true,
+              "reason": "elected as a workshop delegate"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "spoke first at the strike vote"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "friend",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "signed the strike call together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "strike_vote_won",
+              "add": true,
+              "reason": "helped carry the strike vote"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "更衣室里三十多个人签了名，罢工委员会当晚就选出来了。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "small-raise-won",
+          "weight": 0.3,
+          "text": "{organizer}把拖欠的工钱算到每一天，{foreman}听完只说要去问厂主。三天后，每人多拿了一克朗，工时没有变；{subject}把这点钱折好，知道这不是胜利，但至少不是空手。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "back pay after the meeting"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$subjectOrg",
+              "amount": -1,
+              "reason": "the factory paid part of the arrears"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the meeting produced a small concession"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "worked together on the wage claim"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "small_raise_won",
+              "add": true,
+              "reason": "won a partial wage concession without a strike"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "厂主只补了一部分欠薪，工时和工伤赔偿都没有谈成。",
+              "confidence": 0.85,
+              "sourceKind": "told",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "meeting-broken-up",
+          "weight": 0.3,
+          "text": "会开到一半，巡警从两道门同时进来。{subject}被按在墙上，名字和住址被抄进一本黑皮册子；{organizer}在混乱中喊了一句“明天照常上工”，声音被人群压住。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "bruised while the meeting was broken up"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "fined for an unauthorised assembly"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 10,
+                "charge": "未经许可的集会"
+              },
+              "durationMonths": 12,
+              "reason": "the police opened a file on the meeting"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the meeting ended under police pressure"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "stood together when the police entered"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "meeting_broken_up",
+              "add": true,
+              "reason": "was at a union meeting broken up by police"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "巡警从两道门同时进来，带走了签名纸和几个人的住址。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wc17-strike.bargaining-table",
+      "title": "罢工第七天的长桌",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 62
+      },
+      "tags": [
+        "strike",
+        "union",
+        "negotiation",
+        "work",
+        "politics",
+        "factory"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "strike-wave",
+          "owner": "organization"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "strike-committee",
+          "owner": "organization"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "factory-employment",
+          "owner": "person"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "organizer",
+          "kind": "union_member",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "coworker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 16,
+          "maxAge": 62
+        }
+      ],
+      "baseRate": 0.2,
+      "weight": 4,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "settled-with-dignity",
+          "weight": 0.35,
+          "text": "谈判从早上八点拖到天黑。厂主最后同意恢复工钱、承认工伤赔偿，并把三个被停工的工友名字从名单上划掉。{subject}在协议上签字时，手边放着一杯已经凉透的咖啡。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$subjectOrg",
+              "amount": -3,
+              "reason": "the settlement restored wages and paid compensation"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "restored wages and back pay"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-wave",
+              "reason": "the strike ended with a settlement"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-committee",
+              "reason": "the committee dissolved after the settlement"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "helped negotiate the settlement"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the strike ended with something to show"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "strike_settled",
+              "add": true,
+              "reason": "signed a strike settlement"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "协议恢复了工钱和工伤赔偿，三个被停工的名字被划掉。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "partial-and-unfinished",
+          "weight": 0.35,
+          "text": "厂主只答应补发一半欠薪，条件是第二天复工。{subject}把协议带回车间，{organizer}看完没有签字；但第二天早晨，机器还是转了起来，几个人的名字留在罢工名单上。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "half of the arrears"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-committee",
+              "key": "settlementOffered",
+              "value": true,
+              "reason": "a partial settlement was put to the committee"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-committee",
+              "key": "solidarity",
+              "delta": -0.05,
+              "reason": "some workers returned before the committee agreed"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-wave",
+              "reason": "the machines restarted before a full settlement"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "friend",
+              "trust": -0.1,
+              "reason": "the organizer thought the partial deal was a surrender"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the strike ended without a clear victory"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "settled_early",
+              "add": true,
+              "reason": "returned to work on a partial settlement"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "厂主只补了一半欠薪，工伤赔偿和代表资格都没有写进协议。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "strike-broken",
+          "weight": 0.3,
+          "text": "厂主从外区招来一车新工人，门口加了铁栅。{subject}和{organizer}被挡在门外，工牌收走，名字上了黑名单。回家的路上，{subject}把最后一张罢工传单折成船，放进多瑙河。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-wave",
+              "reason": "the strike collapsed"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-committee",
+              "reason": "the committee was broken"
+            },
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "replaced after the strike"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "factory-employment",
+              "reason": "the factory ended the employment after the strike"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "blacklisted",
+              "parameters": {
+                "reason": "strike leadership",
+                "severity": 0.8
+              },
+              "durationMonths": 36,
+              "reason": "the employers' association blacklisted the strike leaders"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "lost wages after the strike"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "the strike was broken"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "both were locked out together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "strike_broken",
+              "add": true,
+              "reason": "was blacklisted after a broken strike"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "厂主从外区招了新工人，铁栅门里已经有人顶了我的车位。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wc17-informant.price-of-a-name",
+      "title": "一张写名字的纸",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 62
+      },
+      "tags": [
+        "union",
+        "informant",
+        "betrayal",
+        "work",
+        "politics",
+        "factory"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "strike-committee",
+          "owner": "organization"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "factory-employment",
+          "owner": "person"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "informer",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "organizer",
+          "kind": "union_member",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "refused-to-name",
+          "weight": 0.35,
+          "text": "厂方的人把一张写着名字的纸推到{subject}面前，说只要指出谁在夜里开会，就调去仓库做清点。{subject}把纸推回去，第二天被调去洗刷间；{organizer}没有道谢，只在午饭时多放了一块面包在她旁边。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "refused to name the meeting"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "friend",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "kept the committee's names out of the office"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "moved to the washroom and lost overtime"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the refusal cost a better post"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_to_inform",
+              "add": true,
+              "reason": "refused to name strikers"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "厂方手里有一张名单，至少有三个名字已经写好了，只等我指认。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "name-sold",
+          "weight": 0.3,
+          "text": "{subject}在纸上写了三个名字，换来一张仓库的工牌和三克朗。那三个人第二天没有来上工；{informer}在更衣室里避开她的眼睛，{organizer}把她的杯子从架子上拿了下来。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "payment for names"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-committee",
+              "key": "solidarity",
+              "delta": -0.15,
+              "reason": "three strikers were named and dismissed"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the workshop learned who wrote the names"
+            },
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "friend",
+              "reason": "the organizer cut ties after the denunciation"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$informer",
+              "kind": "colleague",
+              "trust": -0.15,
+              "reason": "the informer knew and said nothing"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the new post and the money"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "informed_on_strikers",
+              "add": true,
+              "reason": "gave three names to the employer"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我写了三个名字，换到仓库工牌和三克朗。那三个人第二天没有来。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "falsely-suspected",
+          "weight": 0.2,
+          "text": "有人看见{subject}从厂部侧门出来，其实她只是去交医药单。消息传到车间时已经变成“她卖了名单”；{organizer}没有问，只把她的工具从公共架上挪到了角落。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a false informer rumour"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "friend",
+              "trust": -0.1,
+              "reason": "the organizer believed the rumour"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "lost shifts after the rumour"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "falsely suspected of informing"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "suspected_informer",
+              "add": true,
+              "reason": "was falsely suspected of informing"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我只是去厂部交医药单，但车间里已经有人说我卖了名单。",
+              "confidence": 0.85,
+              "sourceKind": "told",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-paper-was-a-test",
+          "weight": 0.15,
+          "text": "那张纸是厂部让人放的，上面三个名字都是已经离职的工人。{subject}看了很久，没有动笔；{informer}收起纸，第二天被调去看仓库。车间里没有人知道该谢谁，也没有人再提这件事。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "did not take the bait"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$informer",
+              "kind": "colleague",
+              "trust": -0.1,
+              "reason": "the informer had been testing the workshop"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-committee",
+              "key": "blacklistRisk",
+              "delta": 0.05,
+              "reason": "the employer was already preparing a blacklist"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saw_through_the_test",
+              "add": true,
+              "reason": "recognized a planted list"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "纸上三个名字都是已经离职的人，厂方是在试谁会动笔。",
+              "confidence": 0.85,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the test left a bad taste"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wc17-coop.roof-over-the-bench",
+      "title": "街角的工友合作社",
+      "domain": "craft",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 62
+      },
+      "tags": [
+        "craft",
+        "cooperative",
+        "business",
+        "debt",
+        "work",
+        "workshop"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "wc17-master-craftsperson",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "debt-bondage",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 62
+        },
+        {
+          "key": "partner",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "landlord",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 4,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "coop-founded",
+          "weight": 0.4,
+          "text": "欠料行的账还没还清，{subject}还是和{partner}租下了街角一间空铺。两个人把旧工作台抬进去，在门楣上钉了一块木牌：工友合作社。第一张订单是给附近医院修三十把椅子，预付款刚够买钉子和胶。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "coop:$subject-$eventId",
+                "name": "工友合作社",
+                "kind": "household_firm",
+                "treasury": 3,
+                "authorityRules": [
+                  "一人一票",
+                  "工钱按工时分配",
+                  "工伤共同承担"
+                ]
+              },
+              "reason": "a master and a journeyman founded a small cooperative workshop"
+            },
+            {
+              "type": "position",
+              "organizationId": "coop:$subject-$eventId",
+              "title": "合作社召集人",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "接单",
+                "派工",
+                "记账"
+              ],
+              "reason": "the cooperative's coordinating post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$partner",
+              "organizationId": "coop:$subject-$eventId",
+              "add": true,
+              "reason": "the partner joined the cooperative"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "lease, tools and first materials"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": 3,
+              "reason": "a new lease debt was added to the old debt"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-master-craftsperson",
+              "key": "backlog",
+              "delta": 2,
+              "reason": "the cooperative brought in repair orders"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the cooperative opened on the corner"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "colleague",
+              "trust": 0.2,
+              "obligation": 0.15,
+              "reason": "founded the cooperative together"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the cooperative opened"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "coop_founded",
+              "add": true,
+              "reason": "founded a worker cooperative"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "合作社的预付款刚够买钉子和胶，医院的三十把椅子必须在月底前修完。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "lease-refused",
+          "weight": 0.3,
+          "text": "{landlord}看完租约，要求{subject}找一个有铺保的人来签字。{subject}去找料行，料行老板正是债主；他愿意担保，条件是从此只接他介绍的活。{partner}听完，把量尺放回桌上。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "lost deposit on the empty shop"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the lease was refused"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$landlord",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "the landlord demanded a guarantor"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": 2,
+              "reason": "the deposit was lost and the old debt grew"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "coop_refused",
+              "add": true,
+              "reason": "could not sign the cooperative lease"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "colleague",
+              "trust": -0.05,
+              "reason": "the partner saw the creditor's condition"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "料行老板愿意做铺保，条件是从此只接他介绍的活。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "partner-leaves",
+          "weight": 0.3,
+          "text": "开工第三周，{partner}把共同买的刨子和钻头装进布袋，说家里等钱用。{subject}没有拦，只把账本上两个人的名字划掉一个；第二天，医院的椅子才修到第七把。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "tools bought out and work delayed"
+            },
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "colleague",
+              "reason": "the partner left the cooperative"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": 3,
+              "reason": "the unfinished hospital order added debt"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "the cooperative lost its second pair of hands"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "coop_collapsed",
+              "add": true,
+              "reason": "the cooperative fell apart"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "医院的三十把椅子只修到第七把，合伙人的刨子和钻头已经不在作坊里。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "coop-grows-into-sweatshop",
+          "weight": 0.2,
+          "text": "合作社接到第一批大订单后，{subject}添了两张工作台，又收了三个学徒。{partner}主张按工时分成，{subject}却开始按件压价；半年后，门楣上的“工友合作社”还在，里面的工时和工钱已经和街对面的作坊没有两样。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_transition",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "fromStateId": "wc17-master-craftsperson",
+              "toStateId": "wc17-sweatshop-owner",
+              "parameters": {
+                "profit": 55,
+                "guilt": 15,
+                "loyalty": 30,
+                "inspectionRisk": 50
+              },
+              "reason": "the cooperative expanded into a workshop that squeezed its apprentices"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "large cooperative orders"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": 2,
+              "reason": "the expansion was bought on credit"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the cooperative began to look like a sweating shop"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the name on the door no longer matched the floor"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "colleague",
+              "trust": -0.15,
+              "reason": "the partner opposed the piece-rate expansion"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "coop_became_sweatshop",
+              "add": true,
+              "reason": "the cooperative turned into a sweatshop"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "合作社收了三个学徒，工钱改成按件计；门楣上的木牌没有换，里面的规矩换了。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wc17-reinvention.late-apprentice",
+      "title": "到了别人带徒弟的年纪",
+      "domain": "craft",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 32,
+        "max": 70
+      },
+      "tags": [
+        "craft",
+        "reinvention",
+        "work",
+        "failure",
+        "training",
+        "late-career"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "failed-apprentice",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 32,
+          "maxAge": 70
+        },
+        {
+          "key": "master",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 76
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80,
+          "organizationKind": "household_firm"
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "new-trade",
+          "weight": 0.4,
+          "text": "到了别人已经带徒弟的年纪，{subject}又成了学徒。{master}没有让她碰贵料，只让她每天磨凿子、认木纹；三个月后，她刨出的第一块榫头被{master}留在工作台上，没有扔进废料箱。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "employment",
+              "personId": "$subject",
+              "organizationId": "$employerOrg",
+              "occupation": "家具修理工",
+              "wage": 2,
+              "workplaceId": "$workplace",
+              "reason": "hired as a late apprentice in a furniture workshop"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "three months of sharpening and joinery"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "failed-apprentice",
+              "reason": "the old failure no longer defined the trade"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": 0.15,
+              "respect": 0.15,
+              "reason": "the master kept the first good joint"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "a late start that worked"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "late_reinvention",
+              "add": true,
+              "reason": "started a new trade later in life"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "师傅把我刨的第一块榫头留在了工作台上，没有扔进废料箱。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "too-old-to-hire",
+          "weight": 0.35,
+          "text": "{master}看完{subject}的手，说关节已经硬了，做不了细活。{subject}在门口站了一会儿，把带来的旧工具一件件收回布袋；回家的电车上，她一直看着自己虎口上的疤。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a day without work and carfare"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "rejected for being too old"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "the master refused to take an older apprentice"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reinvention_refused",
+              "add": true,
+              "reason": "was refused as too old to retrain"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "师傅说我的关节已经硬了，做不了细活。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "home-repair-bench",
+          "weight": 0.25,
+          "text": "{subject}在厨房窗边支起一张小桌，替邻居修伞骨、补木箱、磨菜刀。活很小，钱也少，但每天有人敲门；孩子放学后帮着递钉子，第一次觉得母亲的手不是只会洗衣。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "small repair jobs at home"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "daily repair work"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the neighbors began to bring small repairs"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "failed-apprentice",
+              "reason": "small repairs rebuilt a working identity"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the repair bench gave her a place"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "home_repair_bench",
+              "add": true,
+              "reason": "set up a small repair bench at home"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "邻居开始把坏伞、木箱和钝菜刀送到厨房窗边来。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wc17-sweatshop.ledger-and-loyalty",
+      "title": "账本与女儿的手指",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 75
+      },
+      "tags": [
+        "sweatshop",
+        "ownership",
+        "family",
+        "inspection",
+        "work",
+        "factory"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "wc17-sweatshop-owner",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 60
+        },
+        {
+          "key": "inspector",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 24
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "envelope-for-the-inspector",
+          "weight": 0.35,
+          "text": "检查员在账房坐下，{subject}把一只没有封口的信封推到桌边。检查员没有数，只把窗边的床位写成了“临时储物”；机器重新转起来时，{subject}听见楼上有人在咳嗽。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the inspector's envelope"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "inspectionRisk",
+              "delta": -10,
+              "reason": "the inspection was bought off"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "guilt",
+              "delta": 8,
+              "reason": "the cough upstairs"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "rumours about the inspector's visit"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bribed_inspector",
+              "add": true,
+              "reason": "paid off a workshop inspector"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "检查员把窗边的床位写成临时储物，机器当天下午就重新转了。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "guards-and-shorter-hours",
+          "weight": 0.35,
+          "text": "检查员走后，{subject}让机修工给每台机器装了护板，又把学徒的工时从十二小时减到十小时。账本上这个月的利润少了一截；但夜班结束时，没有人再把手伸到皮带下面。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "guards and shorter hours"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "inspectionRisk",
+              "delta": -15,
+              "reason": "the workshop was brought closer to the rules"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "loyalty",
+              "delta": 10,
+              "reason": "workers noticed the shorter hours"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "guilt",
+              "delta": -8,
+              "reason": "the floor was a little safer"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the workshop improved its safety"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "improved_workshop",
+              "add": true,
+              "reason": "installed guards and cut hours"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "装了护板、减了工时以后，夜班没有再出过手被卷住的事。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "child-on-the-floor",
+          "weight": 0.3,
+          "text": "{child}放学后留在车间里数扣子，一只手指被针扎穿。{subject}抱起{child}往诊所跑，路上想起自己十二岁那年也在同一排机器前站过；第二天，{subject}把{child}送回了学校。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "clinic fees for the child"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "guilt",
+              "delta": 15,
+              "reason": "the owner's own child was hurt on the floor"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "loyalty",
+              "delta": -5,
+              "reason": "the workers saw whose child was sent home"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-sweatshop-owner",
+              "key": "profit",
+              "delta": -2,
+              "reason": "a lost pair of hands"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.1,
+              "affection": 0.15,
+              "reason": "the child was hurt in the family workshop"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the child's blood on the floor"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_injured",
+              "add": true,
+              "reason": "the owner's child was injured in the workshop"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子的手指被针扎穿，我十二岁时也站在同一排机器前。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wc17-sabotage.first-machine",
+      "title": "飞轮里的扳手",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 60
+      },
+      "tags": [
+        "sabotage",
+        "factory",
+        "machine",
+        "work",
+        "crime",
+        "resistance"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "factory-employment",
+          "owner": "person"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "foreman",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 68
+        },
+        {
+          "key": "coworker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 62
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "machine-crippled",
+          "weight": 0.4,
+          "text": "夜班最后一趟换料时，{subject}把一把铁扳手塞进梳棉机的齿轮。机器先是发出尖响，随后停了；{foreman}提着灯跑来，只看见断掉的皮带和满地棉絮。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "parameters": {
+                "sabotage": 45,
+                "heat": 25,
+                "legend": 5
+              },
+              "durationMonths": 18,
+              "reason": "stopped a machine with a wrench"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$subjectOrg",
+              "amount": -4,
+              "reason": "repairing the wrecked carding machine"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "learned exactly where the machine was weakest"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the machine stopped"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "broke_a_machine",
+              "add": true,
+              "reason": "sabotaged a factory machine"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "铁扳手卡在梳棉机的齿轮里，皮带断了，机器至少停三天。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "caught-at-the-belt",
+          "weight": 0.3,
+          "text": "巡夜的{foreman}在机器后面找到{subject}时，她手里还攥着剪断的皮带。厂方没有叫警察，只让她在门房等到天亮；第二天，工资扣了修理费，工牌上多了一道红杠。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "parameters": {
+                "sabotage": 15,
+                "heat": 60,
+                "legend": 0
+              },
+              "durationMonths": 18,
+              "reason": "caught with the cut belt"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "repair costs deducted from wages"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 20,
+                "charge": "破坏机器"
+              },
+              "durationMonths": 12,
+              "reason": "the factory opened a file on the sabotage"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "caught at the machine"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "caught_at_machine",
+              "add": true,
+              "reason": "was caught sabotaging a machine"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "工牌上多了一道红杠，工资扣了修理费，门房记下了我的名字。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "workmate-takes-the-blame",
+          "weight": 0.3,
+          "text": "{subject}弄停了机器，第二天却听见{foreman}说是{coworker}值夜时忘了上油。{coworker}被赶走时没有辩解，只回头看了{subject}一眼；那一眼让{subject}在接下来的半年里都睡不好。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "parameters": {
+                "sabotage": 30,
+                "heat": 10,
+                "legend": 0
+              },
+              "durationMonths": 18,
+              "reason": "let another worker carry the blame"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "hush money for the night watchman"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$coworker",
+              "kind": "colleague",
+              "trust": -0.2,
+              "fear": 0.05,
+              "reason": "the coworker was dismissed for the subject's sabotage"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "guilt over the dismissed coworker"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "let_workmate_take_blame",
+              "add": true,
+              "reason": "allowed a coworker to be blamed for the sabotage"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "机器是我弄停的，被赶走的却是值夜的老工人。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wc17-machine-breaker.legend-and-informer",
+      "title": "烟草盒里的传说",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 65
+      },
+      "tags": [
+        "sabotage",
+        "legend",
+        "informant",
+        "blacklist",
+        "work",
+        "crime"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "wc17-machine-breaker",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "blacklisted",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "informer",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "organizer",
+          "kind": "union_member",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "police",
+          "kind": "official",
+          "required": false,
+          "minAge": 28,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "legend-grows",
+          "weight": 0.35,
+          "text": "黑名单没有让{subject}消失。工厂区的酒馆里有人把她的故事编成顺口溜，孩子们在巷子里学她剪皮带的样子；一个烟草盒在几个车间之间传了一圈，里面是给她的零钱和一张去乡下的车票。",
+          "significance": 0.85,
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "wc17-machine-breaker",
+              "parameter": "legend",
+              "min": 20
+            }
+          ],
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "collection in a tobacco tin"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "key": "legend",
+              "delta": 20,
+              "reason": "the story spread through the factory district"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "key": "heat",
+              "delta": -5,
+              "reason": "the police lost the trail"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "became a factory-district legend"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "the organizer helped collect the money"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "machine_breaker_legend",
+              "add": true,
+              "reason": "became a local legend"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "烟草盒里有零钱和一张去乡下的车票，盒盖内侧写着一个车间的名字。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "name-sold-to-the-police",
+          "weight": 0.3,
+          "text": "{informer}把{subject}的住处告诉了厂方的侦探。天亮前，警察堵住后门，从床下搜出那截皮带；{subject}被带走时，隔壁窗子一扇扇亮起来，又很快暗下去。",
+          "significance": 0.9,
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "wc17-machine-breaker",
+              "parameter": "heat",
+              "min": 30
+            }
+          ],
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "reason": "arrest ended the open sabotage campaign"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "detained",
+              "parameters": {
+                "charge": "破坏机器",
+                "months": 8
+              },
+              "durationMonths": 8,
+              "reason": "arrested after an informer gave the address"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "legal costs and lost wages"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "arrested before dawn"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$informer",
+              "kind": "acquaintance",
+              "trust": -0.25,
+              "fear": 0.1,
+              "reason": "the informer sold the address"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "betrayed_by_informer",
+              "add": true,
+              "reason": "was arrested after an informer spoke"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "警察从床下搜出了那截皮带，只有一个人知道我把它藏在那里。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "quiet-deal",
+          "weight": 0.2,
+          "text": "厂方的律师带来一份协议：只要{subject}承认机器是自己坏的、签下不再进厂的保证书，就不把案子送进法院。{subject}签了字，拿到一张去外省的车票；此后没有人再在维也纳的车间里见过她。",
+          "significance": 0.8,
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "wc17-machine-breaker",
+              "parameter": "heat",
+              "min": 20
+            }
+          ],
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "reason": "signed an agreement to leave the factory district"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the price of the agreement and the ticket"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "left the trade quietly"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_the_trade",
+              "add": true,
+              "reason": "signed a guarantee and left the factory district"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "协议写明我不再进维也纳的工厂，换一张去外省的车票和不再追诉。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "takes-the-fall",
+          "weight": 0.15,
+          "text": "{organizer}也被带来了。侦探说只要{subject}指认是谁教她剪皮带，就可以少判几年。{subject}摇头，第二天被转到另一间牢房；{organizer}在外面的集会上念了她的名字，工友们凑了一笔罚金。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "beaten after refusing to name the organizer"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "key": "heat",
+              "delta": 15,
+              "reason": "the police transferred the prisoner"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-machine-breaker",
+              "key": "legend",
+              "delta": 10,
+              "reason": "the organizer read the name at a rally"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "refused to name the organizer"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$organizer",
+              "kind": "friend",
+              "trust": 0.2,
+              "obligation": 0.2,
+              "reason": "kept the organizer out of the case"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "fines collected by fellow workers"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "took_the_fall",
+              "add": true,
+              "reason": "refused to name the organizer"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我没有指认组织者；第二天被转到另一间牢房，外面的人凑了罚金。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wc17-sweatshop.the-big-order",
+      "title": "旅馆的四十张床架",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "sweatshop",
+        "ownership",
+        "work",
+        "factory",
+        "order",
+        "apprentice",
+        "profit",
+        "craft"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "wc17-master-craftsperson",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "wc17-sweatshop-owner",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "patron",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "apprentice",
+          "kind": "worker",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 30
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-order-is-taken",
+          "weight": 0.4,
+          "significance": 0.85,
+          "text": "旅馆老板{patron}把一张订单摊在刨床上：四十张床架，月底交货。{subject}算了一遍工时，按现在的做法只能保本；第二天，{subject}把{apprentice}的午饭时间缩短，又把工钱改成按件计。{apprentice}没有反对，只在木料上多画了一道线。",
+          "effects": [
+            {
+              "type": "state_transition",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "fromStateId": "wc17-master-craftsperson",
+              "toStateId": "wc17-sweatshop-owner",
+              "parameters": {
+                "profit": 55,
+                "guilt": 10,
+                "loyalty": 35,
+                "inspectionRisk": 45
+              },
+              "reason": "a large hotel order turned the master's workshop into a sweating shop"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "hotel order deposit"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$apprentice",
+              "kind": "employer",
+              "trust": 0.05,
+              "fear": 0.1,
+              "reason": "the apprentice's lunch break was cut for the order"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the workshop began to squeeze its apprentice"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "took_the_big_order",
+              "add": true,
+              "reason": "accepted the hotel bed-frame order"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the order was profitable but ugly"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "四十张床架的利润来自缩短午饭时间和按件压价。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-order-is-halved",
+          "weight": 0.35,
+          "significance": 0.78,
+          "text": "同样的订单，{subject}只肯接一半，并在契约上写明月底交二十张。{patron}嫌慢，转身去找街对面的作坊；{subject}把定金退回去，作坊里少了一笔大钱，但{apprentice}的午饭时间还和从前一样。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "returned deposit and lost the order"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-master-craftsperson",
+              "key": "backlog",
+              "delta": -1,
+              "reason": "the half order left the bench clear"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the master kept the workshop's standard"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "respect": 0.05,
+              "reason": "the patron went to another workshop"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$apprentice",
+              "kind": "employer",
+              "trust": 0.1,
+              "reason": "the apprentice's hours were not cut"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_the_big_order",
+              "add": true,
+              "reason": "refused to squeeze the workshop for the hotel order"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "kept working to the old standard"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the workshop stayed recognizable"
+            }
+          ]
+        },
+        {
+          "id": "subcontract-the-beds",
+          "weight": 0.25,
+          "significance": 0.8,
+          "text": "后街的中间人提出把床架转包出去：{subject}只负责验收和交货，刨花和工钱都留给另一间没有招牌的作坊。{subject}去看了一眼那间屋子，窗边摆着三张床，孩子们在刨花里数钉子；回来时，{subject}把契约签了，却把交货日期往后挪了一周。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "margin from subcontracting the bed frames"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-master-craftsperson",
+              "key": "backlog",
+              "delta": 1,
+              "reason": "the subcontracted order entered the books"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the workshop passed the order to an unregistered shop"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "subcontracts to a sweatshop",
+              "add": true,
+              "reason": "the bed frames were made in a back-street workshop"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "subcontracted_beds",
+              "add": true,
+              "reason": "subcontracted the hotel bed frames"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the children counting nails"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "后街的作坊没有招牌，窗边摆着三张床，孩子们在刨花里数钉子。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

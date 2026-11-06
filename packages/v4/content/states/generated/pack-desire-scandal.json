@@ -1,0 +1,3318 @@
+{
+  "id": "pack-desire-scandal",
+  "version": 1,
+  "title": "欲望、私生活与维也纳的体面",
+  "description": "把双重生活、被抛弃的爱人和不能见光的秘密做成有持续时间、有代价、会被婚姻与公职引爆的机制；让私人的床、信、钱和孩子的疑问真正进入后续事件，而不是只留下几句气氛。",
+  "author": "phase17-content-author/desire-scandal",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-06",
+  "sourceBriefId": "phase17-desire-scandal",
+  "rationale": "Phase 15 已有秘密恋情、公开私情和嫉妒对手，但缺少维持两套生活的持续压力、被抛弃者的具体筹码，以及一个既保护人又囚禁人的秘密。这个包补上三种可查询状态，并让它们与婚姻、孩子、办公室编制和勒索发生可执行的碰撞。",
+  "states": [
+    {
+      "id": "ds17-double-life",
+      "version": 1,
+      "packId": "pack-desire-scandal",
+      "title": "两套钥匙",
+      "description": "一个人同时维持两处亲密生活：一处有婚书、星期日的汤和亲戚的姓名，另一处有借来的房间、不能署名的信和另一套说辞。每一次节日、每一张账单和每一个被撞见的下午，都会让两套生活更靠近一点。",
+      "owner": "person",
+      "slot": "double_life",
+      "conflict": "replace",
+      "tags": [
+        "love",
+        "intimacy",
+        "secret",
+        "risk",
+        "identity",
+        "relationship",
+        "double_life",
+        "secret_intimacy"
+      ],
+      "parameters": {
+        "strain": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "exposure": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "links": {
+        "other": "person"
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 75
+        }
+      ],
+      "durationMonths": {
+        "min": 6,
+        "max": 60
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "love",
+            "intimacy",
+            "secret",
+            "family",
+            "scandal",
+            "double_life"
+          ],
+          "multiplier": 1.45
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "secret",
+            "discretion",
+            "cunning"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "two-calendars",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "cunning",
+            "dc": 13,
+            "successOutcomeIds": [
+              "still-separate"
+            ],
+            "failureOutcomeIds": [
+              "a-name-in-the-wrong-book"
+            ],
+            "criticalFailureOutcomeIds": [
+              "the-two-lives-meet"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "still-separate",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}把两本地址簿分放在大衣两侧的内袋里，一本记着亲戚的命名日，一本只写街名和门牌。这个月没有撞车：周日在家里喝汤，周三在借来的房间里修一只坏掉的八音盒；回家前，{subject}在街角把围巾重新系好，确认身上没有别人的烟味。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-double-life",
+                  "key": "strain",
+                  "delta": 5,
+                  "reason": "another year of keeping two calendars"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-double-life",
+                  "key": "exposure",
+                  "delta": -5,
+                  "reason": "the routines held"
+                },
+                {
+                  "type": "relation",
+                  "a": "$subject",
+                  "b": "$link:other",
+                  "kind": "friend",
+                  "trust": 0.02,
+                  "reason": "the borrowed afternoons continued"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "a month without collision"
+                }
+              ]
+            },
+            {
+              "id": "a-name-in-the-wrong-book",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}在杂货铺赊账时写错了本子：给家里买的煤记在了另一本账上，给那边买的糖又落进了家用账。掌柜没有声张，只在月底把两张账单一起递过来；{subject}站在柜台前，第一次发现自己连一笔小钱都要想半天该算在哪一边。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-double-life",
+                  "key": "exposure",
+                  "delta": 12,
+                  "reason": "two households appeared in one ledger"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-double-life",
+                  "key": "strain",
+                  "delta": 8,
+                  "reason": "the accounts no longer match"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "a small mistake in a shop ledger"
+                }
+              ]
+            },
+            {
+              "id": "the-two-lives-meet",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "两边的亲戚在同一家咖啡馆给各自的孩子过生日。{subject}被两桌人同时叫住，手里那束花不知道该递向哪一边；{link:other}从后门进来，正好看见{subject}替另一边的人拉椅子。没有人当场吵闹，只有人把蛋糕切得很慢。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-double-life",
+                  "key": "exposure",
+                  "delta": 25,
+                  "reason": "both intimate lives occupied the same café"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-double-life",
+                  "key": "strain",
+                  "delta": 15,
+                  "reason": "the two calendars finally met"
+                },
+                {
+                  "type": "relation",
+                  "a": "$subject",
+                  "b": "$link:other",
+                  "kind": "friend",
+                  "trust": -0.05,
+                  "reason": "the other life became visible"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.06,
+                  "reason": "a birthday party with two tables"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "lives-collide",
+          "to": "known-affair",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "ds17-double-life",
+              "parameter": "exposure",
+              "min": 90
+            }
+          ],
+          "reason": "the two lives could no longer be kept apart",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "the double life became public"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "double_life_exposed",
+              "add": true,
+              "reason": "the two households learned about each other"
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-wedding-in-the-family",
+          "onTags": [
+            "marriage",
+            "betrothal"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "key": "strain",
+              "delta": 12,
+              "reason": "a family wedding required one calendar to win"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "key": "exposure",
+              "delta": 5,
+              "reason": "a wedding gathered both sets of relatives"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a wedding invitation with two possible escorts"
+            }
+          ],
+          "text": "亲戚的婚礼定在星期六，请柬上写着“携眷”。{subject}把两张请柬并排放在桌上，一张写了家里的名字，一张还没有填；最后{subject}独自去了，席间被问了三次为什么。",
+          "cooldownMonths": 12
+        },
+        {
+          "id": "the-school-concert",
+          "onTags": [
+            "school",
+            "family"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "key": "strain",
+              "delta": 8,
+              "reason": "a child's school event demanded an undivided parent"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "key": "exposure",
+              "delta": 4,
+              "reason": "the school audience knew the household"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "sitting between two obligations"
+            }
+          ],
+          "text": "学校的期末音乐会安排在下午四点，正好撞上另一边的约定。{subject}在礼堂后排坐了半场，听见孩子念出自己的名字，又看见门口有人等着；{subject}没有回头，只把节目单折成很小的一块。",
+          "cooldownMonths": 12
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "ds17-double-life",
+          "parameter": "strain",
+          "max": 0
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "double_life_active",
+          "add": true,
+          "reason": "a second intimate life became a standing arrangement"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "double_life_active",
+          "add": false,
+          "reason": "the double life ended"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/desire-scandal",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase17-desire-scandal"
+        ],
+        "rationale": "A double life is not a one-off lie. It needs strain, exposure, a named other person and periodic collisions with family events."
+      }
+    },
+    {
+      "id": "ds17-scorned-lover",
+      "version": 1,
+      "packId": "pack-desire-scandal",
+      "title": "被退回的信",
+      "description": "一个被拒绝、被抛下或被当众取代的人，手里还留着旧信、旧照片、共同的债务或只有自己知道的把柄。悲伤和报复心并不互相排斥；婚讯、公开场合和对方的体面，都会让这份旧情重新长出牙齿。",
+      "owner": "person",
+      "slot": "social",
+      "conflict": "replace",
+      "tags": [
+        "love",
+        "jealousy",
+        "rejection",
+        "grief",
+        "rivalry",
+        "scorned_love"
+      ],
+      "parameters": {
+        "grief": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "leverage": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "resolve": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "publicClaim": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "links": {
+        "beloved": "person"
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 75
+        }
+      ],
+      "durationMonths": {
+        "min": 6,
+        "max": 48
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "love",
+            "jealousy",
+            "rival",
+            "scandal",
+            "marriage",
+            "scorned_love"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "rival",
+            "confrontation",
+            "jealousy"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "old-letters",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "willpower",
+            "dc": 12,
+            "successOutcomeIds": [
+              "puts-the-letters-away"
+            ],
+            "failureOutcomeIds": [
+              "reads-the-old-letters"
+            ],
+            "criticalFailureOutcomeIds": [
+              "stands-across-the-street"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "puts-the-letters-away",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}把旧信重新捆好，放进衣柜最上层，压在一件不再穿的冬衣下面。这个月{subject}没有绕路经过那栋房子，也没有在咖啡馆里数门口的人；回家时天还没黑，{subject}给自己煮了一杯咖啡，第一次没有多加一块糖。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-scorned-lover",
+                  "key": "grief",
+                  "delta": -5,
+                  "reason": "the letters were put away"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-scorned-lover",
+                  "key": "leverage",
+                  "delta": -3,
+                  "reason": "the old hold loosened"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "an evening without detours"
+                }
+              ]
+            },
+            {
+              "id": "reads-the-old-letters",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}本来只想找一张洗衣单，却翻出了那叠信。读到第三封时，{subject}已经能背出下一句；窗外有人拉手风琴，拉的是他们那年夏天听过的那支曲子。{subject}把信按原样折好，第二天眼睛肿得需要向店里告假。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-scorned-lover",
+                  "key": "grief",
+                  "delta": 6,
+                  "reason": "the old letters were read again"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-scorned-lover",
+                  "key": "resolve",
+                  "delta": 4,
+                  "reason": "the old promises hardened"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "a night with the old correspondence"
+                }
+              ]
+            },
+            {
+              "id": "stands-across-the-street",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "{subject}在那栋房子对面站了将近一个钟头，看见窗帘换成了新的颜色，门口多了一双不属于自己的鞋。一个送煤的伙计问{subject}是不是在等人，{subject}说不是；话出口时，{subject}才发现自己把对方的门牌号记得比自己的还熟。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-scorned-lover",
+                  "key": "grief",
+                  "delta": 8,
+                  "reason": "the house had a new pair of shoes at the door"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-scorned-lover",
+                  "key": "leverage",
+                  "delta": 10,
+                  "reason": "the subject learned who now lives there"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-scorned-lover",
+                  "key": "resolve",
+                  "delta": 8,
+                  "reason": "watching the house hardened the resolve"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "a neighbour saw the subject staring"
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "a cold hour on the pavement"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "the-banns-are-read",
+          "onTags": [
+            "marriage",
+            "betrothal"
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "grief",
+              "delta": 10,
+              "reason": "the former beloved's marriage was announced"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "leverage",
+              "delta": 5,
+              "reason": "a wedding gives old letters a new use"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "resolve",
+              "delta": 5,
+              "reason": "the news settled something"
+            }
+          ],
+          "text": "教堂门口的布告栏贴出了婚期，{subject}在人群里站了一会儿，把日期记了下来。回家后，{subject}把旧信从衣柜上层取下来，没有拆，只换了一根新绳子。",
+          "cooldownMonths": 12
+        },
+        {
+          "id": "laughed-at-in-public",
+          "onTags": [
+            "public_humiliation"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "resolve",
+              "delta": 10,
+              "reason": "public humiliation sharpened the resolve"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "leverage",
+              "delta": 5,
+              "reason": "the room showed who would enjoy a scandal"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the subject was laughed at in public"
+            }
+          ],
+          "text": "饭桌上有人拿旧事开玩笑，{subject}跟着笑了，笑到一半才发现杯沿被自己咬出了印子。散席时，{subject}记住的不是玩笑，而是哪几个人笑得最响。",
+          "cooldownMonths": 12
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "ds17-scorned-lover",
+          "parameter": "leverage",
+          "max": 0
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "scorned_lover_active",
+          "add": true,
+          "reason": "a rejected lover remained a standing presence"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "scorned_lover_active",
+          "add": false,
+          "reason": "the old attachment lost its hold"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/desire-scandal",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase17-desire-scandal"
+        ],
+        "rationale": "A rejected lover needs a name, a duration and a mix of grief and leverage. Marriage announcements and public humiliations should change what they can do next."
+      }
+    },
+    {
+      "id": "ds17-kept-secret",
+      "version": 1,
+      "packId": "pack-desire-scandal",
+      "title": "锁在针线盒里的东西",
+      "description": "一个被刻意藏起来的秘密：可能是身孕、一段不能被说出的爱、一个不能认的孩子，或一笔因为欲望而欠下的钱。它保护着某个人，也让保守它的人越来越难呼吸；秘密越重，越容易被最亲近的人看出破绽。",
+      "owner": "person",
+      "slot": "kept_secret",
+      "conflict": "replace",
+      "tags": [
+        "love",
+        "secret",
+        "shame",
+        "family",
+        "risk",
+        "kept_secret",
+        "body",
+        "debt"
+      ],
+      "parameters": {
+        "kind": {
+          "type": "string",
+          "default": "hidden attachment"
+        },
+        "weight": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "exposure": {
+          "type": "number",
+          "default": 8,
+          "min": 0,
+          "max": 100
+        },
+        "protection": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 80
+        }
+      ],
+      "durationMonths": {
+        "min": 12,
+        "max": 240
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "secret",
+            "family",
+            "scandal",
+            "law",
+            "body",
+            "kept_secret"
+          ],
+          "multiplier": 1.45
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "secret",
+            "confession",
+            "family"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "one-more-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "willpower",
+            "dc": 13,
+            "successOutcomeIds": [
+              "held-another-year"
+            ],
+            "failureOutcomeIds": [
+              "the-secret-shows"
+            ],
+            "criticalFailureOutcomeIds": [
+              "confession-at-the-wrong-table"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "held-another-year",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}又把针线盒锁好，把钥匙换了地方。这一年里{subject}照常去市场、照常替邻居收信，甚至在圣灵降临节做了两次弥撒；只有深夜清点抽屉时，{subject}才会把那张纸拿出来看一眼，再放回去。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-kept-secret",
+                  "key": "weight",
+                  "delta": 3,
+                  "reason": "another year of carrying the secret"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-kept-secret",
+                  "key": "exposure",
+                  "delta": -3,
+                  "reason": "the routine held"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-kept-secret",
+                  "key": "protection",
+                  "delta": 2,
+                  "reason": "the person it sheltered remained safe"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "a quiet year"
+                }
+              ]
+            },
+            {
+              "id": "the-secret-shows",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}在洗衣房晕了一会儿，醒来时手里还攥着别人的床单。女人们围过来，有人递水，有人问是不是又有了；{subject}说只是没吃早饭，声音却比平时高了半度。下午，整栋楼都在猜{subject}最近为什么不再穿那件收腰的外套。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-kept-secret",
+                  "key": "exposure",
+                  "delta": 10,
+                  "reason": "a faint in the laundry room"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-kept-secret",
+                  "key": "weight",
+                  "delta": 5,
+                  "reason": "the body made the secret harder to hide"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "being looked at too closely"
+                }
+              ]
+            },
+            {
+              "id": "confession-at-the-wrong-table",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "{subject}在亲戚的命名日晚餐上多喝了两杯，听见有人夸{subject}“一辈子清白”，忽然笑出了声。桌边安静下来，{subject}说了一句半真半假的话，又立刻改口；没人追问，但{subject}看见对面的姑母把餐巾叠了三次。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-kept-secret",
+                  "key": "exposure",
+                  "delta": 20,
+                  "reason": "a half-confession at a family table"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-kept-secret",
+                  "key": "weight",
+                  "delta": -15,
+                  "reason": "saying part of it out loud"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "ds17-kept-secret",
+                  "key": "protection",
+                  "delta": -10,
+                  "reason": "the secret no longer fully shelters anyone"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "a dinner that ended too early"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "a remark nobody would repeat directly"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-christening",
+          "onTags": [
+            "birth"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "exposure",
+              "delta": 8,
+              "reason": "a christening gathered the people who count names"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "weight",
+              "delta": 5,
+              "reason": "a birth made the old secret heavier"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "standing at a font with an old secret"
+            }
+          ],
+          "text": "洗礼定在星期日下午，{subject}抱着孩子站在教堂后排，听见神父念出教父的名字。{subject}忽然想起另一张没有递交的登记纸，手指在襁褓边缘收紧；孩子哭了，{subject}跟着低头，假装是在哄。",
+          "cooldownMonths": 24
+        },
+        {
+          "id": "a-question-at-the-table",
+          "onTags": [
+            "public_humiliation"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "weight",
+              "delta": 8,
+              "reason": "a public question pressed on the secret"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "protection",
+              "delta": -5,
+              "reason": "the shelter around the secret thinned"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the secret was almost named"
+            }
+          ],
+          "text": "有人问{subject}为什么总把钱寄去同一个区，又笑着补了一句“当然，不关我们的事”。{subject}把汤匙放下，说那是替朋友照看孩子；这句话在桌上停了很久，比任何追问都重。",
+          "cooldownMonths": 12
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "ds17-kept-secret",
+          "parameter": "weight",
+          "max": 0
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "kept_secret_active",
+          "add": true,
+          "reason": "a secret became a standing burden"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "kept_secret_active",
+          "add": false,
+          "reason": "the secret was released or ended"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/desire-scandal",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase17-desire-scandal"
+        ],
+        "rationale": "A secret that protects and imprisons needs more than a shame mood: it needs weight, exposure, protection and a family life that keeps pressing on it."
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "ds17-courtship.parlour",
+      "title": "租来的会客室",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 40
+      },
+      "tags": [
+        "love",
+        "courtship",
+        "intimacy",
+        "secret",
+        "class",
+        "secret_intimacy",
+        "vienna"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "tag": "secret"
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 40
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 40
+        },
+        {
+          "key": "chaperone",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-second-sunday",
+          "weight": 4,
+          "text": "{subject}在约瑟夫城租下一间带钢琴的会客室，每小时一克朗，女房东把钥匙拴在一截蓝线上。{lover}来时带着一束用报纸包好的紫罗兰，{chaperone}坐在窗边打毛线，偶尔抬头看一眼钟。第三个星期日，{chaperone}说自己要去楼下买咖啡，把门留了半掩。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "parameters": {
+                "discretion": 55,
+                "reciprocity": 50,
+                "exposure": 5,
+                "jealousy": 0,
+                "grief": 0,
+                "origin": "rented parlour",
+                "publicFigure": false
+              },
+              "links": {
+                "lover": "$lover"
+              },
+              "reason": "a courtship began in a rented parlour"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": 0.06,
+              "affection": 0.1,
+              "reason": "three Sundays in a borrowed room"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the parlour, the coffee and a bunch of violets"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "being courted in a room with a piano"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rented_a_parlour",
+              "add": true,
+              "reason": "the courtship had a rented address"
+            }
+          ]
+        },
+        {
+          "id": "the-letter-in-the-piano-bench",
+          "weight": 2,
+          "text": "{subject}把写了三遍的信塞进琴凳，又在散场前取了回来。{lover}问是不是有话要说，{subject}说天气要变了；两个人隔着{chaperone}的毛线篮坐到钟响。回家后，{subject}把信烧了，灰倒进花盆，第二天那盆天竺葵就蔫了。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "affection": 0.02,
+              "reason": "a letter was written and burned"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the parlour fee and a pot of geraniums"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "an unsent letter"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "unsent_letter",
+              "add": true,
+              "reason": "the subject chose not to speak"
+            }
+          ]
+        },
+        {
+          "id": "the-chaperone-falls-asleep",
+          "weight": 1,
+          "text": "{chaperone}在第一支华尔兹后睡着了，鼾声很轻，像一只满足的猫。{lover}趁机把{subject}的手套藏进自己的袖口，{subject}没有要回来；第二天，{chaperone}到处说自己“看得很紧”，还收下了{subject}一包糖。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": 0.05,
+              "affection": 0.08,
+              "reason": "one glove changed pockets"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the chaperone told a flattering version"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "sugar, coffee and a small present for the chaperone"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a comedy of chaperonage"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "chaperone_asleep",
+              "add": true,
+              "reason": "the chaperone slept through the courtship"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds17-affair.established",
+      "title": "两本日历",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 55
+      },
+      "tags": [
+        "love",
+        "affair",
+        "secret",
+        "marriage",
+        "double_life",
+        "secret_intimacy"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "tag": "secret_intimacy"
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "known-affair"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "ds17-double-life"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 55
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 55,
+          "sharedHistoryTag": "secret_intimacy"
+        },
+        {
+          "key": "spouse",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65,
+          "sameHousehold": true
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-borrowed-afternoon",
+          "weight": 4,
+          "text": "{subject}对{spouse}说要去听一场关于市政预算的讲座，实际上在普拉特附近的小旅馆待到黄昏。{lover}替{subject}把袖口的线头剪掉，又用蜡封好一封不能寄的信；{subject}赶回家时，汤刚沸，{spouse}问讲座怎么样。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "reason": "two intimate lives became a routine"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "secret-lover",
+              "key": "intensity",
+              "delta": 0.08,
+              "reason": "the affair settled into a routine"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": 0.03,
+              "affection": 0.06,
+              "reason": "a borrowed afternoon near the Prater"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a room by the hour and a sealed letter"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "being wanted in a room away from home"
+            }
+          ]
+        },
+        {
+          "id": "the-hour-counted",
+          "weight": 2,
+          "text": "{spouse}没有问讲座的事，只把{subject}晚归的每一个钟头记在账本背面。{subject}开始准备两套说辞：一套给家里，一套给{lover}；两本日历上的星期日越排越满，连洗衣日都撞在一起。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_transition",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "fromStateId": "secret-lover",
+              "toStateId": "ds17-double-life",
+              "parameters": {
+                "strain": 45,
+                "exposure": 50
+              },
+              "links": {
+                "other": "$lover"
+              },
+              "reason": "the affair hardened into two parallel lives"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": -0.08,
+              "reason": "the spouse began counting the missing hours"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "two calendars and a second set of keys"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the schedule is becoming a cage"
+            }
+          ]
+        },
+        {
+          "id": "the-key-on-the-table",
+          "weight": 1.5,
+          "text": "{lover}把{subject}给的钥匙放在咖啡杯旁，说自己不想再当别人生活里的旁注。{subject}追到电车站，{lover}已经上了车；回家后，{spouse}说汤咸了，{subject}尝了一口，什么也没尝出来。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "reason": "the lover returned the key"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "secret-lover",
+              "reason": "the secret affair ended"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a quiet rupture in a small circle"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "sleepless nights after the break"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the key was left beside the coffee cup"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lover_returned_key",
+              "add": true,
+              "reason": "the lover ended the affair without a scene"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds17-exposure.photograph",
+      "title": "照相馆橱窗",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 60
+      },
+      "tags": [
+        "love",
+        "scandal",
+        "secret",
+        "exposure",
+        "public",
+        "secret_intimacy",
+        "scorned_love"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "forbidden-attachment",
+          "parameter": "exposure",
+          "min": 55
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner",
+          "sameHousehold": true
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "known-affair"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "ds17-double-life"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60,
+          "sharedHistoryTag": "secret_intimacy"
+        },
+        {
+          "key": "spouse",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70,
+          "sameHousehold": true
+        },
+        {
+          "key": "witness",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-window-on-the-ring",
+          "weight": 3,
+          "text": "{witness}在戒指路一家照相馆的橱窗里认出了{subject}：照片里两个人站在旋转门旁，{lover}的一只手套搭在栏杆上。消息比{subject}先回到家，{spouse}把晚饭留在桌上，自己去了岳母家；第二天，离婚文件和一封没有署名的信一起送到。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_transition",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "fromStateId": "forbidden-attachment",
+              "toStateId": "known-affair",
+              "parameters": {
+                "notoriety": 60,
+                "grief": 15,
+                "exposure": 85,
+                "discretion": 10,
+                "remarried": false,
+                "origin": "photograph"
+              },
+              "links": {
+                "lover": "$lover"
+              },
+              "reason": "a photograph in a shop window exposed the affair"
+            },
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "reason": "the spouse left after the photograph"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$spouse",
+              "stateId": "ds17-scorned-lover",
+              "parameters": {
+                "grief": 60,
+                "leverage": 40,
+                "resolve": 55,
+                "publicClaim": true
+              },
+              "links": {
+                "beloved": "$subject"
+              },
+              "reason": "the betrayed spouse became a scorned lover"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "a public photograph and a public departure"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "lawyers, a room deposit and the photographer's fee"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "photograph_in_the_window",
+              "add": true,
+              "reason": "the affair was recognised in a shop window"
+            }
+          ]
+        },
+        {
+          "id": "the-wrong-couple",
+          "weight": 1.5,
+          "text": "照相馆橱窗里的其实不是{subject}，而是市议员和一位帽匠的妻子。{witness}却已经把故事讲给了半条街；{subject}索性买下那张照片，回家研究“构图”。{lover}笑得把茶喷在桌布上，{spouse}说这张照片挂在前厅倒挺体面。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the photograph and a replacement tablecloth"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "exposure",
+              "delta": -10,
+              "reason": "the rumour attached to the wrong couple"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the subject was still talked about for a week"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "affection": 0.05,
+              "reason": "they laughed at the same mistake"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": 0.02,
+              "reason": "the spouse found the photograph absurd"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "photograph_was_someone_else",
+              "add": true,
+              "reason": "the scandal belonged to another household"
+            }
+          ]
+        },
+        {
+          "id": "the-quiet-arrangement",
+          "weight": 1,
+          "text": "{spouse}没有摔东西，只把一张分居协议和一支笔放在{subject}面前，说每年冬天要看到一笔钱，孩子面前不许提。{subject}签了字；{lover}问这算不算自由，{subject}说算一半。第二天，家里的汤照旧，只是{spouse}不再替{subject}留门。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "the first payment for a quiet separation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "exposure",
+              "delta": -20,
+              "reason": "the spouse agreed not to speak publicly"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "discretion",
+              "delta": 15,
+              "reason": "the household negotiated a silence"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": -0.05,
+              "obligation": 0.1,
+              "reason": "a separation paid for in instalments"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_for_quiet",
+              "add": true,
+              "reason": "the spouse agreed to a private arrangement"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a marriage turned into a contract"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "reason": "the affair settled into two parallel lives"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds17-aftermath.registry",
+      "title": "登记处的第三支笔",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 70
+      },
+      "tags": [
+        "love",
+        "marriage",
+        "scandal",
+        "aftermath",
+        "secret_intimacy",
+        "scorned_love"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "known-affair",
+          "parameter": "grief",
+          "min": 5
+        },
+        {
+          "kind": "hasState",
+          "stateId": "known-affair",
+          "parameter": "remarried",
+          "equals": false
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70,
+          "sharedHistoryTag": "secret_intimacy"
+        },
+        {
+          "key": "registrar",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-small-wedding",
+          "weight": 3,
+          "text": "{subject}和{lover}挑了星期二上午去登记，避开报纸和看热闹的人。{registrar}问有没有人反对，走廊里只有扫地的声音；{lover}把一枚旧戒指套在{subject}手上，尺寸大了一点，{subject}用红线缠了两圈。出门时下起小雨，两个人挤在一把伞下，谁也没提从前。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "partner",
+              "trust": 0.1,
+              "affection": 0.15,
+              "reason": "a quiet civil marriage after the scandal"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "reason": "the public affair ended in a marriage"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a small wedding after a loud story"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the licence, the witnesses and a small meal"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a wedding nobody came to see"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "quiet_registry_wedding",
+              "add": true,
+              "reason": "the marriage was deliberately small"
+            }
+          ]
+        },
+        {
+          "id": "the-missing-dissolution",
+          "weight": 2,
+          "text": "{registrar}翻遍卷宗，说上一段婚姻的解除文书还压在法院，今天不能办。{lover}在门外等到午休，手里那束花慢慢垂下去；{subject}把材料重新捆好，答应下周再来，心里却开始算这场等待还要花多少钱。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "fees for a registration that could not proceed"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "notoriety",
+              "delta": 8,
+              "reason": "the old case entered another file"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": -0.06,
+              "reason": "a wedding postponed by a missing paper"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "waiting at a registry window"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "registry_delayed",
+              "add": true,
+              "reason": "the registry asked for a missing dissolution"
+            }
+          ]
+        },
+        {
+          "id": "the-wrong-name",
+          "weight": 1,
+          "text": "{registrar}把{lover}的姓写成了舞台上用的艺名，证书打印出来才发现。{lover}说这样更好，反正认识自己的人只记得那个名字；{subject}看着证书笑了半天，回家路上买了一瓶便宜的匈牙利酒。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "partner",
+              "trust": 0.05,
+              "affection": 0.08,
+              "reason": "a marriage certificate with the wrong name"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "reason": "the public affair ended despite the clerical error"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the wrong name became a small joke"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the corrected certificate and a bottle of wine"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "a clerk's mistake became a wedding story"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wrong_name_on_certificate",
+              "add": true,
+              "reason": "the certificate carried a stage name"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds17-jealousy.revenge",
+      "title": "歌剧院包厢的第三把椅子",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 60
+      },
+      "tags": [
+        "love",
+        "jealousy",
+        "rival",
+        "betrayal",
+        "public",
+        "secret_intimacy",
+        "scorned_love"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "jealous-rival",
+          "parameter": "threat",
+          "min": 20
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "known-affair"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60,
+          "sharedHistoryTag": "secret_intimacy"
+        },
+        {
+          "key": "rival",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-whisper-in-the-box",
+          "weight": 3,
+          "text": "{subject}在歌剧院订了一个包厢，故意把第三把椅子留给{rival}。幕间休息时，{subject}当着熟人的面把{rival}介绍成“最关心我们家务事的朋友”；{rival}笑着握手，指节却发白，散场后没有等马车。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "jealous-rival",
+              "key": "threat",
+              "delta": -15,
+              "reason": "the rival was made a public joke"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "jealous-rival",
+              "key": "suspicion",
+              "delta": 10,
+              "reason": "the rival now knows the subject will fight back"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.05,
+              "fear": 0.15,
+              "reason": "a public counter-move in a theatre box"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the box became part of the gossip"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the box, the wine and the programme"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the counter-move landed"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "public_counter_move",
+              "add": true,
+              "reason": "the rival was confronted in public"
+            }
+          ]
+        },
+        {
+          "id": "the-envelope-that-buys-a-season",
+          "weight": 2,
+          "text": "{subject}把一只信封推到{rival}面前，里面够付一间铺面半年的租金。{rival}数了两遍，问这是不是封口费；{subject}说这是搬迁费。{rival}收下钱，答应去林茨投靠表兄，临走前却把一张照片的底片留在了桌上。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "the rival accepted a removal payment"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "jealous-rival",
+              "key": "threat",
+              "delta": -22,
+              "reason": "the rival agreed to leave Vienna"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "jealous-rival",
+              "key": "leverage",
+              "delta": -15,
+              "reason": "the rival kept a negative but lost the daily advantage"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "a payment replaced a feud with a truce"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bought_the_rival",
+              "add": true,
+              "reason": "the rival was paid to leave"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "an expensive peace"
+            }
+          ]
+        },
+        {
+          "id": "the-rival-and-the-lover",
+          "weight": 1,
+          "text": "{subject}推开咖啡馆后门时，{lover}和{rival}正共用一只盘子吃杏子馅饼。两个人都没有站起来。{rival}说他们下个月去美国，{lover}说对不起；{subject}把门轻轻带上，走到街上才发现自己还攥着给{lover}买的戏票。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "reason": "the lover left with the rival"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "tag": "secret_intimacy",
+              "reason": "the affair and the rivalry ended together"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "parameters": {
+                "grief": 60,
+                "leverage": 20,
+                "resolve": 45,
+                "publicClaim": false
+              },
+              "links": {
+                "beloved": "$lover"
+              },
+              "reason": "the subject was left for the rival"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the elopement became a café story"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a week without sleep"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "holding two theatre tickets at the door"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lover_left_with_rival",
+              "add": true,
+              "reason": "the rival and the lover left together"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds17-scorned.wedding",
+      "title": "教堂门口的请柬",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 70
+      },
+      "tags": [
+        "love",
+        "grief",
+        "marriage",
+        "scorned_love",
+        "jealousy"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ds17-scorned-lover",
+          "parameter": "grief",
+          "min": 20
+        },
+        {
+          "kind": "notHasState",
+          "tag": "secret_intimacy"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "former",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70,
+          "sharedHistoryTag": "scorned_love"
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 2,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-pew-in-the-back",
+          "weight": 3,
+          "text": "{subject}收到了{former}的结婚请柬，烫金边，字是别人的手笔。{subject}去了，坐在最后一排，看见{former}在圣坛前替新娘整理头纱；唱诗班唱到第二段，{subject}发现自己一直捏着程序单，纸角已经湿了。散场后{subject}没有去酒席，在教堂门口买了一袋烤栗子。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "grief",
+              "delta": -12,
+              "reason": "the wedding was seen, not avoided"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "leverage",
+              "delta": -5,
+              "reason": "the old hold loosened in the church"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$former",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "the subject came to the wedding and left quietly"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the tram, the church collection and roast chestnuts"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a wedding seen from the last pew"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "attended_former_wedding",
+              "add": true,
+              "reason": "the subject attended the former lover's wedding"
+            }
+          ]
+        },
+        {
+          "id": "the-letters-read-aloud",
+          "weight": 1.5,
+          "text": "{subject}把旧信捆成一包，托人送到婚宴上，说“物归原主”。信在宾客之间传了一圈，读到第三封时有人笑出了声；{former}的脸色比桌布还白。第二天，{subject}的名字出现在三份不同的小报上，连常去的肉铺都多收了两个赫勒。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "the letters became a public story"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$former",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.1,
+              "reason": "the wedding letters ruined the reception"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "publicClaim",
+              "value": true,
+              "reason": "the subject claimed the story in public"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "grief",
+              "delta": 8,
+              "reason": "revenge did not feel like relief"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "leverage",
+              "delta": 10,
+              "reason": "the letters were now a public weapon"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the messenger and the higher price at the butcher"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "letters_at_the_wedding",
+              "add": true,
+              "reason": "the old letters were delivered to the wedding"
+            }
+          ]
+        },
+        {
+          "id": "the-wedding-was-yesterday",
+          "weight": 1,
+          "text": "{subject}记错了日子，穿着旧礼服赶到教堂时，门口只剩一个扫花瓣的杂役。杂役说婚礼昨天就办完了，还问{subject}要不要买剩下的蜡烛；{subject}买了两支，回家点在空房间里，看它们烧到天亮。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "grief",
+              "delta": -6,
+              "reason": "the wedding was missed entirely"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-scorned-lover",
+              "key": "resolve",
+              "delta": -5,
+              "reason": "there was nobody left to confront"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "two leftover candles"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the sexton found the mistake harmless"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the absurdity broke the tension"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "a_day_late",
+              "add": true,
+              "reason": "the subject arrived after the wedding"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds17-secret.child",
+      "title": "孩子知道的那一半",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 60
+      },
+      "tags": [
+        "love",
+        "secret",
+        "family",
+        "child",
+        "school",
+        "kept_secret"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ds17-kept-secret"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 60
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 14,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-child-keeps-the-door",
+          "weight": 3,
+          "text": "{child}在楼梯口拦住前来送信的{neighbor}，说母亲不在家，信可以放在门房。{subject}在门后听见，等{neighbor}走了才出来；{child}没有问，只把晚饭多摆了一副碗筷，又收了回去。那天晚上，{subject}第一次把针线盒的钥匙交给了{child}。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "weight",
+              "delta": -8,
+              "reason": "a child chose to share the burden"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "protection",
+              "delta": 10,
+              "reason": "the child became a second keeper"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.12,
+              "affection": 0.08,
+              "reason": "the child guarded the door"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "being trusted by a child"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_became_confidant",
+              "add": true,
+              "reason": "the child learned part of the secret and kept it"
+            }
+          ]
+        },
+        {
+          "id": "the-question-at-the-table",
+          "weight": 2,
+          "text": "{child}问为什么抽屉里有一张写着自己名字的汇款单，{subject}说是远房亲戚。{child}点点头，第二天却把汇款单上的地址抄给了{neighbor}，换了两块糖。{subject}知道后没有打{child}，只把糖收走，整晚没有点灯。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "exposure",
+              "delta": 25,
+              "reason": "the child copied the address for a neighbour"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "weight",
+              "delta": 10,
+              "reason": "the secret now has a child's fingerprints on it"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.12,
+              "reason": "the child traded the address for sugar"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the neighbour now has a name and an address"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the sugar and a lock for the drawer"
+            },
+            {
+              "type": "state_transition",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "fromStateId": "ds17-kept-secret",
+              "toStateId": "public-scandal",
+              "reason": "the secret left the household through the child"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_told_neighbour",
+              "add": true,
+              "reason": "the child sold the address for sweets"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "an unlit room after the child's betrayal"
+            }
+          ]
+        },
+        {
+          "id": "the-child-asks-about-the-photograph",
+          "weight": 1,
+          "text": "{child}从课本里翻出一张没有脸的照片，问上面的人是不是父亲。{subject}说不是，{child}说“那为什么你每次看都哭”。{subject}把照片收进针线盒，{child}从此不再问，却开始在饭前替{subject}摆好椅子，像是在照顾一个病人。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "weight",
+              "delta": 5,
+              "reason": "a child's question made the secret heavier"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "exposure",
+              "delta": 6,
+              "reason": "the child had seen the photograph"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": 0.05,
+              "reason": "the child began caring for the subject"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "being looked after by one's own child"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_saw_photograph",
+              "add": true,
+              "reason": "the child found the hidden photograph"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds17-office.archive-post",
+      "title": "档案室的空编制",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 70
+      },
+      "tags": [
+        "love",
+        "office",
+        "patronage",
+        "politics",
+        "scandal",
+        "double_life",
+        "secret_intimacy"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "office-patronage"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "ds17-double-life"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60,
+          "sharedHistoryTag": "double_life"
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "a-desk-by-the-window",
+          "weight": 3,
+          "text": "{subject}在编制表最下面添了一行“临时档案助理”，月薪两克朗，职责写得很含糊。{clerk}提醒说这个位子没有经过考试，{subject}说特殊时期需要特殊人手。第二天，{lover}搬来一张靠窗的桌子，带来一盆天竺葵；走廊里的人都在猜，只有{clerk}把考勤簿翻到了新的一页。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "position",
+              "organizationId": "$positionOrg",
+              "title": "临时档案助理",
+              "holderId": "$lover",
+              "wage": 2,
+              "authority": [
+                "整理档案",
+                "保管副本"
+              ],
+              "reason": "a paid post was created for the lover"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$lover",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "the lover joined the office"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "the lover's wage came from the office budget"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": 0.12,
+              "affection": 0.08,
+              "reason": "a private attachment became a public appointment"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "appointees",
+              "delta": 1,
+              "reason": "the network gained another name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "delta": 5,
+              "reason": "the appointment created a new obligation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "key": "exposure",
+              "delta": 5,
+              "reason": "the office now sees the lover every day"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the appointment was too convenient"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lover_on_the_payroll",
+              "add": true,
+              "reason": "the lover received an office post"
+            }
+          ]
+        },
+        {
+          "id": "the-post-refused",
+          "weight": 2,
+          "text": "{lover}把一张写着自己名字的纸推过来，说只要一个不用考试的位子。{subject}把纸折好，放回{lover}手里，说编制表不是自家抽屉；{lover}在走廊里站了一会儿，最后说“那我明年再问”。{clerk}假装在擦眼镜，办公室的钟走得很响。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": -0.12,
+              "affection": -0.08,
+              "reason": "the lover's request for a post was refused"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "key": "strain",
+              "delta": 12,
+              "reason": "the refused favour entered the private life"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "loyalty",
+              "delta": -3,
+              "reason": "the network noticed the refusal"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the office was not used as a private drawer"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a quiet argument in a corridor"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_lover_post",
+              "add": true,
+              "reason": "the subject refused to appoint the lover"
+            }
+          ]
+        },
+        {
+          "id": "the-post-that-already-exists",
+          "weight": 1,
+          "text": "{clerk}翻出一张一九〇七年的任命书：档案助理的位子从未撤销，上一任的遗孀至今每月来领一次钥匙。{subject}不能在名册上再添一个人，只能给{lover}挂一个“编外誊写”的名目；工资从办公费里出，{lover}笑说这比情书体面。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "the irregular copyist was paid from office funds"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "an irregular post kept the lover close"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "delta": 3,
+              "reason": "the ghost post created another quiet obligation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "key": "exposure",
+              "delta": 3,
+              "reason": "the irregular arrangement required witnesses"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "档案助理的编制从一九〇七年起就没有正式撤销，上一任的遗孀仍每月来领钥匙。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ghost_post_for_lover",
+              "add": true,
+              "reason": "the lover was hired outside the establishment"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "an absurd old post became useful"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds17-blackmail.debt",
+      "title": "没有署名的账单",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 65
+      },
+      "tags": [
+        "love",
+        "scandal",
+        "blackmail",
+        "crime",
+        "money",
+        "secret_intimacy",
+        "kept_secret"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        },
+        {
+          "key": "blackmailer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65,
+          "sharedHistoryTag": "secret_intimacy"
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-first-installment",
+          "weight": 3,
+          "text": "{blackmailer}在咖啡馆后门等{subject}，把一只没有封口的信封推过来：里面是旅馆登记页的抄本和一张写着数目的纸。{subject}数了三遍钱，还是差一点；{lover}说可以卖掉自己的胸针，{subject}没有答应，只把针线盒最底下的钥匙换了个地方。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "the first blackmail payment"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$blackmailer",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "a payment made the blackmailer a familiar presence"
+            },
+            {
+              "type": "state_transition",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "fromStateId": "public-scandal",
+              "toStateId": "ds17-kept-secret",
+              "parameters": {
+                "kind": "blackmail debt",
+                "weight": 55,
+                "exposure": 20,
+                "protection": 15
+              },
+              "reason": "the public story became a private debt"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "counting money at a café back door"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_first_installment",
+              "add": true,
+              "reason": "the first blackmail payment was made"
+            }
+          ]
+        },
+        {
+          "id": "the-police-commissioner",
+          "weight": 2,
+          "text": "{subject}没有付钱，而是带着抄本去了警察局。值班的警长认得{subject}的名字，也认得报纸上的那件事；他收下材料，说“我们会看着办”，第二天{blackmailer}的门口就多了一个穿便衣的人。{lover}问这样会不会更糟，{subject}说至少现在有人替我们数钱。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a lawyer's letter and the tram to the police station"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$blackmailer",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 20,
+                "charge": "勒索"
+              },
+              "reason": "the blackmailer became the subject of an investigation"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$blackmailer",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.2,
+              "reason": "the subject went to the police"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the subject was seen defending the household"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reported_blackmail",
+              "add": true,
+              "reason": "the blackmail was reported to the police"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the law was given a name"
+            }
+          ]
+        },
+        {
+          "id": "the-landlord-with-a-copy",
+          "weight": 1,
+          "text": "{blackmailer}原来是{subject}的房东代理人。他没有提高嗓门，只把下季度的房租单和一张照片放在一起；{subject}这才明白，勒索可以穿得很体面。{lover}提议搬家，{subject}算了算搬家的钱，决定先忍到春天。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "the raised rent and a copy of the photograph"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$blackmailer",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "the landlord's agent had a copy"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the story gained a respectable witness"
+            },
+            {
+              "type": "state_transition",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "fromStateId": "public-scandal",
+              "toStateId": "ds17-kept-secret",
+              "parameters": {
+                "kind": "rent and photographs",
+                "weight": 50,
+                "exposure": 30,
+                "protection": 10
+              },
+              "reason": "the scandal became a secret held by the landlord"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "landlord_blackmail",
+              "add": true,
+              "reason": "the landlord's agent held the photographs"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a rent increase with a photograph attached"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ds17-quiet.soup",
+      "title": "雨夜的汤",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 60
+      },
+      "tags": [
+        "love",
+        "intimacy",
+        "quiet",
+        "domestic",
+        "secret",
+        "double_life"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ds17-double-life",
+          "parameter": "strain",
+          "min": 10
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "known-affair"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 60
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 60,
+          "sharedHistoryTag": "double_life"
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "soup-for-two",
+          "weight": 3,
+          "text": "雨敲在窗台上，{subject}在借来的小厨房里煮了一锅扁豆汤，盐放多了，{lover}还是喝了两碗。两个人没有提明天，只商量窗帘该不该换成深色；{subject}走时把剩下的汤倒进一只旧果酱罐，带回家藏进厨房最阴凉的碗柜。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "key": "strain",
+              "delta": -10,
+              "reason": "an ordinary evening made the double life bearable"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": 0.04,
+              "affection": 0.08,
+              "reason": "soup, rain and a conversation about curtains"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "lentils, onions and a jar"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a quiet domestic hour"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "soup_for_two",
+              "add": true,
+              "reason": "the lovers shared an ordinary meal"
+            }
+          ]
+        },
+        {
+          "id": "the-button-tin",
+          "weight": 2,
+          "text": "{lover}把{subject}落下的衬衫补好，扣子却缝错了一排。{subject}穿上后笑了半天，说这样正好提醒自己别把衣服穿反；{lover}说下次不补了，手却已经把针线盒收好。两个人在门口为一把伞推让了一会儿，最后谁也没有先走。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "key": "strain",
+              "delta": 5,
+              "reason": "a mended shirt reminded the subject of the divided life"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": -0.03,
+              "affection": 0.04,
+              "reason": "a domestic quarrel about buttons"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a small argument that ended in laughter"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mended_shirt",
+              "add": true,
+              "reason": "the lover mended a shirt and sewed the buttons wrong"
+            }
+          ]
+        },
+        {
+          "id": "the-chimney-smokes",
+          "weight": 1,
+          "text": "炉子倒烟，整间屋子都是灰。{subject}和{lover}披着外套站在院子里，看消防员架梯子；房东太太端来两杯热酒，问“你们是兄妹吧”，{lover}说是，{subject}被酒呛得直咳。第二天，楼梯间多了一张防火告示，也多了几个知道名字的邻居。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "the chimney repair and a new stovepipe"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the neighbours now know the lover's name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "key": "exposure",
+              "delta": 8,
+              "reason": "the fire brigade and the landlady saw them together"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-double-life",
+              "key": "strain",
+              "delta": 5,
+              "reason": "an ordinary accident created witnesses"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "affection": 0.03,
+              "reason": "they laughed at the same disaster"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a chimney fire that became a story"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "chimney_fire",
+              "add": true,
+              "reason": "a chimney fire revealed the household to the neighbours"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "desire",
+    "intimacy",
+    "secrecy",
+    "scandal",
+    "jealousy"
+  ],
+  "tone": [
+    "intimate",
+    "tense",
+    "ironic"
+  ],
+  "scope": [
+    "person",
+    "household",
+    "office"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "sexual content",
+    "infidelity",
+    "public shaming",
+    "blackmail"
+  ]
+}

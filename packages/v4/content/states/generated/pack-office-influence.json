@@ -18,23 +18,73 @@
       "owner": "person",
       "slot": "power",
       "conflict": "replace",
-      "tags": ["office", "patronage", "politics", "power", "network", "obligation"],
+      "tags": [
+        "office",
+        "patronage",
+        "politics",
+        "power",
+        "network",
+        "obligation"
+      ],
       "parameters": {
-        "appointees": { "type": "number", "default": 0, "min": 0, "max": 20 },
-        "favorDebt": { "type": "number", "default": 20, "min": 0, "max": 100 },
-        "loyalty": { "type": "number", "default": 50, "min": 0, "max": 100 },
-        "exposure": { "type": "number", "default": 10, "min": 0, "max": 100 },
-        "officeTitle": { "type": "string", "default": "现任职位" },
-        "positionId": { "type": "string", "default": "" }
+        "appointees": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 20
+        },
+        "favorDebt": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "loyalty": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        "exposure": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        },
+        "officeTitle": {
+          "type": "string",
+          "default": "现任职位"
+        },
+        "positionId": {
+          "type": "string",
+          "default": ""
+        }
       },
-      "durationMonths": { "min": 12, "max": 60 },
+      "durationMonths": {
+        "min": 12,
+        "max": 60
+      },
       "modifiers": [
         {
           "kind": "scene_weight",
-          "tags": ["office", "patronage", "politics", "budget", "appointment", "scandal"],
+          "tags": [
+            "office",
+            "patronage",
+            "politics",
+            "budget",
+            "appointment",
+            "scandal"
+          ],
           "multiplier": 1.4
         },
-        { "kind": "check_bonus", "tags": ["office", "politics"], "bonus": 1 }
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "office",
+            "politics"
+          ],
+          "bonus": 1
+        }
       ],
       "onEnter": [
         {
@@ -58,7 +108,10 @@
         {
           "id": "patronage-year",
           "everyMonths": 12,
-          "check": { "attribute": "cunning", "dc": 12 },
+          "check": {
+            "attribute": "cunning",
+            "dc": 12
+          },
           "outcomes": [
             {
               "id": "network-holds",
@@ -93,7 +146,12 @@
                   "delta": -2,
                   "reason": "one obligation was discharged"
                 },
-                { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the office is working" }
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "the office is working"
+                }
               ]
             },
             {
@@ -120,8 +178,18 @@
                   "delta": -6,
                   "reason": "the network tightened"
                 },
-                { "type": "reputation", "personId": "$subject", "amount": -0.03, "reason": "patronage rumour" },
-                { "type": "mood", "personId": "$subject", "amount": -0.03, "reason": "talk behind the door" },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "patronage rumour"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "talk behind the door"
+                },
                 {
                   "type": "flag",
                   "personId": "$subject",
@@ -146,7 +214,12 @@
                   "delta": 6,
                   "reason": "an old favour was called in"
                 },
-                { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "too many claims on one post" },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "too many claims on one post"
+                },
                 {
                   "type": "knowledge",
                   "holderId": "$subject",
@@ -175,25 +248,77 @@
       "title": "职位受围",
       "description": "一份职位正在被公开质疑：报纸、审计、同僚或街头都在等一个答复。它不夺走 Position，只让每一次使用权力都多一层代价。",
       "owner": "person",
-      "slot": "power",
+      "slot": "office_pressure",
       "conflict": "replace",
-      "tags": ["office", "scandal", "pressure", "politics", "legal", "risk"],
+      "tags": [
+        "office",
+        "scandal",
+        "pressure",
+        "politics",
+        "legal",
+        "risk"
+      ],
       "parameters": {
-        "exposure": { "type": "number", "default": 40, "min": 0, "max": 100 },
-        "support": { "type": "number", "default": 45, "min": 0, "max": 100 },
-        "months": { "type": "number", "default": 0, "min": 0, "max": 36 },
-        "cause": { "type": "string", "default": "public allegation" },
-        "positionId": { "type": "string", "default": "" }
+        "exposure": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        },
+        "support": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "months": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 36
+        },
+        "cause": {
+          "type": "string",
+          "default": "public allegation"
+        },
+        "positionId": {
+          "type": "string",
+          "default": ""
+        }
       },
-      "durationMonths": { "min": 3, "max": 24 },
+      "durationMonths": {
+        "min": 3,
+        "max": 24
+      },
       "modifiers": [
         {
           "kind": "scene_weight",
-          "tags": ["office", "scandal", "politics", "legal", "media", "removal"],
+          "tags": [
+            "office",
+            "scandal",
+            "politics",
+            "legal",
+            "media",
+            "removal"
+          ],
           "multiplier": 1.6
         },
-        { "kind": "scene_weight", "tags": ["quiet", "administration"], "multiplier": 0.75 },
-        { "kind": "check_bonus", "tags": ["scandal", "legal"], "bonus": -1 }
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "quiet",
+            "administration"
+          ],
+          "multiplier": 0.75
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "scandal",
+            "legal"
+          ],
+          "bonus": -1
+        }
       ],
       "onEnter": [
         {
@@ -217,7 +342,10 @@
         {
           "id": "pressure-year",
           "everyMonths": 6,
-          "check": { "attribute": "willpower", "dc": 12 },
+          "check": {
+            "attribute": "willpower",
+            "dc": 12
+          },
           "outcomes": [
             {
               "id": "held-on",
@@ -252,7 +380,12 @@
                   "delta": 1,
                   "reason": "another month under pressure"
                 },
-                { "type": "mood", "personId": "$subject", "amount": 0.01, "reason": "the hearing held" }
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "the hearing held"
+                }
               ]
             },
             {
@@ -288,8 +421,18 @@
                   "delta": 1,
                   "reason": "another month under pressure"
                 },
-                { "type": "reputation", "personId": "$subject", "amount": -0.03, "reason": "a fresh allegation" },
-                { "type": "mood", "personId": "$subject", "amount": -0.04, "reason": "the story will not close" }
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "a fresh allegation"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "the story will not close"
+                }
               ]
             }
           ]
@@ -300,11 +443,21 @@
           "id": "recovered",
           "to": "office-patronage",
           "conditions": [
-            { "kind": "hasState", "stateId": "office-under-siege", "parameter": "support", "min": 70 }
+            {
+              "kind": "hasState",
+              "stateId": "office-under-siege",
+              "parameter": "support",
+              "min": 70
+            }
           ],
           "reason": "the holder rebuilt a working majority",
           "effects": [
-            { "type": "reputation", "personId": "$subject", "amount": 0.03, "reason": "the office recovered" }
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the office recovered"
+            }
           ]
         }
       ],
@@ -323,14 +476,53 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 26, "max": 70 },
-      "tags": ["office", "hire", "patronage", "bureaucracy", "work", "power"],
-      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
-      "conditions": [{ "kind": "position" }],
+      "ageWindow": {
+        "min": 26,
+        "max": 70
+      },
+      "tags": [
+        "office",
+        "hire",
+        "patronage",
+        "bureaucracy",
+        "work",
+        "power"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 26, "maxAge": 70 },
-        { "key": "protege", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 35 },
-        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "protege",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 35
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        }
       ],
       "baseRate": 0.18,
       "weight": 3,
@@ -348,7 +540,10 @@
               "title": "助理文书",
               "holderId": "$protege",
               "wage": 2,
-              "authority": ["整理档案", "安排会面"],
+              "authority": [
+                "整理档案",
+                "安排会面"
+              ],
               "reason": "a real junior post was created for the protege"
             },
             {
@@ -372,7 +567,12 @@
               "trust": 0.12,
               "reason": "hired and vouched for the protege"
             },
-            { "type": "reputation", "personId": "$subject", "amount": 0.03, "reason": "the hire worked" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the hire worked"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -394,7 +594,10 @@
               "title": "档案助理",
               "holderId": "$protege",
               "wage": 2,
-              "authority": ["领取文具", "保管副本"],
+              "authority": [
+                "领取文具",
+                "保管副本"
+              ],
               "reason": "a relative received a paid post"
             },
             {
@@ -434,7 +637,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the family was looked after" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the family was looked after"
+            }
           ]
         },
         {
@@ -443,7 +651,12 @@
           "text": "编制委员会只用了十分钟就否掉了{protege}的名字：预算冻结，岗位归并，连桌子都要搬去仓库。{subject}把那张表折起来，答应明年再试。{protege}说没关系，第二天去了另一家事务所面试。",
           "significance": 0.65,
           "effects": [
-            { "type": "mood", "personId": "$subject", "amount": -0.04, "reason": "the hire was blocked" },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the hire was blocked"
+            },
             {
               "type": "relation",
               "a": "$subject",
@@ -482,7 +695,10 @@
               "title": "助理文书",
               "holderId": "$protege",
               "wage": 1,
-              "authority": ["拆阅旧信", "保管钥匙"],
+              "authority": [
+                "拆阅旧信",
+                "保管钥匙"
+              ],
               "reason": "an old post was revived with a new holder"
             },
             {
@@ -514,7 +730,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "an absurd old post became useful" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "an absurd old post became useful"
+            }
           ]
         }
       ]
@@ -525,14 +746,53 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 24, "max": 70 },
-      "tags": ["office", "budget", "permit", "administration", "power", "economy"],
-      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
-      "conditions": [{ "kind": "position" }],
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "office",
+        "budget",
+        "permit",
+        "administration",
+        "power",
+        "economy"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 24, "maxAge": 70 },
-        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 },
-        { "key": "contractor", "kind": "worker", "required": true, "minAge": 22, "maxAge": 65 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "contractor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        }
       ],
       "baseRate": 0.2,
       "weight": 4,
@@ -550,9 +810,25 @@
               "amount": -2,
               "reason": "the approved budget paid for the roof repair"
             },
-            { "type": "reputation", "personId": "$subject", "amount": 0.04, "reason": "an ordinary budget was made to work" },
-            { "type": "skill", "personId": "$subject", "skill": "numeracy", "amount": 0.03, "reason": "hands-on budget work" },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the office ran better" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "an ordinary budget was made to work"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.03,
+              "reason": "hands-on budget work"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the office ran better"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -577,8 +853,19 @@
           "text": "{subject}把一份扩建许可证压在抽屉最下面，理由是排水和消防通道不合规。申请人{contractor}在走廊里等到下班，最后只拿到一张写着“补件”的纸条。{subject}知道这份许可明年还会再来，但今年不会从自己的桌上出去。",
           "significance": 0.75,
           "effects": [
-            { "type": "reputation", "personId": "$subject", "amount": 0.02, "reason": "the permit was refused on the record" },
-            { "type": "skill", "personId": "$subject", "skill": "numeracy", "amount": 0.01, "reason": "checked the drainage and fire documents" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the permit was refused on the record"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.01,
+              "reason": "checked the drainage and fire documents"
+            },
             {
               "type": "relation",
               "a": "$subject",
@@ -641,7 +928,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the favour was done" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the favour was done"
+            }
           ]
         },
         {
@@ -656,7 +948,12 @@
               "amount": -1,
               "reason": "an unbudgeted fence was charged to the office"
             },
-            { "type": "reputation", "personId": "$subject", "amount": -0.04, "reason": "the signed permit embarrassed the office" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the signed permit embarrassed the office"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -673,7 +970,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": -0.03, "reason": "the money was already gone" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the money was already gone"
+            }
           ]
         }
       ]
@@ -684,14 +986,53 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 24, "max": 70 },
-      "tags": ["office", "favor", "corruption", "patronage", "family", "power"],
-      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
-      "conditions": [{ "kind": "position" }],
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "office",
+        "favor",
+        "corruption",
+        "patronage",
+        "family",
+        "power"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 24, "maxAge": 70 },
-        { "key": "beneficiary", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 70 },
-        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "beneficiary",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        }
       ],
       "baseRate": 0.16,
       "weight": 3,
@@ -709,7 +1050,9 @@
               "title": "顾问",
               "holderId": "$beneficiary",
               "wage": 2,
-              "authority": ["提供咨询"],
+              "authority": [
+                "提供咨询"
+              ],
               "reason": "a quiet sinecure was created"
             },
             {
@@ -749,7 +1092,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the favour was settled" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the favour was settled"
+            }
           ]
         },
         {
@@ -766,7 +1114,12 @@
               "trust": -0.08,
               "reason": "the private favour was refused"
             },
-            { "type": "reputation", "personId": "$subject", "amount": 0.03, "reason": "the office was not used as a private drawer" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the office was not used as a private drawer"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -774,7 +1127,12 @@
               "add": true,
               "reason": "refused a personal sinecure"
             },
-            { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "the refusal cost a friendship" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the refusal cost a friendship"
+            }
           ]
         },
         {
@@ -813,7 +1171,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.01, "reason": "the old favour was quietly honoured" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the old favour was quietly honoured"
+            }
           ]
         },
         {
@@ -828,7 +1191,12 @@
               "amount": -2,
               "reason": "audit response and back pay review"
             },
-            { "type": "reputation", "personId": "$subject", "amount": -0.06, "reason": "a sinecure attracted an audit" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "a sinecure attracted an audit"
+            },
             {
               "type": "state_add",
               "ownerType": "person",
@@ -860,7 +1228,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": -0.05, "reason": "the favour left a paper trail" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the favour left a paper trail"
+            }
           ]
         }
       ]
@@ -871,14 +1244,53 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 26, "max": 75 },
-      "tags": ["office", "rivalry", "politics", "removal", "power", "intrigue"],
-      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
-      "conditions": [{ "kind": "position" }],
+      "ageWindow": {
+        "min": 26,
+        "max": 75
+      },
+      "tags": [
+        "office",
+        "rivalry",
+        "politics",
+        "removal",
+        "power",
+        "intrigue"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 26, "maxAge": 75 },
-        { "key": "rival", "kind": "official", "required": true, "minAge": 26, "maxAge": 75 },
-        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "rival",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        }
       ],
       "baseRate": 0.17,
       "weight": 4,
@@ -890,7 +1302,12 @@
           "text": "会议室里有人念了一份动议，说{subject}把预算当成人情。{rival}把签名页传了一圈，最后停在自己手里：支持票比反对票少三张。{subject}没有发言，只把下一季度的支出表放在桌上，表上每一笔都有收据。",
           "significance": 0.8,
           "effects": [
-            { "type": "reputation", "personId": "$subject", "amount": 0.04, "reason": "the removal motion failed" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the removal motion failed"
+            },
             {
               "type": "relation",
               "a": "$subject",
@@ -915,7 +1332,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.03, "reason": "the office held" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the office held"
+            }
           ]
         },
         {
@@ -930,8 +1352,18 @@
               "remove": true,
               "reason": "removed by a vote of the committee"
             },
-            { "type": "reputation", "personId": "$subject", "amount": -0.05, "reason": "voted out of office" },
-            { "type": "mood", "personId": "$subject", "amount": -0.08, "reason": "the office was lost by vote" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "voted out of office"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "the office was lost by vote"
+            },
             {
               "type": "condition",
               "personId": "$subject",
@@ -977,7 +1409,12 @@
               "amount": -2,
               "reason": "emergency audit of the committee's travel books"
             },
-            { "type": "reputation", "personId": "$subject", "amount": -0.03, "reason": "the counter-move frightened the room" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the counter-move frightened the room"
+            },
             {
               "type": "relation",
               "a": "$subject",
@@ -1002,7 +1439,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.01, "reason": "the counter-move worked" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the counter-move worked"
+            }
           ]
         },
         {
@@ -1011,8 +1453,18 @@
           "text": "第二轮投票是十七比十七。按章程，主席可以投第二票；{subject}把自己的名字念了两遍，会议室里没有人笑。散会后，{rival}在门口说下一次会带更多的人来，{subject}说椅子够用。",
           "significance": 0.8,
           "effects": [
-            { "type": "reputation", "personId": "$subject", "amount": -0.02, "reason": "the tie was broken by the chair" },
-            { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "a procedural victory" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the tie was broken by the chair"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a procedural victory"
+            },
             {
               "type": "relation",
               "a": "$subject",
@@ -1053,15 +1505,60 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 24, "max": 70 },
-      "tags": ["office", "scandal", "media", "reputation", "politics", "power"],
-      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
-      "conditions": [{ "kind": "position" }],
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "office",
+        "scandal",
+        "media",
+        "reputation",
+        "politics",
+        "power"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 24, "maxAge": 70 },
-        { "key": "reporter", "kind": "neighbor", "required": true, "minAge": 20, "maxAge": 70 },
-        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 },
-        { "key": "successor", "kind": "official", "required": false, "minAge": 26, "maxAge": 75 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "reporter",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "successor",
+          "kind": "official",
+          "required": false,
+          "minAge": 26,
+          "maxAge": 75
+        }
       ],
       "baseRate": 0.15,
       "weight": 4,
@@ -1073,8 +1570,18 @@
           "text": "报纸在头版登了{subject}和承包商在一张桌子上的照片，配文只有一句“谁签的字”。质询会开了三个小时，{subject}把合同、比价单和验收记录一页页摊开；记者第二天没有再写，但把照片留在了档案里。",
           "significance": 0.85,
           "effects": [
-            { "type": "reputation", "personId": "$subject", "amount": -0.03, "reason": "a photograph became a public question" },
-            { "type": "mood", "personId": "$subject", "amount": -0.03, "reason": "the hearing was exhausting" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a photograph became a public question"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the hearing was exhausting"
+            },
             {
               "type": "state_add",
               "ownerType": "person",
@@ -1120,8 +1627,18 @@
               "remove": true,
               "reason": "resigned after the scandal"
             },
-            { "type": "reputation", "personId": "$subject", "amount": -0.08, "reason": "resigned under a public cloud" },
-            { "type": "mood", "personId": "$subject", "amount": -0.1, "reason": "the office ended in public" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "resigned under a public cloud"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "the office ended in public"
+            },
             {
               "type": "condition",
               "personId": "$subject",
@@ -1153,7 +1670,12 @@
           "text": "照片登出后，{subject}收到十七封邀请函，都是请去讲“如何面对舆论”。一个工商业协会送来一笔“研究资助”，请{subject}去讲一次闭门课；课酬刚好补上办公室这个月的缺口。",
           "significance": 0.85,
           "effects": [
-            { "type": "reputation", "personId": "$subject", "amount": 0.05, "reason": "notoriety became an invitation" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "notoriety became an invitation"
+            },
             {
               "type": "organization_funds",
               "organizationId": "$positionOrg",
@@ -1191,7 +1713,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.04, "reason": "the scandal was profitable" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the scandal was profitable"
+            }
           ]
         },
         {
@@ -1200,7 +1727,12 @@
           "text": "报纸放大的签名其实是{clerk}的：两个字母写得太像。更正启事登在第七版，只有三行；{subject}的名字被拿掉了，{clerk}的名字留了下来。第二天，{clerk}没有来上班，桌上的茶杯还是满的。",
           "significance": 0.8,
           "effects": [
-            { "type": "reputation", "personId": "$subject", "amount": 0.02, "reason": "the newspaper corrected the record" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the newspaper corrected the record"
+            },
             {
               "type": "relation",
               "a": "$subject",
@@ -1225,7 +1757,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "someone else paid for the mistake" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "someone else paid for the mistake"
+            }
           ]
         }
       ]
@@ -1236,14 +1773,53 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 24, "max": 70 },
-      "tags": ["office", "administration", "budget", "competence", "quiet", "power"],
-      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
-      "conditions": [{ "kind": "position" }],
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "office",
+        "administration",
+        "budget",
+        "competence",
+        "quiet",
+        "power"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 24, "maxAge": 70 },
-        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 },
-        { "key": "auditor", "kind": "official", "required": false, "minAge": 26, "maxAge": 75 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "auditor",
+          "kind": "official",
+          "required": false,
+          "minAge": 26,
+          "maxAge": 75
+        }
       ],
       "baseRate": 0.16,
       "weight": 3,
@@ -1261,9 +1837,25 @@
               "amount": 2,
               "reason": "streamlined spending left a small balance"
             },
-            { "type": "reputation", "personId": "$subject", "amount": 0.04, "reason": "the office ran within its means" },
-            { "type": "skill", "personId": "$subject", "skill": "numeracy", "amount": 0.03, "reason": "hands-on ledger work" },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "quiet competence" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the office ran within its means"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.03,
+              "reason": "hands-on ledger work"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "quiet competence"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -1294,9 +1886,25 @@
               "amount": 3,
               "reason": "a second clean year left a surplus"
             },
-            { "type": "reputation", "personId": "$subject", "amount": 0.06, "reason": "a clean audit and earlier service" },
-            { "type": "skill", "personId": "$subject", "skill": "numeracy", "amount": 0.03, "reason": "another year of ledger work" },
-            { "type": "mood", "personId": "$subject", "amount": 0.03, "reason": "the office worked quietly" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "a clean audit and earlier service"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.03,
+              "reason": "another year of ledger work"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the office worked quietly"
+            },
             {
               "type": "relation",
               "a": "$subject",
@@ -1335,8 +1943,18 @@
               "amount": -1,
               "reason": "deferred roof repairs were charged to the budget"
             },
-            { "type": "reputation", "personId": "$subject", "amount": -0.01, "reason": "the books balanced by delay" },
-            { "type": "mood", "personId": "$subject", "amount": -0.03, "reason": "nothing was really fixed" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the books balanced by delay"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "nothing was really fixed"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -1367,8 +1985,18 @@
               "amount": -2,
               "reason": "forensic review of the predecessor's ledger"
             },
-            { "type": "reputation", "personId": "$subject", "amount": -0.02, "reason": "the office inherited a cooked ledger" },
-            { "type": "mood", "personId": "$subject", "amount": -0.04, "reason": "the predecessor's books were false" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the office inherited a cooked ledger"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the predecessor's books were false"
+            },
             {
               "type": "state_add",
               "ownerType": "person",
@@ -1410,14 +2038,53 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 26, "max": 75 },
-      "tags": ["office", "removal", "loss", "politics", "power", "transition"],
-      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
-      "conditions": [{ "kind": "position" }],
+      "ageWindow": {
+        "min": 26,
+        "max": 75
+      },
+      "tags": [
+        "office",
+        "removal",
+        "loss",
+        "politics",
+        "power",
+        "transition"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 26, "maxAge": 75 },
-        { "key": "successor", "kind": "official", "required": false, "minAge": 26, "maxAge": 75 },
-        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "successor",
+          "kind": "official",
+          "required": false,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        }
       ],
       "baseRate": 0.14,
       "weight": 3,
@@ -1435,8 +2102,18 @@
               "remove": true,
               "reason": "the term ended in order"
             },
-            { "type": "reputation", "personId": "$subject", "amount": 0.02, "reason": "left office in order" },
-            { "type": "mood", "personId": "$subject", "amount": -0.04, "reason": "the term ended" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "left office in order"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the term ended"
+            },
             {
               "type": "condition",
               "personId": "$subject",
@@ -1474,8 +2151,18 @@
               "remove": true,
               "reason": "forced out of office"
             },
-            { "type": "reputation", "personId": "$subject", "amount": -0.06, "reason": "carried out of the building" },
-            { "type": "mood", "personId": "$subject", "amount": -0.08, "reason": "a forced departure" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "carried out of the building"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "a forced departure"
+            },
             {
               "type": "condition",
               "personId": "$subject",
@@ -1537,7 +2224,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "a small door remained open" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a small door remained open"
+            }
           ]
         },
         {
@@ -1546,8 +2238,18 @@
           "text": "计票拖到凌晨，{subject}以两票之差留任。{successor}把已经写好的交接清单折起来，笑着说下次再来。{subject}回到办公室，发现桌上的文件被人重新排过；最上面那份，是新一年的预算草案。",
           "significance": 0.9,
           "effects": [
-            { "type": "reputation", "personId": "$subject", "amount": 0.06, "reason": "reappointed by two votes" },
-            { "type": "mood", "personId": "$subject", "amount": 0.06, "reason": "the office was kept" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "reappointed by two votes"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "the office was kept"
+            },
             {
               "type": "organization_funds",
               "organizationId": "$positionOrg",
@@ -1596,15 +2298,60 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 24, "max": 70 },
-      "tags": ["office", "appointment", "patronage", "organization", "politics", "power"],
-      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
-      "conditions": [{ "kind": "position" }],
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "office",
+        "appointment",
+        "patronage",
+        "organization",
+        "politics",
+        "power"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 24, "maxAge": 70 },
-        { "key": "ally", "kind": "neighbor", "required": true, "minAge": 20, "maxAge": 70 },
-        { "key": "rival", "kind": "official", "required": false, "minAge": 26, "maxAge": 75 },
-        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "ally",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "rival",
+          "kind": "official",
+          "required": false,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        }
       ],
       "baseRate": 0.16,
       "weight": 3,
@@ -1622,7 +2369,10 @@
               "title": "联络员",
               "holderId": "$ally",
               "wage": 1,
-              "authority": ["传递文件", "安排来访"],
+              "authority": [
+                "传递文件",
+                "安排来访"
+              ],
               "reason": "an ally received a working post"
             },
             {
@@ -1662,7 +2412,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "a loyal person was placed" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a loyal person was placed"
+            }
           ]
         },
         {
@@ -1718,7 +2473,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the opposition was seated elsewhere" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the opposition was seated elsewhere"
+            }
           ]
         },
         {
@@ -1727,8 +2487,18 @@
           "text": "名单在委员会卡住了。{ally}的名字被划掉，理由是“没有相关资历”；{subject}没有争，只把名单收回公文包。晚上，{ally}来问结果，{subject}说再等一年；{ally}没有坐，站了一会儿就走了。",
           "significance": 0.7,
           "effects": [
-            { "type": "reputation", "personId": "$subject", "amount": -0.02, "reason": "the appointment list was rejected" },
-            { "type": "mood", "personId": "$subject", "amount": -0.03, "reason": "a promise could not be kept" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the appointment list was rejected"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a promise could not be kept"
+            },
             {
               "type": "relation",
               "a": "$subject",
@@ -1799,7 +2569,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "the list was longer than the living" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the list was longer than the living"
+            }
           ]
         }
       ]
@@ -1810,15 +2585,60 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 28, "max": 75 },
-      "tags": ["office", "corruption", "audit", "legal", "power", "dark"],
-      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
-      "conditions": [{ "kind": "position" }],
+      "ageWindow": {
+        "min": 28,
+        "max": 75
+      },
+      "tags": [
+        "office",
+        "corruption",
+        "audit",
+        "legal",
+        "power",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 28, "maxAge": 75 },
-        { "key": "auditor", "kind": "official", "required": true, "minAge": 26, "maxAge": 75 },
-        { "key": "beneficiary", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 70 },
-        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        },
+        {
+          "key": "auditor",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "beneficiary",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        }
       ],
       "baseRate": 0.13,
       "weight": 4,
@@ -1830,15 +2650,31 @@
           "text": "{auditor}带了两只空箱子来，走的时候还是空的。{subject}把三年的合同、收据和会议记录按月份排在地上，{auditor}抽查了十二份，每一份都能对上签字人；最后一句是“下次可以少准备一点”。",
           "significance": 0.85,
           "effects": [
-            { "type": "reputation", "personId": "$subject", "amount": 0.05, "reason": "the audit found nothing" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the audit found nothing"
+            },
             {
               "type": "organization_funds",
               "organizationId": "$positionOrg",
               "amount": 1,
               "reason": "an unspent balance was returned to the office"
             },
-            { "type": "skill", "personId": "$subject", "skill": "numeracy", "amount": 0.02, "reason": "prepared three years of records" },
-            { "type": "mood", "personId": "$subject", "amount": 0.03, "reason": "a clean audit" },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "prepared three years of records"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a clean audit"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -1869,8 +2705,18 @@
               "amount": -3,
               "reason": "a fine for double-invoiced paper"
             },
-            { "type": "reputation", "personId": "$subject", "amount": -0.05, "reason": "a formal audit finding" },
-            { "type": "mood", "personId": "$subject", "amount": -0.06, "reason": "the fine was personal" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a formal audit finding"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the fine was personal"
+            },
             {
               "type": "state_add",
               "ownerType": "person",
@@ -1916,7 +2762,12 @@
               "amount": -2,
               "reason": "a quiet consulting fee to the auditor"
             },
-            { "type": "reputation", "personId": "$subject", "amount": -0.02, "reason": "the audit was softened" },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the audit was softened"
+            },
             {
               "type": "relation",
               "a": "$subject",
@@ -1942,7 +2793,12 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the report was closed" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the report was closed"
+            }
           ]
         },
         {
@@ -1981,10 +2837,37 @@
               "visibility": "private",
               "trueInWorld": true
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the audit was a family matter" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the audit was a family matter"
+            }
           ]
         }
       ]
     }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "office",
+    "patronage",
+    "corruption",
+    "bureaucracy"
+  ],
+  "tone": [
+    "dry",
+    "cynical",
+    "occasionally warm"
+  ],
+  "scope": [
+    "person",
+    "organization"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "corruption",
+    "abuse of office",
+    "public shaming"
   ]
 }

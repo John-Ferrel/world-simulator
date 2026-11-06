@@ -624,7 +624,7 @@ export const CORE_STATES: StateDefinition[] = [
       owner: 'person',
       slot: 'secret',
       conflict: 'replace',
-      tags: ['love', 'intimacy', 'secret', 'courtship'],
+      tags: ['love', 'intimacy', 'secret', 'courtship', 'secret_intimacy'],
       parameters: {
         intensity: { type: 'number', default: 0.6, min: 0, max: 1 },
         exposed: { type: 'boolean', default: false },

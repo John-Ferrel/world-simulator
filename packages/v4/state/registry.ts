@@ -28,6 +28,13 @@ export type StatePack = {
   /** Why this pack exists and which gap it closes. */
   rationale?: string;
   sourceIds?: string[];
+  /** Optional library metadata for authors and the generated catalog. */
+  themes?: string[];
+  era?: string;
+  tone?: string[];
+  scope?: string[];
+  rarity?: 'common' | 'uncommon' | 'rare' | 'exceptional';
+  contentWarnings?: string[];
 };
 
 export type StatePackValidation = {

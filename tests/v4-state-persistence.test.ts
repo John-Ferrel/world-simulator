@@ -19,6 +19,12 @@ const worldId = `state-store-test-${Date.now().toString(36)}`;
 describe.skipIf(!enabled)('v4 state persistence integration', () => {
   beforeAll(async () => {
     await migrateV4();
+    // The test database may retain a running world from another integration
+    // script. seedV4World intentionally keeps one canonical running world, so
+    // archive leftovers before this test seeds its own.
+    await pool
+      .query("UPDATE v4_worlds SET status='archived', terminal_reason='test reset' WHERE status='running'")
+      .catch(() => undefined);
   });
 
   afterAll(async () => {

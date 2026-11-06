@@ -1,0 +1,3524 @@
+{
+  "id": "pack-fame-art",
+  "version": 1,
+  "title": "名声与手艺：首演、抄袭、缪斯与迟来的回顾展",
+  "description": "把艺术劳动拆成三种持续处境：靠作品活却吃不饱的创作者、借来别人句子的人、被画进作品却难以拥有姓名的缪斯。十个场景让首演、议员委托、抄袭指控、丑闻加演、私人失败、缪斯代价、晚年回顾、电影期权、家庭毁画和政治讽刺真正改变后续选择，而不是只生成一段文艺描述。",
+  "author": "phase17-content-author/fame-art",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-06",
+  "sourceBriefId": "phase17-fame-art",
+  "rationale": "Phase 17 已有名声、舞台君主和公开丑闻，却没有一种状态记录创作手艺与账单的拉扯、借用他人作品的暴露过程，以及缪斯在作品成功后被如何对待。这个包不复制 fame 或 stage-king：它只增加三种可查询的创作处境，并让它们与 office-patronage、forbidden-attachment、public-scandal、stage-sovereign 交叉。作品可以真的好，也可以靠奉承、丑闻或挪用获得不应得的名声；失败则保留为真实的失败，不自动转成励志转折。",
+  "states": [
+    {
+      "id": "fa17-starving-artist",
+      "version": 1,
+      "packId": "pack-fame-art",
+      "title": "饥饿的创作者",
+      "description": "一个把大部分时间交给作品、却还不能靠作品吃饭的人。手艺、名声、账单和妥协的意愿互相拉扯；它不是荣誉称号，也不会自动通向成功。",
+      "owner": "person",
+      "slot": "vocation",
+      "conflict": "replace",
+      "tags": [
+        "art",
+        "craft",
+        "poverty",
+        "recognition",
+        "work",
+        "pride",
+        "ambition"
+      ],
+      "parameters": {
+        "craft": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "recognition": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        },
+        "need": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "integrity": {
+          "type": "number",
+          "default": 60,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "links": {
+        "patron": "person"
+      },
+      "durationMonths": {
+        "min": 12,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "art",
+            "culture",
+            "cafe",
+            "theatre",
+            "newspaper",
+            "studio"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "factory",
+            "poverty"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "art",
+            "craft",
+            "studio"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "rent-and-pages",
+          "everyMonths": 24,
+          "check": {
+            "attribute": "willpower",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "a-year-of-work",
+              "result": "success",
+              "weight": 3,
+              "text": "又一年过去，{subject}把房租、颜料和纸张的钱分开写在一张账单背面。作品没有卖出去几件，但手上的线条比去年稳；夜里，{subject}把一盏煤气灯移到画架最近的地方，继续修改同一个角落。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-starving-artist",
+                  "key": "craft",
+                  "delta": 4,
+                  "reason": "一年不间断的练习"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-starving-artist",
+                  "key": "recognition",
+                  "delta": 3,
+                  "reason": "少数看过作品的人记住了这个名字"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-starving-artist",
+                  "key": "need",
+                  "delta": -2,
+                  "reason": "卖掉一张小画，勉强补上一点开销"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "一张小画的价钱"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "手上的活比去年稳"
+                }
+              ]
+            },
+            {
+              "id": "another-rejection",
+              "result": "failure",
+              "weight": 2,
+              "text": "画店老板把{subject}的作品推回来，说尺寸不合墙面，题材也不合买主的口味。{subject}抱着画走回阁楼，路上经过一家亮着灯的咖啡馆，玻璃里映出一个抱着旧画框的人，像一个迟到的搬运工。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-starving-artist",
+                  "key": "need",
+                  "delta": 7,
+                  "reason": "作品再次被拒，账单继续累积"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-starving-artist",
+                  "key": "recognition",
+                  "delta": -1,
+                  "reason": "画店没有把作品挂出来"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-starving-artist",
+                  "key": "integrity",
+                  "delta": -3,
+                  "reason": "开始认真考虑画一些更好卖的东西"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "抱着画走回阁楼"
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "冬天阁楼里没有足够的煤"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-review-appears",
+          "onTags": [
+            "review",
+            "publication",
+            "exhibition"
+          ],
+          "chance": 0.5,
+          "check": {
+            "skill": "craft",
+            "dc": 12
+          },
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "key": "recognition",
+              "delta": 6,
+              "reason": "一篇评论提到了作品"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "评论带来一点可见度"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "评论刊出后有人买了一张小画"
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "key": "recognition",
+              "delta": -2,
+              "reason": "评论认为作品还没有成形"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "评论比作品更早被人记住"
+            }
+          ],
+          "text": "报纸文化版的一小块地方提到了{subject}，拼错了一个字母，也把作品的名字写成了另一件。{subject}把那张报纸折起来，夹进素描本；至少有人看见过。",
+          "significance": 0.45,
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        }
+      ],
+      "transitions": [
+        {
+          "id": "sell-the-hand",
+          "to": "fa17-plagiarist",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "fa17-starving-artist",
+              "parameter": "need",
+              "min": 80
+            },
+            {
+              "kind": "hasState",
+              "stateId": "fa17-starving-artist",
+              "parameter": "integrity",
+              "max": 30
+            }
+          ],
+          "reason": "账单压过了最后一点顾虑"
+        }
+      ],
+      "historicalBasis": "战前与战后维也纳的咖啡馆、画室、小剧院和报纸文化版为自由职业创作者提供了狭窄的公共空间；收入不稳、房租和材料费是常见压力。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/fame-art",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "用四个参数记录手艺、可见度、经济压力和妥协意愿，让贫困不是荣誉，也不是自动通往成功的起点。"
+      }
+    },
+    {
+      "id": "fa17-plagiarist",
+      "version": 1,
+      "packId": "pack-fame-art",
+      "title": "借来的句子",
+      "description": "一个人把别人的段落、旋律或构图放进了自己的作品。它已经带来过好处，也因此有了被认出的风险；每一次发表、评奖和改编都会重新计算这笔债。",
+      "owner": "person",
+      "slot": "authorship",
+      "conflict": "replace",
+      "tags": [
+        "art",
+        "plagiarism",
+        "secret",
+        "exposure",
+        "guilt",
+        "reputation",
+        "debt"
+      ],
+      "parameters": {
+        "borrowed": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        },
+        "exposure": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        },
+        "guilt": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        },
+        "source": {
+          "type": "string",
+          "default": "一本旧杂志上的段落"
+        }
+      },
+      "durationMonths": {
+        "min": 12,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "plagiarism",
+            "accusation",
+            "media",
+            "award",
+            "publication",
+            "scandal"
+          ],
+          "multiplier": 1.6
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "quiet",
+            "studio",
+            "ordinary"
+          ],
+          "multiplier": 0.75
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "deception",
+            "plagiarism",
+            "publication"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "the-borrowed-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "cunning",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "nobody-noticed",
+              "result": "success",
+              "weight": 3,
+              "text": "又一年过去，没有人把那段话和旧杂志联系起来。{subject}在读者来信里看见有人夸那句“像从生活里直接捞出来的”，回信时写得很短；夜里，{subject}把原刊从书架最上层取下来，又放回去。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-plagiarist",
+                  "key": "exposure",
+                  "delta": -4,
+                  "reason": "一年里没有人认出出处"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-plagiarist",
+                  "key": "guilt",
+                  "delta": 5,
+                  "reason": "被夸的正是借来的那一句"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-plagiarist",
+                  "key": "borrowed",
+                  "delta": 3,
+                  "reason": "又在新作品里用了同一套写法"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "新作品的稿费"
+                }
+              ]
+            },
+            {
+              "id": "someone-quotes-the-source",
+              "result": "failure",
+              "weight": 2,
+              "text": "一位中学教师在读者来信里引用了同一段话，注明出处是十年前的《星期日报》。编辑把两段并排放在文化版上，问{subject}是否愿意解释；{subject}盯着那两栏字，发现连标点都几乎没有改。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-plagiarist",
+                  "key": "exposure",
+                  "delta": 12,
+                  "reason": "两段文字被并排刊登"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-plagiarist",
+                  "key": "guilt",
+                  "delta": 8,
+                  "reason": "连标点都没有改"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "读者开始怀疑作品的来历"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.05,
+                  "reason": "编辑把两段并排放在版面上"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-prize-shortlist",
+          "onTags": [
+            "award",
+            "prize",
+            "publication"
+          ],
+          "chance": 0.45,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "key": "exposure",
+              "delta": 8,
+              "reason": "作品进入评奖名单，更多眼睛看到了它"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "key": "guilt",
+              "delta": 6,
+              "reason": "评奖委员会称赞了借来的段落"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "入围奖金"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "奖金可以付掉一部分账单"
+            }
+          ],
+          "text": "作品进了评奖名单，委员会特别称赞“那种不属于任何流派的句子”。{subject}坐在颁奖礼最后一排，听见自己的名字和一句别人的话被放在同一个句子里。",
+          "significance": 0.55,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        }
+      ],
+      "historicalBasis": "报纸连载、文学评奖、电影改编和咖啡馆朗读会让文本在不同版本之间流动；出处核查在版权制度不完善的年代尤其困难，但并非不可能。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/fame-art",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把抄袭写成有借用比例、暴露度、内疚和具体出处的持续状态；它不会自动败露，也不会因为一次道歉就消失。"
+      }
+    },
+    {
+      "id": "fa17-muse",
+      "version": 1,
+      "packId": "pack-fame-art",
+      "title": "画布上的人",
+      "description": "一个人被另一个人的作品反复观看、描绘和需要。这个人可能真的激发了作品，也可能只是被安排在画布中央；灵感、依赖、署名和离开的能力并不由同一个人掌握。",
+      "owner": "person",
+      "slot": "muse_identity",
+      "conflict": "replace",
+      "tags": [
+        "muse",
+        "art",
+        "desire",
+        "inspiration",
+        "dependence",
+        "vulnerability",
+        "beauty"
+      ],
+      "parameters": {
+        "inspiration": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        "dependence": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "credit": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        },
+        "autonomy": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "links": {
+        "artist": "person"
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "art",
+            "desire",
+            "portrait",
+            "studio",
+            "jealousy"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "art",
+            "desire",
+            "portrait"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "the-sitting-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "willpower",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "set-a-boundary",
+              "result": "success",
+              "weight": 3,
+              "text": "又一年过去，{subject}学会了在进画室前先问清楚这次要坐多久、画完给谁看。{artist}嫌{subject}变得难安排，却也不得不把每次画像的时间写在纸上；那张纸后来被{subject}收进了自己的抽屉。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-muse",
+                  "key": "autonomy",
+                  "delta": 5,
+                  "reason": "开始为画像设定条件"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-muse",
+                  "key": "credit",
+                  "delta": 4,
+                  "reason": "要求把自己的名字写进出借记录"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-muse",
+                  "key": "dependence",
+                  "delta": -4,
+                  "reason": "不再完全依赖画室的安排"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.03,
+                  "reason": "第一次把坐下来的条件写清楚"
+                }
+              ]
+            },
+            {
+              "id": "absorbed-again",
+              "result": "failure",
+              "weight": 2,
+              "text": "画室的门一关，时间就又变成{artist}的。{subject}坐在同一把椅子上，听见窗外电车经过，数到第七次才被允许动一下；回家路上，{subject}发现自己的围巾上沾着一股松节油味，洗了两次也没掉。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-muse",
+                  "key": "dependence",
+                  "delta": 6,
+                  "reason": "又一次被画室的节奏吞没"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-muse",
+                  "key": "inspiration",
+                  "delta": 2,
+                  "reason": "作品确实从这些下午里长出来"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fa17-muse",
+                  "key": "credit",
+                  "delta": -2,
+                  "reason": "名字仍然没有出现在画布旁边"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "围巾上的松节油味洗不掉"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "recognized-in-the-street",
+          "onTags": [
+            "exhibition",
+            "portrait",
+            "review"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "credit",
+              "delta": 3,
+              "reason": "有人在街上认出了画里的人"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "被当作画中人认出来"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "被认出的是画，不是名字"
+            }
+          ],
+          "text": "展览开幕后，有人在街上叫住{subject}，说见过那张画。对方记得画里的披肩、窗台和手指，却怎么也想不起画家的名字，更不知道{subject}叫什么。",
+          "significance": 0.5,
+          "cooldownMonths": 18,
+          "maxPerYear": 1
+        }
+      ],
+      "historicalBasis": "在维也纳的画室、咖啡馆和私人沙龙里，模特、歌手与演员常被作品吸收为形象，署名和报酬却取决于合同、性别与阶级位置。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/fame-art",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把缪斯写成有灵感、依赖、署名和自主性的处境，而不是被动美貌标签；这个人可以留下、索取署名或离开。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "fa17-cabaret.debut",
+      "title": "首演夜的三次忘词",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 34
+      },
+      "tags": [
+        "art",
+        "performance",
+        "cabaret",
+        "debut",
+        "reputation",
+        "failure",
+        "theatre"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 16,
+          "max": 34
+        },
+        {
+          "kind": "attribute",
+          "attribute": "charisma",
+          "min": 0.35
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 34
+        },
+        {
+          "key": "director",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": false,
+          "minAge": 16,
+          "maxAge": 40
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "held-the-room",
+          "weight": 0.35,
+          "text": "首演夜，{subject}在第二首歌的中间忘了两句词，干脆停下来听乐队多走了一个小节，再接着唱。台下有人以为这是新加的停顿，笑了一声，随后整间屋子都放松了。{director}在后台说，今晚之后，节目单上可以印{subject}的名字。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "parameters": {
+                "level": 0.3,
+                "notoriety": false
+              },
+              "durationMonths": 24,
+              "reason": "首演夜被观众记住"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "首演酬劳与加演分成"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "cabaret_performer",
+              "add": true,
+              "reason": "成为歌舞厅的签约演员"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "首演夜的成功"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "学会在忘词时接住观众"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "debut_success",
+              "add": true,
+              "reason": "首演夜站住了"
+            }
+          ]
+        },
+        {
+          "id": "small-part",
+          "weight": 0.4,
+          "text": "{director}只给了{subject}三句台词和一个端盘子的动作。排练时，{subject}把那三句念得太用力，导演让重来，说“你不是在演一个端盘子的人，你是在演一个怕被看见的人”。首演后没有人记住{subject}，但乐队指挥记住了{subject}每次上台前都在后台数拍子。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "parameters": {
+                "craft": 42,
+                "recognition": 12,
+                "need": 55,
+                "integrity": 65
+              },
+              "durationMonths": 180,
+              "reason": "第一次正式登台，只拿到小角色"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "小角色的排练补贴"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "chorus_performer",
+              "add": true,
+              "reason": "进入歌舞厅的群舞队"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "没有人记住那三句台词"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "debut_small_part",
+              "add": true,
+              "reason": "首演只拿到三句台词"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "reason": "a quiet debut created an inspiring attachment",
+              "links": {
+                "artist": "$director"
+              }
+            }
+          ]
+        },
+        {
+          "id": "booed-off",
+          "weight": 0.25,
+          "text": "{subject}的假发在第二段副歌时滑到耳边。前排有人喊“下去吧”，随后整个大厅都跟着拍手，节奏比乐队还齐。{director}在幕布后没有出来，{subject}自己走回后台，经过化妆镜时看见脸上还留着半层没卸干净的粉。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "parameters": {
+                "craft": 30,
+                "recognition": 5,
+                "need": 70,
+                "integrity": 45
+              },
+              "durationMonths": 180,
+              "reason": "首演被观众喝倒彩"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "durationMonths": 8,
+              "reason": "首演失败被小报写成笑话"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "首演被喝倒彩"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "在化妆镜前看见没卸干净的粉"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "booed_on_debut",
+              "add": true,
+              "reason": "首演夜被观众赶下台"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fa17-patron.commission",
+      "title": "市议员的壁画",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 30,
+        "max": 68
+      },
+      "tags": [
+        "art",
+        "patronage",
+        "politics",
+        "commission",
+        "reputation",
+        "money",
+        "censorship"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "office-patronage",
+          "owner": "person"
+        },
+        {
+          "kind": "position"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 68
+        },
+        {
+          "key": "artist",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "model",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 40
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "good-fresco",
+          "weight": 0.35,
+          "text": "{subject}把公共浴室的墙面交给{artist}，只提了一个条件：不要把工人画成排队领汤的人。{artist}在墙上画了清晨换班的电车司机、抱着面包的孩子和一个背对观众的吹号手。揭幕那天，{subject}听见一个洗衣妇说“那是我丈夫的班次”，忽然觉得这笔钱花得值。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "支付壁画的材料与工钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "公共壁画得到市民认可"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$artist",
+              "kind": "friend",
+              "trust": 0.12,
+              "respect": 0.1,
+              "reason": "一次没有强行改稿的委托"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$artist",
+              "stateId": "fa17-starving-artist",
+              "parameters": {
+                "craft": 65,
+                "recognition": 30,
+                "need": 35,
+                "integrity": 80
+              },
+              "links": {
+                "patron": "$subject"
+              },
+              "durationMonths": 180,
+              "reason": "完成一幅真正被看见的公共壁画"
+            },
+            {
+              "type": "position",
+              "organizationId": "$positionOrg",
+              "title": "公共艺术顾问",
+              "holderId": "$artist",
+              "wage": 1,
+              "authority": [
+                "公共壁画咨询",
+                "展览布置"
+              ],
+              "reason": "市议员为完成壁画的艺术家安排了一个兼任顾问职位"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$artist",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "艺术家进入市政文化事务的兼职编制"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "公共艺术顾问的年薪"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "洗衣妇认出壁画里的电车司机是她丈夫的班次。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "commissioned_good_fresco",
+              "add": true,
+              "reason": "委托出一幅真正好的公共作品"
+            }
+          ]
+        },
+        {
+          "id": "flattering-allegory",
+          "weight": 0.35,
+          "text": "{artist}把{subject}画成一位穿托加袍的罗马法官，脚边跪着两个面容模糊的市民。揭幕时，报纸称赞“秩序与仁慈终于同框”，{subject}在照片里站在壁画正下方，笑得比画里还端正。只有{artist}知道，那两位市民的姿势是从一张旧彩票广告上描下来的。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "支付寓意画的颜料与金箔"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "报纸称赞壁画维护了秩序"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "delta": 4,
+              "reason": "艺术委托变成了一笔人情"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$artist",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "双方都知道这幅画为什么被称赞"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$artist",
+              "stateId": "fa17-starving-artist",
+              "parameters": {
+                "craft": 30,
+                "recognition": 45,
+                "need": 25,
+                "integrity": 25
+              },
+              "links": {
+                "patron": "$subject"
+              },
+              "durationMonths": 120,
+              "reason": "靠一幅奉承画获得官方名声"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "壁画里跪着的市民姿势来自一张旧彩票广告。",
+              "confidence": 0.85,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "commissioned_flattery",
+              "add": true,
+              "reason": "委托出一幅被称赞的奉承画"
+            }
+          ]
+        },
+        {
+          "id": "artist-refuses",
+          "weight": 0.2,
+          "text": "{artist}在草图里画了罢工工人举着的面包牌，{subject}让他把牌子改成花环。{artist}说花环盖不住饥饿，{subject}说那就换人。第二天，{artist}把定金装在信封里退回，信封上写着“买颜料够了”；{subject}在办公室坐了很久，最后把草图锁进柜子。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "委托因改稿要求告吹"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$artist",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "艺术家拒绝删掉罢工的招牌"
+            },
+            {
+              "type": "reputation",
+              "personId": "$artist",
+              "amount": -0.04,
+              "reason": "市政文化圈暂时不再找他"
+            },
+            {
+              "type": "flag",
+              "personId": "$artist",
+              "flag": "blacklisted_by_patron",
+              "add": true,
+              "reason": "拒绝市议员的改稿要求"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "退回的定金省下了一笔支出"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "草图被锁进柜子"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "commission_refused_by_artist",
+              "add": true,
+              "reason": "艺术家拒绝修改罢工题材"
+            }
+          ]
+        },
+        {
+          "id": "the-model-stays",
+          "weight": 0.1,
+          "text": "{model}每天下午来画室，坐在借来的天鹅绒椅上，手里捧着一只不属于自己的铜杯。{subject}注意到{artist}画脸的时间越来越长，画背景的时间越来越短。委托完成后，{artist}把{model}的素描单独留在桌上；{subject}没有问，只把尾款多放了一张钞票。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "多给的一张钞票"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$model",
+              "stateId": "fa17-muse",
+              "parameters": {
+                "inspiration": 65,
+                "dependence": 30,
+                "credit": 5,
+                "autonomy": 50
+              },
+              "links": {
+                "artist": "$artist"
+              },
+              "durationMonths": 36,
+              "reason": "被画室留下来当作固定的脸"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$model",
+              "stateId": "forbidden-attachment",
+              "parameters": {
+                "discretion": 40,
+                "reciprocity": 55,
+                "exposure": 15,
+                "jealousy": 20,
+                "grief": 0,
+                "origin": "sitting",
+                "publicFigure": false
+              },
+              "links": {
+                "lover": "$artist"
+              },
+              "durationMonths": 24,
+              "reason": "画室里的下午变成了不能公开的关系"
+            },
+            {
+              "type": "relation",
+              "a": "$model",
+              "b": "$artist",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.1,
+              "reason": "被反复描绘之后，两个人开始单独说话"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "commissioned_a_muse",
+              "add": true,
+              "reason": "委托留下了一段画室关系"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fa17-press.plagiarism-accusation",
+      "title": "第三版上的旧句子",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 75
+      },
+      "tags": [
+        "art",
+        "plagiarism",
+        "accusation",
+        "media",
+        "scandal",
+        "reputation",
+        "law"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fa17-plagiarist",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fa17-plagiarist",
+          "owner": "person",
+          "parameter": "exposure",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        },
+        {
+          "key": "accuser",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        },
+        {
+          "key": "editor",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.2,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "printed-confession",
+          "weight": 0.3,
+          "text": "{accuser}把一九〇四年的旧杂志摊在{editor}桌上，两段文字并排，连断句都像同一只手写的。{editor}给{subject}留了半版版面，{subject}没有辩解，只写了一句“我抄了”。报纸上市那天，{accuser}在咖啡馆门口没有进来，{subject}一个人坐到打烊。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "durationMonths": 18,
+              "reason": "抄袭自白被登在文化版"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "reason": "公开承认之后，借来的句子不再是秘密"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "公开承认抄袭"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "退回首版稿费与赔偿"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$accuser",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "旧杂志被摊在编辑桌上"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "一九〇四年的旧杂志上，那段文字的断句和我的一模一样。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "plagiarism_confessed",
+              "add": true,
+              "reason": "在报纸上公开承认抄袭"
+            }
+          ]
+        },
+        {
+          "id": "paid-silence",
+          "weight": 0.3,
+          "text": "{subject}在咖啡馆后门把一叠克朗推给{accuser}，说这是“资料费”，不是封口费。{accuser}数了两遍，把旧杂志留在桌上，临走前说“你最好别再写第二篇”。{editor}第二天收到一封匿名信，信里没有稿子，只有一张咖啡账单。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "付给指控者的封口费"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "key": "exposure",
+              "delta": -5,
+              "reason": "旧杂志暂时没有再出现"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "key": "guilt",
+              "delta": 8,
+              "reason": "封口费没有让那段文字变成自己的"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$accuser",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "obligation": 0.2,
+              "reason": "一笔不能写进账本的交易"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "指控者收了钱，但旧杂志还在对方手里。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bought_silence",
+              "add": true,
+              "reason": "用钱买下了一次沉默"
+            }
+          ]
+        },
+        {
+          "id": "counter-accusation",
+          "weight": 0.25,
+          "text": "{subject}没有否认，而是翻出{accuser}三年前发表的一篇随笔，指出其中一段和某本旅行手册几乎一样。{editor}把两件事并排做成“文坛互指”的版面；读者更爱看两个人互相撕，至于谁先抄了谁，反而没人再追问。{accuser}的名字从此在编辑部里变成了一个笑话。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "key": "exposure",
+              "delta": -6,
+              "reason": "互相指责把注意力从出处上移开"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "key": "guilt",
+              "delta": 5,
+              "reason": "知道对方也被自己拖进了泥里"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "在公开争执中占了上风"
+            },
+            {
+              "type": "reputation",
+              "personId": "$accuser",
+              "amount": -0.08,
+              "reason": "旧随笔被指抄袭"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$accuser",
+              "kind": "rival",
+              "trust": -0.25,
+              "reason": "两个人把彼此的旧作翻了出来"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "counter_accusation",
+              "add": true,
+              "reason": "用对方的旧作转移了抄袭指控"
+            }
+          ]
+        },
+        {
+          "id": "the-accuser-was-wrong",
+          "weight": 0.15,
+          "text": "{editor}请了一位老排字工核对旧杂志，发现那段话最早出自一段没有署名的民间故事，{accuser}只是从另一本文集里读到过。更正启事登在第七版，只有三行。{subject}没有要求道歉，只在咖啡馆里对{accuser}说，下一次请先查清楚；{accuser}把没喝完的咖啡留在了桌上。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "reason": "被指控的段落原来出自一首民歌"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "报纸更正了指控"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$accuser",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "一次没有查清楚的指控"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "被指控的句子最早出自一段没有署名的民间故事。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "false_accusation",
+              "add": true,
+              "reason": "抄袭指控被证明是误读"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fa17-press.scandal-sells",
+      "title": "丑闻加演",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 75
+      },
+      "tags": [
+        "art",
+        "scandal",
+        "media",
+        "fame",
+        "theatre",
+        "money",
+        "censorship"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        },
+        {
+          "key": "reporter",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "censor",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.2,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "house-full",
+          "weight": 0.35,
+          "text": "丑闻见报后的第一场演出，售票窗口提前两个钟头挂出“满座”。观众并不是来看戏的，是来看{subject}会不会在台上出错；第二幕有一句台词明显念反了，后排却鼓起掌来。经理当晚把票价提高了一半，说明天再加一场。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "丑闻带来的加演分成"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "key": "level",
+              "delta": 0.1,
+              "reason": "丑闻让更多陌生人记住了{subject}的名字"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "key": "notoriety",
+              "value": true,
+              "reason": "名声开始带有恶名"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "观众买票是为了看失误"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "scandal_sold_out",
+              "add": true,
+              "reason": "丑闻让剧场满座"
+            }
+          ]
+        },
+        {
+          "id": "banned",
+          "weight": 0.3,
+          "text": "{censor}在开演前半小时带着两名警察走进经理室，说这出戏“把私事演成了公共秩序问题”。幕布没有拉开，观众在街上等了很久，最后被一场突如其来的雨赶散。{subject}从后台侧门离开，听见有人在雨里喊自己的名字，不知道是在骂还是在叫好。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "停演退票与场租损失"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "演出被审查官叫停"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "key": "level",
+              "delta": -0.05,
+              "reason": "停演让名字从海报上消失了一阵"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$censor",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "演出在开演前被禁"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "审查官是在报纸第二天的社论之后才决定禁演的。",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "performance_banned",
+              "add": true,
+              "reason": "演出被审查官禁止"
+            }
+          ]
+        },
+        {
+          "id": "public-apology",
+          "weight": 0.2,
+          "text": "{subject}在报纸上登了一封不到两百字的道歉，把加演收入捐给了一家儿童诊所。记者问他是不是被逼的，{subject}说不是，只是不想再让母亲在菜市场被人拦住。第三个星期，剧场的上座率回到丑闻之前，后台没有人再提那件事。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "捐出的加演收入"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "reason": "公开道歉与捐款让丑闻逐渐平息"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "key": "level",
+              "delta": -0.08,
+              "reason": "道歉之后，围观的人少了"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "道歉被看作有担当"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "public_apology",
+              "add": true,
+              "reason": "在报纸上公开道歉"
+            }
+          ]
+        },
+        {
+          "id": "paper-retracts",
+          "weight": 0.15,
+          "text": "{reporter}的报道依据是一封匿名信，信上的签名后来被认出是剧场前经理的笔迹。报纸在同样的位置登了更正，措辞比原报道短得多。{subject}没有开记者会，只在下一场演出前对观众说，今晚的票钱里有一半会退给上次淋雨的人。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "reason": "报纸更正了不实报道"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.07,
+              "reason": "不实报道被更正"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "key": "level",
+              "delta": 0.03,
+              "reason": "更正让更多人知道了这出戏"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$reporter",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "一篇没有核实来源的报道"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "匿名信的签名是剧场前经理的笔迹。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "scandal_retracted",
+              "add": true,
+              "reason": "丑闻报道被报纸撤回"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fa17-studio.private-failure",
+      "title": "没有写完的第三幕",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 70
+      },
+      "tags": [
+        "art",
+        "writing",
+        "failure",
+        "poverty",
+        "privacy",
+        "craft",
+        "plagiarism"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "skill",
+          "skill": "craft",
+          "min": 0.2
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "fa17-plagiarist",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "burn-it",
+          "weight": 0.3,
+          "text": "{subject}把第三幕撕成四份，塞进铁炉，火苗先舔到的是标题。屋子里有一股纸灰和胶水混在一起的味道。{neighbor}在门外敲门催房租，{subject}说再等两天，然后坐回桌前，开始写一个只有四页的短篇：一个男人在煤气灯下修一把永远修不好的椅子。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "parameters": {
+                "craft": 55,
+                "recognition": 8,
+                "need": 60,
+                "integrity": 75
+              },
+              "durationMonths": 180,
+              "reason": "烧掉失败的长篇，重新从小作品开始"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "在短篇里重新练习结构"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "纸灰的味道留在屋里"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "买新纸和墨水的钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "burned_manuscript",
+              "add": true,
+              "reason": "烧掉了没有写完的第三幕"
+            }
+          ]
+        },
+        {
+          "id": "borrow-a-paragraph",
+          "weight": 0.3,
+          "text": "{subject}从一九〇四年的画报上抄下一段描写雨夜的话，把地名和人名换掉，寄给一家征文比赛。抄的时候，{subject}告诉自己只借这一小段；寄出去之后，却在邮局门口站了很久，反复回想那段话里有没有一个词是别人一眼就能认出来的。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "parameters": {
+                "borrowed": 45,
+                "exposure": 10,
+                "guilt": 25,
+                "source": "一九〇四年的画报"
+              },
+              "durationMonths": 36,
+              "reason": "把旧画报上的一段描写寄去参赛"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "改写的练习"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "第一次觉得作品有可能被印出来"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "borrowed_paragraph",
+              "add": true,
+              "reason": "从旧画报上借了一段描写"
+            }
+          ]
+        },
+        {
+          "id": "sell-as-pulp",
+          "weight": 0.25,
+          "text": "{subject}把没有写完的稿子卖给一家专门印消遣读物的小出版社，换来的钱刚好够付一个月房租。编辑把结尾改成了火车相撞，又在封面上印了一个陌生的笔名。{subject}在报摊上看见那本册子时，先认出了自己写的一句雨，然后才认出那个名字不是自己的。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "卖掉残稿的稿费"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "parameters": {
+                "craft": 45,
+                "recognition": 3,
+                "need": 40,
+                "integrity": 35
+              },
+              "durationMonths": 120,
+              "reason": "靠匿名消遣读物暂时付清房租"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "一本没有署自己名字的册子"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "出版社把结尾改成了火车相撞，封面上的笔名不是我。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_under_pseudonym",
+              "add": true,
+              "reason": "把残稿卖给消遣读物出版社"
+            }
+          ]
+        },
+        {
+          "id": "take-the-clerk-job",
+          "weight": 0.15,
+          "text": "{subject}去一家保险公司做了临时文书，负责把理赔单按字母顺序装进纸盒。午休时，{subject}在废纸上写句子，写完就揉掉；同事问{subject}以前是不是写过东西，{subject}说只是记一点账。下班后，{subject}经过剧院门口，看见新戏的海报，站了一会儿才走；街角诊所的铜牌上刻着“精神分析”，{subject}没有进去，只把口袋里揉皱的句子又摸了一遍。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "文书工作的第一笔薪水"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "insurance_clerk",
+              "add": true,
+              "reason": "在保险公司做临时文书"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "parameters": {
+                "craft": 40,
+                "recognition": 0,
+                "need": 30,
+                "integrity": 50
+              },
+              "durationMonths": 180,
+              "reason": "白天做文书，夜里偶尔写几行"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "在剧院门口站了一会儿"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "clerk_who_writes",
+              "add": true,
+              "reason": "把写作留在了午休的废纸上"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fa17-stage.muse-expenditure",
+      "title": "画布背面的名字",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 55
+      },
+      "tags": [
+        "art",
+        "muse",
+        "desire",
+        "portrait",
+        "credit",
+        "dependence",
+        "betrayal"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fa17-muse",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "forbidden-attachment",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 55
+        },
+        {
+          "key": "artist",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "model-only",
+          "weight": 0.35,
+          "text": "画展开幕，{subject}的肖像挂在第二展厅最亮的位置。目录上写着画家的名字、年份和“模特：一位友人”，没有{subject}的全名。一位戴硬领的先生在画前停了一会儿，问{artist}这位友人是谁；{artist}说已经记不清了。{subject}站在两步之外，听见这句话，把手里那杯温水喝完。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "画家支付的模特酬劳"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "credit",
+              "delta": 2,
+              "reason": "目录上只写了“一位友人”"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "dependence",
+              "delta": 8,
+              "reason": "酬劳仍然来自画家的安排"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "inspiration",
+              "delta": 5,
+              "reason": "肖像让作品真正成立"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$artist",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "一幅被展出的肖像"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "model_only",
+              "add": true,
+              "reason": "肖像被展出，名字却只写成“友人”"
+            }
+          ]
+        },
+        {
+          "id": "demand-co-credit",
+          "weight": 0.3,
+          "text": "{subject}在开幕前找到{artist}，要求目录上把自己写成合作者，至少写出全名。{artist}说肖像的灵魂属于画家，{subject}说那灵魂每天坐四个钟头，腿都麻了。两个人没有吵完，{subject}把一叠素描从画室带走，在门口留下话：画可以展，名字不能没有。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "credit",
+              "delta": 18,
+              "reason": "坚持要求写出自己的名字"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "autonomy",
+              "delta": 12,
+              "reason": "把素描从画室带走"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "dependence",
+              "delta": -10,
+              "reason": "不再接受没有名字的安排"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$artist",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "署名争执让两个人公开翻脸"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "reason": "署名之争结束了那段不能公开的关系"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "卖掉两张素描"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "第一次把自己的条件说出口"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "claimed_the_sketches",
+              "add": true,
+              "reason": "为署名与画家翻脸"
+            }
+          ]
+        },
+        {
+          "id": "abandoned-after-show",
+          "weight": 0.2,
+          "text": "画展结束后的第三个星期，{artist}搬去了另一位赞助人的别墅，连画室的钥匙都没有留下。{subject}去按门铃，开门的是一个不认识的仆人，说画家先生不再见客。{subject}这才发现，最后三次当模特的酬劳还没有结，而冬天已经来了。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "dependence",
+              "delta": 15,
+              "reason": "画家离开后，生活来源断了"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "credit",
+              "delta": -3,
+              "reason": "没有画家再提那幅肖像"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "inspiration",
+              "delta": -10,
+              "reason": "被留下之后，形象也失去了用处"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "冬天没有足够的煤"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "没有结清的模特酬劳"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$artist",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "画家没有结酬劳就搬走了"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "reason": "画家离开后，那段关系也断了"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "被留在画室门外"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_after_the_show",
+              "add": true,
+              "reason": "画展结束后被画家抛下"
+            }
+          ]
+        },
+        {
+          "id": "own-hand",
+          "weight": 0.15,
+          "text": "{subject}用最后一点钱租下一间带天窗的小屋，把当模特时记住的颜色画成一张不画脸的画：一把空椅子、一条搭在扶手上的披肩、窗外一辆经过的电车。第一张画卖给了一个开书店的女人；{subject}在收据背面第一次写下自己的全名，写得很慢。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "reason": "不再只是别人画布上的形象"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "painter",
+              "add": true,
+              "reason": "开始以自己的名字卖画"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "把当模特的经验变成自己的画"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "第一张画的价钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "书店橱窗里挂出了一张新画"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "在收据背面写下自己的全名"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "painted_herself",
+              "add": true,
+              "reason": "从模特变成以自己的名字卖画的人"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fa17-cafe.late-recognition",
+      "title": "阁楼上的四十七幅画",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 90
+      },
+      "tags": [
+        "art",
+        "aging",
+        "recognition",
+        "obscurity",
+        "retrospective",
+        "craft",
+        "estate"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fa17-starving-artist",
+          "owner": "person",
+          "parameter": "craft",
+          "min": 55
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "fame",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 58,
+          "maxAge": 90
+        },
+        {
+          "key": "critic",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "dealer",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "small-retrospective",
+          "weight": 0.3,
+          "text": "{critic}在旧货店的纸箱里翻到四张署名相同的素描，顺着地址找到{subject}的阁楼。三个月后，一家只有两间房的小画廊挂出了四十七幅画；开幕那天来了三十一个人，卖出去两张。{subject}站在楼梯口，听见一个年轻人说“原来这双手一直在城里”。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "parameters": {
+                "level": 0.2,
+                "notoriety": false
+              },
+              "durationMonths": 36,
+              "reason": "小型回顾展让名字重新出现"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "key": "recognition",
+              "delta": 25,
+              "reason": "四十七幅画被重新看见"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "卖出的两张画"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "小型回顾展得到一篇评论"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$critic",
+              "kind": "friend",
+              "trust": 0.15,
+              "respect": 0.15,
+              "reason": "评论家在旧货店里认出了署名"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "评论家是在旧货店的纸箱里发现那四张素描的。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "late_retrospective",
+              "add": true,
+              "reason": "晚年终于有一次小型回顾展"
+            }
+          ]
+        },
+        {
+          "id": "letter-returned",
+          "weight": 0.3,
+          "text": "艺术学院寄来一封邀请函，信封上还是二十年前的旧地址。邮差把信退回死信处，{subject}正好去那里找一个旧友，看见自己的名字躺在“地址不明”的格子里。{subject}把信拆开，里面写着请{subject}参加一场“被遗忘的维也纳画家”座谈；日期已经过去三个星期。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "邀请函在死信处躺了三个星期"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "key": "recognition",
+              "delta": 2,
+              "reason": "学院终于想起了这个名字"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "艺术学院曾按旧地址寄来一封座谈邀请函。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "letter_returned",
+              "add": true,
+              "reason": "晚年的邀请函被退回死信处"
+            }
+          ]
+        },
+        {
+          "id": "dealer-buys-attic",
+          "weight": 0.25,
+          "text": "{dealer}爬上阁楼，用手电照了照墙边那一排画，说“这些旧东西占地方，我按斤收”。{subject}拿到一笔刚好够修屋顶的钱。半年后，{subject}在一家高级公寓的客厅里看见自己的三幅画，标签上的价钱是当初的十倍；房主说，这是她先生去年从一位有眼光的画商那里买的。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "画商按斤收走旧画的钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "key": "recognition",
+              "delta": 5,
+              "reason": "作品出现在高级公寓的墙上"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "作品出现在高级公寓的墙上"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$dealer",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "旧画被按斤收走又高价转卖"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "画商把三幅画按十倍价钱卖进了高级公寓。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "attic_sold_cheap",
+              "add": true,
+              "reason": "阁楼旧画被画商低价收走"
+            }
+          ]
+        },
+        {
+          "id": "critic-calls-it-dated",
+          "weight": 0.15,
+          "text": "{critic}在报纸上写了一篇短文，说{subject}的画“有手艺，但属于另一个时代”，建议年轻画家不要学那种灰绿色的天空。{subject}把报纸读完，剪下那一小段，夹进一本旧账簿；第二天照常去阁楼画画，只是把窗户开得更大，让冬天的新鲜空气进来。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被评论家称为另一个时代的人"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "评论认为作品已经过时"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "key": "recognition",
+              "delta": -2,
+              "reason": "评论没有带来新的买家"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "评论家用了“有手艺，但属于另一个时代”这句话。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "called_dated",
+              "add": true,
+              "reason": "晚年作品被评论为过时"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fa17-film.option",
+      "title": "把借来的句子拍成电影",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 70
+      },
+      "tags": [
+        "art",
+        "film",
+        "money",
+        "plagiarism",
+        "option",
+        "class",
+        "fame"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fa17-plagiarist",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "owner": "person",
+          "parameter": "level",
+          "min": 0.2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "producer",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "lawyer",
+          "kind": "official",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "sold-big",
+          "weight": 0.3,
+          "text": "{producer}在咖啡馆里把合同推过来，数字后面跟着三个零，足够{subject}两年不写稿。签约后第三个星期，制片厂收到一封挂号信：一位退休教师说，电影梗概里那段雨夜来自她父亲一九〇四年发表在画报上的文章，原刊还夹在家庭相册里。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "电影期权与改编费"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "key": "exposure",
+              "delta": 18,
+              "reason": "原作者的家属带着旧画报找上制片厂"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "key": "guilt",
+              "delta": 10,
+              "reason": "那笔钱是用别人的段落换来的"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "电影合同让名字出现在行业版"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "退休教师手里有一九〇四年的原刊，夹在家庭相册里。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "film_option_sold",
+              "add": true,
+              "reason": "把有问题的作品卖给了电影制片厂"
+            }
+          ]
+        },
+        {
+          "id": "credit-to-director",
+          "weight": 0.3,
+          "text": "{producer}说电影需要一个“更有票房的名字”，把编剧署名换成一位刚从柏林回来的导演，{subject}拿钱，不出现在海报上。{subject}在合同上签了字，首映式没有收到邀请；后来在电车上听见两个学生争论那段雨夜是谁写的，{subject}把帽檐压低了一点。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "不署名的改编费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "海报上没有{subject}的名字"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "key": "guilt",
+              "delta": 5,
+              "reason": "连借来的句子也没有署自己的名字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$producer",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "一纸不署名的合同"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "credit_signed_away",
+              "add": true,
+              "reason": "把编剧署名让给了导演"
+            }
+          ]
+        },
+        {
+          "id": "confess-to-producer",
+          "weight": 0.2,
+          "text": "{subject}在第二次会面时把旧画报放在桌上，说电影里那段雨不是自己写的。{producer}沉默了很久，把合同撕成两半，又给{subject}倒了一杯水，问{subject}会不会改别人的剧本。{subject}说会，但这次想从自己的句子开始；{producer}让{subject}下周来试写一场戏。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "试写一场戏的定金"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "reason": "主动向制片人承认了借用的段落"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-starving-artist",
+              "parameters": {
+                "craft": 55,
+                "recognition": 20,
+                "need": 45,
+                "integrity": 70
+              },
+              "durationMonths": 180,
+              "reason": "失去电影合同，但开始写自己的句子"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "script_doctor",
+              "add": true,
+              "reason": "被制片人请去试写剧本"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "把旧画报放到了桌上"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "confessed_to_producer",
+              "add": true,
+              "reason": "在签约前承认了借用"
+            }
+          ]
+        },
+        {
+          "id": "the-film-is-a-hit",
+          "weight": 0.2,
+          "text": "电影上映后，那段雨夜成了全城模仿的台词，报童在街上喊它，咖啡馆的乐队把它编进间奏。原作者已经去世，版权归一家找不到继承人的小出版社；没有人起诉。{subject}在首映式上被请上台，灯光很亮，{subject}却一直想着旧画报上那个陌生的署名。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 5,
+              "reason": "电影票房分成"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "key": "level",
+              "delta": 0.15,
+              "reason": "电影让{subject}的名字传遍全城"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "key": "exposure",
+              "delta": 8,
+              "reason": "更多观众开始追问那段台词的出处"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-plagiarist",
+              "key": "guilt",
+              "delta": 6,
+              "reason": "在首映式上想起旧画报上的署名"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "电影大获成功"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "borrowed_line_became_famous",
+              "add": true,
+              "reason": "借来的句子成了全城模仿的台词"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fa17-family.destroyed-portrait",
+      "title": "丈夫把画布划开了",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 55
+      },
+      "tags": [
+        "art",
+        "family",
+        "desire",
+        "jealousy",
+        "muse",
+        "portrait",
+        "marriage"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fa17-muse",
+          "owner": "person"
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner",
+          "minTrust": 0.2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 55
+        },
+        {
+          "key": "partner",
+          "kind": "partner",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "artist",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "slashed-canvas",
+          "weight": 0.3,
+          "text": "{partner}在衣柜后面找到那幅未完成的肖像，把画布从左上角划到右下角，颜料像一层薄皮翻起来。{subject}回到家时，{partner}坐在餐桌旁，手里还拿着那把裁纸刀；两个人谁都没有先说话。第二天，{artist}的助手送来一张材料费账单。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "autonomy",
+              "delta": 8,
+              "reason": "被毁掉的画让{subject}不得不选择下一步"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "credit",
+              "delta": -2,
+              "reason": "未完成的肖像不再可能展出"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "inspiration",
+              "delta": -12,
+              "reason": "那幅画本来可以成为作品的中心"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": -0.2,
+              "affection": -0.1,
+              "reason": "伴侣划开了那幅肖像"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "赔偿画布与颜料"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "餐桌上放着一把裁纸刀"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "slashed_canvas",
+              "add": true,
+              "reason": "肖像被伴侣划开"
+            }
+          ]
+        },
+        {
+          "id": "hidden-sittings",
+          "weight": 0.3,
+          "text": "{subject}把画室送来的素描卷起来，塞进一只旧帽盒，藏在床底最里面。{partner}问最近为什么总是晚归，{subject}说剧院排练延长了。下一次当模特照常进行，{subject}坐在同一把椅子上，听见画室门外的楼梯响了一声，整个人僵到{artist}让{subject}放松肩膀。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "inspiration",
+              "delta": 8,
+              "reason": "秘密让画室里的下午变得更浓"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "dependence",
+              "delta": 5,
+              "reason": "为了继续当模特而依赖谎言"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "autonomy",
+              "delta": -5,
+              "reason": "生活被分成两套时间表"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "parameters": {
+                "discretion": 50,
+                "reciprocity": 60,
+                "exposure": 20,
+                "jealousy": 25,
+                "grief": 0,
+                "origin": "sitting",
+                "publicFigure": false
+              },
+              "links": {
+                "lover": "$artist"
+              },
+              "durationMonths": 24,
+              "reason": "偷偷继续的见面变成了不能公开的关系"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": -0.08,
+              "reason": "晚归的理由越来越熟练"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hidden_sittings",
+              "add": true,
+              "reason": "把素描藏在床底的帽盒里"
+            }
+          ]
+        },
+        {
+          "id": "leave-with-the-artist",
+          "weight": 0.2,
+          "text": "{subject}把两只箱子拖到门口，一只装衣服，一只装素描。{partner}没有拦，只把钥匙从桌上推到{subject}面前，说“你走了就别回来拿家具”。{subject}在画室住下，第一夜睡在模特坐的那把椅子上；第二天早上，{artist}给{subject}煮了咖啡，杯子是缺口的。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "reason": "带着素描和两只箱子离开"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "parameters": {
+                "discretion": 35,
+                "reciprocity": 65,
+                "exposure": 30,
+                "jealousy": 20,
+                "grief": 0,
+                "origin": "leaving",
+                "publicFigure": false
+              },
+              "links": {
+                "lover": "$artist"
+              },
+              "durationMonths": 24,
+              "reason": "搬到画室之后，关系不再只是下午的画像时间"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "autonomy",
+              "delta": 15,
+              "reason": "自己决定了要离开哪一张餐桌"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "key": "dependence",
+              "delta": 10,
+              "reason": "住进了画室，生活更依赖画家"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "搬家和寄存家具的费用"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "邻居开始议论这场离开"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "第一夜睡在模特椅上，杯子是缺口的"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_with_artist",
+              "add": true,
+              "reason": "带着素描离开伴侣，搬进画室"
+            }
+          ]
+        },
+        {
+          "id": "stop-the-sittings",
+          "weight": 0.2,
+          "text": "{subject}告诉{artist}不再来了，理由是家里需要{subject}在场。{artist}没有挽留，只说“那张脸我已经记住了”。几个月后，肖像在一家小画廊展出，画里的{subject}没有五官，只有一条披肩和一把空椅子；{partner}陪{subject}去看，站在画前说，这样也好。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fa17-muse",
+              "reason": "停止当模特，不再作为固定形象出现"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$partner",
+              "kind": "partner",
+              "trust": 0.12,
+              "reason": "选择留在家里"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "画里的自己没有五官"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "画廊目录上没有{subject}的名字"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "stopped_sitting",
+              "add": true,
+              "reason": "停止当模特，回到家庭生活"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fa17-cabaret.political-satire",
+      "title": "扮成皇帝的歌手",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "art",
+        "politics",
+        "cabaret",
+        "satire",
+        "censorship",
+        "performance",
+        "scandal"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "stage-sovereign",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "censor",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "owner",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "satire-lands",
+          "weight": 0.35,
+          "text": "{subject}戴着那顶掉漆的铅皮王冠上台，唱一个部长找不到国库钥匙的歌。第一段还没唱完，前排已经笑到拍桌子；第二段里{subject}把钥匙串挂在腰上，警察在门口记笔记。散场后，{owner}把加演的红利塞进{subject}手里，说下个星期还唱。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "讽刺节目的加演分红"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "讽刺节目在城里传开"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "durationMonths": 10,
+              "reason": "讽刺部长引来报纸与警察注意"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "key": "publicBelief",
+              "delta": 8,
+              "reason": "观众把舞台上的国王与街头的部长放在一起笑"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$censor",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "警察在门口记下了歌词"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "satire_landed",
+              "add": true,
+              "reason": "政治讽刺节目在歌舞厅站住了"
+            }
+          ]
+        },
+        {
+          "id": "censored",
+          "weight": 0.3,
+          "text": "{censor}在第二段开始前走到台边，说“钥匙”这个词不能唱，部长家里确实丢过一把。{owner}当场让乐队换成一首关于春天和葡萄酒的歌，观众发出嘘声，有人把节目单揉成纸团。{subject}站在幕布后，听见{owner}对警察说，下一场会换一个更听话的歌手。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "被删改后的演出酬劳"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "节目被删改，观众记住了嘘声"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "key": "scandal",
+              "delta": 10,
+              "reason": "审查官在台边叫停了歌词"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$censor",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "歌词被审查官当场删掉"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "审查官手里有一份不能唱的词的清单。",
+              "confidence": 0.85,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "number_censored",
+              "add": true,
+              "reason": "政治讽刺段子被审查官删改"
+            }
+          ]
+        },
+        {
+          "id": "refuse-to-perform",
+          "weight": 0.2,
+          "text": "{owner}把改好的歌词放在化妆镜前，钥匙换成了花环，部长换成了“某位先生”。{subject}看完，把纸对折，放回镜子前，说今晚不唱了。{owner}骂{subject}不识好歹，取消了下个月的合同；{subject}从后门走出去，街上正在下雨，那顶铅皮王冠还在后台的帽盒里。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "取消合同损失的下月订金"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "拒绝唱删改后的歌词"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$owner",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "拒绝上台，合同被取消"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "从后门走进雨里"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "reason": "拒绝再演那个被删改的国王"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_to_perform",
+              "add": true,
+              "reason": "拒绝演唱被审查删改的版本"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "art",
+    "performance",
+    "media",
+    "plagiarism",
+    "celebrity"
+  ],
+  "tone": [
+    "witty",
+    "bitter",
+    "luminous"
+  ],
+  "scope": [
+    "person",
+    "organization"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "public humiliation",
+    "exploitation",
+    "sexual content"
+  ]
+}

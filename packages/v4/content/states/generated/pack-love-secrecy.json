@@ -19,7 +19,13 @@
       "slot": "secret",
       "conflict": "stack",
       "maxStacks": 2,
-      "tags": ["love", "intimacy", "secret", "courtship", "secret_intimacy"],
+      "tags": [
+        "love",
+        "intimacy",
+        "secret",
+        "courtship",
+        "secret_intimacy"
+      ],
       "parameters": {
         "discretion": {
           "type": "number",
@@ -81,17 +87,30 @@
       "modifiers": [
         {
           "kind": "scene_weight",
-          "tags": ["love", "intimacy", "secret", "courtship"],
+          "tags": [
+            "love",
+            "intimacy",
+            "secret",
+            "courtship"
+          ],
           "multiplier": 1.5
         },
         {
           "kind": "scene_weight",
-          "tags": ["scandal", "family", "law"],
+          "tags": [
+            "scandal",
+            "family",
+            "law"
+          ],
           "multiplier": 1.25
         },
         {
           "kind": "check_bonus",
-          "tags": ["love", "secret", "discretion"],
+          "tags": [
+            "love",
+            "secret",
+            "discretion"
+          ],
           "bonus": 1
         }
       ],
@@ -102,9 +121,15 @@
           "check": {
             "attribute": "cunning",
             "dc": 12,
-            "successOutcomeIds": ["still-hidden"],
-            "failureOutcomeIds": ["seen-in-the-street"],
-            "criticalFailureOutcomeIds": ["talked-about"]
+            "successOutcomeIds": [
+              "still-hidden"
+            ],
+            "failureOutcomeIds": [
+              "seen-in-the-street"
+            ],
+            "criticalFailureOutcomeIds": [
+              "talked-about"
+            ]
           },
           "outcomes": [
             {
@@ -217,9 +242,15 @@
           "check": {
             "attribute": "empathy",
             "dc": 12,
-            "successOutcomeIds": ["steady"],
-            "failureOutcomeIds": ["one-sided"],
-            "criticalFailureOutcomeIds": ["used"]
+            "successOutcomeIds": [
+              "steady"
+            ],
+            "failureOutcomeIds": [
+              "one-sided"
+            ],
+            "criticalFailureOutcomeIds": [
+              "used"
+            ]
           },
           "outcomes": [
             {
@@ -365,7 +396,9 @@
       "reactions": [
         {
           "id": "betrayal-widens-the-secret",
-          "onTags": ["betrayal"],
+          "onTags": [
+            "betrayal"
+          ],
           "chance": 0.7,
           "effects": [
             {
@@ -410,7 +443,9 @@
         },
         {
           "id": "humiliation-at-the-table",
-          "onTags": ["public_humiliation"],
+          "onTags": [
+            "public_humiliation"
+          ],
           "chance": 0.5,
           "effects": [
             {
@@ -466,7 +501,9 @@
         "kind": "generated",
         "author": "phase15-author-love",
         "model": "deepseek-v4.1-flash-subagent",
-        "sourceIds": ["brief-secret-intimacy"],
+        "sourceIds": [
+          "brief-secret-intimacy"
+        ],
         "rationale": "A secret attachment must persist, carry a typed lover link and change what can happen next, without replacing the ordinary relation."
       }
     },
@@ -479,7 +516,13 @@
       "owner": "person",
       "slot": "secret",
       "conflict": "replace",
-      "tags": ["love", "scandal", "secret", "public", "secret_intimacy"],
+      "tags": [
+        "love",
+        "scandal",
+        "secret",
+        "public",
+        "secret_intimacy"
+      ],
       "parameters": {
         "notoriety": {
           "type": "number",
@@ -524,17 +567,28 @@
       "modifiers": [
         {
           "kind": "scene_weight",
-          "tags": ["scandal", "family", "law", "social"],
+          "tags": [
+            "scandal",
+            "family",
+            "law",
+            "social"
+          ],
           "multiplier": 1.45
         },
         {
           "kind": "scene_weight",
-          "tags": ["courtship", "marriage"],
+          "tags": [
+            "courtship",
+            "marriage"
+          ],
           "multiplier": 0.8
         },
         {
           "kind": "check_bonus",
-          "tags": ["scandal", "social"],
+          "tags": [
+            "scandal",
+            "social"
+          ],
           "bonus": 1
         }
       ],
@@ -545,9 +599,15 @@
           "check": {
             "attribute": "charisma",
             "dc": 11,
-            "successOutcomeIds": ["forgotten"],
-            "failureOutcomeIds": ["retold"],
-            "criticalFailureOutcomeIds": ["blackmail"]
+            "successOutcomeIds": [
+              "forgotten"
+            ],
+            "failureOutcomeIds": [
+              "retold"
+            ],
+            "criticalFailureOutcomeIds": [
+              "blackmail"
+            ]
           },
           "outcomes": [
             {
@@ -649,7 +709,9 @@
       "reactions": [
         {
           "id": "betrayal-in-public",
-          "onTags": ["betrayal"],
+          "onTags": [
+            "betrayal"
+          ],
           "chance": 0.6,
           "effects": [
             {
@@ -676,7 +738,9 @@
         },
         {
           "id": "humiliation-in-public",
-          "onTags": ["public_humiliation"],
+          "onTags": [
+            "public_humiliation"
+          ],
           "chance": 0.5,
           "effects": [
             {
@@ -724,7 +788,9 @@
         "kind": "generated",
         "author": "phase15-author-love",
         "model": "deepseek-v4.1-flash-subagent",
-        "sourceIds": ["brief-secret-intimacy"],
+        "sourceIds": [
+          "brief-secret-intimacy"
+        ],
         "rationale": "Exposure is not a mood. A public affair keeps a typed lover link, changes courtship and marriage eligibility, and produces blackmail or repair over time."
       }
     },
@@ -738,7 +804,13 @@
       "slot": "social",
       "conflict": "stack",
       "maxStacks": 2,
-      "tags": ["love", "jealousy", "rival", "risk", "secret_intimacy"],
+      "tags": [
+        "love",
+        "jealousy",
+        "rival",
+        "risk",
+        "secret_intimacy"
+      ],
       "parameters": {
         "suspicion": {
           "type": "number",
@@ -786,17 +858,28 @@
       "modifiers": [
         {
           "kind": "scene_weight",
-          "tags": ["rival", "jealousy", "scandal", "law"],
+          "tags": [
+            "rival",
+            "jealousy",
+            "scandal",
+            "law"
+          ],
           "multiplier": 1.5
         },
         {
           "kind": "scene_weight",
-          "tags": ["love", "courtship"],
+          "tags": [
+            "love",
+            "courtship"
+          ],
           "multiplier": 0.85
         },
         {
           "kind": "check_bonus",
-          "tags": ["rival", "confrontation"],
+          "tags": [
+            "rival",
+            "confrontation"
+          ],
           "bonus": 1
         }
       ],
@@ -807,9 +890,15 @@
           "check": {
             "attribute": "willpower",
             "dc": 12,
-            "successOutcomeIds": ["cools"],
-            "failureOutcomeIds": ["hardens"],
-            "criticalFailureOutcomeIds": ["demands-money"]
+            "successOutcomeIds": [
+              "cools"
+            ],
+            "failureOutcomeIds": [
+              "hardens"
+            ],
+            "criticalFailureOutcomeIds": [
+              "demands-money"
+            ]
           },
           "outcomes": [
             {
@@ -908,7 +997,9 @@
       "reactions": [
         {
           "id": "betrayal-feeds-the-rival",
-          "onTags": ["betrayal"],
+          "onTags": [
+            "betrayal"
+          ],
           "chance": 0.6,
           "effects": [
             {
@@ -935,7 +1026,9 @@
         },
         {
           "id": "humiliation-emboldens-the-rival",
-          "onTags": ["public_humiliation"],
+          "onTags": [
+            "public_humiliation"
+          ],
           "chance": 0.5,
           "effects": [
             {
@@ -991,7 +1084,9 @@
         "kind": "generated",
         "author": "phase15-author-love",
         "model": "deepseek-v4.1-flash-subagent",
-        "sourceIds": ["brief-secret-intimacy"],
+        "sourceIds": [
+          "brief-secret-intimacy"
+        ],
         "rationale": "Jealousy needs an opponent with a name, a lever and a duration. The state links the rival and turns the affair into a sequence of demands rather than a one-off rumour."
       }
     }
@@ -1007,8 +1102,22 @@
         "min": 18,
         "max": 55
       },
-      "tags": ["love", "intimacy", "secret", "courtship", "secret_intimacy"],
-      "contexts": ["peace", "urban", "crisis", "war", "postwar", "rural", "port"],
+      "tags": [
+        "love",
+        "intimacy",
+        "secret",
+        "courtship",
+        "secret_intimacy"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "war",
+        "postwar",
+        "rural",
+        "port"
+      ],
       "conditions": [
         {
           "kind": "hasRelation",
@@ -1211,8 +1320,22 @@
         "min": 18,
         "max": 60
       },
-      "tags": ["love", "secret", "family", "marriage", "secret_intimacy"],
-      "contexts": ["peace", "urban", "crisis", "war", "postwar", "rural", "port"],
+      "tags": [
+        "love",
+        "secret",
+        "family",
+        "marriage",
+        "secret_intimacy"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "war",
+        "postwar",
+        "rural",
+        "port"
+      ],
       "conditions": [
         {
           "kind": "hasState",
@@ -1257,10 +1380,19 @@
         "stateBonus": {
           "secret": 1
         },
-        "successOutcomeIds": ["leave-with-lover", "end-the-affair"],
-        "failureOutcomeIds": ["double-life"],
-        "criticalSuccessOutcomeIds": ["leave-with-lover"],
-        "criticalFailureOutcomeIds": ["the-shop"]
+        "successOutcomeIds": [
+          "leave-with-lover",
+          "end-the-affair"
+        ],
+        "failureOutcomeIds": [
+          "double-life"
+        ],
+        "criticalSuccessOutcomeIds": [
+          "leave-with-lover"
+        ],
+        "criticalFailureOutcomeIds": [
+          "the-shop"
+        ]
       },
       "outcomes": [
         {
@@ -1490,8 +1622,22 @@
         "min": 18,
         "max": 60
       },
-      "tags": ["love", "jealousy", "rival", "secret", "secret_intimacy"],
-      "contexts": ["peace", "urban", "crisis", "war", "postwar", "rural", "port"],
+      "tags": [
+        "love",
+        "jealousy",
+        "rival",
+        "secret",
+        "secret_intimacy"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "war",
+        "postwar",
+        "rural",
+        "port"
+      ],
       "conditions": [
         {
           "kind": "hasState",
@@ -1720,8 +1866,23 @@
         "min": 18,
         "max": 65
       },
-      "tags": ["love", "scandal", "secret", "family", "law", "secret_intimacy"],
-      "contexts": ["peace", "urban", "crisis", "war", "postwar", "rural", "port"],
+      "tags": [
+        "love",
+        "scandal",
+        "secret",
+        "family",
+        "law",
+        "secret_intimacy"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "war",
+        "postwar",
+        "rural",
+        "port"
+      ],
       "conditions": [
         {
           "kind": "hasState",
@@ -1763,9 +1924,16 @@
       "check": {
         "attribute": "charisma",
         "dc": 12,
-        "successOutcomeIds": ["public-scandal", "quiet-arrangement"],
-        "failureOutcomeIds": ["blackmail"],
-        "criticalFailureOutcomeIds": ["wrong-divorce"]
+        "successOutcomeIds": [
+          "public-scandal",
+          "quiet-arrangement"
+        ],
+        "failureOutcomeIds": [
+          "blackmail"
+        ],
+        "criticalFailureOutcomeIds": [
+          "wrong-divorce"
+        ]
       },
       "outcomes": [
         {
@@ -1958,8 +2126,21 @@
         "min": 22,
         "max": 70
       },
-      "tags": ["love", "marriage", "scandal", "family", "secret_intimacy"],
-      "contexts": ["peace", "urban", "crisis", "war", "postwar", "rural"],
+      "tags": [
+        "love",
+        "marriage",
+        "scandal",
+        "family",
+        "secret_intimacy"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "war",
+        "postwar",
+        "rural"
+      ],
       "conditions": [
         {
           "kind": "hasState",
@@ -2190,8 +2371,21 @@
         "min": 20,
         "max": 80
       },
-      "tags": ["grief", "love", "secret", "family", "secret_intimacy"],
-      "contexts": ["peace", "urban", "crisis", "war", "postwar", "rural"],
+      "tags": [
+        "grief",
+        "love",
+        "secret",
+        "family",
+        "secret_intimacy"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "war",
+        "postwar",
+        "rural"
+      ],
       "conditions": [
         {
           "kind": "hasState",
@@ -2372,5 +2566,27 @@
       "weight": 2,
       "cooldownYears": 4
     }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "romance",
+    "secrecy",
+    "scandal",
+    "desire"
+  ],
+  "tone": [
+    "intimate",
+    "tense",
+    "bittersweet"
+  ],
+  "scope": [
+    "person",
+    "household"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "infidelity",
+    "public shaming",
+    "sexual content"
   ]
 }

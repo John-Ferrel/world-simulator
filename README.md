@@ -195,6 +195,20 @@ pnpm v4:with-postgres "pnpm exec tsx scripts/v4-postgres-restart-check.ts load"
 
 完整证据与限制见 [Phase 16 report](docs/v4/phase-16-report.md)、[design](docs/v4/phase-16-design.md)、[critique + revision](docs/v4/phase-16-critique.md)、[model probe](docs/v4/phase-16-model-probe.json) 与 [ADR 017](docs/decisions/ADR-017-state-activation-children-history.md)。真实模型 `/models` 返回 200，但 chat 返回 403（无 active OpenCode Go subscription）；两个新 pack 是离线 LLM 子代理创作并验证，不是 runtime worker 成功。
 
+## Phase 17 内容库
+
+Phase 17 把内容库从 52 states / 1,652 kernels / 6 generated packs 扩展到 **79 / 1,740 / 15**，并建立可查询的 Content Catalog。新增 8 个主题 Pack（life-course、desire-scandal、crime-justice、migration-belonging、faith-miracles、fame-art、absurd-fortune、work-craft）和一个真实 Content Factory pack。
+
+```bash
+pnpm v4:content-catalog      # 重新生成 docs/v4/content-catalog.json/md
+pnpm v4:validate-packs       # 验证全部 15 个 generated pack
+pnpm v4:phase17-lives -- 45 phase17-final-f
+```
+
+真实模型 `/models` 返回 200，chat 成功；`pack-factory-education` 来自一次 8,653-token 成功生成。之前的 403 不再是当前阻塞。内容工厂仍只验证了一个 brief，不能宣称稳定批量生产。
+
+自然人生 final-f：45 年 18,134 events / 347 persons / 51 distinct states / repeatRate 0.1965。独立 Critic 对修订前主样本评为 **16/30**（Phase 16 18/30），指出关系/子女 slot machine、死状态、重复率、无 horizon、组织重复。Phase 17 是内容生产成功、转化仍不足，不是生活质量的最终提升。完整证据见 [report](docs/v4/phase-17-report.md)、[critique](docs/v4/phase-17-critique.md)、[coverage](docs/v4/phase-17-content-coverage.md) 与 [research](docs/v4/phase-17-research.md)。
+
 ## 已知限制与边界
 
 - **内容范围**：静态运行时 183 个事件场景（含 104 个生成场景、519 条生成叙事变体）和 50 个主动 Task（144 outcomes/288 narrations）；另有运行时 content pack 机制，发布后动态加载，仍只是维也纳切片，不是完整 1900 地球人生。离婚、再婚、同性关系、继承和住房容量已有第一版机制，但缺少玩家选择、完整法律程序、再婚/继承分配策略和大规模内容覆盖。

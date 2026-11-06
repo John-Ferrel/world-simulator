@@ -1,0 +1,3516 @@
+{
+  "id": "pack-absurd-fortune",
+  "version": 1,
+  "title": "荒诞运气：错认的继承人、借来的好运与反着实现的愿望",
+  "description": "把四个老母题写成可继续追踪的处境：说不清的好运、被认错的继承人、借来的运气，以及一次愿望以最不方便的方式实现。彩票、遗产、决斗、木偶戏和笨贼都不是孤立笑料，每个结果都留下钱、关系、职位压力或可被下一场戏读取的状态。",
+  "author": "phase17-content-author/absurd-fortune",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-06",
+  "sourceBriefId": "phase17-absurd-fortune",
+  "rationale": "现有 wish-*、stage-king、office-under-siege、public-scandal 和 curse-bargain 已经有机制，却缺少把好运、误认、遗产和反讽愿望写成持续处境的消费者。本包不新增魔法系统：af17-cursed-luck 只把既有诅咒交易之后的巧合写成可追踪的得失；af17-lucky-idiot 与 af17-mistaken-heir 则为好运和误认提供参数、反应与退出路径。彩票与遗产线主要消费 wish-wealth，假继承人线由 af17-mistaken-heir 的曝光和调查承接，办公室线消费 office-under-siege，公辱线消费 public-scandal，诅咒线从 curse-bargain 进入 af17-cursed-luck。",
+  "states": [
+    {
+      "id": "af17-lucky-idiot",
+      "version": 1,
+      "packId": "pack-absurd-fortune",
+      "title": "走运的傻瓜",
+      "description": "一连串无法解释的好运围着这个人：丢失的钱包自己回来，错过的马车没有出事，旧外套的衬里缝着一张中奖彩票。好运是真的，但邻居开始寻找一个更难听的解释。",
+      "owner": "person",
+      "slot": "fortune",
+      "conflict": "replace",
+      "tags": [
+        "luck",
+        "fortune",
+        "windfall",
+        "suspicion",
+        "social",
+        "coincidence",
+        "absurd"
+      ],
+      "parameters": {
+        "streak": {
+          "type": "number",
+          "default": 2,
+          "min": 0,
+          "max": 12
+        },
+        "suspicion": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        },
+        "explanation": {
+          "type": "string",
+          "default": "说不清"
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 48
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "luck",
+            "windfall",
+            "gambling",
+            "market",
+            "accident",
+            "inheritance"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "ordinary"
+          ],
+          "multiplier": 0.85
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "gambling",
+            "luck"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "lucky_idiot",
+          "add": true,
+          "reason": "一连串好运开始被旁人注意到"
+        },
+        {
+          "type": "mood",
+          "personId": "$subject",
+          "amount": 0.02,
+          "reason": "运气站在自己这边"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "lucky_idiot",
+          "add": false,
+          "reason": "好运不再围绕这个人"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "luck-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "luck",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "small-mercies",
+              "result": "success",
+              "weight": 3,
+              "text": "又一年过去，{subject}在煤气灯下捡到一枚银币，又在当铺门口遇见一个认错人的老主顾。好事都不大，却一件接一件；街角咖啡馆里的人开始说，{subject}一定知道什么别人不知道的门路。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-lucky-idiot",
+                  "key": "streak",
+                  "delta": 1,
+                  "reason": "好运又续了一年"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-lucky-idiot",
+                  "key": "suspicion",
+                  "delta": 6,
+                  "reason": "旁人开始解释这串好运"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "捡到的银币"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "小运气不断"
+                }
+              ]
+            },
+            {
+              "id": "the-bill-comes-due",
+              "result": "failure",
+              "weight": 2,
+              "text": "好运气没有出现。{subject}错过电车，鞋跟断在环城大道的石缝里，回家才发现钥匙也丢了。邻居没有安慰，只说“总算轮到你了”，语气像在结一笔旧账。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-lucky-idiot",
+                  "key": "streak",
+                  "delta": -1,
+                  "reason": "好运中断了一次"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-lucky-idiot",
+                  "key": "suspicion",
+                  "delta": 10,
+                  "reason": "邻居把倒霉当作旧账到期"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "修鞋和配钥匙"
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "在冻雨里走回家"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "被邻居等着看笑话"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "windfall-talk",
+          "onTags": [
+            "windfall",
+            "inheritance",
+            "lottery"
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": 12,
+              "reason": "一笔意外之财引来追问"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "好运被说成有门路"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "luck_explained_as_a_deal",
+              "add": true,
+              "reason": "咖啡馆里开始流传一个说法"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "解释比好运更累"
+            }
+          ],
+          "text": "咖啡馆里有人问{subject}，是不是替哪个议员跑过腿，或者认识一个会看牌的女人。{subject}说自己只是运气好；这句话说出口，连{subject}自己都觉得像在遮掩。",
+          "significance": 0.45,
+          "cooldownMonths": 18,
+          "maxPerYear": 1
+        },
+        {
+          "id": "disaster-spares",
+          "onTags": [
+            "accident",
+            "disaster"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": 8,
+              "reason": "又一次巧合被旁人看见"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "spared_by_luck",
+              "add": true,
+              "reason": "在事故里毫发无伤"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "确认自己又躲过一次"
+            }
+          ],
+          "text": "街角的煤油灯爆了，碎片落在离{subject}半步远的地方。{subject}没有受伤，旁边的人却看见{subject}在笑；那不是幸灾乐祸，只是一个人突然确认自己又躲过了一次。",
+          "significance": 0.4,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        }
+      ],
+      "transitions": [
+        {
+          "id": "luck-becomes-a-scandal",
+          "to": "public-scandal",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "af17-lucky-idiot",
+              "parameter": "suspicion",
+              "min": 80
+            }
+          ],
+          "chance": 0.7,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "好运被公开说成不正当"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "luck_became_a_scandal",
+              "add": true,
+              "reason": "邻居和报纸开始公开追问好运的来源"
+            }
+          ],
+          "reason": "怀疑积累到足以把好运变成一桩公开丑闻"
+        }
+      ],
+      "historicalBasis": "好运、嫉妒与“他一定知道什么”的市井逻辑是城市生活的常见材料；本状态不提供超自然保证，只记录一连串可被旁人解释的巧合。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/absurd-fortune",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让好运成为有数量、有社会代价、会退出的处境，而不是一次性旁白。"
+      }
+    },
+    {
+      "id": "af17-mistaken-heir",
+      "version": 1,
+      "packId": "pack-absurd-fortune",
+      "title": "被认错的继承人",
+      "description": "一封写错门牌的信、一个口齿不清的公证人，或一张旧照片，让这个人被当成某笔遗产的继承人。继承权尚未确认，待遇却已经开始：裁缝上门、债主改口、远亲送来果酱。每一次受用都让拆穿更难堪。",
+      "owner": "person",
+      "slot": "false_heir",
+      "conflict": "replace",
+      "tags": [
+        "identity",
+        "inheritance",
+        "estate",
+        "mistaken",
+        "fraud",
+        "family",
+        "status",
+        "risk"
+      ],
+      "parameters": {
+        "claimStrength": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "exposure": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        },
+        "estateValue": {
+          "type": "number",
+          "default": 3,
+          "min": 0,
+          "max": 50
+        },
+        "believedBy": {
+          "type": "string",
+          "default": "一个口齿不清的公证人"
+        }
+      },
+      "durationMonths": {
+        "min": 3,
+        "max": 36
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "inheritance",
+            "estate",
+            "family",
+            "legal",
+            "identity",
+            "status"
+          ],
+          "multiplier": 1.7
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "factory",
+            "ordinary"
+          ],
+          "multiplier": 0.75
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "deception",
+            "identity"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "mistaken_heir",
+          "add": true,
+          "reason": "被当成了某笔遗产的继承人"
+        },
+        {
+          "type": "reputation",
+          "personId": "$subject",
+          "amount": 0.02,
+          "reason": "旁人开始用继承人的方式对待这个人"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "mistaken_heir",
+          "add": false,
+          "reason": "继承人的身份不再被相信"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "claim-year",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "cunning",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "the-story-holds",
+              "result": "success",
+              "weight": 3,
+              "text": "半年过去，没有人来要回那间侧楼。{subject}学会了在门房面前用“家父”这个词，也学会了把公证处的来信先拆再读。遗产的数目没有变，但{subject}已经能熟练地报出那个姓氏。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-mistaken-heir",
+                  "key": "claimStrength",
+                  "delta": 6,
+                  "reason": "继承人的说法又维持了半年"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-mistaken-heir",
+                  "key": "exposure",
+                  "delta": 4,
+                  "reason": "更多文件被拆开"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "别墅给的零用钱"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "故事暂时站住了"
+                }
+              ]
+            },
+            {
+              "id": "a-clerk-asks-for-the-record",
+              "result": "failure",
+              "weight": 2,
+              "text": "洗礼登记簿上找不到{subject}的名字，只有一行被墨水涂掉的旁注。{subject}把复印件折进内袋，回到别墅时，门房第一次没有替{subject}开门。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-mistaken-heir",
+                  "key": "exposure",
+                  "delta": 12,
+                  "reason": "登记簿里的空白被看见"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-mistaken-heir",
+                  "key": "claimStrength",
+                  "delta": -8,
+                  "reason": "继承人的说法出现了裂缝"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "复印和车钱"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "门房不再替自己开门"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "claim-questioned",
+          "onTags": [
+            "inheritance",
+            "legal"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-mistaken-heir",
+              "key": "exposure",
+              "delta": 10,
+              "reason": "远亲开始核对家谱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "继承人的说法被公开核对"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "claim_questioned",
+              "add": true,
+              "reason": "一个远亲开始追问娘家姓"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "答案来得太快"
+            }
+          ],
+          "text": "遗产听证会结束后，一个穿黑衣服的远亲在走廊里拦住{subject}，问{subject}的母亲娘家姓什么。{subject}答得很快，快得像背过；对方没有追问，只把答案记在一张卡片上。",
+          "significance": 0.45,
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        },
+        {
+          "id": "heir-story-sold",
+          "onTags": [
+            "betrayal"
+          ],
+          "requiresRoles": [
+            "betrayer"
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-mistaken-heir",
+              "key": "exposure",
+              "delta": 15,
+              "reason": "熟悉家谱的人把故事卖给了报纸"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.05,
+              "reason": "家谱故事被卖给了报纸"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "heir_story_sold",
+              "add": true,
+              "reason": "继承人的故事进入报纸"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "故事不再只属于自己"
+            }
+          ],
+          "text": "{betrayer}把{subject}讲过的那套家谱卖给了报纸，连“侧楼第三扇窗”这种细节都写了进去。第二天，公证处门口多了一个记者；{subject}才知道，故事一旦有人复述，就不再只属于{subject}。",
+          "significance": 0.6,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        }
+      ],
+      "transitions": [
+        {
+          "id": "claim-becomes-a-case",
+          "to": "under-investigation",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "af17-mistaken-heir",
+              "parameter": "exposure",
+              "min": 70
+            }
+          ],
+          "chance": 0.8,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "heir_claim_investigated",
+              "add": true,
+              "reason": "继承人的说法引来了正式调查"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "value": 15,
+              "reason": "继承案已经开卷"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "charge",
+              "value": "冒认遗产",
+              "reason": "指控被写进案卷"
+            }
+          ],
+          "reason": "曝光积累到足以让继承争议变成正式调查"
+        }
+      ],
+      "historicalBasis": "遗产公证、洗礼登记和远亲认领是城市家庭史的常见纠纷；本状态只记录误认带来的待遇和曝光，不规定真实血缘。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/absurd-fortune",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把“被当成继承人”写成有强度、有曝光、会进入调查的处境，而不是一次性认亲桥段。"
+      }
+    },
+    {
+      "id": "af17-cursed-luck",
+      "version": 1,
+      "packId": "pack-absurd-fortune",
+      "title": "借来的运气",
+      "description": "好运总像从别人那里借来：这个人捡到钱，失主就丢了药费；这个人赶上最后一班电车，另一个人就被留在雨里。它不证明有诅咒，只让每一次得益都能找到一张受损的脸。",
+      "owner": "person",
+      "slot": "luck",
+      "conflict": "replace",
+      "tags": [
+        "luck",
+        "curse",
+        "transfer",
+        "irony",
+        "harm",
+        "benefit",
+        "suspicion",
+        "supernatural"
+      ],
+      "parameters": {
+        "benefit": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "harm": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "awareness": {
+          "type": "boolean",
+          "default": false
+        },
+        "source": {
+          "type": "string",
+          "default": "一枚捡来的铜币"
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 60
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "luck",
+            "windfall",
+            "accident",
+            "curse",
+            "omen",
+            "market"
+          ],
+          "multiplier": 1.55
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "celebration",
+            "courtship"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "omen",
+            "ritual"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "cursed_luck",
+          "add": true,
+          "reason": "好运开始带着别人的损失出现"
+        },
+        {
+          "type": "mood",
+          "personId": "$subject",
+          "amount": 0.01,
+          "reason": "事情顺利得不太对劲"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "cursed_luck",
+          "add": false,
+          "reason": "借来的运气离开了这个人"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "borrowed-luck-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "willpower",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "the-luck-holds",
+              "result": "success",
+              "weight": 3,
+              "text": "这一年里，{subject}总能赶上有轨电车的最后一节车厢，也总在面包房关门前进门。{subject}没有看见那些被留在站台上的人，只在一个雨夜听说，河对岸有个孩子因为药铺提前关门而烧了一夜。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-cursed-luck",
+                  "key": "benefit",
+                  "delta": 5,
+                  "reason": "好运又顺了一年"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-cursed-luck",
+                  "key": "harm",
+                  "delta": 8,
+                  "reason": "别人的损失也跟着累积"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "省下的车钱和面包钱"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "someone_paid_for_the_luck",
+                  "add": true,
+                  "reason": "听说河对岸有人为这场好运付了代价"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "顺利得让人不安"
+                }
+              ]
+            },
+            {
+              "id": "the-debt-is-called",
+              "result": "failure",
+              "weight": 2,
+              "text": "好运气忽然改了方向。{subject}在楼梯上摔了一跤，药费正好等于上个月捡到的数目；同一天，隔壁的老太太却收到一封失而复得的汇款单。{subject}坐在门槛上，第一次开始计算自己到底欠了谁。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-cursed-luck",
+                  "key": "benefit",
+                  "delta": -4,
+                  "reason": "好运暂时转向"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "af17-cursed-luck",
+                  "key": "harm",
+                  "delta": 6,
+                  "reason": "代价落回自己身上"
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "在楼梯上摔伤"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "药费和修楼梯"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "开始计算自己欠了谁"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "saw-the-cost",
+          "onTags": [
+            "windfall",
+            "inheritance",
+            "lottery"
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-cursed-luck",
+              "key": "awareness",
+              "value": true,
+              "reason": "第一次看见好运的另一面"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-cursed-luck",
+              "key": "harm",
+              "delta": 8,
+              "reason": "另一张受损的脸被看见"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saw_the_cost",
+              "add": true,
+              "reason": "看见当铺门口有人为同一笔钱发愁"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "脚步慢了下来"
+            }
+          ],
+          "text": "{subject}在当铺门口数完钱，抬头看见一个女人在翻垃圾桶，手里攥着一张当票。那张当票的号码和{subject}刚收起来的那张只差一位；{subject}把钱包塞得更深，脚步却慢了下来。",
+          "significance": 0.55,
+          "cooldownMonths": 18,
+          "maxPerYear": 1
+        },
+        {
+          "id": "betrayal-paid-in-luck",
+          "onTags": [
+            "betrayal"
+          ],
+          "requiresRoles": [
+            "betrayer"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$betrayer",
+              "amount": -0.05,
+              "reason": "背叛后从马车上摔下来"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-cursed-luck",
+              "key": "benefit",
+              "delta": 4,
+              "reason": "同一天捡到一枚金扣子"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-cursed-luck",
+              "key": "harm",
+              "delta": 6,
+              "reason": "背叛者的伤也被算进这笔运气"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.1,
+              "fear": 0.05,
+              "reason": "背叛与摔伤被放在同一天"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "betrayal_paid_in_luck",
+              "add": true,
+              "reason": "背叛的代价以巧合的方式出现"
+            }
+          ],
+          "text": "{betrayer}在背叛{subject}的第三天从马车上摔下来，摔断了一根肋骨；同一天，{subject}在一件旧大衣里摸到一枚金扣子。没有人把这两件事放在一起，只有{subject}知道那枚扣子值多少药钱。",
+          "significance": 0.6,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        }
+      ],
+      "historicalBasis": "借运、替身和“好运总有人付账”的民间观念出现在多种城市传说中；本状态只把得失写成可追踪的参数，不另造超自然规则。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/absurd-fortune",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让“帮一个人、害另一个人”的运气成为有受益、损害和觉察值的状态，并能被后续犯罪与日常场景消费。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "af17-lottery.ticket-in-the-coat",
+      "title": "外套衬里的彩票",
+      "domain": "economy",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "lottery",
+        "inheritance",
+        "windfall",
+        "family",
+        "rumor",
+        "money",
+        "luck"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "tag": "wish:wealth",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "tailor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "widow",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "a-modest-win",
+          "weight": 0.4,
+          "significance": 0.8,
+          "text": "旧城的裁缝铺里，{tailor}从一件双排扣外套的衬里抖出一张折成四折的彩票。{subject}本来只是来换袖口，彩票却在当天下午中了三十克朗。{tailor}说外套是从一个刚下葬的独身男人房里收来的；{subject}数出两克朗放在熨斗旁，没有问更多。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 30,
+              "reason": "彩票奖金"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "给裁缝的封口钱"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "parameters": {
+                "streak": 2,
+                "suspicion": 20,
+                "explanation": "一件旧外套的衬里"
+              },
+              "durationMonths": 18,
+              "reason": "一笔说不清的横财开始跟着这个人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$tailor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "裁缝收下封口钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_a_winning_ticket",
+              "add": true,
+              "reason": "从旧外套里找到中奖彩票"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "三十克朗改变了这个月"
+            }
+          ]
+        },
+        {
+          "id": "the-family-claims-it",
+          "weight": 0.35,
+          "significance": 0.82,
+          "text": "一个穿黑纱的寡妇在裁缝铺门口认出那件外套，说她丈夫下葬时穿的是另一件，但这张彩票是家里买盐的钱。{subject}被叫到区公所，最后把奖金分了一半，又在文书上按了手印。回家时，三十克朗只剩十一克朗，街坊却已经开始说{subject}发了财。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 11,
+              "reason": "分剩的彩票奖金"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "区公所的手续费"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "parameters": {
+                "streak": 1,
+                "suspicion": 45,
+                "explanation": "一个寡妇认出了那件外套"
+              },
+              "durationMonths": 24,
+              "reason": "横财没有带来安宁，却留下了一个说法"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$widow",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "彩票的归属在区公所被争执"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "街坊开始说这个人发了财"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lottery_claim_disputed",
+              "add": true,
+              "reason": "彩票的归属被公开争执"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "钱少了一半，名声却大了"
+            }
+          ]
+        },
+        {
+          "id": "the-ticket-is-a-dud",
+          "weight": 0.25,
+          "significance": 0.65,
+          "text": "彩票上的号码属于上一季的抽奖，唯一能兑的是一枚印着市徽的铜章。{tailor}把铜章翻过来，说至少能当纽扣；{subject}把它收进口袋，回家路上一直在算那件外套的价钱。第二天，{subject}把铜章别在围裙上，发现自己居然记得住每一期开奖日期。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "改外套的工钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wish-wealth",
+              "key": "intensity",
+              "delta": 0.05,
+              "reason": "一次落空的彩票让执念更深"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "反复计算彩票号码"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ticket_was_worthless",
+              "add": true,
+              "reason": "旧彩票只能换一枚铜章"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "奖金只是一枚纽扣"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "af17-inheritance.false-heir",
+      "title": "公证人念错的门牌",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "inheritance",
+        "family",
+        "identity",
+        "mistake",
+        "legal",
+        "status",
+        "absurd"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "tag": "wish:wealth",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "af17-mistaken-heir",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "notary",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        },
+        {
+          "key": "rival",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "installed-in-the-villa",
+          "weight": 0.4,
+          "significance": 0.85,
+          "text": "区公证处的{notary}把遗嘱念到一半，忽然抬头问{subject}是不是住在齐格勒巷十四号。{subject}点了头，其实只在那里替人送过一冬天煤。三天后，{subject}搬进毛皮商别墅的楼上，衣柜里有死者的拖鞋，桌上每月放着六克朗；没有人要求{subject}出示洗礼证明。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "别墅每月给的零用钱"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-mistaken-heir",
+              "parameters": {
+                "claimStrength": 45,
+                "exposure": 15,
+                "estateValue": 12,
+                "believedBy": "区公证人"
+              },
+              "durationMonths": 12,
+              "reason": "被公证人当成遗产继承人"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "突然成了别墅里的继承人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$notary",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.05,
+              "reason": "公证人把一个名字念成了这个人的地址"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "installed_as_false_heir",
+              "add": true,
+              "reason": "搬进了不属于自己的别墅侧楼"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "死者的拖鞋居然合脚"
+            }
+          ]
+        },
+        {
+          "id": "the-real-heir-arrives",
+          "weight": 0.35,
+          "significance": 0.85,
+          "text": "真正的继承人从的里雅斯特回来，带着洗礼证明和一张旧照片。{subject}在客厅里听见{notary}把同一段遗嘱又念了一遍，这一次每个音节都落在{subject}之外。搬出去那天下雨，{subject}把六克朗的零用钱一枚枚放回桌上，还欠着四克朗的马车费。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "退还零用钱和马车费"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-mistaken-heir",
+              "parameters": {
+                "claimStrength": 8,
+                "exposure": 60,
+                "estateValue": 0,
+                "believedBy": "一段被念错的遗嘱"
+              },
+              "durationMonths": 6,
+              "reason": "假继承人的身份被当众拆穿"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "真正的继承人拿回了别墅"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被赶出别墅的消息传开"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "asked to leave the villa",
+              "add": true,
+              "reason": "真正的继承人回来了"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "real_heir_returned",
+              "add": true,
+              "reason": "真正的继承人从的里雅斯特回来"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "在雨里搬出别墅"
+            }
+          ]
+        },
+        {
+          "id": "the-notary-wanted-a-patsy",
+          "weight": 0.25,
+          "significance": 0.8,
+          "text": "一份被压在抽屉底的委托书让{subject}明白，{notary}需要的不是继承人，而是一个不会问问题的名字。{subject}把委托书和自己的证词送到区法院，换回三克朗的赏钱和一张收据。毛皮商的真侄子拿回了房子，{notary}在走廊里看了{subject}一眼，像在记住一张欠条。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "区法院给的赏钱"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-mistaken-heir",
+              "parameters": {
+                "claimStrength": 5,
+                "exposure": 30,
+                "estateValue": 0,
+                "believedBy": "区法院的一张收据"
+              },
+              "durationMonths": 6,
+              "reason": "短暂被当成继承人，随后成为证人"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "揭穿了一桩假继承安排"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$notary",
+              "kind": "rival",
+              "trust": -0.3,
+              "reason": "公证人的安排被送到法院"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "公证人需要一个不会问问题的名字来占住遗产。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "exposed_a_false_heir_scheme",
+              "add": true,
+              "reason": "把假继承安排交给区法院"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "拿回一点主动权"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "af17-heir.exposure",
+      "title": "洗礼登记簿上的空行",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "inheritance",
+        "legal",
+        "identity",
+        "exposure",
+        "family",
+        "status",
+        "risk"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "af17-mistaken-heir",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        },
+        {
+          "key": "claimant",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "quiet-settlement",
+          "weight": 0.4,
+          "significance": 0.8,
+          "text": "洗礼登记簿翻到那一页时，{clerk}的指尖停在一个空白上。{subject}没有受洗记录，也没有出生证明；{claimant}的律师把八克朗和一份放弃继承声明并排放在桌上。{subject}签了字，拿走钱和一件死者的旧大衣，门房帮{subject}把箱子提到街上，没有要小费。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "放弃继承的补偿"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-mistaken-heir",
+              "reason": "签下放弃继承声明"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "继承人身份悄悄结束"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$claimant",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "双方在律师事务所签了字"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "signed_the_waiver",
+              "add": true,
+              "reason": "拿钱放弃继承"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "拎着箱子回到街上"
+            }
+          ]
+        },
+        {
+          "id": "kept-the-rooms",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "真正的继承人忽然去了格拉茨，证人的名字在传票上被写错，案子拖过了整个冬天。{subject}继续住在别墅的侧楼，替空房子烧暖气，每月领两克朗的看管费。街口的杂货商开始叫{subject}“别墅那位”，语气里既有敬意，也有等着看笑话的意思。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-mistaken-heir",
+              "key": "claimStrength",
+              "delta": -10,
+              "reason": "继承权没有进展"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-mistaken-heir",
+              "key": "exposure",
+              "delta": 15,
+              "reason": "住在别墅里越来越显眼"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "替空房子烧暖气的看管费"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "caretaker",
+              "add": true,
+              "reason": "成为别墅的看管人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$claimant",
+              "kind": "rival",
+              "trust": -0.05,
+              "reason": "继承案拖过了冬天"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_the_rooms",
+              "add": true,
+              "reason": "以看管人的身份留在别墅"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "至少还有一间侧楼"
+            }
+          ]
+        },
+        {
+          "id": "fraud-charge",
+          "weight": 0.3,
+          "significance": 0.88,
+          "text": "一个年轻文书把{subject}签过字的收据和户籍卡订在一起，送到了警察局。{subject}在拘留室坐了一夜，第二天被放出来时，别墅的门锁已经换了。报纸没有登{subject}的名字，但区公所的窗口后面，办事员们已经知道该用哪种眼神看{subject}。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-mistaken-heir",
+              "reason": "假继承人的身份进入刑事调查"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 20,
+                "charge": "冒认遗产"
+              },
+              "durationMonths": 12,
+              "reason": "签过字的收据被送到警察局"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "被警察带走了一夜"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "保释与律师咨询"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "文书把收据和户籍卡订在一起"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "under suspicion of fraud",
+              "add": true,
+              "reason": "冒认遗产的指控进入案卷"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fraud_charge_filed",
+              "add": true,
+              "reason": "被正式调查冒认遗产"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "在拘留室坐了一夜"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "af17-luck.quiet-windfall",
+      "title": "歌剧院门口的钱包",
+      "domain": "daily",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "luck",
+        "windfall",
+        "daily",
+        "quiet",
+        "money",
+        "social",
+        "coincidence"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "af17-lucky-idiot",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "owner",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.2,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "returned-at-the-box-office",
+          "weight": 0.45,
+          "significance": 0.72,
+          "text": "{subject}在歌剧院门口的雪水里捡到一只鳄鱼皮钱包，里面有九克朗、一张当晚的站票和一张调琴师的名片。{subject}把钱包交到售票处，{owner}赶来时没有数钱，只问{subject}会不会弹琴。三天后，{owner}替{subject}调好了一架旧钢琴，没收工钱，还写了一张去乐器行的介绍信。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "失主给的谢礼"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$owner",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "reason": "把钱包原样交还"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "售票处的人记住了这张脸"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": -10,
+              "reason": "好运这次有一个体面的解释"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "和调琴师聊了一个下午"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "returned_a_lost_wallet",
+              "add": true,
+              "reason": "在歌剧院门口归还钱包"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "一件小事做得干净"
+            }
+          ]
+        },
+        {
+          "id": "kept-the-nine-kronen",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "{subject}把钱包塞进大衣内袋，用那九克朗买了两袋煤、一双不漏水的靴子和半磅咖啡。第二天，歌剧院门口贴出一张手写启事，说一位老妇人在找一只鳄鱼皮钱包，里面是她丈夫留下的最后一张站票。{subject}路过时把围巾往上拉了拉，靴子很暖，走路却没有声音。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 9,
+              "reason": "留下的钱包里的钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": 15,
+              "reason": "失物启事贴在了歌剧院门口"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "kept found money",
+              "add": true,
+              "reason": "没有归还捡到的钱包"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_found_wallet",
+              "add": true,
+              "reason": "把钱包里的钱花掉了"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "靴子很暖"
+            }
+          ]
+        },
+        {
+          "id": "the-wallet-was-a-plant",
+          "weight": 0.25,
+          "significance": 0.72,
+          "text": "钱包刚放进内袋，一个戴圆顶礼帽的男人就抓住{subject}的手腕，说{subject}偷了他的钱。围观的人越多，男人说得越响；直到街角的巡警认出他上个月在同一位置演过同一出戏。{subject}拿回自己的围巾，丢了一克朗的车钱，也学会了先看衣领再看钱包。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "被缠住后错过的车钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": 5,
+              "reason": "街角的人看见了争执"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被当成扒手抓住手腕"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "在人群里解释清楚"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "accused of pickpocketing",
+              "add": true,
+              "reason": "钱包是别人设下的诱饵"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wallet_was_bait",
+              "add": true,
+              "reason": "在歌剧院门口被设局"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "围观的人先信了对方"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "af17-duel.borrowed-insult",
+      "title": "借来的侮辱",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 70
+      },
+      "tags": [
+        "duel",
+        "honor",
+        "legal",
+        "mistake",
+        "public",
+        "absurd",
+        "reputation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "stage-king",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "challenger",
+          "kind": "official",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 60
+        },
+        {
+          "key": "second",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "apology-at-the-coffeehouse",
+          "weight": 0.4,
+          "significance": 0.8,
+          "text": "陆军中尉{challenger}在咖啡馆里拦住{subject}，说{subject}上周在报纸上把他所在的团写成“一群会走正步的裁缝”。{subject}没有写过那篇文章，但{challenger}已经把副手{second}带来了。两小时后，双方在环城大道的一家糕点店里签了一份措辞含糊的道歉信；{challenger}请{subject}喝了一杯樱桃酒，像刚做完一笔小生意。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "一场决斗被体面地化解"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$challenger",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "在糕点店签了道歉信"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "对方送来的一箱樱桃酒"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "duel_settled_by_apology",
+              "add": true,
+              "reason": "用一封含糊的道歉信结束决斗"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "没有见血"
+            }
+          ]
+        },
+        {
+          "id": "sabres-at-dawn",
+          "weight": 0.35,
+          "significance": 0.85,
+          "text": "天刚亮，普拉特公园的栗树下，{second}数到三。{challenger}的军刀先划破{subject}的袖子，{subject}回手时打掉了对方的手套；两人都没有再往前一步。医生收了两克朗，把{subject}的前臂缝了四针；{challenger}在包扎时一直盯着自己的手套，像在确认它是不是还属于自己。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "前臂被军刀划伤"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "在普拉特公园按规矩站到底"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$challenger",
+              "kind": "rival",
+              "trust": -0.1,
+              "respect": 0.1,
+              "reason": "两人在栗树下交过手"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "医生和马车"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "fought a duel",
+              "add": true,
+              "reason": "在普拉特公园参加决斗"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fought_a_duel",
+              "add": true,
+              "reason": "袖子被军刀划破"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "缝了四针"
+            }
+          ]
+        },
+        {
+          "id": "police-court",
+          "weight": 0.25,
+          "significance": 0.8,
+          "text": "刀还没有出鞘，巡警就从栗树后面走出来。决斗被写成“破坏公共秩序”，{subject}和{challenger}各罚三克朗，名字登在《维也纳晚报》的法庭栏里。{subject}回到剧院时，经理说观众会喜欢这种新闻，但下一部戏里不能再出现真刀。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "破坏公共秩序的罚款"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "名字上了法庭栏"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "durationMonths": 12,
+              "reason": "决斗案登在报纸法庭栏"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$challenger",
+              "kind": "rival",
+              "trust": -0.05,
+              "reason": "两人一起被罚款"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "duel proceedings",
+              "add": true,
+              "reason": "决斗被警察当场制止"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "duel_went_to_court",
+              "add": true,
+              "reason": "决斗案进了法庭栏"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "经理开始担心真刀"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "af17-wish.family-inheritance",
+      "title": "烟铺楼上的两位姑妈",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 75
+      },
+      "tags": [
+        "wish",
+        "love",
+        "family",
+        "inheritance",
+        "shop",
+        "debt",
+        "irony"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "tag": "wish:love",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        },
+        {
+          "key": "aunt",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 85
+        },
+        {
+          "key": "creditor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "kept-the-shop-and-the-sisters",
+          "weight": 0.4,
+          "significance": 0.82,
+          "text": "遗嘱把烟铺、楼上的两位老小姐和十四克朗的赊账一起留给{subject}。{aunt}第一次见面就叫{subject}“侄子”，把钥匙、账本和一只总在柜台下打盹的猫交过来。{subject}原本只想要一个家，现在有了一个需要每天清晨六点开门的家；{creditor}在门口抽完一支雪茄，提醒{subject}月底先还利息。",
+          "effects": [
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "shopkeeper",
+              "add": true,
+              "reason": "接手烟铺"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "先还一部分烟铺赊账"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$aunt",
+              "kind": "kin",
+              "trust": 0.2,
+              "reason": "被两位老小姐当成侄子"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$creditor",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "obligation": 0.2,
+              "reason": "烟铺还欠着货款"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "成了烟铺的新掌柜"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "inherited a tobacco shop",
+              "add": true,
+              "reason": "遗嘱把烟铺留给了这个人"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_the_tobacco_shop",
+              "add": true,
+              "reason": "留下烟铺和两位老小姐"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "终于有了一个家"
+            }
+          ]
+        },
+        {
+          "id": "sold-the-shop",
+          "weight": 0.35,
+          "significance": 0.85,
+          "text": "房产经纪人只用了两天就找到买主，要把烟铺改成一家卖进口香皂的店面。{subject}在契约上签了字，拿到十二克朗，比继承来的赊账多出不少。{aunt}和她的姐姐在月底搬去城郊的侄女家，临走前把猫留在空柜台下面；{subject}没有回去看那只猫，只在账本最后一页写下“已结清”。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 12,
+              "reason": "卖掉烟铺的钱"
+            },
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$aunt",
+              "kind": "kin",
+              "reason": "两位老小姐被赶出烟铺"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$creditor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "烟铺的欠账结清了"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "街坊看见两位老小姐搬走"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "sold family shop",
+              "add": true,
+              "reason": "把继承来的烟铺卖给了房产商"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_the_tobacco_shop",
+              "add": true,
+              "reason": "烟铺被改成香皂店"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "账本最后一页写着已结清"
+            }
+          ]
+        },
+        {
+          "id": "the-will-was-a-joke",
+          "weight": 0.25,
+          "significance": 0.75,
+          "text": "公证人念到最后一段，停了一下：死者把烟铺留给了“那个总在门口躲雨的年轻人”，落款处画着一只猫。铺子其实早就抵押出去，剩下的只有一只木腿、一本手写配方和两位没有血缘的老小姐。{subject}帮她们把煤搬上楼，没有答应什么；{aunt}却把配方塞进{subject}的口袋，说冬天用得着。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "帮两位老小姐买煤"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$aunt",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "帮两位老小姐搬煤"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "收下一本手写配方"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "helped the two sisters",
+              "add": true,
+              "reason": "在遗嘱落空后仍然帮忙"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_the_recipe",
+              "add": true,
+              "reason": "把烟铺配方收进口袋"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "配方比遗产更实在"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "af17-curse.last-tram",
+      "title": "最后一班电车",
+      "domain": "curse",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "curse",
+        "luck",
+        "transfer",
+        "irony",
+        "harm",
+        "benefit",
+        "accident",
+        "supernatural"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "curse-bargain",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "caught-the-last-tram",
+          "weight": 0.4,
+          "significance": 0.85,
+          "text": "电车进站前，{rival}在冰上滑了一跤，手杖飞进轨道，脚踝肿得像一只面包。{subject}扶起{rival}，又替{rival}去市场顶了清晨的搬运班；工头说既然来了就做到周末。{subject}多挣了三克朗，{rival}却在家躺了六天，药费比工钱还多。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-cursed-luck",
+              "parameters": {
+                "benefit": 20,
+                "harm": 15,
+                "awareness": false,
+                "source": "诅咒的定金"
+              },
+              "durationMonths": 24,
+              "reason": "诅咒交易之后，好运开始从别人身上借来"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "替人顶班三天的工钱"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "market_porter",
+              "add": true,
+              "reason": "在市场顶了搬运班"
+            },
+            {
+              "type": "health",
+              "personId": "$rival",
+              "amount": -0.08,
+              "reason": "在冰上滑倒摔伤脚踝"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "obligation": 0.05,
+              "reason": "顶了对方的班，也看见对方受伤"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "luck_started_with_anothers_fall",
+              "add": true,
+              "reason": "第一笔好运来自别人的摔伤"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "多挣了三克朗"
+            }
+          ]
+        },
+        {
+          "id": "refused-the-shift",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "{subject}把{rival}送到医院，又在候诊室坐到天亮，市场那边的班自然没了。{rival}的妹妹带来一壶热汤，分给{subject}半碗；两个人都没有提那份工作。回家的路上，{subject}发现口袋里的铜币不见了，却第一次没有去想它落在了谁手里。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-cursed-luck",
+              "parameters": {
+                "benefit": 5,
+                "harm": 5,
+                "awareness": false,
+                "source": "一枚不见了的铜币"
+              },
+              "durationMonths": 18,
+              "reason": "放过一次工作，运气仍然跟了上来"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "没去上工，还垫了车钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "acquaintance",
+              "trust": 0.25,
+              "reason": "在医院陪了一夜"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在候诊室冻了一夜"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_the_lucky_shift",
+              "add": true,
+              "reason": "把受伤的人送去医院而不是去上工"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "喝到半碗热汤"
+            }
+          ]
+        },
+        {
+          "id": "passed-it-on",
+          "weight": 0.25,
+          "significance": 0.88,
+          "text": "{subject}把一枚捡来的铜币塞进{rival}的外套口袋，说这是今天在电车轨道上捡的，能带来好运。{rival}笑着收下，第二天就中了教堂抽奖的一小袋面粉；{subject}却在同一天丢了钱包，鞋底也裂了。两个人在市场门口遇见时，{rival}正把那袋面粉分给邻居，{subject}站在雪里，什么也没有说。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$rival",
+              "stateId": "af17-cursed-luck",
+              "parameters": {
+                "benefit": 20,
+                "harm": 15,
+                "awareness": false,
+                "source": "从对方手里接过的铜币"
+              },
+              "durationMonths": 24,
+              "reason": "铜币把借来的运气转给了另一个人"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-bargain",
+              "reason": "把诅咒的定金和铜币一起推了出去"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "丢了钱包，裂了鞋底"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "把一枚来历不明的铜币塞给对方"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "passed_the_curse_on",
+              "add": true,
+              "reason": "把铜币和运气一起转给别人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "站在雪里，什么也没有说"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "af17-office.clerical-luck",
+      "title": "档案室里的拼写错误",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 70
+      },
+      "tags": [
+        "office",
+        "politics",
+        "bureaucracy",
+        "luck",
+        "scandal",
+        "legal",
+        "absurd"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "office-under-siege",
+          "owner": "person"
+        },
+        {
+          "kind": "position"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "reporter",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "the-name-was-misspelled",
+          "weight": 0.4,
+          "significance": 0.82,
+          "text": "审计传票上，{subject}的名字被{clerk}多写了一个字母，门房因此把信退回了收发室。等更正后的传票送到时，真正的采购单已经从另一只抽屉里露了出来；质询会延期两周，{subject}在走廊里第一次听见有人替自己说话。{clerk}没有邀功，只把那张写错的传票夹进自己的抽屉。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "exposure",
+              "delta": -15,
+              "reason": "传票送错，审计被延期"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": 8,
+              "reason": "走廊里有人替这个人说话"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "months",
+              "delta": 1,
+              "reason": "质询会延期两周"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "审计压力暂时减轻"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "一个拼写错误帮了大忙"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saved_by_a_typo",
+              "add": true,
+              "reason": "审计传票上的拼写错误"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "第一次听见有人替自己说话"
+            }
+          ]
+        },
+        {
+          "id": "the-typo-was-mine",
+          "weight": 0.3,
+          "significance": 0.82,
+          "text": "报纸的法庭栏把拼写错误说成{subject}“连自己的名字都签不对”，还暗示档案室在替人遮掩。{reporter}在门口拦住{subject}，问那封退回的信是不是被故意压下的；{subject}说不是，但第二天的标题已经把“不是”删掉了。支持{subject}的人少了一个，档案室的门口多了一张新的值日表。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "exposure",
+              "delta": 12,
+              "reason": "报纸把拼写错误写成遮掩"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": -8,
+              "reason": "一个支持者不再接电话"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被报纸说成连名字都签不对"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "买下所有登了这条新闻的报纸"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$reporter",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "报纸把退回的信写成遮掩"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "mocked in the press",
+              "add": true,
+              "reason": "拼写错误被报纸嘲笑"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "typo_blamed_on_the_office",
+              "add": true,
+              "reason": "拼写错误被说成办公室遮掩"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "标题把“不是”删掉了"
+            }
+          ]
+        },
+        {
+          "id": "trade-the-story",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "{subject}请{reporter}在咖啡馆吃了一顿午饭，把另一桩更耸动的市议会采购案推到他面前。记者收了餐巾，也收下了这个交换；第二天的报纸登了别人的照片，{subject}的审计则被挪到复活节后。{clerk}在走廊里提醒{subject}，这次欠下的人情不是记在公账上的。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "exposure",
+              "delta": -8,
+              "reason": "另一桩采购案占住了版面"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": 4,
+              "reason": "审计被挪到复活节后"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "parameters": {
+                "appointees": 0,
+                "favorDebt": 25,
+                "loyalty": 40,
+                "exposure": 25,
+                "officeTitle": "现任职位",
+                "positionId": "$positionId"
+              },
+              "durationMonths": 12,
+              "reason": "用一桩新闻交换了一次延期"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$reporter",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "在咖啡馆交换了一桩新闻"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "请记者吃午饭"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "traded_a_story_for_time",
+              "add": true,
+              "reason": "用另一桩新闻换到审计延期"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "暂时松了口气"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "af17-humiliation.puppet-show",
+      "title": "慈善市集上的木偶戏",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "humiliation",
+        "public",
+        "scandal",
+        "theatre",
+        "charity",
+        "reputation",
+        "absurd"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "puppeteer",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "journalist",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "laughed-first",
+          "weight": 0.4,
+          "significance": 0.85,
+          "text": "慈善市集的木偶戏把{subject}的丑闻编成三幕，木偶穿着和{subject}一样的灰外套，连走路的姿势都学得出来。第一幕还没演完，{subject}先笑出了声，笑得比谁都响；人群愣了一下，也跟着笑。市长夫人当场请{subject}为下一场义卖剪彩，{puppeteer}在幕布后面朝{subject}举了举木偶。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "先笑自己的人赢了人群"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "下一场义卖的剪彩酬劳"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "reason": "公开嘲笑自己的丑闻，丑闻不再能伤到这个人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$puppeteer",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "在木偶戏前笑出了声"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "laughed_at_own_caricature",
+              "add": true,
+              "reason": "在慈善市集上先笑自己的木偶"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "把嘲笑接了过来"
+            }
+          ]
+        },
+        {
+          "id": "sued-the-puppeteer",
+          "weight": 0.3,
+          "significance": 0.85,
+          "text": "{subject}请律师递了一张控告木偶戏“损害名誉”的状子，开庭那天旁听席坐满了人。法官问木偶是否具备名誉，法庭里笑成一片；状子被驳回，{subject}付了四克朗的诉讼费。第二天，{puppeteer}把这段庭审加进戏里，票价比上周贵了十赫勒。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "诉讼费和律师费"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "状子被驳回，法庭里笑成一片"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$puppeteer",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "为木偶戏递了状子"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "durationMonths": 12,
+              "reason": "控告木偶戏让丑闻又登了一次报"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "sued a puppet show",
+              "add": true,
+              "reason": "把木偶戏告上法庭"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lost_caricature_lawsuit",
+              "add": true,
+              "reason": "控告木偶损害名誉失败"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "法庭里所有人都在笑"
+            }
+          ]
+        },
+        {
+          "id": "left-the-bazaar",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "第三幕开始前，{subject}从侧门走出市集，围巾遮到眼睛。外面正在下冻雨，马车夫要价一克朗，{subject}没有还价。第二天，{journalist}在报纸上写“被自己的影子追着跑的人”，文章不刻薄，却让{subject}在公寓门口站了很久才进去。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "从慈善市集侧门离开"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "冻雨里的马车"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$journalist",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "记者写了一篇不刻薄的文章"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "fled a public caricature",
+              "add": true,
+              "reason": "在木偶戏演完前离开"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fled_the_puppet_show",
+              "add": true,
+              "reason": "从慈善市集侧门离开"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "在公寓门口站了很久"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "af17-crime.inept-burglar",
+      "title": "摔在猪油上的贼",
+      "domain": "crime",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "crime",
+        "burglary",
+        "luck",
+        "legal",
+        "farce",
+        "money",
+        "safety"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "af17-cursed-luck",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "burglar",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 50
+        },
+        {
+          "key": "commissioner",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-loot-on-the-floor",
+          "weight": 0.4,
+          "significance": 0.82,
+          "text": "半夜，{subject}被一声闷响惊醒。一个陌生男人躺在厨房地上，后脑勺压着翻倒的猪油罐，手里还攥着{subject}的银糖钳。{burglar}醒来时已经被晾衣绳捆好；巡警{commissioner}做完笔录，邻居们凑了三克朗给{subject}换新锁，糖钳却少了一只脚。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "邻居们凑的换锁钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "赤手空拳抓住了一个贼"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$commissioner",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "巡警来做了笔录"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$burglar",
+              "kind": "rival",
+              "trust": -0.1,
+              "fear": 0.1,
+              "reason": "贼被晾衣绳捆在厨房里"
+            },
+            {
+              "type": "health",
+              "personId": "$burglar",
+              "amount": -0.05,
+              "reason": "后脑勺撞在猪油罐上"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-cursed-luck",
+              "key": "benefit",
+              "delta": 6,
+              "reason": "一场入室盗窃变成了邻里互助"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-cursed-luck",
+              "key": "harm",
+              "delta": 8,
+              "reason": "贼的伤也算进这笔运气"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "caught_a_burglar",
+              "add": true,
+              "reason": "贼摔在厨房的猪油上"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "糖钳只少了一只脚"
+            }
+          ]
+        },
+        {
+          "id": "kept-the-loot",
+          "weight": 0.3,
+          "significance": 0.85,
+          "text": "{burglar}被巡警带走后，{subject}在楼梯间发现他落下的帆布袋：三只怀表、一小袋银币和一枚不属于这栋楼的钥匙。{subject}把袋子藏进煤箱，第二天当掉两只表，换回八克朗。第三个星期，一个穿灰大衣的男人开始在街对面站着；{subject}没有报警，因为那只袋子还在煤箱里。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 8,
+              "reason": "当掉两只怀表"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-cursed-luck",
+              "key": "benefit",
+              "delta": 10,
+              "reason": "一笔不义之财"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-cursed-luck",
+              "key": "harm",
+              "delta": 10,
+              "reason": "失主和同伙都在找这只袋子"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 10,
+                "charge": "持有来路不明的财物"
+              },
+              "durationMonths": 9,
+              "reason": "当铺的登记把怀表和这个人连在一起"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$burglar",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "留下了贼的帆布袋"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "kept stolen goods",
+              "add": true,
+              "reason": "把贼的袋子藏进煤箱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_stolen_goods",
+              "add": true,
+              "reason": "当掉了贼留下的怀表"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "煤箱里多了一只袋子"
+            }
+          ]
+        },
+        {
+          "id": "the-burglar-returns",
+          "weight": 0.3,
+          "significance": 0.9,
+          "text": "一个月后，{burglar}在酒馆门口拦住{subject}，不是来寻仇，而是来找那枚“总能带来好运”的铜币。{subject}说没有见过，{burglar}却从{subject}的大衣口袋里摸出一枚一模一样的，脸色一下子白了。那天夜里，{subject}家的水管冻裂，{burglar}在城另一头的赌桌上连赢了三把；没有人能把这两件事写进同一份笔录。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$burglar",
+              "stateId": "af17-cursed-luck",
+              "parameters": {
+                "benefit": 15,
+                "harm": 10,
+                "awareness": false,
+                "source": "从对方口袋里摸出的铜币"
+              },
+              "durationMonths": 24,
+              "reason": "铜币把借来的运气转给了贼"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-cursed-luck",
+              "reason": "铜币离开后，好运也跟着走了"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "修冻裂的水管"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$burglar",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "fear": 0.05,
+              "reason": "贼从口袋里摸出一枚铜币"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "lost the lucky coin",
+              "add": true,
+              "reason": "铜币被贼摸走"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "passed_the_luck_to_a_burglar",
+              "add": true,
+              "reason": "借来的运气转到了贼身上"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "水管冻裂的夜里没有铜币"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "af17-luck.wallet-in-the-snow",
+      "title": "雪地里那只没有名字的钱包",
+      "domain": "daily",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "luck",
+        "money",
+        "street",
+        "chance",
+        "irony",
+        "daily"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 75
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "af17-lucky-idiot",
+          "owner": "person"
+        },
+        {
+          "kind": "cash",
+          "max": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "policeman",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-wallet-had-a-name",
+          "weight": 0.4,
+          "text": "{subject}在雪地里捡到一只缝线开裂的钱包，里面有三克朗、一张彩票和一张写着地址的纸。{subject}按地址送回去，开门的老太太说钱包不是她的，却把彩票塞给{subject}，说“你拿着吧，我这辈子没中过”。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "parameters": {
+                "suspicion": 5,
+                "streak": 35
+              },
+              "durationMonths": 48,
+              "reason": "a returned wallet left a lottery ticket in hand"
+            },
+            {
+              "type": "cash",
+              "amount": 3,
+              "reason": "the wallet’s owner refused the money",
+              "householdId": "$household"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "returned_the_snow_wallet",
+              "add": true,
+              "reason": "returned a lost wallet"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a small improbable kindness"
+            }
+          ]
+        },
+        {
+          "id": "kept-the-wallet",
+          "weight": 0.35,
+          "text": "{subject}把钱包塞进内袋，走了两条街才敢回头看。三克朗够买一周的煤，彩票也许什么都不是；但那天晚上，{subject}把彩票压在盐罐底下，像压着一张还没有兑现的明天。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "cash",
+              "amount": 3,
+              "reason": "the money in the lost wallet",
+              "householdId": "$household"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "parameters": {
+                "suspicion": 25,
+                "streak": 25
+              },
+              "durationMonths": 36,
+              "reason": "kept a lost wallet and its lottery ticket"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_the_snow_wallet",
+              "add": true,
+              "reason": "kept money that was not theirs"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a small guilty windfall"
+            }
+          ]
+        },
+        {
+          "id": "the-wallet-belonged-to-the-police",
+          "weight": 0.25,
+          "text": "{subject}刚把钱包交给街角岗亭，{policeman}就翻了翻里面的纸，问“你住哪条街”。钱包确实是失物，但失主是警局的人；{subject}拿回一张收据，回家路上总觉得有人在后面跟着。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "handed in a wallet at the police post"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$policeman",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "the policeman took down the address"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "returned_wallet_to_police",
+              "add": true,
+              "reason": "the lost wallet belonged to the police"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a receipt and a lingering glance"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "luck",
+    "mistaken_identity",
+    "inheritance",
+    "irony"
+  ],
+  "tone": [
+    "absurd",
+    "dark_comedy",
+    "farcical"
+  ],
+  "scope": [
+    "person",
+    "household",
+    "office"
+  ],
+  "rarity": "rare",
+  "contentWarnings": [
+    "sudden wealth",
+    "death",
+    "humiliation"
+  ]
+}

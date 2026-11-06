@@ -240,6 +240,9 @@ export function stateAuthorMessages(
     `- A real office must use a position effect. A stage title must use a state with a performance/court tag and must not create authority.`,
     `- Cover at least one normal, one rare, and one absurd/black-humour outcome where the brief allows it. Do not make every wish backfire.`,
     `- No code, SQL, URLs, HTML, scripts, or arbitrary keys. Unknown keys are rejected.`,
+    `- EVERY effect must be a JSON object with a literal \"type\" string from the allowed list. Never use a state id or a concept name as the effect type.`,
+    `- Required effect shapes: state_add {type,stateId,ownerType,ownerId,parameters?,links?,reason}; state_parameter {type,ownerType,ownerId,stateId,key,delta OR value,reason}; state_transition {type,fromStateId,toStateId,ownerType,ownerId,reason}; position {type,organizationId?,title,holderId,authority,reason}; organization_found {type,organization:{id?,name,kind,placeId?},reason}.`,
+    `- A bare effect like {\"debt-bondage\": ...} or {\"effects\":[...]} without a type is invalid and wastes the attempt.`,
     `- Text must use only declared role tokens or builtins {subject},{residence},{place},{school},{workplace},{age},{year},{child},{milieu},{context}.`,
     `- Do not change committed history; write opportunities, not decrees.`,
     ...(previousErrors.length > 0

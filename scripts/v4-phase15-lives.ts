@@ -320,6 +320,51 @@ function activationDiagnostics(run: Run) {
       stateAdds: stateHits,
     };
   });
+  const kernelPack = new Map<string, string>();
+  const statePack = new Map<string, string>();
+  for (const pack of GENERATED_STATE_PACKS) {
+    for (const kernel of pack.kernels ?? []) kernelPack.set(kernel.id, pack.id);
+    for (const state of pack.states) statePack.set(state.id, pack.id);
+  }
+  const crossPackCounts: Record<string, number> = {};
+  const crossPackSamples: {
+    date: { year: number; month: number };
+    action: string;
+    subject: string;
+    sourcePack: string;
+    target: string;
+    effect: string;
+  }[] = [];
+  for (const event of events) {
+    const kernelId = event.action.includes('::')
+      ? event.action.split('::')[0]!
+      : event.action.split('/')[0]!;
+    const sourcePack = kernelPack.get(kernelId);
+    if (!sourcePack) continue;
+    for (const effect of event.effects) {
+      const targets: string[] = [];
+      if (effect.type === 'state_add') targets.push(effect.stateId);
+      if (effect.type === 'state_parameter') targets.push(effect.stateId);
+      if (effect.type === 'state_remove' && effect.stateId) targets.push(effect.stateId);
+      if (effect.type === 'state_transition') targets.push(effect.fromStateId, effect.toStateId);
+      for (const stateId of targets) {
+        const targetPack = statePack.get(stateId) ?? 'base';
+        if (targetPack === sourcePack) continue;
+        const key = `${sourcePack}->${targetPack}`;
+        crossPackCounts[key] = (crossPackCounts[key] ?? 0) + 1;
+        if (crossPackSamples.length < 24) {
+          crossPackSamples.push({
+            date: event.date,
+            action: event.action,
+            subject: run.world.persons[event.subjectId]?.name ?? event.subjectId,
+            sourcePack,
+            target: stateId,
+            effect: effect.type,
+          });
+        }
+      }
+    }
+  }
   const officeOutcomes: Record<string, number> = {};
   for (const event of officeEvents) {
     const outcome = event.action.split('/').pop() ?? event.action;
@@ -363,6 +408,10 @@ function activationDiagnostics(run: Run) {
         .sort((a, b) => b[1].adds - a[1].adds),
     ),
     packActivation,
+    crossPack: {
+      counts: crossPackCounts,
+      samples: crossPackSamples,
+    },
     office: {
       events: officeEvents.length,
       uniqueSubjects: new Set(officeEvents.map((event) => event.subjectId)).size,
@@ -458,8 +507,9 @@ function stateSnapshot(world: WorldState, personId: string) {
     .filter(
       (state) =>
         (state.ownerType === 'person' && state.ownerId === personId) ||
-        (state.ownerType === 'household' && state.ownerId === person?.householdId) ||
-        (state.ownerType === 'organization' && organizationIds.has(state.ownerId)),
+        (Boolean(person && !person.died) &&
+          ((state.ownerType === 'household' && state.ownerId === person?.householdId) ||
+            (state.ownerType === 'organization' && organizationIds.has(state.ownerId)))),
     )
     .map((state) => ({
       id: state.id,
@@ -646,6 +696,20 @@ for (const seed of seeds) {
     ),
     stateCounts,
     activation: activationDiagnostics(run),
+    contentSamples: run.events
+      .filter((event) =>
+        ['lc17-', 'ds17-', 'cj17-', 'mb17-', 'fm17-', 'fa17-', 'af17-', 'wc17-', 'r15-education.'].some(
+          (prefix) => event.action.startsWith(prefix),
+        ),
+      )
+      .slice(0, 60)
+      .map((event) => ({
+        date: event.date,
+        action: event.action,
+        subject: run.world.persons[event.subjectId]?.name ?? event.subjectId,
+        text: event.immediateText.slice(0, 240),
+        effects: event.effects.map(effectText),
+      })),
     actionCounts: Object.fromEntries(
       [...new Set(run.events.map((event) => event.action.split('/')[0]!))]
         .map((action): [string, number] => [

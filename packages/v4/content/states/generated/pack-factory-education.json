@@ -1,0 +1,1001 @@
+{
+  "id": "pack-factory-education",
+  "version": 1,
+  "title": "夜校、奖学金与毕业论文",
+  "description": "由真实 Content Factory（deepseek-v4.1-flash）根据 brief-education-continuity 生成并验证的教育连续性 pack；Phase 17 将原始模型输出规范化后注册。",
+  "author": "content-factory/deepseek-v4.1-flash",
+  "model": "deepseek-v4.1-flash",
+  "sourceBriefId": "brief-education-continuity",
+  "rationale": "验证真实模型仍能生成可编译的 StatePack，并为 night-school / scholarship / thesis 提供真实机会链。",
+  "states": [
+    {
+      "id": "night-school",
+      "version": 1,
+      "packId": "pack-factory-education",
+      "title": "夜校生",
+      "description": "白天工作、晚上上课的半工半读状态。它占用 education slot，与全职工厂职位、全日制大学不能共存；进度随每年检定累积。",
+      "owner": "person",
+      "slot": "education",
+      "conflict": "replace",
+      "tags": [
+        "education",
+        "night_school",
+        "work"
+      ],
+      "parameters": {
+        "progress": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 100
+        },
+        "tuition_arrears": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 500
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 65
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "university-student"
+        }
+      ],
+      "durationMonths": {
+        "min": 12,
+        "max": 36
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "education",
+            "night_school",
+            "work"
+          ],
+          "multiplier": 1.4
+        }
+      ],
+      "ticks": [
+        {
+          "id": "annual",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "willpower",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "held",
+              "result": "success",
+              "weight": 2,
+              "text": "{subject}又撑过一年夜校；工位和课桌仍然互相偷时间，但进度在缓慢累积。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "night-school",
+                  "key": "progress",
+                  "delta": 15,
+                  "reason": "held on through the year"
+                }
+              ]
+            },
+            {
+              "id": "stalled",
+              "result": "partial",
+              "weight": 1,
+              "text": "{subject}这一年缺课太多，学费还欠着，进度几乎没动。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "night-school",
+                  "key": "progress",
+                  "delta": 4,
+                  "reason": "too many missed classes"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "night-school",
+                  "key": "tuition_arrears",
+                  "delta": 20,
+                  "reason": "unpaid night-school tuition"
+                }
+              ]
+            },
+            {
+              "id": "slipped",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}在这一年失去了一点余地；夜校的报名费和工厂的班次第一次正面撞上。",
+              "effects": [
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "slipped"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "night-school",
+                  "key": "progress",
+                  "delta": -2,
+                  "reason": "setback at night school"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "night-school",
+                  "key": "tuition_arrears",
+                  "delta": 35,
+                  "reason": "missed payment"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "reaction-unemployment",
+          "onTags": [
+            "unemployment"
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "night-school:reacted",
+              "add": true,
+              "reason": "the state answered a real event"
+            }
+          ],
+          "text": "{subject}失业后第一次认真考虑把夜校读到底。",
+          "cooldownMonths": 12
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "content-factory/deepseek-v4.1-flash",
+        "model": "deepseek-v4.1-flash",
+        "rationale": "持久半工半读教育状态，带进度与欠费机制"
+      },
+      "transitions": [
+        {
+          "id": "night-school-graduates",
+          "to": "university-graduate",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "night-school",
+              "owner": "person",
+              "parameter": "progress",
+              "min": 60
+            }
+          ],
+          "chance": 1,
+          "reason": "night-school progress reached the graduation threshold"
+        }
+      ]
+    },
+    {
+      "id": "scholarship-holder",
+      "version": 1,
+      "packId": "pack-factory-education",
+      "title": "奖学金受助人",
+      "description": "以成绩换取资助的教育状态。占用 education slot；每年续期检定看成绩和家庭现金，失败转入欠费或退学。",
+      "owner": "person",
+      "slot": "education",
+      "conflict": "replace",
+      "tags": [
+        "education",
+        "scholarship",
+        "means_tested"
+      ],
+      "parameters": {
+        "standing": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        "stipend_months_left": {
+          "type": "number",
+          "default": 12,
+          "min": 0,
+          "max": 48
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 12,
+          "max": 30
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "university-student"
+        }
+      ],
+      "durationMonths": {
+        "min": 12,
+        "max": 48
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "education",
+            "scholarship"
+          ],
+          "multiplier": 1.3
+        }
+      ],
+      "ticks": [
+        {
+          "id": "annual-renewal",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "intelligence",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "renewed",
+              "result": "success",
+              "weight": 2,
+              "text": "{subject}的成绩足够续上奖学金；家里这一年不用再为学费发愁。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "scholarship-holder",
+                  "key": "standing",
+                  "delta": 8,
+                  "reason": "renewed on merit"
+                },
+                {
+                  "type": "cash",
+                  "amount": 25,
+                  "reason": "scholarship stipend paid",
+                  "householdId": "$household"
+                }
+              ]
+            },
+            {
+              "id": "probation",
+              "result": "partial",
+              "weight": 1,
+              "text": "{subject}的成绩压在线上，奖学金改成半额，家里开始动用积蓄。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "scholarship-holder",
+                  "key": "standing",
+                  "delta": -10,
+                  "reason": "put on probation"
+                },
+                {
+                  "type": "cash",
+                  "amount": -30,
+                  "reason": "family covers the gap",
+                  "householdId": "$household"
+                }
+              ]
+            },
+            {
+              "id": "revoked",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}的奖学金被取消，学校把过去一年的费用开成一张账单。",
+              "effects": [
+                {
+                  "type": "state_transition",
+                  "fromStateId": "scholarship-holder",
+                  "toStateId": "night-school",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "reason": "scholarship revoked, moved to night school"
+                },
+                {
+                  "type": "cash",
+                  "amount": -60,
+                  "reason": "back-dated tuition bill",
+                  "householdId": "$household"
+                }
+              ]
+            },
+            {
+              "id": "advanced-to-thesis",
+              "result": "success",
+              "weight": 1,
+              "text": "{subject}的奖学金评审第一次没有争论：成绩够好，导师在推荐信上签了名。学校把“毕业论文候选人”的表格推过来，纸角还带着上一任申请者的折痕。",
+              "effects": [
+                {
+                  "type": "state_transition",
+                  "fromStateId": "scholarship-holder",
+                  "toStateId": "thesis-candidate",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "reason": "advanced to thesis candidacy"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": 0.04,
+                  "reason": "the thesis committee accepted the application"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "thesis_candidacy_advanced",
+                  "add": true,
+                  "reason": "moved from scholarship to thesis candidacy"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "reaction-debt",
+          "onTags": [
+            "debt",
+            "debt-bondage"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "scholarship-holder:family-debt",
+              "add": true,
+              "reason": "family debt touches the scholarship"
+            }
+          ],
+          "text": "{subject}发现奖学金并不能替家里还债，只能替自己争一点时间。",
+          "cooldownMonths": 18
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "content-factory/deepseek-v4.1-flash",
+        "model": "deepseek-v4.1-flash",
+        "rationale": "按成绩与现金续期的奖学金状态"
+      }
+    },
+    {
+      "id": "thesis-candidate",
+      "version": 1,
+      "packId": "pack-factory-education",
+      "title": "论文候选人",
+      "description": "接近毕业的最终教育阶段。占用 education slot；完成论文后转为大学毕业生，未完成则可能退学。它不授予任何职位，只改变机会与检定。",
+      "owner": "person",
+      "slot": "education",
+      "conflict": "replace",
+      "tags": [
+        "education",
+        "university",
+        "thesis"
+      ],
+      "parameters": {
+        "thesis_progress": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "hasState",
+          "stateId": "university-student"
+        },
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 45
+        }
+      ],
+      "durationMonths": {
+        "min": 6,
+        "max": 24
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "education",
+            "thesis"
+          ],
+          "multiplier": 1.2
+        }
+      ],
+      "ticks": [
+        {
+          "id": "termly",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "intelligence",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "advanced",
+              "result": "success",
+              "weight": 2,
+              "text": "{subject}的论文又推进一章；导师开始把{subject}当同僚而非学生。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "thesis-candidate",
+                  "key": "thesis_progress",
+                  "delta": 25,
+                  "reason": "chapter finished"
+                }
+              ]
+            },
+            {
+              "id": "stuck",
+              "result": "partial",
+              "weight": 1,
+              "text": "{subject}卡在数据与脚注之间，论文只挪动了一点点。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "thesis-candidate",
+                  "key": "thesis_progress",
+                  "delta": 8,
+                  "reason": "stuck in footnotes"
+                }
+              ]
+            },
+            {
+              "id": "abandoned",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}的资助断掉，论文写不下去，委员会给了最后一次延期。",
+              "effects": [
+                {
+                  "type": "state_transition",
+                  "fromStateId": "thesis-candidate",
+                  "toStateId": "university-dropout",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "reason": "funding ended, thesis abandoned"
+                },
+                {
+                  "type": "cash",
+                  "amount": -40,
+                  "reason": "final extension fee",
+                  "householdId": "$household"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "reaction-job-offer",
+          "onTags": [
+            "employment",
+            "factory"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "thesis-candidate:job-offer-conflict",
+              "add": true,
+              "reason": "a job competes with the thesis"
+            }
+          ],
+          "text": "{subject}收到一份全职工作邀请，正好和论文进度抢同一段时间。",
+          "cooldownMonths": 12
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "content-factory/deepseek-v4.1-flash",
+        "model": "deepseek-v4.1-flash",
+        "rationale": "毕业前最终阶段，可成功转毕业生或失败转退学生"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "r15-education.entry-offer",
+      "title": "一次入学机会",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 12,
+        "max": 18
+      },
+      "tags": [
+        "education",
+        "scholarship",
+        "opportunity"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "university-student"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "scholarship-holder"
+        },
+        {
+          "kind": "cash",
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "full-scholarship",
+          "weight": 2,
+          "text": "{subject}的成绩打动了本地学校，拿到一份覆盖学费的奖学金；家里第一次不用为这笔钱吵到半夜。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "scholarship-holder",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "standing": 55
+              },
+              "reason": "merit scholarship awarded"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "delta": 2,
+              "reason": "schooling begins"
+            }
+          ]
+        },
+        {
+          "id": "conditional-support",
+          "weight": 2,
+          "text": "{subject}只拿到部分资助；剩下的学费要靠家里凑，或者靠夜校补。母亲把首饰盒翻到底，父亲说再等一年，学校却只给到下学期。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "scholarship-holder",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "parameters": {
+                "standing": 35
+              },
+              "reason": "partial scholarship"
+            },
+            {
+              "type": "cash",
+              "amount": -15,
+              "reason": "family pays remainder",
+              "householdId": "$household"
+            }
+          ]
+        },
+        {
+          "id": "evening-only",
+          "weight": 1,
+          "text": "学校没有多余名额，只给{subject}留了夜校的位置。白天在工厂站一天，晚上再去教室坐三个钟头；老师说先试试，撑不住也不算丢人。",
+          "effects": [
+            {
+              "type": "state_add",
+              "stateId": "night-school",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "only evening classes available"
+            }
+          ]
+        },
+        {
+          "id": "offer-declined-black-humour",
+          "weight": 1,
+          "text": "{subject}把入学通知折成纸船放进河里；家里少了一张嘴吃饭，也少了一个读书人。",
+          "effects": [
+            {
+              "type": "cash",
+              "amount": 10,
+              "reason": "sold the textbooks instead",
+              "householdId": "$household"
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "delta": -1,
+              "reason": "declined schooling",
+              "status": "none"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r15-education.tuition-vs-debt",
+      "title": "学费与家庭债务",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adulthood",
+      "tags": [
+        "education",
+        "debt",
+        "family"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "scholarship-holder"
+        },
+        {
+          "kind": "cash",
+          "max": 50
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "family-pays",
+          "weight": 2,
+          "text": "家里咬牙还清这一期学费；{subject}的奖学金保住了，但家庭现金见了底。父亲把空钱包放回抽屉，母亲没有问还剩多少。",
+          "effects": [
+            {
+              "type": "cash",
+              "amount": -45,
+              "reason": "tuition paid from family savings",
+              "householdId": "$household"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "scholarship-holder",
+              "key": "standing",
+              "delta": 3,
+              "reason": "account in good standing"
+            }
+          ]
+        },
+        {
+          "id": "work-while-studying",
+          "weight": 2,
+          "text": "{subject}白天去打工补学费，学业改成夜校；两边都保住了一半。工头说别迟到，老师说别退学，{subject}把两张时间表叠在一起。",
+          "effects": [
+            {
+              "type": "state_transition",
+              "fromStateId": "scholarship-holder",
+              "toStateId": "night-school",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "switched to night school to pay tuition"
+            },
+            {
+              "type": "cash",
+              "amount": 20,
+              "reason": "wages from daytime work",
+              "householdId": "$household"
+            }
+          ]
+        },
+        {
+          "id": "debt-takes-precedence",
+          "weight": 1,
+          "text": "债主先到一步；{subject}的奖学金还没续期，家里的现金已经进了别人的口袋。学校只给一张缓交单，父亲在门口抽完一支烟。",
+          "effects": [
+            {
+              "type": "state_transition",
+              "fromStateId": "scholarship-holder",
+              "toStateId": "university-dropout",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "family debt forced withdrawal"
+            },
+            {
+              "type": "cash",
+              "amount": -50,
+              "reason": "debt collector took the tuition money",
+              "householdId": "$household"
+            }
+          ]
+        },
+        {
+          "id": "tuition-paid-in-kind",
+          "weight": 1,
+          "text": "校长同意{subject}用扫地抵学费；奖学金没动，学历进度以工时计算。每天放学后，{subject}把教室的粉笔灰扫进铁皮簸箕。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "scholarship-holder",
+              "key": "standing",
+              "delta": 5,
+              "reason": "work-study arrangement"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -3,
+              "reason": "long hours sweeping"
+            }
+          ]
+        }
+      ],
+      "ageWindow": {
+        "min": 17,
+        "max": 30
+      }
+    },
+    {
+      "id": "r15-education.night-school-vs-factory",
+      "title": "夜校与工位",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adulthood",
+      "tags": [
+        "education",
+        "night_school",
+        "factory",
+        "slot_conflict"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "night-school"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "factory-employment"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "choose-school",
+          "weight": 2,
+          "text": "{subject}辞掉全日制工位，专心读夜校；钱变少，但课桌和工位不再互相撕扯。第一晚回家，书包里只有一本借来的课本。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "stateId": "factory-employment",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "quit full-time factory work to study"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "night-school",
+              "key": "progress",
+              "delta": 20,
+              "reason": "more time for classes"
+            },
+            {
+              "type": "cash",
+              "amount": -30,
+              "reason": "lost wages",
+              "householdId": "$household"
+            }
+          ]
+        },
+        {
+          "id": "choose-work",
+          "weight": 2,
+          "text": "{subject}保住了工位，夜校的课只能先停；教育状态转移为退学。班主任在名单上画了一道线，{subject}没有去问还能不能补。",
+          "effects": [
+            {
+              "type": "state_transition",
+              "fromStateId": "night-school",
+              "toStateId": "university-dropout",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "kept factory job, left night school"
+            },
+            {
+              "type": "cash",
+              "amount": 35,
+              "reason": "full-time factory wages",
+              "householdId": "$household"
+            }
+          ]
+        },
+        {
+          "id": "part-time-both",
+          "weight": 1,
+          "text": "{subject}和工头谈成半日工：工厂与夜校都只保住一半，但两个 slot 不再冲突。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "night-school",
+              "key": "progress",
+              "delta": 10,
+              "reason": "part-time study"
+            },
+            {
+              "type": "cash",
+              "amount": 10,
+              "reason": "reduced wages",
+              "householdId": "$household"
+            }
+          ]
+        }
+      ],
+      "ageWindow": {
+        "min": 16,
+        "max": 35
+      }
+    },
+    {
+      "id": "r15-education.graduation-mismatch",
+      "title": "毕业后的第一份工作与学历不匹配",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adulthood",
+      "tags": [
+        "education",
+        "employment",
+        "graduate"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "thesis-candidate"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "graduated-fit",
+          "weight": 2,
+          "text": "{subject}的论文通过，得到一份与学历对口的工作；毕业没有保证职位，但这一次机会接上了。",
+          "effects": [
+            {
+              "type": "state_transition",
+              "fromStateId": "thesis-candidate",
+              "toStateId": "university-graduate",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "thesis defended"
+            },
+            {
+              "type": "cash",
+              "amount": 40,
+              "reason": "first salary",
+              "householdId": "$household"
+            }
+          ]
+        },
+        {
+          "id": "graduated-overqualified",
+          "weight": 2,
+          "text": "{subject}拿到了学位，但本地只招体力工；学位成了谈工资时的尴尬背景。招聘的人看了证书一眼，问会不会搬箱子。",
+          "effects": [
+            {
+              "type": "state_transition",
+              "fromStateId": "thesis-candidate",
+              "toStateId": "university-graduate",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "graduated"
+            },
+            {
+              "type": "cash",
+              "amount": 15,
+              "reason": "manual work pays less than expected",
+              "householdId": "$household"
+            }
+          ]
+        },
+        {
+          "id": "thesis-unfinished",
+          "weight": 1,
+          "text": "{subject}的论文没能写完，学校把{subject}的名字从毕业生名单上划掉。",
+          "effects": [
+            {
+              "type": "state_transition",
+              "fromStateId": "thesis-candidate",
+              "toStateId": "university-dropout",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "reason": "thesis not completed"
+            }
+          ]
+        }
+      ],
+      "ageWindow": {
+        "min": 22,
+        "max": 40
+      }
+    }
+  ],
+  "metadata": {
+    "composeWith": [
+      "university-student",
+      "apprenticeship-contract",
+      "factory-employment"
+    ],
+    "suggestedStateIds": [
+      "night-school",
+      "scholarship-holder",
+      "thesis-candidate"
+    ],
+    "outcomeCoverage": "kernels include normal success, partial success, and failure/withdrawal outcomes with state, cash, education, or health effects"
+  },
+  "generatedAt": "2026-11-06T11:23:09.195Z",
+  "themes": [
+    "education",
+    "class",
+    "school",
+    "social_mobility"
+  ],
+  "era": "1912–1955",
+  "tone": [
+    "earnest",
+    "bittersweet",
+    "ironic"
+  ],
+  "scope": [
+    "person",
+    "household"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "poverty",
+    "educational exclusion",
+    "debt"
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-06",
+  "provider": "opencode-go",
+  "baseUrl": "https://opencode.ai/zen/go/v1",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "wireModel": "deepseek-v4.1-flash",
+  "credentialPresent": true,
+  "connectionProbe": {
+    "models": 200,
+    "chat": "ok",
+    "note": "The previous 403 is no longer reproduced in this environment. The model returns chat completions."
+  },
+  "factoryAttempts": [
+    {
+      "brief": "brief-power-and-irony",
+      "result": "failed-validation",
+      "usedFallback": true,
+      "ok": false,
+      "tokens": 12465,
+      "attempts": [
+        {
+          "attempt": 1,
+          "tokens": 3143,
+          "errors": [
+            "puppet-office.ticks[0].outcomes[0].effects[0]: effect has no type",
+            "puppet-office.ticks[0].outcomes[0].effects[1]: effect has no type",
+            "puppet-office.ticks[0].outcomes[0].effects[2]: effect has no type",
+            "puppet-office.ticks[0].outcomes[0].effects[3]: effect has no type",
+            "puppet-office.ticks[0].outcomes[1].effects[0]: effect has no type",
+            "puppet-office.ticks[0].outcomes[1].effects[1]: effect has no type",
+            "puppet-office.reactions[0].effects[0]: effect has no type"
+          ]
+        },
+        {
+          "attempt": 2,
+          "tokens": 9322,
+          "errors": [
+            "kernels[0]/patronage-debt.effects[0]: invalid effect debt-bondage"
+          ]
+        }
+      ],
+      "note": "The model was reachable and produced tokens, but violated the effect schema; no success claimed."
+    },
+    {
+      "brief": "brief-education-continuity",
+      "result": "success",
+      "usedFallback": false,
+      "ok": true,
+      "tokens": 8653,
+      "attempts": 1,
+      "states": 3,
+      "kernels": 4,
+      "compiledScenes": 56,
+      "model": "deepseek-v4.1-flash",
+      "sourceReport": "data/phase15-content/generation-report.json",
+      "integratedPack": "packages/v4/content/states/generated/pack-factory-education.json",
+      "note": "First real Content Factory pack integrated into the runtime in Phase 17; state ids and kernels are unchanged, only pack metadata/provenance was normalized."
+    }
+  ],
+  "promptHardening": "Added an explicit hard rule that every effect is an object with a literal type and gave required state_add/state_parameter/state_transition/position/organization_found shapes. The education brief then passed on its first attempt.",
+  "secretsIncluded": false
+}

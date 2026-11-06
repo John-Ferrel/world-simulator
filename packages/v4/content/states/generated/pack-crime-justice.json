@@ -1,0 +1,3756 @@
+{
+  "id": "pack-crime-justice",
+  "version": 1,
+  "title": "罪与罚：债、巡警、法庭与出狱以后",
+  "description": "把维也纳的债主、市场保护费、警察档案、预审、监所和出狱后的劳动介绍所接成一条可追踪的因果链。新状态只记录追捕、刑期和保护费网络；具体的逮捕、审判、监禁与释放仍由既有 detained、under-investigation、debt-bondage、blacklisted 等状态和普通场景承担。",
+  "author": "phase17-content-author/crime-justice",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-06",
+  "sourceBriefId": "phase17-crime-justice",
+  "rationale": "现有法律内容只有被调查、被拘留和债务束缚几个骨架，缺少追捕中的日常、监所内部的社会生活、出狱后的再入境，以及以保护为名的收费网络。本包不新建司法引擎：每一条逮捕、审判、监禁、释放和勒索都落在既有的 state、relation、cash、condition 与 position 效果上，并让犯罪既可能成功，也可能以平庸而难堪的方式失败。",
+  "states": [
+    {
+      "id": "cj17-wanted",
+      "version": 1,
+      "packId": "pack-crime-justice",
+      "title": "被追捕",
+      "description": "警察、债主或同伙正在找一个具体的人。政治警察的卡片索引、债主的账本和火车站的旅客名单都可能让热度上升；追捕不会自动变成逮捕，但每一次露面都要换一条路。",
+      "owner": "person",
+      "slot": "pursuit",
+      "conflict": "replace",
+      "tags": [
+        "crime",
+        "police",
+        "pursuit",
+        "wanted",
+        "risk",
+        "debt"
+      ],
+      "parameters": {
+        "heat": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        },
+        "cover": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        },
+        "price": {
+          "type": "number",
+          "default": 5,
+          "min": 0,
+          "max": 100
+        },
+        "pursuer": {
+          "type": "string",
+          "default": "警局"
+        },
+        "alias": {
+          "type": "string",
+          "default": "无"
+        }
+      },
+      "links": {
+        "hunter": "person"
+      },
+      "durationMonths": {
+        "min": 3,
+        "max": 36
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "crime",
+            "police",
+            "court",
+            "escape",
+            "pursuit"
+          ],
+          "multiplier": 1.55
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "family",
+            "leisure",
+            "courtship"
+          ],
+          "multiplier": 0.75
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "police",
+            "court"
+          ],
+          "bonus": -1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "wanted_by_authorities",
+          "add": true,
+          "reason": "有人正在找一个具体的名字"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "wanted_by_authorities",
+          "add": false,
+          "reason": "追捕暂时停止或已经结束"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "heat-check",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "cunning",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "lay-low",
+              "result": "success",
+              "weight": 2,
+              "text": "{subject}换了去市场的路线，又把常穿的那件外套反过来改成里衬。半年里没有人来敲门，只有楼下的鞋匠多问了一句最近怎么不走前街。热度退了一点，但名字还在某个抽屉里。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-wanted",
+                  "key": "heat",
+                  "delta": -8,
+                  "reason": "半年没有在旧路线上露面"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-wanted",
+                  "key": "cover",
+                  "delta": 4,
+                  "reason": "改过的外套和新的路线起了作用"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "暂时没有人来敲门"
+                }
+              ]
+            },
+            {
+              "id": "seen-at-the-market",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}在马克特大厅的鱼摊前被一个便衣看见。对方没有立刻上前，只跟着走到了电车轨道边。{subject}挤上开往普拉特的电车，多坐了三站，又花一克朗从后门下车；回到家时，围裙口袋里还带着鱼腥味。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-wanted",
+                  "key": "heat",
+                  "delta": 9,
+                  "reason": "便衣在市场上认出了这个人"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "绕路和临时车钱"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "被人从鱼摊跟到电车站"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-uniform-on-the-stair",
+          "onTags": [
+            "police"
+          ],
+          "chance": 0.45,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "key": "heat",
+              "delta": 6,
+              "reason": "警察在楼梯间出现"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "楼梯间的制服"
+            }
+          ],
+          "text": "{subject}听见楼梯间有军刀碰到栏杆的声音，立刻把灯拧小。脚步声在上一层停了一会儿，又往下走；第二天，房东说昨晚有人来问过三楼住着谁。",
+          "significance": 0.45,
+          "cooldownMonths": 6,
+          "maxPerYear": 2
+        },
+        {
+          "id": "the-name-that-was-sold",
+          "onTags": [
+            "betrayal"
+          ],
+          "requiresRoles": [
+            "betrayer"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "key": "heat",
+              "delta": 12,
+              "reason": "熟人把行踪卖给了追捕者"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.1,
+              "reason": "行踪被熟人卖给了追捕者"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "熟人知道该去哪里找人"
+            }
+          ],
+          "text": "{betrayer}在咖啡馆里收了钱，把{subject}每周去洗衣房的时间写在烟盒背面。第二天，洗衣房门口多了一个看报的人。{subject}后来听说，{betrayer}那天没有回家吃晚饭。",
+          "significance": 0.55,
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        }
+      ],
+      "transitions": [
+        {
+          "id": "picked-up",
+          "to": "detained",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "cj17-wanted",
+              "parameter": "heat",
+              "min": 80
+            },
+            {
+              "kind": "notHasState",
+              "stateId": "detained",
+              "owner": "person"
+            }
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "taken_from_a_rented_room",
+              "add": true,
+              "reason": "在租来的房间里被带走"
+            }
+          ],
+          "reason": "追捕的热度终于足够让巡警上门"
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "cj17-wanted",
+          "parameter": "heat",
+          "max": 5
+        },
+        {
+          "kind": "hasState",
+          "stateId": "cj17-wanted",
+          "parameter": "cover",
+          "min": 45
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/crime-justice",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把追捕写成可下降也可上升的热度与掩护，而不是一次性逮捕；它给学校、工厂门口和火车站提供可读的条件。"
+      }
+    },
+    {
+      "id": "cj17-prison-term",
+      "version": 1,
+      "packId": "pack-crime-justice",
+      "title": "刑期",
+      "description": "一个人在监所里服具体的刑期。它记录剩余月份、在监所里的表现、能借到多少人情，以及出狱时还带着什么；监狱不是空白的时间，而是一套有工场、点名、放风和交换的日常。",
+      "owner": "person",
+      "slot": "confinement",
+      "conflict": "replace",
+      "tags": [
+        "crime",
+        "prison",
+        "confinement",
+        "legal",
+        "reentry",
+        "absence"
+      ],
+      "parameters": {
+        "monthsLeft": {
+          "type": "number",
+          "default": 12,
+          "min": 0,
+          "max": 60
+        },
+        "behavior": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        "contacts": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        },
+        "charge": {
+          "type": "string",
+          "default": "盗窃"
+        },
+        "workshop": {
+          "type": "string",
+          "default": "缝纫间"
+        }
+      },
+      "durationMonths": {
+        "min": 3,
+        "max": 60
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "prison",
+            "court",
+            "legal",
+            "police"
+          ],
+          "multiplier": 1.7
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "family",
+            "leisure",
+            "travel",
+            "courtship"
+          ],
+          "multiplier": 0.35
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "prison"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "unemployment",
+          "personId": "$subject",
+          "reason": "服刑期间失去原来的工作"
+        },
+        {
+          "type": "condition",
+          "personId": "$subject",
+          "condition": "prisoner",
+          "add": true,
+          "reason": "进入监所服刑"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "serving_prison_term",
+          "add": true,
+          "reason": "开始服具体的刑期"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "condition",
+          "personId": "$subject",
+          "condition": "prisoner",
+          "add": false,
+          "reason": "离开监所"
+        },
+        {
+          "type": "condition",
+          "personId": "$subject",
+          "condition": "prison record",
+          "add": true,
+          "reason": "刑期留下正式记录"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "serving_prison_term",
+          "add": false,
+          "reason": "刑期结束或被提前终止"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "released_from_prison",
+          "add": true,
+          "reason": "从监所出来"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "prison-half-year",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "resilience",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "the-work-detail-holds",
+              "result": "success",
+              "weight": 2,
+              "text": "半年过去，{subject}已经能在点名时闭着眼找到自己的位置。缝纫间的管理人把{subject}调去熨衣领，活儿轻一点，工分照旧。墙上的日历被撕掉六张，剩下的月份开始变得可以数。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-prison-term",
+                  "key": "behavior",
+                  "delta": 6,
+                  "reason": "在缝纫间熬过了半年"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-prison-term",
+                  "key": "contacts",
+                  "delta": 2,
+                  "reason": "认识了愿意替人带话的工友"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-prison-term",
+                  "key": "monthsLeft",
+                  "delta": -6,
+                  "reason": "又服完半年刑期"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "剩下的月份开始可以数"
+                }
+              ]
+            },
+            {
+              "id": "solitary-for-a-week",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}在放风时替隔壁的人传了一句话，被看守听见。单人间只有一床薄毯和一只铁碗，送饭的窗口每天开两次。七天以后{subject}回到大间，发现自己的铺位上已经放了别人的东西。",
+              "effects": [
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "单人间里的七天"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-prison-term",
+                  "key": "behavior",
+                  "delta": -8,
+                  "reason": "被关过单人间"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-prison-term",
+                  "key": "monthsLeft",
+                  "delta": -6,
+                  "reason": "又服完半年刑期"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.05,
+                  "reason": "铺位被挪走了"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-letter-from-outside",
+          "onTags": [
+            "family"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "外面有人还记得写信"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "key": "behavior",
+              "delta": 3,
+              "reason": "家里的信让日子好过一点"
+            }
+          ],
+          "text": "{subject}收到一封折成三折的信，纸上有面粉和煤烟的味道。信里没有问案子，只说家里的窗子换了新玻璃，墙上的旧日历还停在入冬那一页。{subject}把信读了两遍，才折回原来的折痕。",
+          "significance": 0.4,
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        }
+      ],
+      "transitions": [
+        {
+          "id": "over-the-wall",
+          "to": "cj17-wanted",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "cj17-prison-term",
+              "parameter": "behavior",
+              "max": 15
+            },
+            {
+              "kind": "hasState",
+              "stateId": "cj17-prison-term",
+              "parameter": "monthsLeft",
+              "min": 6
+            }
+          ],
+          "chance": 0.2,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "escaped_prison_work_detail",
+              "add": true,
+              "reason": "从劳动工场逃走"
+            }
+          ],
+          "reason": "表现太差又剩下太多刑期，劳动工场成了逃跑的入口"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/crime-justice",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把刑期写成有月份、表现、狱友人情的持续状态；释放和再次被追捕都由参数和转移决定，而不是由旁白宣布。"
+      }
+    },
+    {
+      "id": "cj17-protection-racket",
+      "version": 1,
+      "packId": "pack-crime-justice",
+      "title": "保护费网络",
+      "description": "一个人以“保平安”为名向市场摊位、店铺和后院工场收钱。它有收入、客户、欠上面的人情和暴露程度；保护不是抽象气氛，而是每月要收的硬币和必须记住的名字。",
+      "owner": "person",
+      "slot": "racket",
+      "conflict": "replace",
+      "tags": [
+        "crime",
+        "protection",
+        "racket",
+        "money",
+        "obligation",
+        "exposure",
+        "network"
+      ],
+      "parameters": {
+        "income": {
+          "type": "number",
+          "default": 4,
+          "min": 0,
+          "max": 100
+        },
+        "clients": {
+          "type": "number",
+          "default": 3,
+          "min": 0,
+          "max": 40
+        },
+        "obligation": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "exposure": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        },
+        "backer": {
+          "type": "string",
+          "default": "区里的巡官"
+        }
+      },
+      "links": {
+        "backer": "person",
+        "muscle": "person"
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 60
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "crime",
+            "protection",
+            "market",
+            "police",
+            "money"
+          ],
+          "multiplier": 1.6
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "family",
+            "leisure",
+            "courtship"
+          ],
+          "multiplier": 0.7
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "crime",
+            "protection"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "runs_protection_racket",
+          "add": true,
+          "reason": "开始按月收保护费"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "runs_protection_racket",
+          "add": false,
+          "reason": "保护费网络散掉或转到别人手里"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "collection-season",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "cunning",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "a-clean-round",
+              "result": "success",
+              "weight": 2,
+              "text": "{subject}把这一季的账收齐了：鱼摊、鞋铺、后院染坊，一共十七克朗。没有人少给，也没有人多问。{subject}在账本最后一页画了一个勾，又把两克朗单独包好，准备明天送到巡官家。",
+              "effects": [
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "这一季保护费里留下的零头"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-protection-racket",
+                  "key": "income",
+                  "delta": 2,
+                  "reason": "这一季收得顺"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-protection-racket",
+                  "key": "clients",
+                  "delta": 1,
+                  "reason": "又有一家店默认了这个规矩"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-protection-racket",
+                  "key": "exposure",
+                  "delta": 3,
+                  "reason": "收钱的路线越来越固定"
+                }
+              ]
+            },
+            {
+              "id": "someone-wrote-to-the-police",
+              "result": "failure",
+              "weight": 1,
+              "text": "一封没有署名的信寄到了警察局，说马克特附近有人按月收钱。{subject}不知道是谁写的，只能把这一季的账重新抄一遍，又把两个最熟的摊主请去喝酒。酒喝完，账没有变少，巡官却先来问了一句。",
+              "effects": [
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "请摊主喝酒和重抄账本"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-protection-racket",
+                  "key": "exposure",
+                  "delta": 10,
+                  "reason": "有人给警察局写了匿名信"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "cj17-protection-racket",
+                  "key": "obligation",
+                  "delta": 6,
+                  "reason": "需要巡官替这件事说一句话"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "不知道是谁写的信"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "the-inspector-wants-his-share",
+          "onTags": [
+            "police"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "给巡官的一份"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "obligation",
+              "delta": 8,
+              "reason": "巡官开始按月要一份"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "exposure",
+              "delta": 5,
+              "reason": "知道账的人又多了一个"
+            }
+          ],
+          "text": "{subject}在街角被巡官叫住，对方没有提保护费，只问最近市场秩序怎么样。临走时，巡官说家里的煤快用完了。{subject}当晚把两克朗和一袋煤送到门口，没有留名字。",
+          "significance": 0.5,
+          "cooldownMonths": 12,
+          "maxPerYear": 2
+        },
+        {
+          "id": "a-collector-talks",
+          "onTags": [
+            "betrayal"
+          ],
+          "requiresRoles": [
+            "betrayer"
+          ],
+          "chance": 0.55,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "exposure",
+              "delta": 12,
+              "reason": "手下把收钱名单说了出去"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.1,
+              "reason": "收钱名单被手下说出去"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "保护费的事开始有人公开议论"
+            }
+          ],
+          "text": "{betrayer}在酒馆里把两条街的收钱名单当笑话讲，讲到第三家店时，邻桌有人放下了杯子。第二天，{subject}照常去收钱，发现那家店的老板已经把柜台后面的账本换成了新的。",
+          "significance": 0.55,
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        }
+      ],
+      "transitions": [
+        {
+          "id": "the-ledger-reaches-the-wrong-desk",
+          "to": "cj17-wanted",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "cj17-protection-racket",
+              "parameter": "exposure",
+              "min": 75
+            }
+          ],
+          "chance": 0.55,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "racket_ledger_exposed",
+              "add": true,
+              "reason": "保护费账本落到了不该看到的人手里"
+            }
+          ],
+          "reason": "暴露太多，巡官决定先一步把这个人交出去"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/crime-justice",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把保护费写成有收入、客户、上面的人情和暴露程度的网络；它可以赚钱，也可以因为一封匿名信或一次酒后失言转为追捕。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "cj17-debt.creditor-offer",
+      "title": "债主带来的两个人",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "crime",
+        "debt",
+        "police",
+        "family",
+        "threat",
+        "money"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "debt-bondage",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "creditor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        },
+        {
+          "key": "enforcer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 55
+        },
+        {
+          "key": "kid",
+          "kind": "child",
+          "required": false,
+          "minAge": 5,
+          "maxAge": 15
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "paid-with-a-job",
+          "weight": 0.35,
+          "text": "债主把一张折成四折的期票放在桌上，说只要{subject}把一只封好的木匣送到北站，利息就可以从账上划掉。{subject}抱着匣子穿过煤烟味很重的街道，匣子里有金属磕碰的声音。三天后，巡官在楼下问起那只匣子，债主却已经不在这条街上了。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "替债主送匣子的跑腿钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": -8,
+              "reason": "送完匣子后划掉的一部分本金"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 12,
+                "charge": "来路不明的货匣"
+              },
+              "durationMonths": 12,
+              "reason": "巡官开始问起那只木匣"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$creditor",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "obligation": 0.12,
+              "reason": "替债主送过一只封好的匣子"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "carried_a_sealed_box",
+              "add": true,
+              "reason": "替债主把匣子送到北站"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "匣子里的金属声"
+            }
+          ]
+        },
+        {
+          "id": "legal-composition",
+          "weight": 0.3,
+          "text": "债主原本带来两个收账的人，听完{subject}的提议后，让他们先下楼。第二天，双方在区法院的书记官面前签了一份分期偿还书：每月还两克朗，利息停住，缝纫机暂不搬走。{subject}按了手印，回家路上买了一块最便宜的肥皂。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "分期偿还书的第一笔"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": -10,
+              "reason": "法院书记官见证的分期偿还"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "court payment plan",
+              "add": true,
+              "reason": "债务转成法院见证的分期偿还"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$creditor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.08,
+              "reason": "双方在书记官面前签了偿还书"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "debt_composition_signed",
+              "add": true,
+              "reason": "签了法院见证的分期偿还书"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "利息终于停住"
+            }
+          ]
+        },
+        {
+          "id": "taken-as-security",
+          "weight": 0.2,
+          "text": "两个收账的人没有动拳头，只把{subject}家的座钟和冬天的大衣搬上了手推车。债主说这叫“先抵一部分”，还在收据上写了日期。屋子里突然安静得能听见隔壁的咳嗽；{subject}把收据折好，放进原来放座钟的那块空位。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "被搬走的座钟和大衣折价"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "debt-bondage",
+              "key": "debt",
+              "delta": -4,
+              "reason": "家具和衣物被折价抵债"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "goods seized for debt",
+              "add": true,
+              "reason": "座钟和冬衣被收账人搬走"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$enforcer",
+              "kind": "rival",
+              "trust": -0.12,
+              "fear": 0.1,
+              "reason": "收账人搬走了家里的座钟"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "debt_paid_in_goods",
+              "add": true,
+              "reason": "用家具和衣物抵了一部分债"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "屋子里少了座钟的声音"
+            }
+          ]
+        },
+        {
+          "id": "the-child-shoes",
+          "weight": 0.15,
+          "text": "债主看见{kid}蹲在门口系鞋带，随口说这孩子再过两年就能去帮佣，工钱可以抵一部分债。{subject}当晚把{kid}送到城外姑妈家，回来时鞋底沾满泥。债主没有再提这件事，但每次收账都往屋里多看一眼。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "送孩子去城外的车钱"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "child sent to relatives",
+              "add": true,
+              "reason": "把孩子送到城外亲戚家"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kid",
+              "kind": "kin",
+              "trust": -0.02,
+              "affection": 0.08,
+              "fear": 0.05,
+              "reason": "孩子被临时送走"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$creditor",
+              "kind": "rival",
+              "trust": -0.18,
+              "fear": 0.12,
+              "reason": "债主开始打孩子工钱的主意"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_hidden_from_creditor",
+              "add": true,
+              "reason": "把孩子送走来躲避债主"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "孩子被送走"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cj17-police.lineup",
+      "title": "第四个人举了手",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "police",
+        "court",
+        "legal",
+        "investigation",
+        "mistaken_identity",
+        "humiliation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "under-investigation",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "inspector",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "witness",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "wrong-man",
+          "weight": 0.3,
+          "text": "预审室里点着三盏煤气灯，{witness}从五个男人面前走过，在第四个人面前停住，又退回第二个。{inspector}把{subject}的帽子摘下来看了看，最后在记录上写了“排除”。{subject}走出警局时，天还没亮，扫街的人正在冲洗台阶。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "delta": -10,
+              "reason": "证人排除了这个人"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "排认后暂时洗清了一部分嫌疑"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cleared_in_lineup",
+              "add": true,
+              "reason": "在列队辨认中被排除"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被当成嫌疑人站了半个晚上"
+            }
+          ]
+        },
+        {
+          "id": "identified",
+          "weight": 0.35,
+          "text": "{witness}在第一个人面前就站住了，说那件灰外套不会错。{inspector}没有再看{subject}的眼睛，只让警士把手铐拿出来。{subject}被推上囚车时，听见{witness}在身后说：“我记得那个人走路的样子。”其实{subject}的左脚并不跛。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被警士推上囚车时撞到车门"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "detained",
+              "parameters": {
+                "charge": "证人指认的盗窃",
+                "months": 6
+              },
+              "durationMonths": 6,
+              "reason": "证人当场指认，转为拘留"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$witness",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.08,
+              "reason": "证人在列队辨认中指认了这个人"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "identified_by_witness",
+              "add": true,
+              "reason": "被证人从列队中认出"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "被推上囚车"
+            }
+          ]
+        },
+        {
+          "id": "bought-the-witness",
+          "weight": 0.2,
+          "text": "家里凑了三克朗，由{subject}的家里人在咖啡馆后门交给{witness}。第二天，{witness}在预审室里说光线太暗，认不清。{inspector}合上本子，说证据不足，但没有把案子结掉。{subject}知道那张纸还在某个抽屉里，只是暂时不压在自己身上。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "在咖啡馆后门交给证人的钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "delta": -5,
+              "reason": "证人改口说光线太暗"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$witness",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "obligation": 0.12,
+              "fear": 0.05,
+              "reason": "证人收了钱并改口"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "witness_paid_off",
+              "add": true,
+              "reason": "家里出钱买通了证人"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "证人收了钱才说光线太暗，案子并没有真正结掉。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "案子只是暂时不压在身上"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "parameters": {
+                "heat": 20,
+                "cover": 5,
+                "price": 4,
+                "pursuer": "police",
+                "alias": "witness buyer"
+              },
+              "durationMonths": 12,
+              "reason": "buying a witness put a police target on the subject"
+            }
+          ]
+        },
+        {
+          "id": "the-wrong-button",
+          "weight": 0.15,
+          "text": "{witness}在五个人里转了两圈，最后指向{inspector}，说那枚铜纽扣和凶手的一模一样。预审室先是一静，接着有人咳了一声。{subject}被带回走廊，等了一个下午，拿到一张写着“暂时释放”的纸条；{inspector}的纽扣当天就换了。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "delta": -6,
+              "reason": "辨认过程出了明显的错误"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "预审室里的笑话传到了走廊"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lineup_collapsed",
+              "add": true,
+              "reason": "证人指认了主持辨认的巡官"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "证人指认了巡官的铜纽扣，辨认当场作废。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "荒唐的辨认暂时帮了自己"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cj17-court.charge-read",
+      "title": "最后一张纸",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "court",
+        "legal",
+        "trial",
+        "informant",
+        "sentence",
+        "prison"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "detained",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "cj17-prison-term",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "judge",
+          "kind": "official",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 70
+        },
+        {
+          "key": "advocate",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 65
+        },
+        {
+          "key": "accomplice",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 55
+        }
+      ],
+      "baseRate": 0.2,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "legal-aid-works",
+          "weight": 0.3,
+          "text": "{advocate}把搜查记录翻到最后一页，指出上面缺了见证人的签名。{judge}让书记官把纸递上来，看了很久，最后说这页不能作为证据。起诉被撤回，{subject}在走廊里接过退还的保释金，{advocate}只收了一克朗的车马费。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "给辩护人的车马费和抄写费"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "detained",
+              "reason": "起诉撤回，拘留结束"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "case dismissed",
+              "add": true,
+              "reason": "关键搜查记录缺少见证人签名"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "案子以证据不足撤回"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$advocate",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "respect": 0.1,
+              "reason": "辩护人找到了程序上的漏洞"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "case_dismissed_on_procedure",
+              "add": true,
+              "reason": "因程序问题撤诉"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "从法院正门走出来"
+            }
+          ]
+        },
+        {
+          "id": "fine-and-record",
+          "weight": 0.25,
+          "text": "{judge}说事情不大，但总得有人负责：罚四克朗，记录在案，不再关押。{subject}把家里准备交房租的钱数了两遍，还是差一克朗，最后由{advocate}垫上。走出法院时，雨把判决书上的墨迹晕开，{subject}还是把它折好带回了家。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "法院判处的罚金"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "detained",
+              "reason": "罚金代替了继续关押"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "criminal record",
+              "add": true,
+              "reason": "判决书上留下了姓名和案由"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "法院记录进入了街坊的耳朵"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$advocate",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "辩护人替这个人垫了一克朗"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fined_in_court",
+              "add": true,
+              "reason": "被法院判处罚金"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "判决书被雨淋湿"
+            }
+          ]
+        },
+        {
+          "id": "names-for-leniency",
+          "weight": 0.25,
+          "text": "{advocate}在走廊里低声说，只要把{accomplice}的名字写进供词，刑期可以改成缓刑。{subject}写了，写得很慢，最后还在名字下面画了一道横线。{judge}接受了供词，{accomplice}当天下午在火车站被拦住。{subject}没有坐牢，但回家时发现门缝里塞着一张没有署名的纸，上面只画了一把刀。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "detained",
+              "reason": "以供词换取缓刑，拘留结束"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "parameters": {
+                "heat": 30,
+                "cover": 10,
+                "price": 5,
+                "pursuer": "同伙",
+                "alias": "供词里的名字"
+              },
+              "durationMonths": 18,
+              "reason": "供词把同伙送进车站的包围，也把这个人标成了目标"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$accomplice",
+              "kind": "rival",
+              "trust": -0.4,
+              "fear": 0.2,
+              "reason": "名字被写进供词，同伙在火车站被捕"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "供词在拘留所和街面上传开"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "informer_after_trial",
+              "add": true,
+              "reason": "用同伙的名字换缓刑"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "门缝里那把画出来的刀"
+            }
+          ]
+        },
+        {
+          "id": "sentenced-to-prison",
+          "weight": 0.2,
+          "text": "{judge}把判决书念得很慢：八个月监禁，服刑后驱逐出本区。{advocate}想再说什么，{judge}已经合上本子。{subject}被带回拘留室时，看见走廊尽头有人在擦铜牌；那块铜牌上刻着法院的名字，擦得很亮。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "detained",
+              "reason": "判决生效，从拘留转为服刑"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "parameters": {
+                "monthsLeft": 8,
+                "behavior": 50,
+                "contacts": 10,
+                "charge": "盗窃",
+                "workshop": "缝纫间"
+              },
+              "durationMonths": 10,
+              "reason": "法院判处八个月监禁"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "convicted",
+              "add": true,
+              "reason": "判决书念出了罪名和刑期"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "法院判决在街坊间传开"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sentenced_to_prison",
+              "add": true,
+              "reason": "被判处八个月监禁"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "走廊尽头那块擦亮的铜牌"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cj17-prison.workshop",
+      "title": "缝纫间的号码",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "prison",
+        "work",
+        "confinement",
+        "survival",
+        "informant",
+        "craft"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "cj17-prison-term",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "warder",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 65
+        },
+        {
+          "key": "cellmate",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.2,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "needle-and-thimble",
+          "weight": 0.35,
+          "text": "{cellmate}把一枚磨得发亮的顶针推到{subject}面前，教{subject}把针脚藏在衣缝里面，说验收的人不会拆开看。缝纫间里十二台机器一起响，{warder}在门口站了一会儿，没有点名。{subject}低下头，第一次觉得这门手艺也许出狱后还能换一碗饭。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "在缝纫间学会了藏针脚"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "key": "behavior",
+              "delta": 8,
+              "reason": "在工场里表现稳定"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "key": "contacts",
+              "delta": 3,
+              "reason": "和缝纫间的工友熟悉起来"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$cellmate",
+              "kind": "friend",
+              "trust": 0.12,
+              "respect": 0.05,
+              "reason": "同监的人教了缝纫手艺"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "手艺也许还能换一碗饭"
+            }
+          ]
+        },
+        {
+          "id": "contraband-tobacco",
+          "weight": 0.25,
+          "text": "{cellmate}从鞋底摸出一小包烟丝，说看守换班时可以换到热水和额外的面包。{subject}用一克朗和半块肥皂换了。烟味在通铺上散开时，{warder}突然推门进来，所有人都把脸转向墙；最后被搜出来的是另一个人的袜子。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "换烟丝和热水的一克朗"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "key": "contacts",
+              "delta": 8,
+              "reason": "学会了在监所里换东西的门路"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "key": "behavior",
+              "delta": -4,
+              "reason": "参与了一次违禁品交易"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$cellmate",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.08,
+              "reason": "一起做过一次小交易"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "prison_contraband",
+              "add": true,
+              "reason": "在监所里换过烟丝"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "热水和烟丝带来的短暂轻松"
+            }
+          ]
+        },
+        {
+          "id": "the-warders-ledger",
+          "weight": 0.25,
+          "text": "{warder}把{subject}叫到放风场的墙边，说只要把{cellmate}夜里说过的话写下来，下个月就能调去厨房帮工。{subject}写了三行，换到一把更轻的扫帚。{cellmate}没有问，只在吃饭时把座位挪远了一点。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "key": "behavior",
+              "delta": 10,
+              "reason": "用三行供词换到了厨房帮工"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "key": "contacts",
+              "delta": -5,
+              "reason": "同监的人开始避开这个人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$cellmate",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.08,
+              "reason": "夜里的话被写成了三行供词"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "prison_informer",
+              "add": true,
+              "reason": "向看守提供了同监人的话"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "吃饭时被让出的座位"
+            }
+          ]
+        },
+        {
+          "id": "the-machine-jams",
+          "weight": 0.15,
+          "text": "缝纫间的机器突然卡住，针头断在{subject}的指节旁边。{warder}让{subject}去水龙头下面冲一冲，然后回来继续。血把袖口弄脏了，{cellmate}替{subject}把剩下的衣领缝完；晚饭时，{subject}的手抖得拿不稳勺子。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "缝纫机针头扎伤了手"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "hand injury",
+              "add": true,
+              "reason": "缝纫间的事故留下了手伤"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "key": "behavior",
+              "delta": -2,
+              "reason": "手伤让工分少了一截"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$cellmate",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "obligation": 0.05,
+              "reason": "同监的人替这个人缝完了衣领"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "prison_workshop_injury",
+              "add": true,
+              "reason": "在缝纫间被针头扎伤"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "手抖得拿不稳勺子"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cj17-prison.release-day",
+      "title": "出狱那天的电车",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "prison",
+        "release",
+        "reentry",
+        "family",
+        "work",
+        "stigma"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "cj17-prison-term",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "cj17-prison-term",
+          "owner": "person",
+          "parameter": "monthsLeft",
+          "max": 6
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "warder",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 65
+        },
+        {
+          "key": "cellmate",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "kid",
+          "kind": "child",
+          "required": false,
+          "minAge": 5,
+          "maxAge": 16
+        }
+      ],
+      "baseRate": 0.22,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "walked-out-with-a-certificate",
+          "weight": 0.35,
+          "text": "{warder}把一张释放证明和一枚铜扣交给{subject}，说工作介绍所会看这张纸。{subject}走到街上，先看见面包房的新招牌，又看见招工栏上“无犯罪记录”几个字。{subject}把证明折成两半，一半放进内袋，一半留在手里。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "reason": "刑期服满，拿到释放证明"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "blacklisted",
+              "parameters": {
+                "reason": "prison record",
+                "severity": 0.55
+              },
+              "durationMonths": 24,
+              "reason": "释放证明上的记录让正规雇主退却"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "released prisoner",
+              "add": true,
+              "reason": "带着释放证明回到街上"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "释放证明上的案由被人看见"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "released_with_certificate",
+              "add": true,
+              "reason": "拿着释放证明走出监所"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "招工栏上的“无犯罪记录”"
+            }
+          ]
+        },
+        {
+          "id": "family-at-the-gate",
+          "weight": 0.3,
+          "text": "{kid}站在监狱门口的电线杆下面，穿着一件明显大了一号的旧外套。{subject}出来时，{kid}没有立刻跑过来，只把手里那块用纸包着的面包举高了一点。{subject}接过面包，发现还是温的；两个人沿着电车轨道走回家，谁也没提里面的事。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "reason": "刑期结束，孩子在门口等候"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kid",
+              "kind": "kin",
+              "trust": 0.1,
+              "affection": 0.12,
+              "obligation": 0.08,
+              "reason": "孩子在监狱门口带来一块温面包"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "released prisoner",
+              "add": true,
+              "reason": "从监所出来"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "family_met_at_prison_gate",
+              "add": true,
+              "reason": "出狱时孩子在门口等候"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "面包还是温的"
+            }
+          ]
+        },
+        {
+          "id": "parole-with-names",
+          "weight": 0.2,
+          "text": "{warder}在放风时把{subject}叫到墙边，说只要写出{cellmate}在牢里传过的话，剩下的三个月可以减掉。{subject}写了，写完以后{cellmate}被调去了另一层。释放那天，{cellmate}隔着铁门看了{subject}一眼，没有挥手。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "reason": "以供词换取提前释放"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "parameters": {
+                "heat": 25,
+                "cover": 10,
+                "price": 5,
+                "pursuer": "狱友",
+                "alias": "提前释放的人"
+              },
+              "durationMonths": 12,
+              "reason": "提前释放的供词让牢里的人记住了这个名字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$cellmate",
+              "kind": "rival",
+              "trust": -0.3,
+              "fear": 0.15,
+              "reason": "同监的人因供词被调走"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "提前释放的原因在监所里传开"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "informer_for_parole",
+              "add": true,
+              "reason": "用同监人的话换取提前释放"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "铁门后没有挥手的同监人"
+            }
+          ]
+        },
+        {
+          "id": "gate-money",
+          "weight": 0.15,
+          "text": "释放前一天，{warder}说出门要交两克朗的“衣物保管费”，否则只能穿着囚衣走。{subject}没有钱，只好让家里把冬天的被子当掉。出狱那天，{subject}穿着一件不合身的旧外套，手里拎着当票，比原定的日子晚了两天。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "出门前交的衣物保管费"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-prison-term",
+              "key": "monthsLeft",
+              "delta": 2,
+              "reason": "交不出钱，释放晚了两天"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "release delayed",
+              "add": true,
+              "reason": "因衣物保管费晚出狱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_gate_money",
+              "add": true,
+              "reason": "家里当掉被子交了出门费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "拎着当票走出监所"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cj17-family.schoolyard",
+      "title": "校门外的警士",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 60
+      },
+      "tags": [
+        "family",
+        "child",
+        "school",
+        "police",
+        "stigma",
+        "neighborhood"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "cj17-wanted",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 60
+        },
+        {
+          "key": "kid",
+          "kind": "child",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 14
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "the-teacher-knows",
+          "weight": 0.35,
+          "text": "{teacher}把{subject}叫到校门旁边，说最近有警士来问过{kid}的家庭情况，问得很细。{teacher}没有让{subject}别再出现，只建议以后让别的家长来接。{subject}站在校门外，看见{kid}隔着铁栏杆朝这边挥手，手举到一半又放下了。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "child questioned at school",
+              "add": true,
+              "reason": "警士到学校问过孩子的家庭情况"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kid",
+              "kind": "kin",
+              "trust": -0.08,
+              "fear": 0.05,
+              "reason": "孩子在学校被警士问话"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "respect": 0.02,
+              "reason": "老师建议换人来接孩子"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "警士出现在校门口"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_marked_at_school",
+              "add": true,
+              "reason": "孩子在学校被点名问过家庭"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "孩子挥到一半的手"
+            }
+          ]
+        },
+        {
+          "id": "moved-the-kid",
+          "weight": 0.3,
+          "text": "{subject}把{kid}送到城外姑妈家，只带了一个小箱子和一双替换的鞋。{kid}在火车站问什么时候能回来，{subject}说等雪化了。火车开走后，{subject}在站台上站了很久；回到城里，家里的那张小床显得比原来宽。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "送孩子出城的车票和行李"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "child sent to relatives",
+              "add": true,
+              "reason": "把孩子送到城外姑妈家"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kid",
+              "kind": "kin",
+              "trust": -0.04,
+              "affection": -0.08,
+              "obligation": 0.1,
+              "reason": "孩子被送到城外，等雪化了才回来"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_sent_to_relatives",
+              "add": true,
+              "reason": "为了避开警士把孩子送走"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "家里的床显得比原来宽"
+            }
+          ]
+        },
+        {
+          "id": "mothers-close-ranks",
+          "weight": 0.2,
+          "text": "{neighbor}在校门口把几个议论的人挡了回去，说{kid}的父亲只是去了外地做工，谁再乱讲就去敲谁家的门。第二天，{teacher}把{kid}的座位调到了中间。{subject}没有当面道谢，只在{neighbor}家门口放了一小袋煤。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.12,
+              "respect": 0.08,
+              "reason": "邻居在校门口替孩子挡了闲话"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kid",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": 0.05,
+              "reason": "孩子的座位被调回中间"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "邻居公开替这家人说话"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "schoolyard_defended",
+              "add": true,
+              "reason": "邻居在校门口替孩子说话"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "门口那一小袋煤"
+            }
+          ]
+        },
+        {
+          "id": "the-kid-lies",
+          "weight": 0.15,
+          "text": "{kid}在操场上对同学说，父亲死在波斯尼亚，母亲在医院洗床单。{subject}去接{kid}时正好听见，脚步停在雪地里。{kid}看见{subject}，没有慌，只把书包带子又收紧了一格；两个人一路走回家，谁也没有先开口。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kid",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": -0.04,
+              "fear": 0.08,
+              "reason": "孩子在学校编了另一个家庭"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "child tells a cover story",
+              "add": true,
+              "reason": "孩子在学校替家里编了说法"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "操场上的说法传到了街坊"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_told_a_cover_story",
+              "add": true,
+              "reason": "孩子在学校说父亲死在波斯尼亚"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "听见孩子编出来的父亲"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cj17-work.factory-gate",
+      "title": "厂门口的两个便衣",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 65
+      },
+      "tags": [
+        "work",
+        "factory",
+        "police",
+        "union",
+        "class",
+        "wanted"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "factory-employment",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "cj17-wanted",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 65
+        },
+        {
+          "key": "union_rep",
+          "kind": "union_member",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "shop-steward-covers",
+          "weight": 0.3,
+          "text": "{union_rep}把{subject}的名字从当天的班次表上挪到“仓库盘货”，又把一张工会会员证塞进{subject}的围裙口袋。{foreman}来问过两次，{union_rep}都说{subject}在楼下搬纸。{subject}在仓库里坐了一整天，听见机器声从地板下面传上来。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "补交的工会会费"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "key": "cover",
+              "delta": 10,
+              "reason": "工会代表把名字藏进了仓库班次"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$union_rep",
+              "kind": "friend",
+              "trust": 0.12,
+              "obligation": 0.1,
+              "reason": "工会代表替这个人挡了工头"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "工头两次没在车间找到人"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "union_cover_at_factory",
+              "add": true,
+              "reason": "工会代表把名字挪进了仓库班次"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "在仓库里躲过一天"
+            }
+          ]
+        },
+        {
+          "id": "foreman-sells-the-shift",
+          "weight": 0.3,
+          "text": "{foreman}没有报警，只把{subject}叫到锅炉房，说要继续上工，每月得从工钱里拿出两克朗“给夜班守卫买烟”。{subject}答应了。第二天，班次表上{subject}的名字还在，只是排在最后一个；{foreman}经过时，手指在{subject}的工牌上敲了两下。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "给夜班守卫买烟的钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "key": "heat",
+              "delta": -5,
+              "reason": "工头把便衣来问的事压了下去"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$foreman",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "obligation": 0.18,
+              "fear": 0.08,
+              "reason": "工头收钱替这个人压下了便衣的问话"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_foreman_for_cover",
+              "add": true,
+              "reason": "每月给工头两克朗买烟"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "名字被排在班次表最后"
+            }
+          ]
+        },
+        {
+          "id": "police-at-the-gate",
+          "weight": 0.25,
+          "text": "两个便衣在厂门口等{subject}，没有出示证件，只说“跟我们走一趟”。{foreman}把{subject}的工牌从钩子上摘下来，放进抽屉，像收起一件用旧了的工具。{subject}被带上马车时，早班汽笛正好响起，厂门在身后慢慢关上。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "被便衣推上马车"
+            },
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "在厂门口被带走"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "reason": "在厂门口被便衣带走"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "factory-employment",
+              "reason": "工牌被从钩子上摘下来"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "detained",
+              "parameters": {
+                "charge": "在逃期间被认出",
+                "months": 6
+              },
+              "durationMonths": 6,
+              "reason": "在厂门口被便衣带走"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "arrested_at_factory_gate",
+              "add": true,
+              "reason": "早班汽笛响时被带上马车"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "厂门在身后关上"
+            }
+          ]
+        },
+        {
+          "id": "blacklisted-first",
+          "weight": 0.15,
+          "text": "厂里没有等警察来，先把{subject}的名字从工资册上划掉了。{foreman}说不是针对{subject}，是保险行会不肯再保“有案底的人”。{subject}收拾工具时，{union_rep}站在门口，想说什么，最后只递过来一张劳动介绍所的地址。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "名字被从工资册上划掉"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "factory-employment",
+              "reason": "工厂以保险行会为由解除雇佣"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "blacklisted",
+              "parameters": {
+                "reason": "criminal record",
+                "severity": 0.6
+              },
+              "durationMonths": 24,
+              "reason": "保险行会不肯再保“有案底的人”"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$union_rep",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "工会代表递来劳动介绍所的地址"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fired_before_police_arrived",
+              "add": true,
+              "reason": "警察来之前工厂先除了名"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "工具箱被清空"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cj17-protection.first-payment",
+      "title": "市场尽头的铁皮盒",
+      "domain": "crime",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 70
+      },
+      "tags": [
+        "crime",
+        "protection",
+        "market",
+        "blacklist",
+        "work",
+        "money"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "blacklisted",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "cj17-protection-racket",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "collector",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 55
+        },
+        {
+          "key": "patron",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 75
+        },
+        {
+          "key": "inspector",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "pays-weekly",
+          "weight": 0.35,
+          "text": "{collector}把一只铁皮盒子放在{subject}的摊位上，说市场这一排每月两克朗，保{subject}的货不被掀、秤不被砸。{subject}看见隔壁卖鸡蛋的老妇人一句话没说就数了钱，也数了。{patron}站在街对面，手里转着一把没有打开的伞。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "第一个月的市场保护费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$collector",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "fear": 0.12,
+              "obligation": 0.08,
+              "reason": "每月向这个人交保护费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "fear": 0.08,
+              "obligation": 0.05,
+              "reason": "街对面那个撑伞的人才是收钱的东家"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "paying protection money",
+              "add": true,
+              "reason": "开始按月向市场收钱的人交费"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_protection_money",
+              "add": true,
+              "reason": "把两克朗放进铁皮盒"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "市场这一排的摊位每月都要往铁皮盒里放两克朗。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "reported-to-the-inspector",
+          "weight": 0.3,
+          "text": "{subject}带着收据去了市场管理处，{inspector}听完，把收据翻过来，说上面没有印章，不能立案。{subject}又问警察局，窗口的人让{subject}填一张表，表上要写“损失金额”。{subject}填了两克朗；半年过去，没有人来找{collector}谈过。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "立案表格和往返车钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$inspector",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "reason": "市场管理处拒绝受理没有印章的收据"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$collector",
+              "kind": "rival",
+              "trust": -0.15,
+              "fear": 0.05,
+              "reason": "收据被拿去管理处"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "complaint filed without result",
+              "add": true,
+              "reason": "投诉被窗口收下，却没有立案"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "protection_complaint_ignored",
+              "add": true,
+              "reason": "市场管理处说收据没有印章"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "市场管理处和警察局都收下了说法，但没有人真正立案。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "表格上只填了两克朗的损失"
+            }
+          ]
+        },
+        {
+          "id": "joins-the-collection",
+          "weight": 0.2,
+          "text": "{collector}见{subject}数钱数得仔细，便让{subject}第二天跟着去收两条街。{subject}第一次伸手时，手心里全是汗；{patron}在后面看着，说收保护费不难，难的是记住谁还没有交。月底，{subject}分到三克朗和一把新锁。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "第一个月跟着收保护费分到的钱"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "parameters": {
+                "income": 3,
+                "clients": 2,
+                "obligation": 20,
+                "exposure": 10,
+                "backer": "市场尽头的老人"
+              },
+              "links": {
+                "backer": "$patron"
+              },
+              "durationMonths": 24,
+              "reason": "开始替人收两条街的保护费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$collector",
+              "kind": "colleague",
+              "trust": 0.08,
+              "obligation": 0.12,
+              "fear": 0.05,
+              "reason": "跟着这个人学会了收保护费"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "fear": 0.1,
+              "obligation": 0.15,
+              "reason": "市场尽头的老人给了这份差事"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "became_protection_collector",
+              "add": true,
+              "reason": "开始替人收保护费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "月底分到三克朗和一把新锁"
+            }
+          ]
+        },
+        {
+          "id": "beaten-by-collector",
+          "weight": 0.15,
+          "text": "{collector}说{subject}交晚了三天，按规矩要“补个教训”。两个人把{subject}的摊布掀进泥里，鸡蛋碎了一半。{patron}没有动手，只在旁边说算了，下次记得。{subject}蹲在地上捡还能卖的蛋，手指被蛋壳划了一道口子。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被收保护费的人推倒在摊位上"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "碎掉的鸡蛋和弄脏的摊布"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$collector",
+              "kind": "rival",
+              "trust": -0.22,
+              "fear": 0.2,
+              "reason": "因为晚交三天被掀了摊子"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "beaten over protection money",
+              "add": true,
+              "reason": "在市场上因为保护费被推倒"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "beaten_by_protection_collector",
+              "add": true,
+              "reason": "摊子被掀，鸡蛋碎了一半"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "蹲在地上捡碎蛋"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cj17-racket.collect",
+      "title": "安葬会的收据",
+      "domain": "crime",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "crime",
+        "protection",
+        "racket",
+        "market",
+        "violence",
+        "police",
+        "irony"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "cj17-protection-racket",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "shopkeeper",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "enforcer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 45
+        }
+      ],
+      "baseRate": 0.19,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "paid-on-time",
+          "weight": 0.35,
+          "text": "{shopkeeper}把三克朗和一张写着“本月已清”的纸条一起推过柜台，手指在纸上按了一下。{subject}数完钱，顺手把门口倒下的扫帚扶正。{enforcer}站在门外，什么也没做；这条街今天很安静，安静得能听见隔壁钟表铺的摆轮。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "这个月收上来的保护费"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "income",
+              "delta": 3,
+              "reason": "这个月收得干净"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "clients",
+              "delta": 1,
+              "reason": "又有一家店按时交了钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "exposure",
+              "delta": 2,
+              "reason": "收钱的路线又多了一家"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$shopkeeper",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "fear": 0.15,
+              "obligation": 0.05,
+              "reason": "按月收这家店的钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "这条街今天很安静"
+            }
+          ]
+        },
+        {
+          "id": "the-widows-receipt",
+          "weight": 0.25,
+          "text": "{shopkeeper}戴着黑纱，看见{subject}进门就叹了口气，说安葬会的钱终于来了。{subject}还没来得及开口，手里已经被塞进两克朗和一张皱巴巴的收据；{shopkeeper}还问棺材什么时候到。{subject}在收据上按了手印，出门时才想起自己原本是来收保护费的。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "安葬会“收”来的两克朗"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "obligation",
+              "delta": 10,
+              "reason": "收据上按了手印，欠下一副棺材"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "exposure",
+              "delta": 4,
+              "reason": "安葬会的人知道这张收据"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$shopkeeper",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "obligation": 0.15,
+              "reason": "寡妇把安葬会的钱交给了这个人"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我收了一笔安葬会的钱，还在收据上按了手印，现在欠一副棺材。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "coffin_receipt",
+              "add": true,
+              "reason": "把保护费收成了安葬会的棺材钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "出门时才想起自己是来收保护费的"
+            }
+          ]
+        },
+        {
+          "id": "enforcer-goes-too-far",
+          "weight": 0.2,
+          "text": "{shopkeeper}说这个月实在拿不出钱，{enforcer}便把柜台上的玻璃罐扫到地上。{subject}没有拦，等看见{shopkeeper}的手臂垂下来时才让人停手。巡警来得比平时快，{subject}从后门离开，听见街上有人在喊医生。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "从柜台抽屉里拿走的钱"
+            },
+            {
+              "type": "health",
+              "personId": "$shopkeeper",
+              "amount": -0.08,
+              "reason": "被推倒时摔伤了手臂"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "exposure",
+              "delta": 18,
+              "reason": "街上有人看见收钱的人动手"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "parameters": {
+                "heat": 35,
+                "cover": 5,
+                "price": 10,
+                "pursuer": "巡警",
+                "alias": "市场收钱的人"
+              },
+              "durationMonths": 12,
+              "reason": "收保护费时打伤了店主"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$shopkeeper",
+              "kind": "rival",
+              "trust": -0.3,
+              "fear": 0.3,
+              "reason": "收钱的人打伤了店主"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "市场上有人被打伤"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "assault reported",
+              "add": true,
+              "reason": "巡警因市场斗殴来到现场"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "后门外的喊医生声"
+            }
+          ]
+        },
+        {
+          "id": "the-shop-is-a-front",
+          "weight": 0.2,
+          "text": "{shopkeeper}今天格外痛快，钱早早包在纸里。{subject}刚接过纸包，后间就走出两个便衣，桌上那盏灯把三个人的影子照在墙上。{shopkeeper}退到门边，说“就是他们”。{subject}被按在柜台上时，闻见新刨的木屑味——那间后间根本不是住人的。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被便衣按在柜台上"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "身上带的钱被当作赃款收走"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "reason": "收钱时走进便衣设下的铺子"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "detained",
+              "parameters": {
+                "charge": "敲诈勒索",
+                "months": 8
+              },
+              "durationMonths": 8,
+              "reason": "被便衣当场拘留"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$shopkeeper",
+              "kind": "rival",
+              "trust": -0.3,
+              "fear": 0.1,
+              "reason": "店主配合便衣设了套"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "racket_walked_into_trap",
+              "add": true,
+              "reason": "收保护费走进了便衣的铺子"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "后间的新木屑味"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cj17-escape.border-train",
+      "title": "北站最后一节车厢",
+      "domain": "migration",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 60
+      },
+      "tags": [
+        "crime",
+        "escape",
+        "migration",
+        "border",
+        "train",
+        "smuggler"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "cj17-wanted",
+          "owner": "person",
+          "parameter": "heat",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "smuggler",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "gendarme",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "kid",
+          "kind": "child",
+          "required": false,
+          "minAge": 5,
+          "maxAge": 16
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "over-the-border",
+          "weight": 0.3,
+          "text": "{smuggler}把{subject}带到北站最末一节车厢，说查票的人会在普雷斯堡之前换班。火车开动后，{subject}把帽檐压低，看见窗外的雪把田野和铁轨连成一片。天亮前，{subject}已经在一间没有招牌的客栈里，用另一个名字登记。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "付给走私者的车钱和客栈钱"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "reason": "越过边境，旧名字暂时留在维也纳"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "left Vienna",
+              "add": true,
+              "reason": "坐夜车离开维也纳"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$smuggler",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.08,
+              "reason": "走私者把这个人带过了边境"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "crossed_border_by_night_train",
+              "add": true,
+              "reason": "坐夜车越过边境"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "用另一个名字登记入住"
+            }
+          ]
+        },
+        {
+          "id": "bribed-the-gendarme",
+          "weight": 0.25,
+          "text": "{gendarme}在车厢连接处拦住{subject}，看了证件，又看了看{subject}的鞋。{smuggler}把五克朗卷进一张车票里递过去；{gendarme}把票还回来，说“下一站别下车”。{subject}坐回座位，发现自己的手一直到布吕恩才不再发抖。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "卷进车票里的五克朗"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "key": "heat",
+              "delta": -20,
+              "reason": "宪兵收钱后把名字从当班名单上挪开"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$gendarme",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "obligation": 0.15,
+              "fear": 0.1,
+              "reason": "宪兵收钱放过了这趟车"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "bribed a gendarme",
+              "add": true,
+              "reason": "在车厢连接处用五克朗买通宪兵"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bribed_border_gendarme",
+              "add": true,
+              "reason": "宪兵说下一站别下车"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "手一直到布吕恩才不抖"
+            }
+          ]
+        },
+        {
+          "id": "taken-off-the-train",
+          "weight": 0.25,
+          "text": "{gendarme}在边境小站把{subject}叫下车，说名单上有这个名字。{smuggler}已经不见了，站台上只有一条狗和一堆没扫的雪。{subject}被带进站房后面的小屋，等了两天，才等到一辆回维也纳的囚车。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "被扣下时身上剩下的零钱"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "在边境站房后面的小屋里等了两天"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "reason": "在边境小站被宪兵拦下"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "detained",
+              "parameters": {
+                "charge": "无证越境",
+                "months": 4
+              },
+              "durationMonths": 4,
+              "reason": "在边境被拦下并押回维也纳"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "held at border",
+              "add": true,
+              "reason": "在边境小站被扣留"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "stopped_at_border_station",
+              "add": true,
+              "reason": "名单上的名字被宪兵查到"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "站台上只剩一条狗和一堆雪"
+            }
+          ]
+        },
+        {
+          "id": "kids-passport",
+          "weight": 0.2,
+          "text": "{smuggler}看见{kid}，说孩子没有证件，得多加三克朗，或者留在下一站。{subject}把钱数了三遍，最后还是把{kid}的手牵紧。火车过境时，{kid}把脸埋在{subject}的袖子里；{smuggler}在另一节车厢，假装不认识他们。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "给孩子补的越境钱"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-wanted",
+              "reason": "带着孩子越过边境"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$kid",
+              "kind": "kin",
+              "trust": 0.08,
+              "affection": 0.1,
+              "obligation": 0.12,
+              "reason": "没有把孩子留在边境小站"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$smuggler",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "fear": 0.08,
+              "reason": "走私者临时加价"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "left Vienna",
+              "add": true,
+              "reason": "带着孩子坐夜车离开维也纳"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_extra_for_child_at_border",
+              "add": true,
+              "reason": "为孩子补了越境的钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "钱数了三遍"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "crime",
+    "justice",
+    "debt",
+    "prison",
+    "police"
+  ],
+  "tone": [
+    "dark",
+    "tense",
+    "black_humour"
+  ],
+  "scope": [
+    "person",
+    "organization"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "violence",
+    "incarceration",
+    "police violence",
+    "child endangerment"
+  ]
+}

@@ -28,28 +28,71 @@
         "no-real-authority"
       ],
       "parameters": {
-        "production": { "type": "string", "default": "《冬日王冠》" },
-        "role": { "type": "string", "default": "被废黜的国王" },
-        "publicBelief": { "type": "number", "default": 20, "min": 0, "max": 100 },
-        "costumeQuality": { "type": "number", "default": 55, "min": 0, "max": 100 },
-        "scandal": { "type": "number", "default": 0, "min": 0, "max": 100 },
-        "performances": { "type": "number", "default": 0, "min": 0, "max": 100 }
+        "production": {
+          "type": "string",
+          "default": "《冬日王冠》"
+        },
+        "role": {
+          "type": "string",
+          "default": "被废黜的国王"
+        },
+        "publicBelief": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "costumeQuality": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "scandal": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 100
+        },
+        "performances": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 100
+        }
       },
-      "durationMonths": { "min": 2, "max": 24 },
+      "durationMonths": {
+        "min": 2,
+        "max": 24
+      },
       "modifiers": [
         {
           "kind": "scene_weight",
-          "tags": ["performance", "theatre", "crowd", "power", "rumor"],
+          "tags": [
+            "performance",
+            "theatre",
+            "crowd",
+            "power",
+            "rumor"
+          ],
           "multiplier": 1.7
         },
         {
           "kind": "scene_weight",
-          "tags": ["work", "factory", "ordinary"],
+          "tags": [
+            "work",
+            "factory",
+            "ordinary"
+          ],
           "multiplier": 0.7
         },
         {
           "kind": "check_bonus",
-          "tags": ["performance", "theatre", "deception"],
+          "tags": [
+            "performance",
+            "theatre",
+            "deception"
+          ],
           "bonus": 1
         }
       ],
@@ -81,7 +124,10 @@
         {
           "id": "performance-run",
           "everyMonths": 12,
-          "check": { "attribute": "charisma", "dc": 12 },
+          "check": {
+            "attribute": "charisma",
+            "dc": 12
+          },
           "outcomes": [
             {
               "id": "held-the-crowd",
@@ -107,7 +153,12 @@
                   "delta": 10,
                   "reason": "又演完一轮"
                 },
-                { "type": "mood", "personId": "$subject", "amount": 0.03, "reason": "舞台上的成功" }
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.03,
+                  "reason": "舞台上的成功"
+                }
               ]
             },
             {
@@ -134,7 +185,12 @@
                   "delta": 6,
                   "reason": "失败的首演"
                 },
-                { "type": "mood", "personId": "$subject", "amount": -0.04, "reason": "被观众嘲笑" }
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "被观众嘲笑"
+                }
               ]
             }
           ]
@@ -143,7 +199,11 @@
       "reactions": [
         {
           "id": "crowd-acclaim",
-          "onTags": ["revolution", "crowd", "protest"],
+          "onTags": [
+            "revolution",
+            "crowd",
+            "protest"
+          ],
           "chance": 0.25,
           "effects": [
             {
@@ -195,25 +255,69 @@
       "owner": "person",
       "slot": "court_service",
       "conflict": "replace",
-      "tags": ["court", "kitchen", "service", "power", "food", "work"],
+      "tags": [
+        "court",
+        "kitchen",
+        "service",
+        "power",
+        "food",
+        "work"
+      ],
       "parameters": {
-        "station": { "type": "string", "default": "甜点台" },
-        "access": { "type": "number", "default": 1, "min": 0, "max": 3 },
-        "favor": { "type": "number", "default": 40, "min": 0, "max": 100 },
-        "tasterDuty": { "type": "boolean", "default": false },
-        "poisonScares": { "type": "number", "default": 0, "min": 0, "max": 5 },
-        "wage": { "type": "number", "default": 3, "min": 0, "max": 20 }
+        "station": {
+          "type": "string",
+          "default": "甜点台"
+        },
+        "access": {
+          "type": "number",
+          "default": 1,
+          "min": 0,
+          "max": 3
+        },
+        "favor": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        },
+        "tasterDuty": {
+          "type": "boolean",
+          "default": false
+        },
+        "poisonScares": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 5
+        },
+        "wage": {
+          "type": "number",
+          "default": 3,
+          "min": 0,
+          "max": 20
+        }
       },
-      "durationMonths": { "min": 6, "max": 120 },
+      "durationMonths": {
+        "min": 6,
+        "max": 120
+      },
       "modifiers": [
         {
           "kind": "scene_weight",
-          "tags": ["court", "kitchen", "banquet", "politics"],
+          "tags": [
+            "court",
+            "kitchen",
+            "banquet",
+            "politics"
+          ],
           "multiplier": 1.6
         },
         {
           "kind": "scene_weight",
-          "tags": ["hunger", "poverty"],
+          "tags": [
+            "hunger",
+            "poverty"
+          ],
           "multiplier": 0.7
         }
       ],
@@ -239,7 +343,10 @@
         {
           "id": "kitchen-year",
           "everyMonths": 12,
-          "check": { "skill": "craft", "dc": 12 },
+          "check": {
+            "skill": "craft",
+            "dc": 12
+          },
           "outcomes": [
             {
               "id": "held-the-kitchen",
@@ -265,7 +372,12 @@
                   "delta": 1,
                   "reason": "工钱略有增加"
                 },
-                { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "被厨房需要" }
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "被厨房需要"
+                }
               ]
             },
             {
@@ -306,7 +418,11 @@
       "reactions": [
         {
           "id": "poison-scare",
-          "onTags": ["poison", "banquet", "court"],
+          "onTags": [
+            "poison",
+            "banquet",
+            "court"
+          ],
           "chance": 0.3,
           "effects": [
             {
@@ -355,30 +471,74 @@
       "owner": "person",
       "slot": "curse",
       "conflict": "replace",
-      "tags": ["curse", "superstition", "family", "transfer", "fear", "omen"],
+      "tags": [
+        "curse",
+        "superstition",
+        "family",
+        "transfer",
+        "fear",
+        "omen"
+      ],
       "parameters": {
-        "form": { "type": "string", "default": "迟延" },
-        "severity": { "type": "number", "default": 35, "min": 0, "max": 100 },
-        "triggers": { "type": "number", "default": 0, "min": 0, "max": 9 },
-        "bearerKnown": { "type": "boolean", "default": false },
-        "sourceName": { "type": "string", "default": "一句没有说完的祝福" },
-        "boundToHousehold": { "type": "boolean", "default": false }
+        "form": {
+          "type": "string",
+          "default": "迟延"
+        },
+        "severity": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "triggers": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 9
+        },
+        "bearerKnown": {
+          "type": "boolean",
+          "default": false
+        },
+        "sourceName": {
+          "type": "string",
+          "default": "一句没有说完的祝福"
+        },
+        "boundToHousehold": {
+          "type": "boolean",
+          "default": false
+        }
       },
-      "durationMonths": { "min": 12, "max": 240 },
+      "durationMonths": {
+        "min": 12,
+        "max": 240
+      },
       "modifiers": [
         {
           "kind": "scene_weight",
-          "tags": ["curse", "omen", "ritual", "fear", "family"],
+          "tags": [
+            "curse",
+            "omen",
+            "ritual",
+            "fear",
+            "family"
+          ],
           "multiplier": 1.5
         },
         {
           "kind": "scene_weight",
-          "tags": ["courtship", "celebration"],
+          "tags": [
+            "courtship",
+            "celebration"
+          ],
           "multiplier": 0.8
         },
         {
           "kind": "check_bonus",
-          "tags": ["ritual", "omen"],
+          "tags": [
+            "ritual",
+            "omen"
+          ],
           "bonus": 1
         }
       ],
@@ -404,7 +564,10 @@
         {
           "id": "curse-pressure",
           "everyMonths": 12,
-          "check": { "attribute": "willpower", "dc": 12 },
+          "check": {
+            "attribute": "willpower",
+            "dc": 12
+          },
           "outcomes": [
             {
               "id": "kept-it-quiet",
@@ -421,7 +584,12 @@
                   "delta": -4,
                   "reason": "一年的压制仪式"
                 },
-                { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "诅咒暂时安静" }
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "诅咒暂时安静"
+                }
               ]
             },
             {
@@ -462,10 +630,17 @@
       "reactions": [
         {
           "id": "answer-a-betrayal",
-          "onTags": ["betrayal"],
-          "requiresRoles": ["betrayer"],
+          "onTags": [
+            "betrayal"
+          ],
+          "requiresRoles": [
+            "betrayer"
+          ],
           "chance": 0.6,
-          "check": { "attribute": "willpower", "dc": 11 },
+          "check": {
+            "attribute": "willpower",
+            "dc": 11
+          },
           "effects": [
             {
               "type": "health",
@@ -531,16 +706,51 @@
       "domain": "culture",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 18, "max": 65 },
-      "tags": ["performance", "theatre", "power", "irony", "work", "pretend"],
+      "ageWindow": {
+        "min": 18,
+        "max": 65
+      },
+      "tags": [
+        "performance",
+        "theatre",
+        "power",
+        "irony",
+        "work",
+        "pretend"
+      ],
       "conditions": [
-        { "kind": "notHasState", "stateId": "stage-sovereign" },
-        { "kind": "attribute", "attribute": "charisma", "min": 0.4 }
+        {
+          "kind": "notHasState",
+          "stateId": "stage-sovereign"
+        },
+        {
+          "kind": "attribute",
+          "attribute": "charisma",
+          "min": 0.4
+        }
       ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 65 },
-        { "key": "director", "kind": "neighbor", "required": true, "minAge": 24, "maxAge": 70 },
-        { "key": "rival", "kind": "worker", "required": false, "minAge": 18, "maxAge": 55 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "director",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 55
+        }
       ],
       "baseRate": 0.15,
       "weight": 3,
@@ -568,7 +778,12 @@
               "durationMonths": 12,
               "reason": "首演夜被选为舞台君主"
             },
-            { "type": "cash", "householdId": "$household", "amount": 2, "reason": "首演酬劳" },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "首演酬劳"
+            },
             {
               "type": "role",
               "personId": "$subject",
@@ -612,7 +827,12 @@
               "amount": 1,
               "reason": "替角的排练补贴"
             },
-            { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "坐在后台听掌声" },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "坐在后台听掌声"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -635,8 +855,18 @@
               "amount": 0.03,
               "reason": "观察演员的表演"
             },
-            { "type": "mood", "personId": "$subject", "amount": -0.04, "reason": "试镜被拒" },
-            { "type": "cash", "householdId": "$household", "amount": -1, "reason": "买了一张站票" },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "试镜被拒"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "买了一张站票"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -654,8 +884,18 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 20, "max": 65 },
-      "tags": ["performance", "crowd", "power", "mistake", "politics", "irony"],
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "performance",
+        "crowd",
+        "power",
+        "mistake",
+        "politics",
+        "irony"
+      ],
       "conditions": [
         {
           "kind": "hasState",
@@ -666,8 +906,20 @@
         }
       ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 20, "maxAge": 65 },
-        { "key": "officer", "kind": "official", "required": true, "minAge": 24, "maxAge": 70 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "officer",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
       ],
       "baseRate": 0.18,
       "weight": 4,
@@ -725,7 +977,10 @@
                 "name": "临时礼仪委员会",
                 "kind": "state",
                 "treasury": 1,
-                "authorityRules": ["礼宾专员由委员会任命", "任期至庆典结束"]
+                "authorityRules": [
+                  "礼宾专员由委员会任命",
+                  "任期至庆典结束"
+                ]
               },
               "reason": "市政厅为疏散人群设立临时委员会"
             },
@@ -735,7 +990,10 @@
               "title": "礼宾专员",
               "holderId": "$subject",
               "wage": 2,
-              "authority": ["主持仪式", "检查排水"],
+              "authority": [
+                "主持仪式",
+                "检查排水"
+              ],
               "reason": "一份真实但很小的市政任命"
             },
             {
@@ -767,8 +1025,18 @@
               "amount": -0.06,
               "reason": "因误认被短暂拘留"
             },
-            { "type": "mood", "personId": "$subject", "amount": -0.1, "reason": "被关进拘留室" },
-            { "type": "cash", "householdId": "$household", "amount": -1, "reason": "保释与罚金" },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "被关进拘留室"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "保释与罚金"
+            },
             {
               "type": "relation",
               "a": "$subject",
@@ -794,8 +1062,18 @@
       "domain": "culture",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 20, "max": 70 },
-      "tags": ["performance", "theatre", "aftermath", "work", "irony", "quiet"],
+      "ageWindow": {
+        "min": 20,
+        "max": 70
+      },
+      "tags": [
+        "performance",
+        "theatre",
+        "aftermath",
+        "work",
+        "irony",
+        "quiet"
+      ],
       "conditions": [
         {
           "kind": "hasState",
@@ -806,7 +1084,13 @@
         }
       ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 20, "maxAge": 70 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        }
       ],
       "baseRate": 0.2,
       "weight": 3,
@@ -838,7 +1122,12 @@
               "amount": 1,
               "reason": "守夜工作的第一笔工钱"
             },
-            { "type": "mood", "personId": "$subject", "amount": -0.03, "reason": "舞台生活结束" },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "舞台生活结束"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -913,14 +1202,24 @@
               "add": true,
               "reason": "受聘教授表演"
             },
-            { "type": "cash", "householdId": "$household", "amount": 2, "reason": "表演课的薪水" },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "表演课的薪水"
+            },
             {
               "type": "reputation",
               "personId": "$subject",
               "amount": 0.05,
               "reason": "成为剧院学校的教师"
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "把经验传给别人" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "把经验传给别人"
+            }
           ]
         }
       ]
@@ -931,8 +1230,18 @@
       "domain": "court",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 20, "max": 65 },
-      "tags": ["court", "kitchen", "poison", "taster", "food", "dark-humour"],
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "court",
+        "kitchen",
+        "poison",
+        "taster",
+        "food",
+        "dark-humour"
+      ],
       "conditions": [
         {
           "kind": "hasState",
@@ -943,8 +1252,20 @@
         }
       ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 20, "maxAge": 65 },
-        { "key": "rival_cook", "kind": "worker", "required": false, "minAge": 18, "maxAge": 65 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "rival_cook",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 65
+        }
       ],
       "baseRate": 0.18,
       "weight": 3,
@@ -1037,7 +1358,12 @@
               "delta": 2,
               "reason": "管事认为{subject}处理得当"
             },
-            { "type": "cash", "householdId": "$household", "amount": 1, "reason": "管事的赏钱" }
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "管事的赏钱"
+            }
           ]
         },
         {
@@ -1046,7 +1372,12 @@
           "text": "汤里的怪味不是毒，是厨房新来的伙计把腌鲱鱼汁当成醋倒了进去。医生闻了闻，说可以放心；主君却很喜欢，命令把这道汤写进菜单。{subject}从洗碗台被调到酱汁台，工钱涨了一枚银币。",
           "significance": 0.7,
           "effects": [
-            { "type": "cash", "householdId": "$household", "amount": 1, "reason": "调岗后的工钱" },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "调岗后的工钱"
+            },
             {
               "type": "state_parameter",
               "ownerType": "person",
@@ -1089,8 +1420,18 @@
       "domain": "court",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 20, "max": 65 },
-      "tags": ["court", "kitchen", "banquet", "mistake", "quiet", "irony"],
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "court",
+        "kitchen",
+        "banquet",
+        "mistake",
+        "quiet",
+        "irony"
+      ],
       "conditions": [
         {
           "kind": "hasState",
@@ -1101,9 +1442,27 @@
         }
       ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 20, "maxAge": 65 },
-        { "key": "sovereign", "kind": "official", "required": true, "minAge": 24, "maxAge": 80 },
-        { "key": "envoy", "kind": "official", "required": false, "minAge": 24, "maxAge": 75 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "sovereign",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 80
+        },
+        {
+          "key": "envoy",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 75
+        }
       ],
       "baseRate": 0.15,
       "weight": 3,
@@ -1115,7 +1474,12 @@
           "text": "{subject}做的一道炖菜被端上{sovereign}的桌子。{sovereign}吃完，问是谁做的；管事报了{subject}的名字。那天晚上，{subject}第一次被允许从正门离开厨房，围裙上还沾着一点肉汁。",
           "significance": 0.78,
           "effects": [
-            { "type": "cash", "householdId": "$household", "amount": 2, "reason": "主君的赏钱" },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "主君的赏钱"
+            },
             {
               "type": "state_parameter",
               "ownerType": "person",
@@ -1170,7 +1534,12 @@
               "amount": 0.05,
               "reason": "使节把误认传了出去"
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.03, "reason": "被当成君主行礼" },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "被当成君主行礼"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -1202,8 +1571,17 @@
               "stateId": "royal-servant",
               "reason": "厨房因主君不适被封"
             },
-            { "type": "unemployment", "personId": "$subject", "reason": "宫廷厨房被解散" },
-            { "type": "mood", "personId": "$subject", "amount": -0.08, "reason": "失去宫廷差事" },
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "宫廷厨房被解散"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "失去宫廷差事"
+            },
             {
               "type": "cash",
               "householdId": "$household",
@@ -1227,12 +1605,40 @@
       "domain": "social",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 18, "max": 70 },
-      "tags": ["curse", "ritual", "betrayal", "family", "transfer", "wish"],
-      "conditions": [{ "kind": "hasState", "stateId": "curse-mark", "owner": "person" }],
+      "ageWindow": {
+        "min": 18,
+        "max": 70
+      },
+      "tags": [
+        "curse",
+        "ritual",
+        "betrayal",
+        "family",
+        "transfer",
+        "wish"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "curse-mark",
+          "owner": "person"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 70 },
-        { "key": "rival", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 70 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "rival",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
       ],
       "baseRate": 0.16,
       "weight": 3,
@@ -1275,7 +1681,12 @@
               "trust": -0.15,
               "reason": "把诅咒塞进对方口袋"
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "身上轻了一些" },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "身上轻了一些"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -1362,7 +1773,12 @@
               "trust": -0.1,
               "reason": "被对方看见失败的仪式"
             },
-            { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "仪式失败" },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "仪式失败"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -1380,15 +1796,44 @@
       "domain": "wish",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 18, "max": 70 },
-      "tags": ["wish", "power", "crown", "office", "irony", "festival"],
+      "ageWindow": {
+        "min": 18,
+        "max": 70
+      },
+      "tags": [
+        "wish",
+        "power",
+        "crown",
+        "office",
+        "irony",
+        "festival"
+      ],
       "conditions": [
-        { "kind": "hasState", "tag": "wish:power", "owner": "person" },
-        { "kind": "notHasState", "stateId": "stage-sovereign" }
+        {
+          "kind": "hasState",
+          "tag": "wish:power",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "stage-sovereign"
+        }
       ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 70 },
-        { "key": "official", "kind": "official", "required": false, "minAge": 24, "maxAge": 75 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 75
+        }
       ],
       "baseRate": 0.2,
       "weight": 4,
@@ -1407,7 +1852,10 @@
                 "name": "市民礼仪处",
                 "kind": "state",
                 "treasury": 1,
-                "authorityRules": ["礼仪官由市民代表团任命", "任期一年，可续任"]
+                "authorityRules": [
+                  "礼仪官由市民代表团任命",
+                  "任期一年，可续任"
+                ]
               },
               "reason": "市民代表团为愿望设立一个真实职位"
             },
@@ -1417,7 +1865,11 @@
               "title": "公共礼仪官",
               "holderId": "$subject",
               "wage": 3,
-              "authority": ["主持仪式", "签发礼节函", "安排吊唁"],
+              "authority": [
+                "主持仪式",
+                "签发礼节函",
+                "安排吊唁"
+              ],
               "reason": "愿望以真实任命的方式实现"
             },
             {
@@ -1426,7 +1878,12 @@
               "amount": 0.08,
               "reason": "获得真实职位"
             },
-            { "type": "mood", "personId": "$subject", "amount": 0.05, "reason": "愿望真的实现了" }
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "愿望真的实现了"
+            }
           ]
         },
         {
@@ -1478,7 +1935,12 @@
               "amount": -2,
               "reason": "订做戏服的押金"
             },
-            { "type": "mood", "personId": "$subject", "amount": -0.04, "reason": "愿望没有实现" },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "愿望没有实现"
+            },
             {
               "type": "flag",
               "personId": "$subject",
@@ -1490,5 +1952,26 @@
         }
       ]
     }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "power",
+    "theatre",
+    "mistaken_identity",
+    "irony"
+  ],
+  "tone": [
+    "absurd",
+    "satirical",
+    "bittersweet"
+  ],
+  "scope": [
+    "person",
+    "organization"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "humiliation",
+    "political violence"
   ]
 }

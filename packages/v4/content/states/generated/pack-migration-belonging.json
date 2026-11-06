@@ -1,0 +1,3510 @@
+{
+  "id": "pack-migration-belonging",
+  "version": 1,
+  "title": "迁徙与归属：证件、汇款与口音",
+  "description": "把初到城市、无完整证件和跨地汇款写成可查询、可执行的持续状态，再让护照窗口、学校登记处、车间、同乡会、邮局、返乡列车和占领时期的楼梯间去消费它们。迁移不是一次成功或失败，而是一连串会改变住房、语言、工钱和家庭义务的手续。",
+  "author": "phase17-content-author/migration-belonging",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-06",
+  "sourceBriefId": "phase17-migration-belonging",
+  "rationale": "现有内容库有战争、家庭、工厂和政治状态，却没有一套持续追踪“刚到的人”“没有纸的人”和“往故乡寄钱的人”的机制。这个包不复制现代移民局，而使用1912至1955年间维也纳真实存在的车站、警察外侨科、教区簿、同乡互助会、邮局汇款单和占领当局告示，让迁移成功、失败以及意外的归属都能落在参数和关系上。",
+  "states": [
+    {
+      "id": "mb17-newcomer",
+      "version": 1,
+      "packId": "pack-migration-belonging",
+      "title": "初到维也纳的人",
+      "description": "一个人刚在维也纳落下行李：德语只会几句，认识的人不多，住的地方也许只是一张床位。居留纸、口音、工钱和房东的脸色每天改变他能去哪里，也改变他是否还把自己当成客人。",
+      "owner": "person",
+      "slot": "migration",
+      "conflict": "replace",
+      "tags": [
+        "migration",
+        "newcomer",
+        "language",
+        "network",
+        "housing",
+        "belonging"
+      ],
+      "parameters": {
+        "language": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "localNetwork": {
+          "type": "number",
+          "default": 8,
+          "min": 0,
+          "max": 100
+        },
+        "housingStrain": {
+          "type": "number",
+          "default": 60,
+          "min": 0,
+          "max": 100
+        },
+        "permitStatus": {
+          "type": "string",
+          "default": "provisional"
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 90
+        }
+      ],
+      "durationMonths": {
+        "min": 12,
+        "max": 96
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "migration",
+            "language",
+            "housing",
+            "work",
+            "border",
+            "diaspora"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "official",
+            "police",
+            "papers"
+          ],
+          "multiplier": 1.25
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "migration",
+            "belonging"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "first-year",
+          "everyMonths": 24,
+          "check": {
+            "attribute": "resilience",
+            "dc": 11,
+            "successOutcomeIds": [
+              "puts-down-roots"
+            ],
+            "failureOutcomeIds": [
+              "still-a-guest"
+            ],
+            "criticalFailureOutcomeIds": [
+              "moves-again"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "puts-down-roots",
+              "result": "success",
+              "weight": 3,
+              "text": "一年过去，{subject}能在菜市场用德语讲价，也知道哪家铺子肯赊半块黄油。房东仍叫他“新来的”，但楼下的面包师已经记住了他买哪一种面包，还会把前一天剩的那只小圆面包留出来。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-newcomer",
+                  "key": "language",
+                  "delta": 4,
+                  "reason": "a year of daily errands in German"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-newcomer",
+                  "key": "localNetwork",
+                  "delta": 5,
+                  "reason": "the baker and the market know this face"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-newcomer",
+                  "key": "housingStrain",
+                  "delta": -2,
+                  "reason": "a slightly steadier room"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "a small familiarity"
+                }
+              ]
+            },
+            {
+              "id": "still-a-guest",
+              "result": "failure",
+              "weight": 2,
+              "text": "{subject}又搬了一次房，箱子里多了一把缺齿的梳子和一叠没寄出的信。新住处离电车线更远，邻居说德语很快；他只能点头，等对方走后再把门关上，把今天听错的词一个一个记在旧票据背面。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-newcomer",
+                  "key": "language",
+                  "delta": 1,
+                  "reason": "new words learned the hard way"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-newcomer",
+                  "key": "localNetwork",
+                  "delta": -2,
+                  "reason": "the move broke old contacts"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-newcomer",
+                  "key": "housingStrain",
+                  "delta": 4,
+                  "reason": "a farther and more crowded room"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "the move and a new rent deposit"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "still a guest in the building"
+                }
+              ]
+            },
+            {
+              "id": "moves-again",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "房东把房租涨了一截，{subject}在同一个星期里丢了工。夜里他把行李重新捆好，发现自己已经能听懂搬家公司问的那句德语，却还不足以跟人争一份租约；第二天清早，他把钥匙放在门房，没有回头。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-newcomer",
+                  "key": "language",
+                  "delta": 2,
+                  "reason": "the eviction taught another hard phrase"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-newcomer",
+                  "key": "localNetwork",
+                  "delta": -4,
+                  "reason": "the old neighbours are left behind"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-newcomer",
+                  "key": "housingStrain",
+                  "delta": 10,
+                  "reason": "an eviction and a search for a bed"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.05,
+                  "reason": "another rented room lost"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "mb17_moved_again",
+                  "add": true,
+                  "reason": "the newcomer was forced to move again"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "hostile-notice",
+          "onTags": [
+            "xenophobia",
+            "humiliation"
+          ],
+          "chance": 0.35,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": -4,
+              "reason": "a public insult made neighbours keep their distance"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "housingStrain",
+              "delta": 3,
+              "reason": "the building feels less safe"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a slur written on the stairwell wall"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_public_humiliation",
+              "add": true,
+              "reason": "the newcomer was publicly marked as an outsider"
+            }
+          ],
+          "text": "楼梯间有人用粉笔写了“外国人滚回去”，{subject}的名字被写在下面，拼错了一个字母。他站着看了很久，最后用袖子把字擦掉，袖口留下一层白灰；楼上有人关门，声音比平时重。",
+          "significance": 0.6,
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        },
+        {
+          "id": "workplace-footing",
+          "onTags": [
+            "employment",
+            "work"
+          ],
+          "chance": 0.2,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": 3,
+              "reason": "a foreman and a coworker learned the newcomer's name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "language",
+              "delta": 1,
+              "reason": "two new German words at the workplace"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a small place on the shop floor"
+            }
+          ],
+          "text": "工头让{subject}把一箱零件搬到后间，又顺口教了他两个德语词。午休时，一个老工人把多余的汤推过来；{subject}没有推回去，只把碗底最后一点喝干净，把空碗放回对方手边。",
+          "significance": 0.45,
+          "cooldownMonths": 12,
+          "maxPerYear": 2
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "mb17-newcomer",
+          "parameter": "localNetwork",
+          "min": 85
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "mb17_newcomer_active",
+          "add": true,
+          "reason": "a newcomer began building a life in the city"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "mb17_newcomer_active",
+          "add": false,
+          "reason": "the newcomer has enough local ties to stop being new"
+        }
+      ],
+      "historicalBasis": "维也纳在1912至1955年间接收来自帝国各地、邻国和战后地区的迁移者；居住登记、警察外侨科、房东、工厂和同乡互助会共同构成日常的准入机制。本状态不绑定任何真实个人或族群。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/migration-belonging",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase17-migration-belonging"
+        ],
+        "rationale": "让“初到”成为语言、关系网和住房压力的持续参数，而不是一次性抵达文本。"
+      }
+    },
+    {
+      "id": "mb17-stateless",
+      "version": 1,
+      "packId": "pack-migration-belonging",
+      "title": "证件不全的人",
+      "description": "护照被扣、国籍被注销，或出生纸始终没有找到。这个人仍在这座城里生活，但每一次报到、每一张登记表、每一个穿制服的人都能改变他的去留；南森护照和临时收据只是把危险推迟到下一个窗口。",
+      "owner": "person",
+      "slot": "civil_status",
+      "conflict": "replace",
+      "tags": [
+        "migration",
+        "stateless",
+        "papers",
+        "legal",
+        "police",
+        "risk"
+      ],
+      "parameters": {
+        "exposure": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "documentState": {
+          "type": "string",
+          "default": "missing"
+        },
+        "monthsUnregistered": {
+          "type": "number",
+          "default": 3,
+          "min": 0,
+          "max": 48
+        },
+        "sponsor": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 14,
+          "max": 90
+        }
+      ],
+      "durationMonths": {
+        "min": 6,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "papers",
+            "police",
+            "legal",
+            "border",
+            "migration",
+            "risk"
+          ],
+          "multiplier": 1.7
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "leisure",
+            "courtship",
+            "travel"
+          ],
+          "multiplier": 0.6
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "legal",
+            "papers"
+          ],
+          "bonus": -1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "registration-round",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "cunning",
+            "dc": 12,
+            "successOutcomeIds": [
+              "stamp-in-the-book"
+            ],
+            "failureOutcomeIds": [
+              "sent-away"
+            ],
+            "criticalFailureOutcomeIds": [
+              "held-overnight"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "stamp-in-the-book",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}在警察局外侨科排到窗口，把收据、住址和担保人的名字一一递进去。职员在卡片上盖了章，又把下一次报到的日期用蓝铅笔写在角落；那张卡片被他贴身收好，回到住处才敢拿出来看第二遍。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-stateless",
+                  "key": "exposure",
+                  "delta": -10,
+                  "reason": "the registration card was stamped"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-stateless",
+                  "key": "documentState",
+                  "value": "stamped",
+                  "reason": "the file received a temporary stamp"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-stateless",
+                  "key": "monthsUnregistered",
+                  "delta": -2,
+                  "reason": "the reporting gap was reduced"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "the registration fee and a tram ticket"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "a temporary document in hand"
+                },
+                {
+                  "type": "knowledge",
+                  "holderId": "$subject",
+                  "proposition": "外侨科的报到章每隔一段时间就要重盖，收据不能代替护照。",
+                  "confidence": 0.9,
+                  "sourceKind": "document",
+                  "visibility": "private",
+                  "trueInWorld": true
+                }
+              ]
+            },
+            {
+              "id": "sent-away",
+              "result": "failure",
+              "weight": 2,
+              "text": "窗口在午前关了，门口贴着一张手写的纸条：整理档案，下周再来。{subject}在台阶上坐到天黑，第二天再来时，办事员换了人，只说他手里的收据“不是这一任发的”；走廊里排队的人换了一拨，队伍却一样长。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-stateless",
+                  "key": "exposure",
+                  "delta": 10,
+                  "reason": "the missed appointment put the file back in the queue"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-stateless",
+                  "key": "monthsUnregistered",
+                  "delta": 2,
+                  "reason": "another month without a valid stamp"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "a lost day and tram fare"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.05,
+                  "reason": "the window was closed again"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "mb17_missed_registration",
+                  "add": true,
+                  "reason": "a reporting date was missed because the office closed"
+                }
+              ]
+            },
+            {
+              "id": "held-overnight",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "两个便衣在住处门口等{subject}，没有出示逮捕令，只说去局里谈一谈。他在一间没有窗户的屋子里坐到第二天早晨，出来时口袋里多了一张传唤单，护照仍不在手里；街上的面包房已经开门，空气里有新烤的面包味。",
+              "effects": [
+                {
+                  "type": "state_add",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "under-investigation",
+                  "parameters": {
+                    "progress": 20,
+                    "charge": "无证件居留"
+                  },
+                  "durationMonths": 12,
+                  "reason": "the registration case became an investigation file"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "mb17-stateless",
+                  "key": "exposure",
+                  "delta": 15,
+                  "reason": "an overnight detention without a charge"
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "a night without sleep"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.07,
+                  "reason": "questioning in a windowless room"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "mb17_held_overnight",
+                  "add": true,
+                  "reason": "the stateless person was held overnight"
+                },
+                {
+                  "type": "knowledge",
+                  "holderId": "$subject",
+                  "proposition": "没有护照的人也会被登记进另一本调查簿。",
+                  "confidence": 0.85,
+                  "sourceKind": "witnessed",
+                  "visibility": "private",
+                  "trueInWorld": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "workplace-raid",
+          "onTags": [
+            "raid",
+            "police"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "exposure",
+              "delta": 12,
+              "reason": "the police checked papers at the workplace gate"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "half a day's wages lost during the raid"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the foreman looked away"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_workplace_raid",
+              "add": true,
+              "reason": "a police raid reached the workplace"
+            }
+          ],
+          "text": "警察在工地门口查证件，{subject}从后门走进堆木料的院子。工头看见了，没有喊他回来，也没有替他说话；那天下午，他的工时被划掉半天，工具箱上多了一层细木屑。",
+          "significance": 0.55,
+          "cooldownMonths": 8,
+          "maxPerYear": 2
+        },
+        {
+          "id": "sponsor-appears",
+          "onTags": [
+            "sponsor",
+            "guarantee"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "sponsor",
+              "value": true,
+              "reason": "a guarantor signed for the file"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "exposure",
+              "delta": -10,
+              "reason": "the guarantor made the file less exposed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "obligation": 0.05,
+              "reason": "the guarantor signed a residence form"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "someone agreed to answer for him"
+            }
+          ],
+          "text": "一个在教会互助会做事的{neighbor}愿意为{subject}作保，在表格的担保人一栏写下自己的住址。办事员抬头看了他一眼，说“出了问题找他”；{neighbor}点了点头，出门后才低声问{subject}，下个月的房租有没有着落。",
+          "significance": 0.6,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        },
+        {
+          "id": "permit-revoked",
+          "onTags": [
+            "revocation",
+            "denunciation"
+          ],
+          "chance": 0.3,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "documentState",
+              "value": "revoked",
+              "reason": "the residence paper was declared invalid"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "exposure",
+              "delta": 15,
+              "reason": "a revoked paper raised the risk of removal"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the mailbox name was torn off"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_status_revoked",
+              "add": true,
+              "reason": "the residence status was revoked"
+            }
+          ],
+          "text": "一封没有落款的信寄到住处，说{subject}的居留纸“不再有效”。第二天，房东把信箱上的名字撕掉；{subject}把信读了三遍，才明白自己又回到了没有纸的那一类人，连信封上的折痕都像一道旧伤。",
+          "significance": 0.65,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "mb17_stateless_active",
+          "add": true,
+          "reason": "a person without complete papers entered the city's files"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "mb17_stateless_active",
+          "add": false,
+          "reason": "the stateless status ended or was superseded"
+        }
+      ],
+      "historicalBasis": "无国籍、护照被扣和居住登记不全在1912至1955年间的维也纳是真实存在的行政处境；南森护照从1920年代起为部分无国籍者提供旅行证件，但并不能消除警察登记和担保要求。本状态不指向任何具体个人或族群。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/migration-belonging",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase17-migration-belonging"
+        ],
+        "rationale": "把“没有纸”写成定期报到、担保人和暴露度的持续机制，并让一次夜间拘留可以生成调查状态。"
+      }
+    },
+    {
+      "id": "mb17-remittance-web",
+      "version": 1,
+      "packId": "pack-migration-belonging",
+      "title": "往故乡汇钱的户",
+      "description": "这个家庭每月要从维也纳的工钱里挤出一点，寄给留在故乡的父母、兄妹或孩子。汇款单、家书、房租和煤钱互相挤压；少寄一次，远方的屋顶就可能漏雨，而维也纳的房东不会等。",
+      "owner": "household",
+      "slot": "household_finance",
+      "conflict": "replace",
+      "tags": [
+        "migration",
+        "remittance",
+        "household",
+        "obligation",
+        "money",
+        "diaspora"
+      ],
+      "parameters": {
+        "obligation": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "supportSent": {
+          "type": "number",
+          "default": 6,
+          "min": 0,
+          "max": 30
+        },
+        "arrears": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 12
+        },
+        "relativesAway": {
+          "type": "number",
+          "default": 3,
+          "min": 0,
+          "max": 8
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "householdSize",
+          "min": 1
+        }
+      ],
+      "durationMonths": {
+        "min": 24,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "remittance",
+            "money",
+            "family",
+            "migration",
+            "letter",
+            "diaspora"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "leisure",
+            "travel"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "remittance",
+            "household"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "remittance-year",
+          "everyMonths": 24,
+          "check": {
+            "attribute": "intelligence",
+            "skill": "numeracy",
+            "dc": 11,
+            "successOutcomeIds": [
+              "posted-in-time"
+            ],
+            "failureOutcomeIds": [
+              "month-behind"
+            ],
+            "criticalFailureOutcomeIds": [
+              "letter-returned"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "posted-in-time",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}把工钱摊在桌上，先数出房租和煤钱，再把剩下的换成一张汇款单。邮局职员在单子上敲了章，说“两周能到”；回家的路上，他买了一张最便宜的明信片，写了两行字又划掉一行。",
+              "effects": [
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -2,
+                  "reason": "the money order and postage"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "mb17-remittance-web",
+                  "key": "supportSent",
+                  "delta": 2,
+                  "reason": "another money order reached the post office"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "mb17-remittance-web",
+                  "key": "arrears",
+                  "delta": -1,
+                  "reason": "one month of arrears was cleared"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "mb17-remittance-web",
+                  "key": "obligation",
+                  "delta": -3,
+                  "reason": "a family obligation was partly met"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "the money order was accepted"
+                }
+              ]
+            },
+            {
+              "id": "month-behind",
+              "result": "failure",
+              "weight": 2,
+              "text": "这个月厂里少发了工钱。{subject}把汇款单填到一半又放下，先给房东送去一部分；夜里他给故乡写信，说“下个月一定补上”，写完把信纸折了三折，像怕它自己会开口。",
+              "effects": [
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "the rent was paid first"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "mb17-remittance-web",
+                  "key": "arrears",
+                  "delta": 1,
+                  "reason": "the money order was postponed"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "mb17-remittance-web",
+                  "key": "obligation",
+                  "delta": 4,
+                  "reason": "the family is now waiting for next month"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "a letter promising to catch up"
+                }
+              ]
+            },
+            {
+              "id": "letter-returned",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "汇款单被退了回来，理由是收件地址“查无此人”。{subject}拿着那张盖了退件章的纸去问邮局，又去问同乡会；没有人知道那家人搬去了哪里，只有邮局墙上的钟还在走，秒针每一下都像在提醒钱没有到。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "mb17-remittance-web",
+                  "key": "arrears",
+                  "delta": 2,
+                  "reason": "the money returned and the obligation remains"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "mb17-remittance-web",
+                  "key": "obligation",
+                  "delta": 6,
+                  "reason": "the family cannot be found and the debt is unresolved"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.05,
+                  "reason": "a returned money order"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "mb17_remittance_letter_returned",
+                  "add": true,
+                  "reason": "the remittance letter came back undelivered"
+                },
+                {
+                  "type": "knowledge",
+                  "holderId": "$subject",
+                  "proposition": "退件章意味着钱没有到，也意味着那个地址已经失效。",
+                  "confidence": 0.95,
+                  "sourceKind": "document",
+                  "visibility": "private",
+                  "trueInWorld": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "family-emergency",
+          "onTags": [
+            "family_emergency",
+            "death"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "obligation",
+              "delta": 10,
+              "reason": "a roof collapsed and the family needs more money"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "arrears",
+              "delta": 1,
+              "reason": "the emergency payment arrived late"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "an emergency money order sent home"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the school fees were spent on a roof"
+            }
+          ],
+          "text": "故乡来了一封电报，说屋顶塌了一角，老人暂时住到邻居家。{subject}当晚就去邮局，把本来留着交学费的钱先汇了出去；回家后，他把墙上的缴费单取下来，折好放进抽屉。",
+          "significance": 0.6,
+          "cooldownMonths": 18,
+          "maxPerYear": 1
+        },
+        {
+          "id": "wages-arrive",
+          "onTags": [
+            "employment",
+            "wage"
+          ],
+          "chance": 0.25,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the factory paid part of the arrears"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "supportSent",
+              "delta": 1,
+              "reason": "a second money order was sent this year"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "obligation",
+              "delta": -2,
+              "reason": "the extra payment eased the family's need"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a little breathing room"
+            }
+          ],
+          "text": "厂里补发了一笔拖欠的工钱。{subject}没有先还杂货铺的账，而是去邮局多填了一张汇款单；回来的路上，他给自己买了一支最便宜的烟，站在桥上看了一会儿水，才把剩下的钱数清楚。",
+          "significance": 0.45,
+          "cooldownMonths": 12,
+          "maxPerYear": 2
+        },
+        {
+          "id": "border-closes",
+          "onTags": [
+            "border_closure",
+            "war"
+          ],
+          "chance": 0.3,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "arrears",
+              "delta": 2,
+              "reason": "the mail and money orders are delayed at the border"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "letters are stuck somewhere on the way"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_border_slow_letters",
+              "add": true,
+              "reason": "the border slowed the remittance letters"
+            }
+          ],
+          "text": "边境又收紧了，往故乡的列车要换乘三次。邮局说汇款还能走，但信可能压在路上；{subject}还是把两张单子一起递进窗口，像把一句话交给一个不保证送达的人。",
+          "significance": 0.5,
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "mb17_remittance_web_active",
+          "add": true,
+          "reason": "the household began supporting relatives elsewhere"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "mb17_remittance_web_active",
+          "add": false,
+          "reason": "the household no longer carries the remittance obligation"
+        }
+      ],
+      "historicalBasis": "从帝国时期到战后，维也纳的迁移工人长期通过邮局汇款单和家书支持留在故乡的亲属；汇款延迟、地址变更和边境管制会直接改变家庭预算。本状态只描述家庭义务，不绑定任何真实家庭。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/migration-belonging",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase17-migration-belonging"
+        ],
+        "rationale": "把汇款写成家庭每月的可计算义务，而不是一次性的乡愁文本。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "mb17-border.permit-window",
+      "title": "护照窗口前的长队",
+      "domain": "migration",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 16,
+        "max": 70
+      },
+      "tags": [
+        "migration",
+        "border",
+        "papers",
+        "permit",
+        "station",
+        "official",
+        "belonging"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "mb17-newcomer",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "mb17-stateless",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 16,
+          "maxAge": 80
+        }
+      ],
+      "check": {
+        "attribute": "cunning",
+        "skill": "social",
+        "dc": 12,
+        "successOutcomeIds": [
+          "admitted-with-papers",
+          "papers-retained"
+        ],
+        "failureOutcomeIds": [
+          "turned-back"
+        ]
+      },
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "admitted-with-papers",
+          "weight": 0.45,
+          "text": "火车在清晨进站，{official}把{subject}的护照翻到最后一页，又看了看那张没有照片的出生纸。蓝章落下去，手续费和住址登记表一起被推到窗口；{subject}把临时居留纸折成四折，塞进内衣口袋，走出站门时天还没有完全亮。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the passport fee and the first week's rent"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "parameters": {
+                "language": 18,
+                "localNetwork": 6,
+                "housingStrain": 65,
+                "permitStatus": "provisional"
+              },
+              "durationMonths": 60,
+              "reason": "the border admitted the subject on a provisional residence paper"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "parameters": {
+                "obligation": 55,
+                "supportSent": 4,
+                "arrears": 0,
+                "relativesAway": 3
+              },
+              "durationMonths": 120,
+              "reason": "the household already carries obligations to relatives at home"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "permit_holder",
+              "add": true,
+              "reason": "a provisional residence permit"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_admitted_at_border",
+              "add": true,
+              "reason": "the subject was admitted at the passport window"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the stamp was a beginning, not a guarantee"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "临时居留纸要求在四十八小时内到区公所登记住址。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "papers-retained",
+          "weight": 0.3,
+          "text": "{official}把护照留在窗口后面，说需要“核对”，只给{subject}一张薄薄的收据。火车已经清客，月台上只剩扫地的工人；{subject}捏着收据走出站门，第一次发现一张纸可以同时像通行证和像把柄。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the fee for the temporary receipt"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "parameters": {
+                "language": 15,
+                "localNetwork": 4,
+                "housingStrain": 70,
+                "permitStatus": "papers-held"
+              },
+              "durationMonths": 48,
+              "reason": "the subject entered while the passport stayed at the window"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "parameters": {
+                "exposure": 55,
+                "documentState": "retained",
+                "monthsUnregistered": 0,
+                "sponsor": false
+              },
+              "durationMonths": 36,
+              "reason": "the passport was retained and only a receipt was issued"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_papers_retained_at_border",
+              "add": true,
+              "reason": "the passport stayed behind the passport window"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a receipt instead of a passport"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "护照被扣时，窗口只给收据；收据不能当身份证明用。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "turned-back",
+          "weight": 0.25,
+          "text": "{official}把材料推回来，说出生纸缺了教区印章。{subject}解释自己是从乡下赶来的，对方只指了指墙上的告示；排在后头的{neighbor}递来半块面包，两个人坐在候车室里等下一班回去的车，谁也没有先说话。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the return ticket and a wasted day"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the border refused the birth paper"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "the stranger shared half a loaf in the waiting room"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_turned_back_at_border",
+              "add": true,
+              "reason": "the subject was turned back for a missing parish seal"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "边境窗口只承认带教区印章的出生证明。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mb17-stateless.registration-round",
+      "title": "外侨科的报到簿",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 16,
+        "max": 75
+      },
+      "tags": [
+        "migration",
+        "stateless",
+        "police",
+        "papers",
+        "registration",
+        "risk"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "mb17-stateless",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 75
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 16,
+          "maxAge": 80
+        }
+      ],
+      "check": {
+        "attribute": "cunning",
+        "dc": 12,
+        "successOutcomeIds": [
+          "entry-stamped"
+        ],
+        "failureOutcomeIds": [
+          "turned-away"
+        ],
+        "criticalFailureOutcomeIds": [
+          "held-overnight"
+        ]
+      },
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "entry-stamped",
+          "weight": 0.5,
+          "text": "{official}在报到簿上找到{subject}的名字，用蓝铅笔在日期旁边画了一个勾。收据被钉在卡片背后，下一次报到的日子写在最上面；{subject}走出警察局时，把卡片按在胸口，像按住一只随时会飞走的鸟。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "exposure",
+              "delta": -10,
+              "reason": "the registration book recognized the subject"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "documentState",
+              "value": "stamped",
+              "reason": "the reporting card received a blue pencil date"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "monthsUnregistered",
+              "delta": -2,
+              "reason": "the reporting gap was reduced"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the office fee and tram fare"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a date written down instead of a threat"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "外侨科的报到章每隔一段时间就要重盖，收据不能代替护照。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "turned-away",
+          "weight": 0.35,
+          "text": "窗口在午前关了，门口贴着一张手写的纸条：整理档案，下周再来。{subject}在台阶上坐到天黑，第二天再来时，办事员换了人，只说他手里的收据“不是这一任发的”。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "exposure",
+              "delta": 10,
+              "reason": "the missed appointment put the file back in the queue"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "monthsUnregistered",
+              "delta": 2,
+              "reason": "another period without a valid stamp"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a lost day of work"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the window closed before the name was called"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_missed_registration",
+              "add": true,
+              "reason": "the reporting date was missed"
+            }
+          ]
+        },
+        {
+          "id": "held-overnight",
+          "weight": 0.15,
+          "text": "两个便衣在住处门口等{subject}，没有出示逮捕令，只说去局里谈一谈。他在一间没有窗户的屋子里坐到第二天早晨，出来时口袋里多了一张传唤单，护照仍不在手里；街上的面包房已经开门了。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 20,
+                "charge": "无证件居留"
+              },
+              "durationMonths": 12,
+              "reason": "the registration case became an investigation file"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "exposure",
+              "delta": 15,
+              "reason": "an overnight detention without a charge"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a night without sleep"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "questioning in a windowless room"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_held_overnight",
+              "add": true,
+              "reason": "the subject was held overnight"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "没有护照的人也会被登记进另一本调查簿。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mb17-language.school-counter",
+      "title": "学校登记处的口音",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 55
+      },
+      "tags": [
+        "migration",
+        "language",
+        "school",
+        "child",
+        "humiliation",
+        "belonging"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "mb17-newcomer",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 55
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 13,
+          "sameHousehold": true
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "register-without-the-mother-tongue",
+          "weight": 0.4,
+          "text": "登记表上有一栏“母语”，{teacher}看了{subject}一眼，说这里只填德语。{subject}把家乡的村名写在纸上，又被要求擦掉；{child}攥着他的袖口，走廊里的孩子学着他们的发音，笑声一直跟到楼梯口。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "language",
+              "delta": 2,
+              "reason": "the registration forced a new German phrase"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": -3,
+              "reason": "the school gate felt closed"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolProgress",
+              "delta": -6,
+              "reason": "the child was marked as a language problem"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "delta": -8,
+              "reason": "the child heard the corridor laughter"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a public correction at the school counter"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_school_humiliation",
+              "add": true,
+              "reason": "the school treated the home language as a defect"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "学校把孩子的母语记成了需要纠正的缺陷。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "another-mother-translates",
+          "weight": 0.35,
+          "text": "{neighbor}从队伍后面走上来，用带着同样口音的德语替{subject}解释：孩子在本地上过两年学，会写自己的名字。{teacher}不太高兴，还是在名册上添了一行；出门时，{neighbor}把自家地址写在糖纸上，说有事可以来敲门。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": 8,
+              "reason": "another migrant family stood up for them"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "language",
+              "delta": 3,
+              "reason": "a new phrase learned at the school counter"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "affection": 0.05,
+              "reason": "the neighbour translated at the school counter"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "delta": 5,
+              "reason": "the child was defended in front of the teacher"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "an unexpected ally at the school gate"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_schoolgate_ally",
+              "add": true,
+              "reason": "another mother translated for the family"
+            }
+          ]
+        },
+        {
+          "id": "child-corrects-the-teacher",
+          "weight": 0.25,
+          "text": "老师问{child}会不会拼自己的姓，{child}用维也纳话答了一句，办公室里的人都笑了。{subject}没听懂，只看见{child}抬起下巴；出门后，{child}小声把刚才的话翻译了一遍，说老师把“sch”念错了。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "language",
+              "delta": 3,
+              "reason": "the child brought a local phrase home"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": 2,
+              "reason": "the school office remembered the child's name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "delta": 6,
+              "reason": "the child corrected the teacher's pronunciation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolProgress",
+              "delta": 4,
+              "reason": "the child was placed in the right class"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": 0.06,
+              "reason": "the child translated the joke for the parent"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "pride and a small pang of distance"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_child_translated_for_parent",
+              "add": true,
+              "reason": "the child became the family's local voice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mb17-work.floor-and-foreman",
+      "title": "夜班名单上的新名字",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 60
+      },
+      "tags": [
+        "migration",
+        "work",
+        "factory",
+        "wage",
+        "class",
+        "language"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "mb17-newcomer",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "factory-employment",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 75
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 65
+        }
+      ],
+      "check": {
+        "attribute": "resilience",
+        "skill": "craft",
+        "dc": 11,
+        "successOutcomeIds": [
+          "kept-on-night-shift",
+          "coworker-shares-the-machine"
+        ],
+        "failureOutcomeIds": [
+          "wage-docked-for-a-misheard-word"
+        ]
+      },
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "kept-on-night-shift",
+          "weight": 0.45,
+          "text": "{employer}把夜班表钉在车间门口，{subject}的名字被写在最下面一行。夜班的机器声更响，工钱也多一点；{subject}把每个操纵杆的德语名字抄在纸片上，贴在机器边，第二天早上手指全是油。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the first full night-shift wage"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "factory-employment",
+              "key": "seniority",
+              "delta": 1,
+              "reason": "a full year on the night shift"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": 4,
+              "reason": "the night shift knows the subject's name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "language",
+              "delta": 1,
+              "reason": "machine words written on paper slips"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.04,
+              "respect": 0.04,
+              "reason": "the foreman put the subject on the night list"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_night_shift",
+              "add": true,
+              "reason": "the subject was kept on the night shift"
+            }
+          ]
+        },
+        {
+          "id": "wage-docked-for-a-misheard-word",
+          "weight": 0.3,
+          "text": "工头喊了一个词，{subject}听成了另一个，整排标签印错了颜色。{employer}没有骂人，只把损失记在计件工资里；下班时，{subject}在洗手池边把那个词念了很多遍，水一直是冷的。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the misprinted labels were deducted from the wage"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a mistake heard by the whole floor"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": -3,
+              "reason": "the shift kept its distance after the loss"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.08,
+              "reason": "the foreman recorded the loss against the subject"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_wage_docked_accent",
+              "add": true,
+              "reason": "a misheard German word cost part of the wage"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "工头把听错指令的损失直接记在计件工资里。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "coworker-shares-the-machine",
+          "weight": 0.25,
+          "text": "一个会讲两种话的{worker}把{subject}拉到自己的机器旁，教他把纸边对齐，又替他把工头的指令翻成简单的德语。下班后，他们站在厂门口喝了一瓶啤酒；{worker}说，你不用说得好，只要别让机器停下来。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": 7,
+              "reason": "a coworker became a guide on the factory floor"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "a coworker taught the machine's rhythm"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "the coworker shared a machine and a beer"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "union_member",
+              "add": true,
+              "reason": "the coworker brought the subject into the union"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a place beside a machine"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_shopfloor_ally",
+              "add": true,
+              "reason": "a coworker made room on the shop floor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mb17-diaspora.sunday-table",
+      "title": "同乡会的星期日长桌",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 70
+      },
+      "tags": [
+        "migration",
+        "diaspora",
+        "community",
+        "food",
+        "belonging",
+        "mutual_aid"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "mb17-newcomer",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "dues-and-a-name",
+          "weight": 0.4,
+          "text": "长桌摆在同乡会租来的后间，桌上有一锅卷心菜炖肉和两种面包。{neighbor}收下{subject}的会费，把名字写进一本线装簿子，又在旁边记下“会德语，能跑邮局”；散会时，有人把一位律师的地址塞给他。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the mutual aid society's monthly dues"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": 8,
+              "reason": "the association put the subject in touch with a lawyer"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "association_member",
+              "add": true,
+              "reason": "joined the mutual aid society"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_diaspora_member",
+              "add": true,
+              "reason": "the subject joined a diaspora mutual aid society"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a name written in the association book"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "同乡会的簿子记着谁替谁担保、谁欠谁的人情。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "gossip-follows-the-letter",
+          "weight": 0.35,
+          "text": "有人把一封刚从故乡寄来的信读出声，读到“他在维也纳大概忘了家里”时，桌边的人都笑了。{subject}也跟着笑，手却停在汤勺上；他想起自己上个月没有寄出的那张汇款单。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": -3,
+              "reason": "the association gossip made the subject wary"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "the neighbour read the letter aloud"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the letter became a public joke"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_diaspora_gossip",
+              "add": true,
+              "reason": "a private letter was read aloud at the association table"
+            }
+          ]
+        },
+        {
+          "id": "a-place-at-the-end-of-the-table",
+          "weight": 0.25,
+          "text": "一个刚下火车的{worker}站在门口，鞋上全是泥，说找不到住处。{neighbor}让他先坐下，{subject}把汤推过去，又把一间便宜床位的地址写在火柴盒上；那天长桌挤得坐不下，谁也没有先走。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": 6,
+              "reason": "the table made room for another newcomer"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a shared pot at the association table"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "the subject wrote down an address for the new arrival"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "being able to make room for someone else"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_table_for_newcomer",
+              "add": true,
+              "reason": "the subject helped a newly arrived worker"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mb17-remittance.letter-and-money-order",
+      "title": "邮局里的汇款单",
+      "domain": "economy",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "migration",
+        "remittance",
+        "money",
+        "family",
+        "letter",
+        "dilemma"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "mb17-remittance-web",
+          "owner": "household"
+        },
+        {
+          "kind": "overcrowded",
+          "value": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 16,
+          "sameHousehold": true
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "send-the-whole-order",
+          "weight": 0.4,
+          "text": "邮局窗口前，{subject}把房租、煤钱和给故乡的汇款单摊在柜台上。{official}数了两遍纸币，问“都寄？”{subject}点头，把{child}想要的新鞋从纸上划掉；回家的路上，孩子没有问，只把旧鞋上的纸板又往里塞了塞。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "the whole money order was sent home"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "supportSent",
+              "delta": 3,
+              "reason": "the yearly remittance was paid in one sum"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "arrears",
+              "delta": -1,
+              "reason": "the arrears were partly cleared"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "obligation",
+              "delta": -8,
+              "reason": "the family received the full amount"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.03,
+              "reason": "the child's new shoes were postponed again"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_remittance_sent_despite_shortage",
+              "add": true,
+              "reason": "the full remittance was sent despite the household shortage"
+            }
+          ]
+        },
+        {
+          "id": "keep-the-coal-money",
+          "weight": 0.35,
+          "text": "汇款单填到一半，{subject}听见{child}在门口咳嗽，便把纸币收回口袋，先去煤店买了一筐煤。夜里他给故乡写信，说这个月厂里活少；信写完，他把去年的一张汇款回执翻出来，看了很久。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the money stayed with the household for coal"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "arrears",
+              "delta": 2,
+              "reason": "the money order was not sent this month"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "obligation",
+              "delta": 6,
+              "reason": "the family is waiting for a double payment"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "affection": 0.04,
+              "reason": "the child got a warm room instead of new shoes"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "a letter that promises next month"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_remittance_kept_for_coal",
+              "add": true,
+              "reason": "the household kept the remittance money for coal"
+            }
+          ]
+        },
+        {
+          "id": "split-the-order-and-borrow",
+          "weight": 0.25,
+          "text": "{neighbor}借给{subject}一小叠纸币，条件是这个月先还一半。{subject}把汇款单填成两份，一份寄给故乡，一份留着交房租；{official}看了看两张单子，说“这样到得更慢”，但还是盖了章。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "half the money order and a small loan fee"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "supportSent",
+              "delta": 1,
+              "reason": "half the money order was sent"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "arrears",
+              "delta": 1,
+              "reason": "the family received only half"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "mb17-remittance-web",
+              "key": "obligation",
+              "delta": -2,
+              "reason": "a partial payment reduced the obligation"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "obligation": 0.06,
+              "reason": "the neighbour lent money for the split remittance"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_remittance_half_sent",
+              "add": true,
+              "reason": "the remittance was split between home and rent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mb17-return.funeral-train",
+      "title": "返乡列车上的黑面包",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 75
+      },
+      "tags": [
+        "migration",
+        "return",
+        "home",
+        "grief",
+        "train",
+        "belonging"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "mb17-newcomer",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "grief",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "sex": "female",
+          "minAge": 16,
+          "maxAge": 35
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 40,
+          "maxAge": 85
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "the-village-has-shrunk",
+          "weight": 0.4,
+          "text": "葬礼结束后，{sibling}领{subject}去看老屋。门锁换了，院子里的梨树被砍掉一半；邻居端来咖啡，问他维也纳的房租和工作，像在问一个远房亲戚。{subject}住到第三天，发现自己已经在算回程的火车时刻。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the return ticket and a funeral wreath"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the old house no longer feels like home"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.04,
+              "reason": "the sibling kept the old house keys"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_village_feels_small",
+              "add": true,
+              "reason": "the village felt smaller than the memory"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "老屋的钥匙已经不在自家人手里。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "misses-the-last-train-back",
+          "weight": 0.35,
+          "text": "{subject}在墓园待到天黑，又在{neighbor}家喝了两杯烧酒。等他赶到车站，末班车已经开走；他在候车室的长椅上坐到天亮，第二天回到维也纳时，工厂的工牌被放在门房里。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a missed train and a night in the waiting room"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the last train left without the subject"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "the old neighbour poured two glasses"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a missed shift after the funeral"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_missed_return_train",
+              "add": true,
+              "reason": "the return train was missed"
+            }
+          ]
+        },
+        {
+          "id": "bring-the-youngest-cousin-back",
+          "weight": 0.25,
+          "text": "临走前，{sibling}把最小的妹妹推到{subject}面前，说她在村里找不到活。{subject}看着那张和自己刚来时一样茫然的脸，最终多买了一张车票；回维也纳的火车上，两个人的行李只占了半个架子。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "move",
+              "personId": "$sibling",
+              "locationId": "@station",
+              "reason": "the younger sister travelled back to Vienna"
+            },
+            {
+              "type": "household",
+              "personId": "$sibling",
+              "householdId": "$household",
+              "reason": "the younger sister joined the Vienna household"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "housingStrain",
+              "delta": 8,
+              "reason": "another person shares the rented room"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a second train ticket and a new mattress"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.08,
+              "obligation": 0.05,
+              "reason": "the subject brought the younger sister to Vienna"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the family is larger and the room is smaller"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_chain_migration",
+              "add": true,
+              "reason": "the return home brought another family member to Vienna"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mb17-belonging.sunday-walk",
+      "title": "星期日的奥花园",
+      "domain": "daily",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 70
+      },
+      "tags": [
+        "migration",
+        "belonging",
+        "ordinary",
+        "family",
+        "park",
+        "quiet"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "mb17-newcomer",
+          "owner": "person",
+          "parameter": "localNetwork",
+          "min": 25
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 4,
+          "maxAge": 14,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 2,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "greeted-by-name",
+          "weight": 0.45,
+          "text": "星期日的奥花园里，栗子树刚落叶。{neighbor}远远叫出{subject}的姓，问他妻子和孩子好不好；{subject}用德语答了两句，虽然语法不对，对方还是听懂了。回家的路上，他第一次没有绕开那条有警察岗亭的街。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "language",
+              "delta": 2,
+              "reason": "a Sunday conversation in German"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": 4,
+              "reason": "a neighbour greeted the subject by name"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "reason": "a Sunday greeting in the park"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "being recognised in a public place"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_greeted_by_name",
+              "add": true,
+              "reason": "a neighbour greeted the subject by name in the Augarten"
+            }
+          ]
+        },
+        {
+          "id": "the-child-speaks-like-a-local",
+          "weight": 0.35,
+          "text": "{child}跑去买烤栗子，回来时已经和摊主聊上了。摊主问{subject}：“你女儿在这里生的？”{subject}摇头，{child}却抢着说“我在这里上学”。{subject}听见那一口维也纳话，忽然分不清自己是高兴还是失落。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "language",
+              "delta": 1,
+              "reason": "the child brought home a local idiom"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": 3,
+              "reason": "the chestnut seller knows the child"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "affection": 0.06,
+              "reason": "the child claimed the city as home"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "pride mixed with the distance of language"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_child_at_home_here",
+              "add": true,
+              "reason": "the child speaks like a local"
+            }
+          ]
+        },
+        {
+          "id": "a-policeman-asks-for-papers",
+          "weight": 0.2,
+          "text": "一个穿制服的{official}在公园门口查证件。{subject}把居留纸递过去，对方翻了两遍，问为什么星期天也带着它；{child}停止追鸽子，站在旁边。证件没有问题，但回家的路上谁也没有说话。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "a Sunday paper check at the park gate"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": -2,
+              "reason": "the park felt watched"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_papers_checked_in_park",
+              "add": true,
+              "reason": "the subject's papers were checked in the Augarten"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mb17-xenophobia.stairwell-notice",
+      "title": "楼梯间里的告示",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 70
+      },
+      "tags": [
+        "migration",
+        "xenophobia",
+        "occupation",
+        "housing",
+        "neighbor",
+        "harm"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "mb17-newcomer",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-landlord-posts-a-list",
+          "weight": 0.4,
+          "text": "房东把一张打印的告示钉在楼梯间，上面列着“应腾退的外国住户”，{subject}的名字被拼错了一个字母。房东说这栋楼要留给穿制服的人，限期两周；{subject}回到屋里，发现墙上的日历还停在搬进来的那个月。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "housingStrain",
+              "delta": 20,
+              "reason": "the landlord posted an eviction list"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a deposit lost on a room under threat"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "a name misspelled on a list of foreign tenants"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_landlord_list",
+              "add": true,
+              "reason": "the landlord put the subject on an eviction list"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "房东的腾退名单上，名字拼错也算数。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-neighbor-hides-the-family",
+          "weight": 0.35,
+          "text": "{neighbor}在夜里敲开门，把{subject}一家领到地窖后面的空屋。那里没有窗，但有一盏煤油灯和半袋土豆；{neighbor}说，巡逻队只在白天来，晚上别开灯。{subject}把孩子的鞋放在门边，第一次觉得这栋楼里还有人站在自己这边。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "localNetwork",
+              "delta": 10,
+              "reason": "a neighbour hid the family in the cellar"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "housingStrain",
+              "delta": -5,
+              "reason": "a hidden room is safer than the stairwell list"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "the neighbour offered a hidden room"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "an unexpected ally in the building"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_hidden_by_neighbor",
+              "add": true,
+              "reason": "a neighbour hid the family during an occupation"
+            }
+          ]
+        },
+        {
+          "id": "denounce-before-being-denounced",
+          "weight": 0.25,
+          "text": "楼下的{neighbor}被叫去问话，回来时脸色很差。{subject}听见有人说，只要交出另一个“没有纸的人”，名单上就能划掉一个名字；那天晚上，{official}来敲门，{subject}把邻居的姓名和住处说了出来。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the occupation office marked the subject as cooperative"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.2,
+              "fear": 0.1,
+              "reason": "the subject gave the neighbour's name to the authorities"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$neighbor",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 15,
+                "charge": "被邻居举报"
+              },
+              "durationMonths": 12,
+              "reason": "the subject denounced the neighbour to the occupation office"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the price of a scratched-out name"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_denounced_neighbor_under_occupation",
+              "add": true,
+              "reason": "the subject denounced a neighbour under occupation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mb17-papers.case-file",
+      "title": "档案室里的出生证明",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "migration",
+        "stateless",
+        "papers",
+        "investigation",
+        "archive",
+        "belonging"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "mb17-stateless",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "under-investigation",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "a-clerk-finds-the-entry",
+          "weight": 0.35,
+          "text": "{official}从教区簿的微缩胶片里抬起头，说找到了{subject}的出生记录：村名、父母姓名和洗礼日期都对得上。办理台上摊着南森护照申请表、住址登记和一张缴费单；{subject}把名字写了两遍，第二遍才没有写错。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "reason": "the birth record ended the stateless status"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "reason": "the investigation was closed by the identity record"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "parameters": {
+                "language": 45,
+                "localNetwork": 35,
+                "housingStrain": 45,
+                "permitStatus": "registered"
+              },
+              "durationMonths": 72,
+              "reason": "the subject re-entered the city's records as a registered resident"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the archive fee and the new photograph"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "registered_resident",
+              "add": true,
+              "reason": "a registered residence record"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "a name found in the parish book"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_birth_entry_found",
+              "add": true,
+              "reason": "the parish register proved the subject's birth"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "教区簿上的出生记录比任何护照都更难被否认。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-file-is-lost-for-a-fee",
+          "weight": 0.35,
+          "text": "档案室的{official}把{subject}的卷宗从架子上抽出来，说“这份东西本来就不该在这里”。他收下几张纸币，把卷宗塞进抽屉最底层；出门时，{subject}拿到一张没有编号的收据，上面的字迹一擦就掉。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "the fee for losing a file"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "exposure",
+              "delta": -15,
+              "reason": "the investigation file was buried in a drawer"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "documentState",
+              "value": "pending",
+              "reason": "the file was removed from the active shelf"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "reason": "the archive clerk shelved the investigation"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a receipt with no number"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_bought_a_silence",
+              "add": true,
+              "reason": "the subject paid to have a file lost"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "调查卷宗可以被塞进抽屉，但不会真正消失。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-investigator-closes-the-file",
+          "weight": 0.3,
+          "text": "{official}把调查记录合上，说没有找到可以起诉的事，但也没有找到能证明{subject}身份的材料。他给了一张临时停留纸，限定在城区内；{subject}走出警察局，天正在下雨，纸上的墨迹被伞沿滴下来的水洇开一小块。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-stateless",
+              "key": "exposure",
+              "delta": -5,
+              "reason": "the investigation was closed without a charge"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "reason": "the investigator closed the file"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a temporary paper instead of a charge"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mb17_case_closed_without_papers",
+              "add": true,
+              "reason": "the case closed but the papers remained incomplete"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "没有起诉不等于有身份；临时停留纸只保证暂时不被带走。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "migration",
+    "borders",
+    "diaspora",
+    "family",
+    "belonging"
+  ],
+  "tone": [
+    "tender",
+    "humiliating",
+    "hopeful"
+  ],
+  "scope": [
+    "person",
+    "household"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "xenophobia",
+    "displacement",
+    "family separation"
+  ]
+}

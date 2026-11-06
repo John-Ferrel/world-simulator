@@ -214,3 +214,18 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - **自然人生**：final-c 40 年 14,435 事件 / 342 人 / 146 births / 132 deaths / 30 distinct states；final-a 50 年 22,102 事件，final-b 45 年 19,512 事件。
 - **未完成**：widow/inheritance/family-estate 内容仍未自然触发；office downstream 仍少；love/knowledge/craft 愿望仍弱；repeatRate 0.1543；生产 DB/API 与 runtime LLM 未验证。
 - 交付：`docs/v4/phase-16-design.md`、`phase-16-critique.md`、`phase-16-report.md`、ADR-017。
+
+## Phase 17 执行状态（2026-11-06）
+
+- **目标**：以 Content Library / Catalog / 多 Subagent 生产为中心，扩大可组合内容，不重写 Engine。
+- **内容规模**：79 states / 1,740 kernels / 15 generated packs（Phase 16: 52 / 1,652 / 6）；generated states 16→43，generated kernels 47→135。
+- **新 pack**：life-course、desire-scandal、crime-justice、migration-belonging、faith-miracles、fame-art、absurd-fortune、work-craft；另加真实 Content Factory pack `pack-factory-education`。
+- **Catalog**：`scripts/v4-content-catalog.ts` 生成 `docs/v4/content-catalog.json/md`；含 consumers/consumerPacks/stage/domain gaps/unconsumed/pack metadata；`pnpm v4:content-catalog`。
+- **QA**：`tests/v4-phase17-content.test.ts`：15 packs validate、ID 唯一、每个新 state 有 creation path + consumer、每个 kernel ≥2 outcomes、compiledScenes>0；`pnpm v4:validate-packs`。
+- **真实模型**：`/models` 200、chat 成功；education brief 8,653 tokens / 1 attempt / 3 states / 4 kernels / 56 scenes，已注册；power brief 12,465 tokens/2 attempts 失败并 fallback，保留在 `phase-17-content-factory.json`。
+- **自然人生**：final-f 45 年 18,134 events / 347 persons / 51 distinct states / repeatRate 0.1965；final-c 21,173/52/0.1892；final-e 20,790/50/0.1843。新内容中 life-course 33 prodigy、6 caregiver；fame 19 starving/10 muse；migration 19+19；absurd 15 lucky；faith 3+1+1；office 107 events。
+- **交叉组合**：final-f new→base 99+ effects；work→office、under-investigation→cj17-wanted、courtship→forbidden-attachment、life→chronic/care、migration→family。new→new 仍弱。
+- **独立 Critic**：修订前主样本 16/30（Phase 16 18/30）；关系/子女 slot machine、死状态、重复率 0.1978、无 horizon、组织重复、历史日期错位。修订做 cash/slot/caregiver-link/muse-link/factory-graduation 等修复，但未重评更高分。
+- **测试/DB**：89 files / 526 pass / 37 skip；typecheck/build；15 packs validate；PG state/macro 2 passed；e2e 1 passed；test DB beforeAll archive 残留 running world。
+- **未完成**：new→new 组合、签名状态可达性、家庭/伴侣/生育连续性、历史日期/组织类型、horizon、稳定批量 Content Factory、20k 新内容 profile；不是所有状态都在自然人生中出现。
+- 交付：`docs/v4/phase-17-content-architecture.md`、`phase-17-research.md`、`phase-17-content-coverage.md`、`phase-17-report.md`、`phase-17-critique.md`、`phase-17-content-factory.json`。

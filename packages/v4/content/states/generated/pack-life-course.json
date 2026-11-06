@@ -1,0 +1,4026 @@
+{
+  "id": "pack-life-course",
+  "version": 1,
+  "title": "人生历程：神童、照护、空巢与迟来的重新开始",
+  "description": "把童年被称作神童的压力、成年后照料衰弱亲人的负担、最后一个孩子离家后的空巢，以及离开校园多年后重新使用一张旧文凭，做成可持续、可消费的状态。它补强童年与老年两个薄弱阶段，并让 raising-child、apprenticeship-contract、chronic-illness、family-estate、university-graduate 在同一段人生里相互接续。",
+  "author": "phase17-content-author/life-course",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-06",
+  "sourceBriefId": "phase17-life-course",
+  "rationale": "Phase 17 的目录显示 childhood 只有 61 个 kernel、elderhood 只有 17 个，且 university-graduate 与 chronic-illness 没有任何消费者。这个包不复制既有状态：神童状态从童年延伸到青春期考试，照护状态从老年病人的慢性病转到成年子女的夜班，空巢状态由 raising-child 的离家参数创建、在老年探访中被读取；继承与迟来的求学则消费 family-estate 与 university-graduate。所有结果都落在同一个世界的钱、纸、药、房间和亲属关系上。",
+  "states": [
+    {
+      "id": "lc17-child-prodigy",
+      "version": 1,
+      "packId": "pack-life-course",
+      "title": "被称作神童的孩子",
+      "description": "一个孩子在钢琴、提琴或算术上被大人称作“有前途”。称赞、学费、练习和公开表演一起变成压力；孩子可能真的喜欢它，也可能只学会在客人面前坐直。",
+      "owner": "person",
+      "slot": "childhood_talent",
+      "conflict": "replace",
+      "tags": [
+        "childhood",
+        "promise",
+        "talent",
+        "pressure",
+        "family",
+        "education",
+        "prodigy"
+      ],
+      "parameters": {
+        "promise": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        "pressure": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        },
+        "loveOfIt": {
+          "type": "number",
+          "default": 60,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 5,
+          "max": 12
+        }
+      ],
+      "durationMonths": {
+        "min": 24,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "childhood",
+            "education",
+            "performance",
+            "practice",
+            "family"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "illness",
+            "war"
+          ],
+          "multiplier": 0.75
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "performance",
+            "practice"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "practice-year",
+          "everyMonths": 24,
+          "check": {
+            "attribute": "willpower",
+            "dc": 11,
+            "successOutcomeIds": [
+              "keeps-practicing"
+            ],
+            "failureOutcomeIds": [
+              "sits-with-hands-folded"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "keeps-practicing",
+              "result": "success",
+              "weight": 2,
+              "text": "{subject}今年自己把练习时间从半小时加到三刻钟。琴谱的边角被翻得起毛，厨房里有人听见同一段反复了七遍，最后一遍终于没有错音；{subject}停下来，才发现窗外天已经黑了，煤气灯在玻璃上照出一小块黄色的自己。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc17-child-prodigy",
+                  "key": "promise",
+                  "delta": 3,
+                  "reason": "another year of steady practice"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc17-child-prodigy",
+                  "key": "loveOfIt",
+                  "delta": 4,
+                  "reason": "the piece finally came clean"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc17-child-prodigy",
+                  "key": "pressure",
+                  "delta": -2,
+                  "reason": "practice became a private habit"
+                },
+                {
+                  "type": "skill",
+                  "personId": "$subject",
+                  "skill": "craft",
+                  "amount": 0.02,
+                  "reason": "a year of daily finger work"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "a clean run-through at dusk"
+                }
+              ]
+            },
+            {
+              "id": "sits-with-hands-folded",
+              "result": "failure",
+              "weight": 1,
+              "text": "冬天屋里冷，{subject}把手指压在暖气片上，等关节活动开才肯碰琴键。老师上周留下的曲子还停在第三页；{subject}听见楼下孩子在雪地里喊，便把琴盖合上，坐到窗边去看，直到手指重新变凉。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc17-child-prodigy",
+                  "key": "pressure",
+                  "delta": 6,
+                  "reason": "the weekly piece was not learned"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc17-child-prodigy",
+                  "key": "loveOfIt",
+                  "delta": -6,
+                  "reason": "the instrument became a duty"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc17-child-prodigy",
+                  "key": "promise",
+                  "delta": -2,
+                  "reason": "a winter without practice"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "watching the snow instead of the score"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "age",
+          "min": 18
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "child_prodigy",
+          "add": true,
+          "reason": "the child was named a prodigy"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "child_prodigy",
+          "add": false,
+          "reason": "the prodigy childhood ended"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/life-course",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase17-life-course"
+        ],
+        "rationale": "Childhood promise needs a persisted mechanism: promise, pressure and intrinsic love diverge over years, and an adolescence exam can read the result. It is not a one-off compliment scene."
+      }
+    },
+    {
+      "id": "lc17-caregiver",
+      "version": 1,
+      "packId": "pack-life-course",
+      "title": "照料一个衰弱的亲人",
+      "description": "一个成年人把一部分时间、工钱和睡眠交给病床边的亲人。照料不是一次性的孝行：药费、夜班、兄弟姐妹的分摊和病人自己的脾气会持续改变这个家。",
+      "owner": "person",
+      "slot": "care",
+      "conflict": "replace",
+      "tags": [
+        "care",
+        "family",
+        "illness",
+        "elder",
+        "duty",
+        "household"
+      ],
+      "parameters": {
+        "burden": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "resentment": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "paidHelp": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "links": {
+        "patient": "person"
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 75
+        }
+      ],
+      "durationMonths": {
+        "min": 6,
+        "max": 180
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "care",
+            "family",
+            "illness",
+            "medical",
+            "elder"
+          ],
+          "multiplier": 1.6
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "travel",
+            "leisure"
+          ],
+          "multiplier": 0.7
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "care",
+            "family"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "care-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "resilience",
+            "dc": 11,
+            "successOutcomeIds": [
+              "carried"
+            ],
+            "failureOutcomeIds": [
+              "worn-thin"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "carried",
+              "result": "success",
+              "weight": 2,
+              "text": "{subject}又撑过一年。药盒按星期分好，账本上多了一栏“看护”，工钱少了一些，但还没有断；{patient}今年记得住{subject}的名字，偶尔也记得住昨天吃了什么。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc17-caregiver",
+                  "key": "burden",
+                  "delta": -4,
+                  "reason": "a manageable year of care"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc17-caregiver",
+                  "key": "resentment",
+                  "delta": -2,
+                  "reason": "the routine became less bitter"
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "a year of broken nights"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "the patient still knows the name"
+                }
+              ]
+            },
+            {
+              "id": "worn-thin",
+              "result": "failure",
+              "weight": 1,
+              "text": "{patient}今年摔了两次，第二次把胯骨摔裂了。{subject}在医院走廊的硬椅上睡了四夜，回家以后发现厂里已经把位置给了别人；药费单、住院单和一张停工的证明一起压在桌玻璃下面，边角每天都被翻卷一点。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc17-caregiver",
+                  "key": "burden",
+                  "delta": 8,
+                  "reason": "a fall and a hospital stay"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc17-caregiver",
+                  "key": "resentment",
+                  "delta": 6,
+                  "reason": "the job was lost while caring"
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "four nights on a hospital chair"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -2,
+                  "reason": "medicine and hospital fees"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "the costs kept arriving"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "patient-death",
+          "onTags": [
+            "death"
+          ],
+          "requiresRoles": [
+            "parent"
+          ],
+          "chance": 0.8,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "a parent died while the care arrangement was active"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "another death in the family"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "buried_parent",
+              "add": true,
+              "reason": "a parent died after a period of care"
+            }
+          ],
+          "text": "{parent}去世的消息传来时，{subject}正在把当天的药片分进小格。护士问要不要留一件衣服，{subject}说“留着那件灰的”，说完才发现自己的声音很平，像在替别人办手续。",
+          "cooldownMonths": 120,
+          "maxPerYear": 1
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "lc17-caregiver",
+          "parameter": "burden",
+          "max": 5
+        },
+        {
+          "kind": "age",
+          "min": 80
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/life-course",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase17-life-course"
+        ],
+        "rationale": "Eldercare needs a recurring burden, a resentment parameter, a paid-help switch and a death reaction. The state links to the actual patient so later scenes and ticks can name the same person."
+      }
+    },
+    {
+      "id": "lc17-empty-nest",
+      "version": 1,
+      "packId": "pack-life-course",
+      "title": "孩子都走了的家",
+      "description": "最后一个孩子搬走以后，屋子多出几间没人用的房。安静不是一件事，而是一种每天都要重新安排的时间：房间要不要改、饭做多少、周末等不等门铃。",
+      "owner": "household",
+      "slot": "home",
+      "conflict": "replace",
+      "tags": [
+        "family",
+        "home",
+        "empty_nest",
+        "aging",
+        "household",
+        "transition"
+      ],
+      "parameters": {
+        "quiet": {
+          "type": "number",
+          "default": 60,
+          "min": 0,
+          "max": 100
+        },
+        "reorientation": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        },
+        "roomKept": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "durationMonths": {
+        "min": 36,
+        "max": 240
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "family",
+            "home",
+            "aging",
+            "memory",
+            "household"
+          ],
+          "multiplier": 1.45
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "courtship",
+            "child"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "home",
+            "family"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "quiet-year",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "room-stays",
+              "weight": 2,
+              "text": "{subject}把朝北那间房的窗帘拉开又合上，床单还是孩子离家时铺的那一条。午饭只煮了一小锅，锅底结了一圈干米；下午有人敲门，{subject}先去看了钟，才想起这个点不会有人来。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "lc17-empty-nest",
+                  "key": "quiet",
+                  "delta": 5,
+                  "reason": "the room stayed unused for another year"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "lc17-empty-nest",
+                  "key": "reorientation",
+                  "delta": -2,
+                  "reason": "the household kept the old routine"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "the empty room kept its old sheets"
+                }
+              ]
+            },
+            {
+              "id": "new-use",
+              "weight": 1,
+              "text": "{subject}把朝北的房腾出来，靠窗摆了一张旧桌，开始替街坊抄信、写申请、算煤账。第一天来了两个人，第二天来了五个；桌上多了一只装零钱的果酱瓶，瓶身上还留着去年的标签。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "lc17-empty-nest",
+                  "key": "quiet",
+                  "delta": -6,
+                  "reason": "the room acquired a new use"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "lc17-empty-nest",
+                  "key": "reorientation",
+                  "delta": 8,
+                  "reason": "the household found a new routine"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "small fees for letters and accounts"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.03,
+                  "reason": "the room became useful again"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-child-returns-to-stay",
+          "onTags": [
+            "child_returned"
+          ],
+          "conditions": [
+            {
+              "kind": "hasState",
+              "owner": "household",
+              "stateId": "raising-child",
+              "parameter": "leftHome",
+              "equals": false
+            }
+          ],
+          "chance": 0.8,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "reason": "a child moved back into the household"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the returned child filled the empty room"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "empty_nest_ended_by_return",
+              "add": true,
+              "reason": "a child returned to live at home"
+            }
+          ],
+          "text": "门铃在下午响起，孩子提着箱子站在楼梯口，说这次不走了。{subject}把刚收起的被褥又抱出来，厨房里多摆了一副碗筷；朝北那间房的窗帘，晚上终于拉开了。",
+          "cooldownMonths": 60,
+          "maxPerYear": 1
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "owner": "household",
+          "stateId": "lc17-empty-nest",
+          "parameter": "reorientation",
+          "min": 80
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "empty_nest_active",
+          "add": true,
+          "reason": "the last child left the household"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "empty_nest_active",
+          "add": false,
+          "reason": "the household reoriented around the empty rooms"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/life-course",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase17-life-course"
+        ],
+        "rationale": "Empty nest is a household mechanism, not a mood: quiet, reorientation and whether the child's room is kept change what the next elderhood visit means. It is created by a leaving kernel and consumed by later visit and reinvention kernels."
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "lc17-prodigy.noticed",
+      "title": "老师多看了一眼",
+      "domain": "education",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 7,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "prodigy",
+        "talent",
+        "school",
+        "music",
+        "family",
+        "promise"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "lc17-child-prodigy"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 11
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": false,
+          "minAge": 28,
+          "maxAge": 60
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "signs-the-card",
+          "weight": 0.35,
+          "text": "老师在{subject}的练习本背面画了五条线，说手指还要再长一年。第二天，{teacher}把一张写着“每周三次”的纸条交给{subject}家里的大人，学费按季度付，先交一半。{subject}把纸条折成小船，放在窗台上，直到墨迹被煤气灯熏黄。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "parameters": {
+                "promise": 55,
+                "pressure": 35,
+                "loveOfIt": 70
+              },
+              "durationMonths": 120,
+              "reason": "the teacher arranged regular lessons"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the first quarter of music lessons"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.12,
+              "reason": "the teacher recognised the child's ability"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "first regular finger exercises"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "prodigy_lessons",
+              "add": true,
+              "reason": "regular lessons began"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a teacher wrote down the times"
+            }
+          ]
+        },
+        {
+          "id": "plays-for-the-yard",
+          "weight": 0.3,
+          "text": "放学后，{subject}爬上院子里的木箱，用一把借来的提琴拉了一首集市上听来的曲子。修鞋匠用锤子打拍子，晾衣绳上的床单跟着晃；{teacher}站在门口听了很久，没有说音准，只说“明天来教室”。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "parameters": {
+                "promise": 45,
+                "pressure": 20,
+                "loveOfIt": 80
+              },
+              "durationMonths": 120,
+              "reason": "the child played for the courtyard and was heard"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "coins from the neighbours after the courtyard tune"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the courtyard noticed the child's playing"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.08,
+              "reason": "the teacher heard the borrowed violin"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "courtyard_violin",
+              "add": true,
+              "reason": "the child played for the courtyard"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the courtyard clapped in time"
+            }
+          ]
+        },
+        {
+          "id": "the-child-refuses",
+          "weight": 0.2,
+          "text": "老师让{subject}在全校面前拉一遍，{subject}把琴弓横在膝盖上，说手指疼。其实昨天在灶台边已经练到会了；{teacher}看出这一点，收起谱子，说“下个月再说”。回家时，{subject}把琴盒抱得很紧，像抱一只不肯叫的猫。",
+          "significance": 0.68,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "parameters": {
+                "promise": 30,
+                "pressure": 55,
+                "loveOfIt": 35
+              },
+              "durationMonths": 120,
+              "reason": "the child was named promising but refused the first public performance"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the refusal sat badly"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "prodigy_refused_first",
+              "add": true,
+              "reason": "the child refused to play for the school"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "respect": -0.03,
+              "reason": "the teacher saw the refusal as fear"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.01,
+              "reason": "practice continued in private"
+            }
+          ]
+        },
+        {
+          "id": "the-piano-is-sold",
+          "weight": 0.15,
+          "text": "家里的钢琴是上一辈留下的，琴腿用一本旧电话簿垫着。{teacher}说这孩子该考音乐学院，家里却已经约好买主；{subject}在买主量琴键时弹了最后一支曲子，弹完把琴盖合上，谁也没有鼓掌。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "parameters": {
+                "promise": 20,
+                "pressure": 60,
+                "loveOfIt": 50
+              },
+              "durationMonths": 120,
+              "reason": "the family sold the instrument but the child's reputation remained"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "the piano was sold to a buyer"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the last piece was played for a buyer"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "piano_sold",
+              "add": true,
+              "reason": "the family piano was sold"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.04,
+              "reason": "the teacher's plan was overruled by the sale"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "家里的钢琴被卖掉了，买主量琴键时我在场。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 2,
+      "cooldownYears": 10
+    },
+    {
+      "id": "lc17-prodigy.recital",
+      "title": "为客人演奏",
+      "domain": "education",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 8,
+        "max": 11
+      },
+      "tags": [
+        "childhood",
+        "prodigy",
+        "performance",
+        "practice",
+        "family",
+        "shame",
+        "music"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc17-child-prodigy",
+          "parameter": "pressure",
+          "min": 15
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 11
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "clean-hands",
+          "weight": 0.3,
+          "text": "客厅里坐了十二个人，壁炉上的钟慢了一刻钟。{subject}把曲子从头拉到尾，中间只错了一个音；{teacher}没有笑，只在客人走后把谱子翻到下一页。厨房里端来剩下的杏仁饼，{subject}拿了一块，发现手心全是汗。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "promise",
+              "delta": 6,
+              "reason": "a clean performance before guests"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "pressure",
+              "delta": 4,
+              "reason": "the guests now expect another performance"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "loveOfIt",
+              "delta": 3,
+              "reason": "the piece held together"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the performance went well"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the guests praised the child"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "a full piece performed from memory"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "an envelope from the host"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "respect": 0.05,
+              "reason": "the teacher's pupil played cleanly"
+            }
+          ]
+        },
+        {
+          "id": "the-hands-shake",
+          "weight": 0.25,
+          "text": "第一个音就低了半度。{subject}看见{teacher}在门口微微摇头，后面的小节便像走错的楼梯，一级一级往下掉。客人还是鼓了掌，说“孩子还小”；{subject}把琴弓放下，觉得那掌声比沉默更难挨。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "pressure",
+              "delta": 10,
+              "reason": "a public mistake in front of guests"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "loveOfIt",
+              "delta": -8,
+              "reason": "the instrument became a source of shame"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "promise",
+              "delta": -3,
+              "reason": "the guests heard the wrong notes"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "the applause felt worse than silence"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "stage_fright",
+              "add": true,
+              "reason": "the first public performance shook the child"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "the teacher shook his head at the door"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the guests remembered the wrong notes"
+            }
+          ]
+        },
+        {
+          "id": "the-dog-howls",
+          "weight": 0.2,
+          "text": "曲子拉到第二段，窗外的狗跟着调子嚎起来，先是低一声，后来索性趴在门口长嚎。客人笑，主人也笑，{subject}干脆把曲子改成进行曲，狗却跟不上了。{teacher}事后说，至少这一次，没有人睡着。",
+          "significance": 0.66,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "pressure",
+              "delta": 3,
+              "reason": "the performance became a joke"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "loveOfIt",
+              "delta": 5,
+              "reason": "the child improvised instead of freezing"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "promise",
+              "delta": -2,
+              "reason": "the guests treated the prodigy as a novelty"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the dog joined the performance"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the recital was remembered as an anecdote"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the amused host still paid for the evening"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "dog_howl_recital",
+              "add": true,
+              "reason": "a dog howled through the recital"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.01,
+              "reason": "the teacher admitted the room stayed awake"
+            }
+          ]
+        },
+        {
+          "id": "plays-the-kitchen-song",
+          "weight": 0.15,
+          "text": "节目单上写着莫扎特，{subject}却拉到一半换成了厨房里听来的小调。厨娘在门后跟着哼，主人的脸沉下来；{teacher}把琴收进盒子，说“你至少知道自己喜欢什么”。回家的电车上，{subject}第一次没有问下次什么时候上课。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "promise",
+              "delta": -4,
+              "reason": "the child abandoned the printed programme"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "pressure",
+              "delta": -5,
+              "reason": "the child stopped performing for approval"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "loveOfIt",
+              "delta": 10,
+              "reason": "the kitchen song belonged to the child"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the child played something of their own"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the host expected Mozart"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "played_kitchen_song",
+              "add": true,
+              "reason": "the child changed the programme"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "respect": 0.03,
+              "reason": "the teacher disapproved but understood"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 3
+    },
+    {
+      "id": "lc17-prodigy.conservatory-exam",
+      "title": "音乐学院走廊里的长椅",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 15,
+        "max": 17
+      },
+      "tags": [
+        "adolescence",
+        "prodigy",
+        "exam",
+        "conservatory",
+        "apprenticeship",
+        "music",
+        "future"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc17-child-prodigy"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "apprenticeship-contract"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 17
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "accepted",
+          "weight": 0.3,
+          "text": "{subject}在走廊的长椅上坐了三个小时，轮到的时候手指已经发僵。{teacher}让{subject}先拉一段音阶，再拉一段自己带来的曲子；听完以后，{teacher}在表格上写了一个“取”，又说“学徒契约那边，你自己去解”。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "higher",
+              "level": 4,
+              "placeId": "@university",
+              "reason": "accepted into the conservatory"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "apprenticeship-contract",
+              "reason": "the conservatory place ended the workshop contract"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "promise",
+              "delta": 8,
+              "reason": "the conservatory examiner accepted the child"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "pressure",
+              "delta": 6,
+              "reason": "the place brought new expectations"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "exam fees and new strings"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "the examiner wrote 'accepted'"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "conservatory_accepted",
+              "add": true,
+              "reason": "accepted into a conservatory"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.1,
+              "reason": "the examiner recognised the training"
+            }
+          ]
+        },
+        {
+          "id": "workshop-wins",
+          "weight": 0.25,
+          "text": "{subject}在考场外遇见师傅，师傅没有问结果，只说下午还有一批活要交。{subject}把准考证折起来，塞进围裙口袋；回到作坊时，铅字的油墨味比琴房更熟悉，{teacher}后来托人带话，说名额可以留到明年。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "apprenticeship-contract",
+              "key": "progress",
+              "delta": 12,
+              "reason": "the apprentice chose the workshop for now"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "pressure",
+              "delta": 8,
+              "reason": "the family needed the workshop wage"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "loveOfIt",
+              "delta": -4,
+              "reason": "music was postponed for paid work"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a full week's apprentice wage"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the exam was left unfinished"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "chose_workshop",
+              "add": true,
+              "reason": "the workshop took priority over the exam"
+            }
+          ]
+        },
+        {
+          "id": "fails-both",
+          "weight": 0.25,
+          "text": "{subject}在考场上拉断了一根弦，换弦时又把琴马碰歪了。{teacher}在表格上写了“明年再试”，师傅那边则说这个月的工钱要扣，因为少干了三天。回家的路上，{subject}把断弦绕在手指上，绕得很紧，直到指尖发白。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "promise",
+              "delta": -10,
+              "reason": "the exam ended in a broken string"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "pressure",
+              "delta": 10,
+              "reason": "both the conservatory and the workshop demanded more"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "loveOfIt",
+              "delta": -6,
+              "reason": "the instrument failed at the worst moment"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "apprenticeship-contract",
+              "key": "progress",
+              "delta": -5,
+              "reason": "three days missed for the exam"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "exam fee and a new string"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "the string broke in the exam room"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "failed_conservatory",
+              "add": true,
+              "reason": "failed the conservatory entrance exam"
+            }
+          ]
+        },
+        {
+          "id": "stairwell-audition",
+          "weight": 0.2,
+          "text": "{subject}迟到一刻钟，考场已经关门，便在楼梯间拉给排队的人听。一个开咖啡馆的胖男人听完，问{subject}晚上愿不愿意来拉两个钟头，管一顿饭，另给车钱；{teacher}从楼上下来，看见楼梯间围了一圈人，什么也没有说。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "promise",
+              "delta": 2,
+              "reason": "a café owner heard the stairwell performance"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "loveOfIt",
+              "delta": 8,
+              "reason": "the stairwell audience actually listened"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-child-prodigy",
+              "key": "pressure",
+              "delta": -6,
+              "reason": "the failed exam no longer felt final"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a café engagement and car fare"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the stairwell crowd stayed to listen"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "stairwell_audition",
+              "add": true,
+              "reason": "played an unscheduled stairwell audition"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "the teacher saw the improvised audience"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 4
+    },
+    {
+      "id": "lc17-care.parent-illness",
+      "title": "药盒放在厨房门后",
+      "domain": "care",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 82
+      },
+      "tags": [
+        "elderhood",
+        "care",
+        "illness",
+        "family",
+        "medicine",
+        "debt",
+        "household"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "chronic-illness",
+          "parameter": "severity",
+          "min": 0.3
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 82
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "accepts-the-child",
+          "weight": 0.3,
+          "text": "{subject}把药盒推到桌角，说“你也有自己的家”。{child}没有争，第二天把铺盖搬进走廊尽头的小房间，把闹钟拨到凌晨两点。药费、煤钱和一张写着剂量的纸被钉在厨房门后；{subject}半夜醒来，听见{child}在数剩下的药片。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "move",
+              "personId": "$child",
+              "locationId": "@home",
+              "reason": "the adult child moved into the parent's flat"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$child",
+              "stateId": "lc17-caregiver",
+              "parameters": {
+                "burden": 45,
+                "resentment": 12,
+                "paidHelp": false
+              },
+              "links": {
+                "patient": "$subject"
+              },
+              "durationMonths": 180,
+              "reason": "the adult child moved in to care for the ill parent"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.06,
+              "affection": 0.05,
+              "obligation": 0.04,
+              "reason": "the child took over the medicine and the night watch"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "an extra bed and a second coal allowance"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the child came back to the flat"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_became_caregiver",
+              "add": true,
+              "reason": "an adult child became the primary carer"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子搬回来照顾我，药盒放在厨房门后。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "hides-the-diagnosis",
+          "weight": 0.25,
+          "text": "{subject}把诊断书夹进食谱，告诉{child}只是胃不好。夜里疼得厉害时，{subject}就坐在床沿数窗外的马车，等那一阵过去；第二天照旧去市场，提不动篮子也不肯说。{child}临走前看见炉子上没洗的药罐，问了一句，{subject}说那是邻居的。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the diagnosis was hidden and untreated"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the pain was kept private"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hid_illness_from_child",
+              "add": true,
+              "reason": "the diagnosis was hidden from the adult child"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.04,
+              "reason": "the child was told a smaller truth"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "诊断书被夹在食谱里，孩子没有看见。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "sells-the-brass-clock",
+          "weight": 0.2,
+          "text": "家里那座铜钟是结婚时买的，走一刻慢一刻。{subject}让{child}把它送去当铺，换回一个按日来做的看护；看护每天下午来两小时，先量脉搏，再热汤。{child}把当票收在镜框后面，钟摆的位置空了一块，墙上留下一个浅印。",
+          "significance": 0.73,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a paid carer came for two hours a day"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$child",
+              "stateId": "lc17-caregiver",
+              "parameters": {
+                "burden": 35,
+                "resentment": 5,
+                "paidHelp": true
+              },
+              "links": {
+                "patient": "$subject"
+              },
+              "durationMonths": 180,
+              "reason": "the family hired paid help and the child still supervised"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "reason": "the clock paid for part of the care"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the clock was gone but the afternoons were covered"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "clock_pawned_for_care",
+              "add": true,
+              "reason": "the brass clock was pawned for care"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "铜钟进了当铺，换回一个每天下午来的看护。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-wrong-pills",
+          "weight": 0.15,
+          "text": "{subject}把白色药片和蓝色药片分错了，早晨多吃了一粒，下午一直犯困。{child}发现时，{subject}正坐在窗边，把窗帘的阴影当成了旧邻居；{child}把药盒全部倒出来，按日期重新排了一遍，手一直在抖。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the pills were mixed up"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$child",
+              "stateId": "lc17-caregiver",
+              "parameters": {
+                "burden": 55,
+                "resentment": 25,
+                "paidHelp": false
+              },
+              "links": {
+                "patient": "$subject"
+              },
+              "durationMonths": 180,
+              "reason": "the child took over the pill box after the mix-up"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.02,
+              "affection": 0.03,
+              "reason": "the child re-sorted every pill by date"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the afternoon was lost to the wrong dose"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "pill_mixup",
+              "add": true,
+              "reason": "white and blue pills were mixed up"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "白色和蓝色药片被分错了，孩子把药盒重新排了一遍。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 5
+    },
+    {
+      "id": "lc17-care.crisis-night",
+      "title": "夜里的铃",
+      "domain": "care",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 30,
+        "max": 55
+      },
+      "tags": [
+        "adulthood",
+        "care",
+        "eldercare",
+        "night",
+        "family",
+        "exhaustion",
+        "illness"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc17-caregiver",
+          "parameter": "burden",
+          "min": 25
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 55
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 65,
+          "maxAge": 90
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "stays-the-night",
+          "weight": 0.3,
+          "text": "{parent}在凌晨三点按响床边的铃，说只是想喝水。{subject}从折叠床上坐起来，把水杯递过去，又顺手换了尿湿的床单；窗外的煤气灯已经灭了，屋里只剩钟摆和呼吸声。天亮时，{subject}在厨房站着睡着了一刻钟。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "key": "burden",
+              "delta": 12,
+              "reason": "another night without sleep"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "key": "resentment",
+              "delta": 3,
+              "reason": "the bell rang for a glass of water"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a broken night"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "sleep came standing up"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.06,
+              "obligation": 0.05,
+              "reason": "the night watch was kept"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "night_watch",
+              "add": true,
+              "reason": "stayed awake through the night"
+            }
+          ]
+        },
+        {
+          "id": "calls-the-neighbor",
+          "weight": 0.25,
+          "text": "{subject}敲开隔壁的门，请那位退休的医院杂工来看一眼。老人翻了翻{parent}的眼皮，说该叫救护车；{subject}在走廊里数着口袋里的钞票，最后只叫了一辆出租马车。医院门口的队伍一直排到街上，{subject}把外套脱下来垫在{parent}背后。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "a cab to the hospital and the outpatient fee"
+            },
+            {
+              "type": "health",
+              "personId": "$parent",
+              "amount": 0.02,
+              "reason": "the parent was seen at the hospital"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "key": "burden",
+              "delta": 4,
+              "reason": "the hospital queue took the rest of the night"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the queue reached the street"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.04,
+              "reason": "the coat was folded under the parent's back"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "called_ambulance",
+              "add": true,
+              "reason": "took the parent to hospital at night"
+            }
+          ]
+        },
+        {
+          "id": "calls-in-a-favour",
+          "weight": 0.2,
+          "conditions": [
+            {
+              "kind": "position"
+            }
+          ],
+          "text": "{subject}在城里有个能说得上话的职位，托了医院的后门，把{parent}安排进一间两人病房。值班医生来看了两次，药量改了，账单也改了；那天夜里，{parent}的呼吸平稳下来，{subject}却坐在厨房里，把那张托人写的条子揉成了一团。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$parent",
+              "amount": 0.04,
+              "reason": "the parent was admitted through the subject's influence"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "key": "burden",
+              "delta": 2,
+              "reason": "the responsibility of pulling strings for a parent"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the favour was noticed at the office"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "used_office_for_parent_care",
+              "add": true,
+              "reason": "used a real position to arrange a parent's hospital bed"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the note was folded into a ball"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我用职位托人把父亲或母亲安排进了医院。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-laugh",
+          "weight": 0.25,
+          "text": "{parent}把{subject}认成了已经去世的配偶，问今天怎么没有买李子。{subject}先纠正，后来顺着说“卖完了”，{parent}便发起脾气。{subject}走到厨房，靠着水池笑了一声，又赶紧捂住嘴；那笑声在瓷砖上弹回来，听着像哭。",
+          "significance": 0.77,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "key": "burden",
+              "delta": 8,
+              "reason": "the parent mistook the carer for a dead spouse"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "key": "resentment",
+              "delta": 10,
+              "reason": "the mistake reopened an old loss"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the laugh sounded like crying"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "affection": 0.05,
+              "reason": "the confusion was met with a kind lie"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parent_mistook_me",
+              "add": true,
+              "reason": "the parent mistook the carer for someone dead"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "老人把我认成了已经去世的配偶，问今天为什么没有买李子。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 3
+    },
+    {
+      "id": "lc17-care.last-letter",
+      "title": "公证人念到第二页",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 35,
+        "max": 59
+      },
+      "tags": [
+        "adulthood",
+        "care",
+        "death",
+        "inheritance",
+        "grief",
+        "family",
+        "funeral"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc17-caregiver"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 59
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 70,
+          "maxAge": 95
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "dies-at-home",
+          "weight": 0.3,
+          "text": "{parent}在清晨咽气，窗外送奶的车刚过。{subject}把事先准备好的黑布挂在门上，去市政厅排队领死亡证明；{official}在柜台后盖章，问“职业”，{subject}想了很久，说“退休”。回家时，邻居已经在厨房烧水，桌上摆着切成小块的罂粟籽蛋糕。葬礼后的第三周，{subject}的腰直不起来，医生说是这些年搬人、翻身、提便盆落下的。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "death",
+              "personId": "$parent",
+              "cause": "长期病弱",
+              "reason": "the parent died at home after a long illness"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "reason": "the person being cared for died"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "grief",
+              "parameters": {
+                "loss": "年老的亲人"
+              },
+              "durationMonths": 36,
+              "reason": "the parent's death"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "chronic-illness",
+              "parameters": {
+                "severity": 0.4,
+                "years": 0
+              },
+              "durationMonths": 240,
+              "reason": "years of lifting and turning the parent left a chronic back condition"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "funeral, black cloth and the death certificate"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "the parent died at home"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "buried_parent",
+              "add": true,
+              "reason": "buried the parent after care"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "死亡证明上职业一栏，我替老人写了“退休”。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "dies-in-hospital",
+          "weight": 0.2,
+          "text": "医院在第七层，电梯坏了两天。{parent}最后说的话是“把窗开一点”，{subject}去开窗时，护士已经在拉帘子。葬礼从简，棺材是租的；{official}把遗嘱念到第二页，提到一只旧怀表，表壳里还夹着一张一九一四年的车票。回家后，{subject}的膝盖开始积水，医生说是长期搬抬和睡硬椅留下的。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "death",
+              "personId": "$parent",
+              "cause": "长期病弱",
+              "reason": "the parent died in hospital"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "reason": "the person being cared for died"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "grief",
+              "parameters": {
+                "loss": "年老的亲人"
+              },
+              "durationMonths": 36,
+              "reason": "the parent's death in hospital"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "chronic-illness",
+              "parameters": {
+                "severity": 0.45,
+                "years": 0
+              },
+              "durationMonths": 240,
+              "reason": "lifting and hospital chairs left a chronic knee condition"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "hospital fees and a rented coffin"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "the window was opened too late"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "inherited_watch",
+              "add": true,
+              "reason": "inherited the parent's old pocket watch"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "怀表里夹着一张一九一四年的车票。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-will-names-the-neighbor",
+          "weight": 0.2,
+          "text": "遗嘱只有一页半，房子留给{subject}，钢琴留给楼下的修琴匠，理由是“他每周来调一次音，从不收钱”。{subject}在公证处没有争，回家后把钢琴上的相框拿下来，发现琴键缝里还塞着{parent}的顶针。{official}说，若有人异议，可以在十四天内提出。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "death",
+              "personId": "$parent",
+              "cause": "长期病弱",
+              "reason": "the parent died before the will was read"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "reason": "the person being cared for died"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "grief",
+              "parameters": {
+                "loss": "年老的亲人"
+              },
+              "durationMonths": 36,
+              "reason": "the parent's death and the surprising will"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a small bequest after the funeral costs"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the piano went to the neighbour"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "piano_left_to_neighbor",
+              "add": true,
+              "reason": "the parent left the piano to the neighbour"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "遗嘱把钢琴留给楼下的修琴匠，理由是他每周免费调音。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-false-alarm",
+          "weight": 0.3,
+          "text": "{parent}半夜喘不上气，{subject}已经叫了神父。天亮前，{parent}却坐起来要喝咖啡，说只是梦见有人追。{subject}把神父送出门，回来时看见{parent}正把葬礼上要用的黑领带系在猫脖子上。{official}下午来电话问遗嘱要不要改，{subject}说“先放着”。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "key": "burden",
+              "delta": 4,
+              "reason": "a night of false alarm"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "key": "resentment",
+              "delta": 2,
+              "reason": "the priest was called for nothing"
+            },
+            {
+              "type": "health",
+              "personId": "$parent",
+              "amount": 0.03,
+              "reason": "the parent recovered by morning"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the parent asked for coffee"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the priest's car fare and a bottle of coffee"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "false_alarm",
+              "add": true,
+              "reason": "the death watch turned out to be a false alarm"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": 0.03,
+              "reason": "the black tie ended up on the cat"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 6
+    },
+    {
+      "id": "lc17-nest.last-child-leaves",
+      "title": "最后一间朝北的房",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 45,
+        "max": 59
+      },
+      "tags": [
+        "adulthood",
+        "family",
+        "empty_nest",
+        "leaving",
+        "home",
+        "household",
+        "aging"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "owner": "household",
+          "stateId": "raising-child",
+          "parameter": "leftHome",
+          "equals": true
+        },
+        {
+          "kind": "householdSize",
+          "max": 3
+        },
+        {
+          "kind": "notHasState",
+          "owner": "household",
+          "stateId": "lc17-empty-nest"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 59
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 25
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "keeps-the-room",
+          "weight": 0.3,
+          "text": "{child}回来取最后一箱书，临走时问那间朝北的房要不要租出去。{subject}说先放着，万一你回来住；{child}笑了一下，没有接话。门关上以后，{subject}走进去，把床单重新铺平，枕头拍了两下，灰尘在午后的光里浮起来。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "parameters": {
+                "quiet": 70,
+                "reorientation": 10,
+                "roomKept": true
+              },
+              "durationMonths": 240,
+              "reason": "the last child left and the room was kept unchanged"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the room stayed ready for a return"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "empty_nest_room_kept",
+              "add": true,
+              "reason": "the child's room was kept as it was"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.02,
+              "affection": 0.03,
+              "reason": "the room was left open for the child"
+            }
+          ]
+        },
+        {
+          "id": "paints-the-room",
+          "weight": 0.25,
+          "text": "{subject}把朝北的房刷成浅绿色，旧书桌搬到走廊，换了一张裁缝用的长台。{child}周末回来，看见自己的奖状被收进纸盒，愣在门口；{subject}说“你要哪张，自己挑”。两个人把奖状铺在地上，挑到天黑，最后只带走一张。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "parameters": {
+                "quiet": 40,
+                "reorientation": 35,
+                "roomKept": false
+              },
+              "durationMonths": 240,
+              "reason": "the room was repainted for a new use"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "paint, a brush and a new work table"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the room became a workroom"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": 0.03,
+              "reason": "they chose one old certificate together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "empty_nest_repainted",
+              "add": true,
+              "reason": "the child's room was repainted"
+            }
+          ]
+        },
+        {
+          "id": "takes-a-lodger",
+          "weight": 0.2,
+          "text": "招租的纸条贴在面包店门口，第三天就来了一个学音乐的年轻人，行李只有一只琴盒。{subject}把朝北的房租出去，租金刚好够煤和电；夜里听见琴声从墙后传来，{subject}想起{child}小时候练琴，翻了个身，没有起床。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "parameters": {
+                "quiet": 25,
+                "reorientation": 50,
+                "roomKept": false
+              },
+              "durationMonths": 240,
+              "reason": "the empty room was rented to a lodger"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the lodger's first month of rent"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "music returned to the flat"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "empty_nest_lodger",
+              "add": true,
+              "reason": "a lodger moved into the child's old room"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "朝北的房间租给了一个学音乐的年轻人。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-child-returns",
+          "weight": 0.25,
+          "text": "{child}在车站丢了工作，提着箱子回来，说只住两个月。{subject}把刚收起来的被褥又抱出来，晚饭多煮了一把米；夜里{child}在朝北的房里咳嗽，{subject}躺在床上想，那两个月的期限谁也没有再提。",
+          "significance": 0.79,
+          "effects": [
+            {
+              "type": "move",
+              "personId": "$child",
+              "locationId": "@home",
+              "reason": "the child returned to the family flat"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "leftHome",
+              "value": false,
+              "reason": "the child moved back in"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "delta": 5,
+              "reason": "the household supports the returned child"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "another mouth at the table"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the child is back under the roof"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": 0.04,
+              "reason": "the returned child was taken in"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_returned_home",
+              "add": true,
+              "reason": "an adult child moved back home"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 5
+    },
+    {
+      "id": "lc17-nest.sunday-visit",
+      "title": "星期天的两副碗筷",
+      "domain": "family",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 85
+      },
+      "tags": [
+        "elderhood",
+        "family",
+        "empty_nest",
+        "visit",
+        "home",
+        "aging",
+        "memory"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "owner": "household",
+          "stateId": "lc17-empty-nest",
+          "parameter": "quiet",
+          "min": 10
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 85
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 50
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 50
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-good-visit",
+          "weight": 0.3,
+          "text": "{child}带着一袋苹果和一张新的公交时刻表来，说以后每月第二个星期天都能到。{subject}把汤热了两遍，又把{child}小时候用的碗拿出来；饭后两个人在厨房洗碗，水太烫，{child}把{subject}的手推开，自己把剩下的洗完。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "quiet",
+              "delta": -10,
+              "reason": "the child promised regular visits"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "reorientation",
+              "delta": 5,
+              "reason": "the household planned around the visits"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "apples and a pot of soup"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the kitchen was full again"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.06,
+              "reason": "the visit became a monthly arrangement"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sunday_visit",
+              "add": true,
+              "reason": "the child promised regular Sunday visits"
+            }
+          ]
+        },
+        {
+          "id": "the-visit-is-a-loan",
+          "weight": 0.2,
+          "text": "{child}在饭桌上提起一笔到期的债，说只借三个月。{subject}把存折从铁盒里拿出来，又放回去，最后去里屋取了一叠旧钞票；{child}数钱时，{subject}看见其指甲缝里还留着印刷厂的油墨。{child}走后，{subject}把空了的铁盒放回柜子，盒子比原来轻。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "a loan to the adult child"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "quiet",
+              "delta": 8,
+              "reason": "the visit ended with a debt"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "reorientation",
+              "delta": -2,
+              "reason": "the old iron box was emptied"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the savings went out the door"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.03,
+              "obligation": 0.04,
+              "reason": "the loan was made at the dinner table"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lent_to_child",
+              "add": true,
+              "reason": "lent money to the adult child"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子来借钱，说三个月还。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-empty-chair",
+          "weight": 0.25,
+          "text": "{subject}把汤炖到下午三点，{child}没有来，也没有电话。桌上的两副碗筷摆到天黑，{subject}把其中一副收进柜子，又拿出来，最后只收了筷子。第二天，{child}寄来一张明信片，说工厂加班；{subject}把它立在钟旁边，钟还是慢一刻。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "quiet",
+              "delta": 10,
+              "reason": "the child did not come"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "reorientation",
+              "delta": 3,
+              "reason": "the household adjusted to another empty Sunday"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "roomKept",
+              "value": true,
+              "reason": "the child's room was still kept ready"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the soup was kept warm until it spoiled"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the second bowl stayed empty"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "empty_chair_sunday",
+              "add": true,
+              "reason": "the child did not come on Sunday"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.02,
+              "reason": "the postcard arrived after the soup"
+            }
+          ]
+        },
+        {
+          "id": "the-neighbor-repairs-the-radio",
+          "weight": 0.25,
+          "text": "楼下的年轻{neighbor}来借螺丝刀，看见{subject}的收音机只剩一个台，便蹲下来修。修好后，屋里响起舞曲，{neighbor}教{subject}调音量；后来楼里谁的收音机坏了都拿来，{subject}在厨房腾出一格抽屉放螺丝和旧电子管，第一次收了两先令。{child}晚上打来电话，{subject}说“家里有人来过”。",
+          "significance": 0.77,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "quiet",
+              "delta": -8,
+              "reason": "the neighbour brought music into the flat"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "reorientation",
+              "delta": 10,
+              "reason": "the household discovered a new afternoon habit"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the first two shillings for radio repairs"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "learning to replace valves and clean contacts"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the radio played a dance tune"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "affection": 0.02,
+              "reason": "the neighbour repaired the radio"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "late_radio_repair",
+              "add": true,
+              "reason": "a neighbour taught the subject to repair radios"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "楼下的邻居修好了收音机；后来我替楼里的人修，第一次收了两先令。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 3,
+      "cooldownYears": 2
+    },
+    {
+      "id": "lc17-graduate.late-start",
+      "title": "迟到多年的注册",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 44
+      },
+      "tags": [
+        "adulthood",
+        "education",
+        "university",
+        "graduate",
+        "reinvention",
+        "empty_nest",
+        "late_life"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "university-graduate"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 44
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "guest-auditor",
+          "weight": 0.3,
+          "text": "{subject}把多年前的毕业证书从纸筒里抽出来，边角已经发黄。注册处的职员翻了三遍名册，才找到名字；{teacher}同意让{subject}以旁听身份进课堂，不交学费，但要自己买笔记本。第一堂课上，{subject}坐在最后一排，把眼镜摘下来擦了两次。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "higher",
+              "level": 6,
+              "reason": "returned to university as a guest auditor"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.04,
+              "reason": "a term of lectures and note-taking"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "notebooks and the tram to the university"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the old certificate was accepted"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "late_guest_auditor",
+              "add": true,
+              "reason": "returned to university as a guest auditor"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.06,
+              "reason": "the lecturer allowed the older auditor into the class"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我以旁听身份回到了大学课堂。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "prints-a-pamphlet",
+          "weight": 0.25,
+          "text": "{subject}把年轻时写的论文找出来，删掉注释，改成一本给工人夜校用的小册子。印刷厂要五十份起印，{subject}把孩子的旧课本卖了凑钱；{teacher}看过后，只在页边写了一句“这里可以再慢一点”。册子印出来，封面是深绿色的。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a fifty-copy print run"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.03,
+              "reason": "rewriting a thesis for workers' evening classes"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the pamphlet circulated in evening classes"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the pamphlet came back from the printer"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "late_pamphlet",
+              "add": true,
+              "reason": "printed a pamphlet for workers' evening classes"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "respect": 0.05,
+              "reason": "the teacher annotated the manuscript"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我印了五十本给工人夜校的小册子，封面是深绿色的。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-degree-is-not-honored",
+          "weight": 0.2,
+          "text": "{subject}去应聘一所中学的夜校教师，校长把毕业证翻过来，说“这是战前的章，现在不认”。{subject}没有争，收起证书，去街角的书店问有没有按小时算的抄写活。回家时，{subject}把证书放回纸筒，筒口比记忆中更松。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the pre-war degree was refused"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "tram fare and a wasted morning"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "literacy",
+              "amount": 0.01,
+              "reason": "copying work at the bookshop"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "degree_not_honored",
+              "add": true,
+              "reason": "the pre-war degree was not recognised"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "战前的毕业证在战后的夜校不被承认。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "takes-over-the-bookshop",
+          "weight": 0.25,
+          "text": "书店老板要回乡下的葡萄园，问{subject}要不要接手。店面很小，后面有一间能放两张桌子的里屋；{subject}用积蓄付了转让费，把旧书按语种重新排架。第一个月只卖出去七本，但每天开门时，{subject}都先把门铃擦一遍。",
+          "significance": 0.79,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the transfer fee for the bookshop"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "keeping the bookshop accounts"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the neighbourhood noticed the new bookshop"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the doorbell was polished every morning"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "owns_bookshop",
+              "add": true,
+              "reason": "took over a small bookshop"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "书店第一个月只卖出去七本，但门铃每天都被擦一遍。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 8
+    },
+    {
+      "id": "lc17-inherit.estate",
+      "title": "地契上的四个名字",
+      "domain": "family",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 75
+      },
+      "tags": [
+        "adulthood",
+        "inheritance",
+        "estate",
+        "family",
+        "property",
+        "legal",
+        "siblings"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "owner": "household",
+          "stateId": "family-estate"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 75
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 80
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "keeps-the-house",
+          "weight": 0.25,
+          "text": "{sibling}想卖，{subject}想留。两个人把地契铺在厨房桌上，手指在同一块田的边界上来回划；最后{subject}答应把仓房的收成折成钱，分五年付给{sibling}。签字那天，{subject}在契约背面记下第一笔日期，墨水滴在“梨树”两个字上。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the first payment to the sibling"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": 6,
+              "reason": "the sibling's share is paid over five years"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "heirNamed",
+              "value": true,
+              "reason": "the estate now has a named heir"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.03,
+              "obligation": 0.06,
+              "reason": "the estate was kept and the share financed"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the ink smudged over the pear tree"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_family_estate",
+              "add": true,
+              "reason": "kept the family estate against the sibling's wish to sell"
+            }
+          ]
+        },
+        {
+          "id": "sells-and-splits",
+          "weight": 0.3,
+          "text": "买主是邻村的一个磨坊主，出价不算高，但肯一次付清。{subject}和{sibling}在公证处分了钱，各自数了两遍；走出门时，{sibling}说“以后梨树归别人了”，{subject}说“梨树本来也不归我们”。两个人站在台阶上，谁也没有先走。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 5,
+              "reason": "the household's share of the estate sale"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "reason": "the family estate was sold and divided"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.02,
+              "affection": 0.02,
+              "reason": "the sale was settled without a lawsuit"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the pear tree passed to a buyer"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_family_estate",
+              "add": true,
+              "reason": "sold the family estate and split the money"
+            }
+          ]
+        },
+        {
+          "id": "the-missing-deed",
+          "weight": 0.2,
+          "text": "地契上少了一个签名，登记处说不能过户。{subject}翻遍祖父留下的木箱，只找到一张一九〇一年的税单和半张被老鼠咬掉的地图；{sibling}怀疑是{subject}藏了，{subject}怀疑是{sibling}先拿去了城里。梨树那年结得很少，谁也没有去摘。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the registry fee and a lawyer's letter"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "contested",
+              "value": true,
+              "reason": "the missing signature made the title contested"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": 8,
+              "reason": "legal costs over the missing deed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.08,
+              "reason": "each suspected the other of hiding the deed"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the pears were left on the tree"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "missing_deed",
+              "add": true,
+              "reason": "the estate deed was missing a signature"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "地契少了一个签名，登记处拒绝过户。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "gives-it-to-the-tenant",
+          "weight": 0.25,
+          "text": "{worker}在这块地上种了二十六年，屋顶漏了自己爬上去修。{subject}和{sibling}算过账，发现卖地的钱扣掉欠税和修补，只剩一小叠；{subject}提议把地租给{worker}，租约写十年，租金按收成分。{sibling}起初不同意，后来在契约上签了名，说“至少梨树还在”。",
+          "significance": 0.79,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": -3,
+              "reason": "the tenant's rent paid down part of the debt"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "upkeep",
+              "delta": 4,
+              "reason": "the tenant took over roof repairs"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "heirNamed",
+              "value": true,
+              "reason": "the ten-year lease named the tenant"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the first share of the harvest rent"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "respect": 0.05,
+              "reason": "the tenant received a ten-year lease"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.01,
+              "reason": "the sibling eventually signed the lease"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "at least the pear tree stayed"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "estate_tenant_lease",
+              "add": true,
+              "reason": "leased the estate to its long-standing tenant"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 7
+    },
+    {
+      "id": "lc17-health.chronic-onset",
+      "title": "医生把名字写在处方上",
+      "domain": "health",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 45,
+        "max": 82
+      },
+      "tags": [
+        "health",
+        "illness",
+        "care",
+        "family",
+        "class",
+        "body"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 45,
+          "max": 82
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "chronic-illness",
+          "owner": "person"
+        },
+        {
+          "kind": "health",
+          "max": 0.85
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 45,
+          "maxAge": 82
+        },
+        {
+          "key": "doctor",
+          "kind": "official",
+          "required": false,
+          "minAge": 28,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "a-name-for-it",
+          "weight": 0.45,
+          "text": "{doctor}把听诊器收进皮包，在处方上写下一个很长的病名，又说“先别急着告诉家里”。{subject}把纸折成四折，回家路上在药房门口站了一会儿；药费比这个月的煤钱还多。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "chronic-illness",
+              "parameters": {
+                "severity": 0.35
+              },
+              "durationMonths": 120,
+              "reason": "a chronic diagnosis after months of symptoms"
+            },
+            {
+              "type": "cash",
+              "amount": -3,
+              "reason": "the first prescription and a second visit",
+              "householdId": "$household"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "处方上写着一个很长的病名；医生说要按时复诊，但不能保证治好。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "received a diagnosis"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "chronic_diagnosis",
+              "add": true,
+              "reason": "a chronic illness was named"
+            }
+          ]
+        },
+        {
+          "id": "the-symptoms-are-ignored",
+          "weight": 0.35,
+          "text": "{subject}把咳嗽归罪于煤灰，把腿肿归罪于站得太久。{doctor}说最好少上半天工，{subject}笑了一声，说“半天工的钱谁给”。第二天照旧出门，口袋里那张处方被钥匙磨出一道白边。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "symptoms ignored for another season"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the body keeps interrupting"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ignored_chronic_symptoms",
+              "add": true,
+              "reason": "chose work over treatment"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "chronic-illness",
+              "parameters": {
+                "severity": 0.2
+              },
+              "durationMonths": 72,
+              "reason": "untreated symptoms became chronic"
+            }
+          ]
+        },
+        {
+          "id": "the-specialist-bill",
+          "weight": 0.2,
+          "text": "{doctor}开了一张转诊单，说专科医生在市中心，挂号要天不亮去排队。{subject}去了，走廊里坐满同样攥着转诊单的人；轮到时，医生只看了三分钟，又加了一项检查。账单上的数字让{subject}在楼梯口坐了很久。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "chronic-illness",
+              "parameters": {
+                "severity": 0.5
+              },
+              "durationMonths": 120,
+              "reason": "a specialist confirmed a chronic condition"
+            },
+            {
+              "type": "cash",
+              "amount": -7,
+              "reason": "specialist consultation and a second test",
+              "householdId": "$household"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$doctor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "the referral led to a specialist"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "专科医生说这病不会很快好，只会慢慢改变能干多少活。",
+              "confidence": 0.85,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "heard the specialist’s prognosis"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc17-care.offers-to-care",
+      "title": "走廊尽头的那张折叠床",
+      "domain": "care",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 55
+      },
+      "tags": [
+        "care",
+        "family",
+        "aging",
+        "health",
+        "household",
+        "duty"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 25,
+          "max": 55
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 90
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "moves-the-bed-in",
+          "weight": 0.4,
+          "text": "{parent}在楼梯口喘了两次才上到三楼。{subject}没有开会，也没有和谁商量，晚上就把折叠床搬进走廊尽头的小房间，把闹钟拨到凌晨两点。第二天，{subject}在药盒上贴了第一张写着时间的纸。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "parameters": {
+                "burden": 30,
+                "resentment": 10,
+                "paidHelp": false,
+                "patientConfidence": 60
+              },
+              "durationMonths": 60,
+              "reason": "took a frail parent into the household",
+              "links": {
+                "patient": "$parent"
+              }
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.12,
+              "affection": 0.15,
+              "obligation": 0.2,
+              "reason": "became the primary carer"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the parent was not left alone"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "moved_parent_into_the_flat",
+              "add": true,
+              "reason": "made room for a frail parent"
+            }
+          ]
+        },
+        {
+          "id": "hires-the-neighbour",
+          "weight": 0.3,
+          "text": "{subject}算了一夜账，第二天去敲楼下退休护士的门。看护每天下午来两小时，工钱按周付；{parent}嫌贵，{subject}说“总比我辞工强”。第一周结束时，药盒上的时间第一次没有写错。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc17-caregiver",
+              "parameters": {
+                "burden": 20,
+                "resentment": 5,
+                "paidHelp": true,
+                "patientConfidence": 65
+              },
+              "durationMonths": 48,
+              "reason": "arranged paid help for a frail parent",
+              "links": {
+                "patient": "$parent"
+              }
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "the first week of paid care"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": 0.06,
+              "obligation": 0.1,
+              "reason": "paid for care instead of leaving work"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_for_parent_care",
+              "add": true,
+              "reason": "hired a neighbour as a carer"
+            }
+          ]
+        },
+        {
+          "id": "says-not-this-year",
+          "weight": 0.3,
+          "text": "{subject}把“再等等”说了三遍。{parent}点头，说自己也还能走动；那天晚上，{subject}回到自己家，听见楼上的椅子拖过地板，声音比平时慢。第二天，{subject}给乡下表亲写了一封信，信里没有提折叠床。",
+          "significance": 0.55,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "left the parent alone for another year"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "trust": -0.04,
+              "obligation": 0.08,
+              "reason": "postponed care"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "postponed_parent_care",
+              "add": true,
+              "reason": "asked the parent to wait"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "life_course",
+    "childhood",
+    "aging",
+    "care",
+    "inheritance"
+  ],
+  "tone": [
+    "warm",
+    "melancholy",
+    "wry"
+  ],
+  "scope": [
+    "person",
+    "household"
+  ],
+  "rarity": "common",
+  "contentWarnings": [
+    "child illness",
+    "death of a parent",
+    "family conflict",
+    "poverty"
+  ]
+}

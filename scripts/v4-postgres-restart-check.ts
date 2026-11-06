@@ -97,6 +97,9 @@ if (mode === 'seed') {
     }),
   );
   if (!ok) process.exitCode = 1;
+  await pool
+    .query("UPDATE v4_worlds SET status='archived', terminal_reason='restart check complete' WHERE id=$1", [worldId])
+    .catch(() => undefined);
 }
 
 await pool.end();

@@ -18,28 +18,67 @@
       "owner": "person",
       "slot": "curse",
       "conflict": "replace",
-      "tags": ["curse", "ritual", "wish", "bargain", "debt", "secret", "supernatural"],
+      "tags": [
+        "curse",
+        "ritual",
+        "wish",
+        "bargain",
+        "debt",
+        "secret",
+        "supernatural"
+      ],
       "parameters": {
-        "request": { "type": "string", "default": "让那个人也尝尝" },
-        "price": { "type": "number", "default": 2, "min": 0, "max": 12 },
-        "doubt": { "type": "number", "default": 35, "min": 0, "max": 100 },
-        "sealed": { "type": "boolean", "default": false }
+        "request": {
+          "type": "string",
+          "default": "让那个人也尝尝"
+        },
+        "price": {
+          "type": "number",
+          "default": 2,
+          "min": 0,
+          "max": 12
+        },
+        "doubt": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "sealed": {
+          "type": "boolean",
+          "default": false
+        }
       },
-      "durationMonths": { "min": 3, "max": 24 },
+      "durationMonths": {
+        "min": 3,
+        "max": 24
+      },
       "modifiers": [
         {
           "kind": "scene_weight",
-          "tags": ["curse", "ritual", "omen", "bargain", "wish"],
+          "tags": [
+            "curse",
+            "ritual",
+            "omen",
+            "bargain",
+            "wish"
+          ],
           "multiplier": 1.45
         },
         {
           "kind": "scene_weight",
-          "tags": ["celebration", "courtship"],
+          "tags": [
+            "celebration",
+            "courtship"
+          ],
           "multiplier": 0.8
         },
         {
           "kind": "check_bonus",
-          "tags": ["ritual", "omen"],
+          "tags": [
+            "ritual",
+            "omen"
+          ],
           "bonus": 1
         }
       ],
@@ -65,7 +104,10 @@
         {
           "id": "bargain-year",
           "everyMonths": 12,
-          "check": { "attribute": "willpower", "dc": 11 },
+          "check": {
+            "attribute": "willpower",
+            "dc": 11
+          },
           "outcomes": [
             {
               "id": "kept-quiet",
@@ -169,28 +211,71 @@
       "owner": "person",
       "slot": "accusation",
       "conflict": "replace",
-      "tags": ["witchcraft", "rumor", "religion", "legal", "reputation", "fear", "supernatural"],
+      "tags": [
+        "witchcraft",
+        "rumor",
+        "religion",
+        "legal",
+        "reputation",
+        "fear",
+        "supernatural"
+      ],
       "parameters": {
-        "evidence": { "type": "number", "default": 20, "min": 0, "max": 100 },
-        "danger": { "type": "number", "default": 25, "min": 0, "max": 100 },
-        "accuserKnown": { "type": "boolean", "default": false },
-        "healerConsulted": { "type": "boolean", "default": false }
+        "evidence": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "danger": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "accuserKnown": {
+          "type": "boolean",
+          "default": false
+        },
+        "healerConsulted": {
+          "type": "boolean",
+          "default": false
+        }
       },
-      "durationMonths": { "min": 6, "max": 48 },
+      "durationMonths": {
+        "min": 6,
+        "max": 48
+      },
       "modifiers": [
         {
           "kind": "scene_weight",
-          "tags": ["rumor", "church", "court", "investigation", "betrayal", "witchcraft", "curse"],
+          "tags": [
+            "rumor",
+            "church",
+            "court",
+            "investigation",
+            "betrayal",
+            "witchcraft",
+            "curse"
+          ],
           "multiplier": 1.65
         },
         {
           "kind": "scene_weight",
-          "tags": ["work", "courtship", "celebration", "travel"],
+          "tags": [
+            "work",
+            "courtship",
+            "celebration",
+            "travel"
+          ],
           "multiplier": 0.65
         },
         {
           "kind": "check_bonus",
-          "tags": ["rumor", "court"],
+          "tags": [
+            "rumor",
+            "court"
+          ],
           "bonus": 1
         }
       ],
@@ -198,7 +283,10 @@
         {
           "id": "rumor-season",
           "everyMonths": 12,
-          "check": { "attribute": "cunning", "dc": 12 },
+          "check": {
+            "attribute": "cunning",
+            "dc": 12
+          },
           "outcomes": [
             {
               "id": "whispers-fade",
@@ -264,8 +352,12 @@
       "reactions": [
         {
           "id": "another-name",
-          "onTags": ["betrayal"],
-          "requiresRoles": ["betrayer"],
+          "onTags": [
+            "betrayal"
+          ],
+          "requiresRoles": [
+            "betrayer"
+          ],
           "chance": 0.5,
           "effects": [
             {
@@ -356,15 +448,46 @@
       "domain": "wish",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 18, "max": 70 },
-      "tags": ["curse", "ritual", "wish", "revenge", "betrayal", "bargain", "supernatural"],
+      "ageWindow": {
+        "min": 18,
+        "max": 70
+      },
+      "tags": [
+        "curse",
+        "ritual",
+        "wish",
+        "revenge",
+        "betrayal",
+        "bargain",
+        "supernatural"
+      ],
       "conditions": [
-        { "kind": "hasState", "tag": "wish:revenge", "owner": "person" },
-        { "kind": "notHasState", "stateId": "cursed-by-wish", "owner": "person" }
+        {
+          "kind": "hasState",
+          "tag": "wish:revenge",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "cursed-by-wish",
+          "owner": "person"
+        }
       ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 70 },
-        { "key": "broker", "kind": "neighbor", "required": true, "minAge": 35, "maxAge": 80 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "broker",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 80
+        }
       ],
       "baseRate": 0.16,
       "weight": 3,
@@ -512,15 +635,46 @@
       "domain": "wish",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 20, "max": 65 },
-      "tags": ["wish", "power", "curse", "ritual", "bargain", "office", "irony"],
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "wish",
+        "power",
+        "curse",
+        "ritual",
+        "bargain",
+        "office",
+        "irony"
+      ],
       "conditions": [
-        { "kind": "hasState", "tag": "wish:power", "owner": "person" },
-        { "kind": "notHasState", "stateId": "cursed-by-wish", "owner": "person" }
+        {
+          "kind": "hasState",
+          "tag": "wish:power",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "cursed-by-wish",
+          "owner": "person"
+        }
       ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 20, "maxAge": 65 },
-        { "key": "clerk", "kind": "official", "required": true, "minAge": 28, "maxAge": 75 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        }
       ],
       "baseRate": 0.15,
       "weight": 3,
@@ -539,7 +693,10 @@
                 "name": "夜校同学会",
                 "kind": "other",
                 "treasury": 0,
-                "authorityRules": ["会长保管储物间的铜钥匙", "会员每年重新登记一次"]
+                "authorityRules": [
+                  "会长保管储物间的铜钥匙",
+                  "会员每年重新登记一次"
+                ]
               },
               "reason": "一次仪式真的留下了一个组织"
             },
@@ -549,7 +706,9 @@
               "title": "夜校同学会会长",
               "holderId": "$subject",
               "wage": 0,
-              "authority": ["保管储物间钥匙"],
+              "authority": [
+                "保管储物间钥匙"
+              ],
               "reason": "愿望以真实但无用的职位实现"
             },
             {
@@ -676,11 +835,33 @@
       "domain": "social",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 20, "max": 70 },
-      "tags": ["betrayal", "money", "family", "trust", "curse", "secret"],
+      "ageWindow": {
+        "min": 20,
+        "max": 70
+      },
+      "tags": [
+        "betrayal",
+        "money",
+        "family",
+        "trust",
+        "curse",
+        "secret"
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 20, "maxAge": 70 },
-        { "key": "betrayer", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 75 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "betrayer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
       ],
       "baseRate": 0.18,
       "weight": 3,
@@ -837,12 +1018,40 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 18, "max": 75 },
-      "tags": ["betrayal", "politics", "investigation", "curse", "denunciation", "secret"],
-      "conditions": [{ "kind": "hasState", "stateId": "cursed-by-wish", "owner": "person" }],
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "betrayal",
+        "politics",
+        "investigation",
+        "curse",
+        "denunciation",
+        "secret"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "cursed-by-wish",
+          "owner": "person"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 75 },
-        { "key": "betrayer", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 75 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "betrayer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
       ],
       "baseRate": 0.17,
       "weight": 3,
@@ -997,12 +1206,38 @@
       "domain": "politics",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 25, "max": 70 },
-      "tags": ["betrayal", "office", "power", "politics", "curse", "institution"],
-      "conditions": [{ "kind": "position" }],
+      "ageWindow": {
+        "min": 25,
+        "max": 70
+      },
+      "tags": [
+        "betrayal",
+        "office",
+        "power",
+        "politics",
+        "curse",
+        "institution"
+      ],
+      "conditions": [
+        {
+          "kind": "position"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 25, "maxAge": 70 },
-        { "key": "betrayer", "kind": "worker", "required": true, "minAge": 22, "maxAge": 70 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "betrayer",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        }
       ],
       "baseRate": 0.16,
       "weight": 3,
@@ -1153,8 +1388,18 @@
       "domain": "curse",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 18, "max": 80 },
-      "tags": ["curse", "notice", "illness", "fear", "knowledge", "supernatural"],
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "curse",
+        "notice",
+        "illness",
+        "fear",
+        "knowledge",
+        "supernatural"
+      ],
       "conditions": [
         {
           "kind": "hasState",
@@ -1168,7 +1413,13 @@
         }
       ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 80 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
       ],
       "baseRate": 0.2,
       "weight": 3,
@@ -1287,8 +1538,19 @@
       "domain": "curse",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 18, "max": 75 },
-      "tags": ["curse", "money", "fear", "client", "ritual", "supernatural", "work"],
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "curse",
+        "money",
+        "fear",
+        "client",
+        "ritual",
+        "supernatural",
+        "work"
+      ],
       "conditions": [
         {
           "kind": "hasState",
@@ -1302,8 +1564,20 @@
         }
       ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 75 },
-        { "key": "client", "kind": "neighbor", "required": true, "minAge": 20, "maxAge": 80 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "client",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 80
+        }
       ],
       "baseRate": 0.15,
       "weight": 3,
@@ -1448,13 +1722,47 @@
       "domain": "legal",
       "kind": "event",
       "stage": "adulthood",
-      "ageWindow": { "min": 18, "max": 80 },
-      "tags": ["witchcraft", "investigation", "reputation", "rumor", "legal", "aftermath"],
-      "conditions": [{ "kind": "hasState", "stateId": "suspected-witchcraft", "owner": "person" }],
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "witchcraft",
+        "investigation",
+        "reputation",
+        "rumor",
+        "legal",
+        "aftermath"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "suspected-witchcraft",
+          "owner": "person"
+        }
+      ],
       "roles": [
-        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 80 },
-        { "key": "investigator", "kind": "official", "required": true, "minAge": 25, "maxAge": 70 },
-        { "key": "accuser", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 80 }
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "investigator",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "accuser",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
       ],
       "baseRate": 0.2,
       "weight": 3,
@@ -1611,5 +1919,27 @@
         }
       ]
     }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "curse",
+    "betrayal",
+    "witchcraft",
+    "supernatural"
+  ],
+  "tone": [
+    "dark",
+    "eerie",
+    "ironic"
+  ],
+  "scope": [
+    "person",
+    "organization"
+  ],
+  "rarity": "rare",
+  "contentWarnings": [
+    "supernatural harm",
+    "betrayal",
+    "witchcraft persecution"
   ]
 }

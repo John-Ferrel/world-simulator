@@ -7,6 +7,8 @@
 > 2026-11-05 Phase 15 更新：新增 State 机制层（48 个定义、state_add/remove/parameter/transition、slot、typed links、d10/d20 检定、tick/reaction/transition、真实 Position 与 organization_found）。内容工厂含 schema/类型/编译可达性验证、registry、provenance 和确定性 fallback；真实模型 API 在本次环境返回 HTTP 403，因此实际 pack 由 LLM 子代理撰写并离线验证，不能宣称运行时模型内容工厂已成功调用。新增 446 条历史参考记录（79 国、166 城、93 人、98 事件、10 个明确 fiction hook、517 来源）、五年历史 review 与 Macro Director 快照。60 年两个 seed：16,438/18,555 事件，386/439 条 state facts，254/278 ticks，24/23 reactions，13/21 transitions，17/20 种 state，16/14 个 Position。A–F 实验 6/6 通过。`pnpm test` 88 files / 517 pass / 36 skip；v4 39 files / 237 pass / 8 skip；build 通过；20k 性能基线 4.28 s/年、1% state 6.41 s/年、5% state 8.29 s/年。PostgreSQL 与真实模型调用仍未验证。完整报告见 [phase-15-report.md](phase-15-report.md)。
 
 
+> 2026-11-06 Phase 17 更新：内容库从 52 states / 1,652 kernels / 6 packs 扩展到 **79 states / 1,740 kernels / 15 packs**；新增 8 个主题 pack（life-course、desire-scandal、crime-justice、migration-belonging、faith-miracles、fame-art、absurd-fortune、work-craft）与真实模型 Content Factory pack `pack-factory-education`。新增 generated Content Catalog、pack metadata、consumer/creation QA 测试、crossPack/contentSamples 诊断。真实模型 `/models` 200、chat 成功；education brief 8,653 tokens 1 次通过并注册，power brief 12,465 tokens 两次失败后 fallback（不冒充成功）。自然人生 final-f：45 年 18,134 events / 347 persons / 51 distinct states / repeatRate 0.1965；final-c 21,173 / 52 states；final-e 20,790 / 50 states。独立 Critic 修订前主样本 **16/30**（Phase 16 18/30），核心批评是关系/子女 slot machine、死状态、重复率上升、无 horizon、组织重复。测试 89 files / 526 pass / 37 skip；15 packs validate；PG state/macro 2 passed；e2e 1 passed。完整报告见 [phase-17-report.md](phase-17-report.md)、[critique](phase-17-critique.md)。仍未完成：new→new 组合弱、签名状态可达性、家庭连续性、历史日期、horizon、稳定批量 Content Factory、20k 新内容 profile。
+
 > 2026-11-06 Phase 16 更新：不再扩 State 数量，而是让已有机制进入自然人生。新增 state/position opportunity lane（cast 预检、最低 rate 0.35、每人年一次）、`autoAttachOnBirth`、通用 `child` role、StateInstance 级 tick/reaction 绑定、最近有效 Position 的 `$positionOrg`、place/region state anchor 与 1945 liberation 移除占领。自然 run `phase16-final-c`：40 年 14,435 事件 / 342 人 / 146 births / 132 deaths / 30 distinct states / 972 ticks / 559 reactions / 318 resolved state opportunities；office pack 85 events / 25 Position 创建 / 10 结束；family pack 141 states / 24 child-leaves / 6 returns；curse 在 1931 对真实 betrayer 提交 health -0.18 + condition；history occupation 11 states 全部结束。`phase16-final-a` 50 年 22,102 事件 / 33 Position 创建 / 10 curse reactions。真实模型 `/models` 200、chat 403（无 active Go subscription），两个新 pack 是离线 LLM 子代理创作并验证；PostgreSQL 18.6 state persistence + macro store 2/2、真实 stop/start 重启恢复 ok=true、e2e 1 passed；`pnpm test` 88 files / 521 pass / 37 skip；20k baseline 4.57 s/年、1% 6.63、5% 10.28。仍未完成：widow/inheritance 内容可达性、office 持续下游、love/knowledge/craft 愿望、生产规模 DB/API、runtime LLM worker。完整报告见 [phase-16-report.md](phase-16-report.md)。
 
 > 2026-11-04 Phase 11 更新：新增 Context × Milieu × Plot Kernel 组合编译层；150 个 Kernel（100 Event / 50 Task）、10 Context、12 Milieu、98 variants、450 base outcomes。默认 Vienna 年编译 255 Scene / 151 Task，跨四情境 996 个 compiled scene IDs；35 年 5,027 事件中 293 composed events、56 个 Kernel 实际触发。1.265M 是 naive 上界，不是已验证实例。88 年 playtest 23,802 事件 / 2,965 Task / 27 repeat offenders；20k 合成人口 composition 仍约 252 秒/年。Critic 20 样本 9 通过 / 11 失败，文学质量未通过。完整报告见 [phase-11-report.md](phase-11-report.md)。
@@ -322,5 +324,23 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 自然人生 | final-c 40 年 14,435 events / 342 persons / 208 alive / 30 distinct states；final-a 50 年 22,102 events；final-b 45 年 19,512 events |
 | 性能 | 20k baseline **4,569 ms/年**；1% **6,628 ms/年**；5% **10,283 ms/年**；从初期 8.29/11.99 优化下来，1% 仍未完全回到 5s |
 | 验证 | `pnpm test` 88 files / **521 pass / 37 skip**；typecheck 无输出；A–F 6/6（受控实验） |
+
+## Phase 17（2026-11-06）— Living Content Library
+
+完整报告：`docs/v4/phase-17-report.md`；设计：`phase-17-content-architecture.md`；研究：`phase-17-research.md`；覆盖：`phase-17-content-coverage.md`；独立批评：`phase-17-critique.md`。
+
+| 项 | 实测 |
+|---|---|
+| 内容规模 | **79 states / 1,740 kernels / 15 generated packs**；新增 24 个写手 State + 3 个 factory State；generated kernels 47→135 |
+| Catalog | `scripts/v4-content-catalog.ts` 从 runtime 生成 `content-catalog.json/md`，含 consumers/consumerPacks/stage/domain gaps/unconsumed/pack metadata |
+| 新 Pack | life-course、desire-scandal、crime-justice、migration-belonging、faith-miracles、fame-art、absurd-fortune、work-craft + factory-education；全部 validator `ok:true` |
+| 真实模型 | `/models` 200，chat 成功；education brief 8,653 tokens / 1 attempt / 3 states / 4 kernels / 56 scenes；power brief 12,465 tokens 两次失败后 fallback，保留记录 |
+| 自然人生 | final-f 45 年 18,134 events / 347 persons / 51 distinct states / repeatRate 0.1965；final-c 50 年 21,173 / 52 states；final-e 50 年 20,790 / 50 states |
+| 交叉组合 | final-f new→base 99+ effects；`work→office`、`under-investigation→cj17-wanted`、`courtship→forbidden-attachment`、`life-course→chronic-illness/care`、`migration→family` |
+| Content Factory | 真实模型 pack `pack-factory-education` 注册；之前的 403 不再复现；只成功验证一个 brief，不宣称稳定批量生产 |
+| 测试 | `pnpm test` 89 files / **526 pass / 37 skip**；typecheck/build 通过；15 packs validate；PG state/macro 2 passed；e2e 1 passed |
+| 独立 Critic | 修订前主样本 **16/30**（Phase 16 为 18/30）：关系/子女 slot machine、死状态、重复率 0.1978、无 horizon、组织重复 |
+
+未完成/限制：新包仍主要消费旧 states，new→new 组合弱；`ds17-double-life`、`af17-mistaken-heir`、`af17-cursed-luck`、`cj17-prison-term`、`mb17-stateless`、`thesis-candidate` 等签名状态仍 0/稀有；家庭/伴侣/生育连续性未修；历史日期与组织类型仍有 base 错误；49% focal 样本 25 岁前死亡或活到观察终点无 coda；Content Factory 只验证一个 brief；20k + 79 states 未重新 profile。不得把 79 states/1,740 kernels 当作已演出人生。
 
 未完成/限制：widow-pension / inheritance-division / family-estate 仍零自然触发；office follow-up 0–6 个/seed，`office-patronage` 仅 2–3 adds；love/knowledge/craft 愿望仍弱；final-c repeatRate 0.1543；work-permit 未创建就业；组织 treasury 尺度不合理；历史日期为 1 月占位；生产 DB/API、runtime LLM worker、公网部署未验证；独立 Critic 修订前 19/30，不能把机制激活等同于文学质量提升。

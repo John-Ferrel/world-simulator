@@ -1,0 +1,2927 @@
+{
+  "id": "pack-faith-miracles",
+  "version": 1,
+  "title": "信仰、奇迹与骗局",
+  "description": "维也纳的教堂、通灵会、诊所、报纸和政党组织都在争夺同一件东西：一个人如何解释自己身上的不幸。本包把归属、见证与公共圣名写成可持续的状态，让安慰、欺骗、调查和怀疑都能留下后果。",
+  "author": "phase17-content-author/faith-miracles",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-06",
+  "sourceBriefId": "phase17-faith-miracles",
+  "rationale": "既有 grief、suspected-witchcraft、cursed-by-wish、under-investigation、public-scandal、chronic-illness 已能承载丧失、巫术指控、诅咒压力、案件、丑闻和长期病痛，但缺少把信仰组织、无法解释的见证和公共疗愈者串起来的持续机制。本包不判定超自然真假，只让人群、机构、家庭和金钱对同一件事作出彼此冲突的反应。",
+  "states": [
+    {
+      "id": "fm17-cult-initiate",
+      "version": 1,
+      "packId": "pack-faith-miracles",
+      "title": "晨星会的新成员",
+      "description": "一个人把部分生活交给了一个要求服从、定期缴费、共享秘密的小圈子。归属感与怀疑同时增长，离开则要付出关系、金钱和名誉的代价。",
+      "owner": "person",
+      "slot": "faith",
+      "conflict": "replace",
+      "tags": [
+        "faith",
+        "cult",
+        "belonging",
+        "obedience",
+        "doubt",
+        "exit",
+        "religion",
+        "secret"
+      ],
+      "parameters": {
+        "belonging": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "obedience": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        },
+        "doubt": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "exitCost": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "faith",
+            "cult",
+            "ritual",
+            "religion",
+            "community"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "courtship",
+            "travel"
+          ],
+          "multiplier": 0.7
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "faith",
+            "cult"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "fm17_cult_joined",
+          "add": true,
+          "reason": "加入了晨星会"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "fm17_cult_left",
+          "add": true,
+          "reason": "离开了晨星会"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "the-circle-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "willpower",
+            "dc": 12,
+            "successOutcomeIds": [
+              "keeps-asking"
+            ],
+            "failureOutcomeIds": [
+              "signs-again"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "keeps-asking",
+              "result": "success",
+              "weight": 2,
+              "text": "又过了一年，{subject}仍坐在那间借来的后厅里，但开始记下每次募捐的数目。会长说怀疑也是修行的一部分；{subject}把这句话抄在本子上，旁边画了一个问号。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-cult-initiate",
+                  "key": "doubt",
+                  "delta": 8,
+                  "reason": "开始核对募捐账目"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-cult-initiate",
+                  "key": "belonging",
+                  "delta": 2,
+                  "reason": "会里的人仍然记得她的名字"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "怀疑没有立刻把人赶走"
+                }
+              ]
+            },
+            {
+              "id": "signs-again",
+              "result": "failure",
+              "weight": 1,
+              "text": "会长让{subject}在一张空白纸上签名，说这是“把旧名字交出去”。签完，{subject}才发现那页纸被夹进了会员名册；这个月的奉献又涨了一克朗，没有人解释为什么。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-cult-initiate",
+                  "key": "obedience",
+                  "delta": 8,
+                  "reason": "在空白纸上签了名"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-cult-initiate",
+                  "key": "exitCost",
+                  "delta": 6,
+                  "reason": "名字进入了会员名册"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "上涨的月度奉献"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "签名之后才知道代价"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "fm17-cult-betrayal",
+          "onTags": [
+            "betrayal"
+          ],
+          "requiresRoles": [
+            "betrayer"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "key": "doubt",
+              "delta": 10,
+              "reason": "会内熟人把私下的话交了出去"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "key": "exitCost",
+              "delta": 8,
+              "reason": "背叛让退出更像一种公开指控"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.05,
+              "reason": "会内的信任被交到别人手里"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "不知道该先怀疑谁"
+            }
+          ],
+          "text": "{betrayer}把{subject}在祷告后说过的话转述给了会长。第二天，{subject}被安排坐到最靠近门口的位置；没有人解释，但那把椅子比昨天矮了一截。",
+          "significance": 0.55,
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        },
+        {
+          "id": "fm17-cult-scandal",
+          "onTags": [
+            "scandal"
+          ],
+          "chance": 0.35,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "key": "obedience",
+              "delta": 4,
+              "reason": "外面的议论让会里收得更紧"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "key": "exitCost",
+              "delta": 5,
+              "reason": "此时离开会被当成背叛"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "门外的议论传进了门里"
+            }
+          ],
+          "text": "街上的报纸提到“某个封闭小圈子的聚会”，没有点名。会长把报纸折好，说这是敌人在试探；{subject}注意到，从那天起，后厅的门多了一道插销。",
+          "significance": 0.4,
+          "cooldownMonths": 18
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/faith-miracles",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让归属、服从、怀疑与退出成本同时存在；不把成员写成愚昧，也不把组织写成全能。"
+      }
+    },
+    {
+      "id": "fm17-miracle-witness",
+      "version": 1,
+      "packId": "pack-faith-miracles",
+      "title": "见过无法解释之事的人",
+      "description": "一次说不清的光、痊愈或声响落在了这个人身上。人群开始向她要一个解释，而她自己也还没有。注意力、确信和义务会一起改变她接下来的生活。",
+      "owner": "person",
+      "slot": "faith",
+      "conflict": "replace",
+      "tags": [
+        "faith",
+        "miracle",
+        "vision",
+        "witness",
+        "religion",
+        "reputation",
+        "doubt"
+      ],
+      "parameters": {
+        "certainty": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        },
+        "attention": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "obligation": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 60
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "faith",
+            "miracle",
+            "vision",
+            "religion",
+            "reputation"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "courtship",
+            "leisure"
+          ],
+          "multiplier": 0.75
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "faith",
+            "vision"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "fm17_miracle_witnessed",
+          "add": true,
+          "reason": "亲眼见过一件无法解释的事"
+        },
+        {
+          "type": "knowledge",
+          "holderId": "$subject",
+          "proposition": "我看见的那件事，到今天我仍说不出它是什么。",
+          "confidence": 0.65,
+          "sourceKind": "witnessed",
+          "visibility": "private"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "the-story-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "empathy",
+            "dc": 10,
+            "successOutcomeIds": [
+              "told-kindly"
+            ],
+            "failureOutcomeIds": [
+              "story-hardens"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "told-kindly",
+              "result": "success",
+              "weight": 2,
+              "text": "{subject}又把那件事讲了一遍，这次没有添油加醋。听的人问：“你确定不是灯影？”{subject}说确定，也不确定。对方点点头，没有追问；这反而让{subject}松了一口气。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-miracle-witness",
+                  "key": "attention",
+                  "delta": 5,
+                  "reason": "故事被平静地讲完"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-miracle-witness",
+                  "key": "certainty",
+                  "delta": 4,
+                  "reason": "承认不确定之后反而更站得住"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "一个不夸大的见证者"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "有人愿意听完"
+                }
+              ]
+            },
+            {
+              "id": "story-hardens",
+              "result": "failure",
+              "weight": 1,
+              "text": "故事传到第三个人嘴里时，已经多了“白光”“香气”和“死去的人叫了她的名字”。{subject}想纠正，却发现每纠正一次，别人就多记一条；到最后，连她自己都开始怀疑当时站在哪里。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-miracle-witness",
+                  "key": "attention",
+                  "delta": 10,
+                  "reason": "故事被传得越来越离奇"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-miracle-witness",
+                  "key": "certainty",
+                  "delta": -5,
+                  "reason": "已经分不清自己记得什么"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "夸大的版本开始反噬"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "自己的记忆被别人改写"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "fm17-miracle-press",
+          "onTags": [
+            "public",
+            "scandal"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "attention",
+              "delta": 10,
+              "reason": "报纸又把旧事翻了出来"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "obligation",
+              "delta": 5,
+              "reason": "记者要求她给出一个说法"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "名字再次被陌生人念出"
+            }
+          ],
+          "text": "晚报的插图版把{subject}画在教堂门口，旁边是一团被画得很亮的光。{subject}没有接受采访，但邻居已经把那份报纸压在柜台玻璃下面。",
+          "significance": 0.45,
+          "cooldownMonths": 18
+        },
+        {
+          "id": "fm17-miracle-inquiry",
+          "onTags": [
+            "investigation",
+            "police"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "obligation",
+              "delta": 10,
+              "reason": "有人要她在一份记录上签字"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "certainty",
+              "delta": -5,
+              "reason": "问话让记忆变得更加不可靠"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "她开始害怕自己说错"
+            }
+          ],
+          "text": "一个穿黑衣的办事员把{subject}的话逐句记下，又让她在页脚签名。{subject}签完才看见，纸上“见证”两个字被印得比别的字都大。",
+          "significance": 0.5,
+          "cooldownMonths": 24
+        }
+      ],
+      "transitions": [
+        {
+          "id": "fm17-witness-becomes-saint",
+          "to": "fm17-saint-or-fraud",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "fm17-miracle-witness",
+              "parameter": "attention",
+              "min": 70
+            },
+            {
+              "kind": "hasState",
+              "stateId": "fm17-miracle-witness",
+              "parameter": "certainty",
+              "min": 50
+            }
+          ],
+          "chance": 0.25,
+          "reason": "人群不再只把她当见证者，而开始向她求一个结果"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/faith-miracles",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把见证写成一种会被传播、索取和改写的社会处境，而不是一次性的神迹叙事。"
+      }
+    },
+    {
+      "id": "fm17-saint-or-fraud",
+      "version": 1,
+      "packId": "pack-faith-miracles",
+      "title": "被当成圣人或骗子的人",
+      "description": "门口开始有人排队：有人求治病，有人求安慰，有人带着钱，也有人带着记录本。公众给这个人的称号既可能是圣名，也可能是骗局的开端。",
+      "owner": "person",
+      "slot": "reputation",
+      "conflict": "replace",
+      "tags": [
+        "faith",
+        "healing",
+        "saint",
+        "fraud",
+        "reputation",
+        "religion",
+        "medicine",
+        "public"
+      ],
+      "parameters": {
+        "following": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "suspicion": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "cures": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 30
+        },
+        "protection": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 72
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "faith",
+            "healing",
+            "saint",
+            "miracle",
+            "medicine",
+            "reputation"
+          ],
+          "multiplier": 1.55
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "courtship",
+            "leisure"
+          ],
+          "multiplier": 0.7
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "healing",
+            "reputation"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "fm17_public_healer",
+          "add": true,
+          "reason": "门外开始有人等着被治"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "the-queue-at-the-door",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "charisma",
+            "dc": 12,
+            "successOutcomeIds": [
+              "a-cure-is-counted"
+            ],
+            "failureOutcomeIds": [
+              "a-patient-worsens"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "a-cure-is-counted",
+              "result": "success",
+              "weight": 2,
+              "text": "一个拄拐来的老妇人在院子里走了三步，把拐杖举起来给所有人看。{subject}没有说“是我治好的”，但也没有阻止别人这么说；当天晚上，门口多了三束花和一封没有署名的感谢信。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-saint-or-fraud",
+                  "key": "following",
+                  "delta": 8,
+                  "reason": "一个被看见的痊愈"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-saint-or-fraud",
+                  "key": "cures",
+                  "delta": 1,
+                  "reason": "人群把这次好转记成一次治愈"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-saint-or-fraud",
+                  "key": "suspicion",
+                  "delta": -3,
+                  "reason": "公开的好转压过了部分怀疑"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "门口留下的捐款"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "一个被看见的痊愈"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "花比问话更容易应付"
+                }
+              ]
+            },
+            {
+              "id": "a-patient-worsens",
+              "result": "failure",
+              "weight": 1,
+              "text": "一个孩子在被“祝福”后的第二天烧得更厉害。家里人没有闹，只把那条擦过额头的布巾留在门口；{subject}把它捡起来，洗了，又晾回去，像是在等一个不会来的解释。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-saint-or-fraud",
+                  "key": "following",
+                  "delta": -5,
+                  "reason": "一个孩子的病情加重"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "fm17-saint-or-fraud",
+                  "key": "suspicion",
+                  "delta": 10,
+                  "reason": "家属开始怀疑祝福本身"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "请医生来家里看孩子"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "失败比成功传得更快"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "洗不掉的布巾"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "fm17-saint-inquiry",
+          "onTags": [
+            "investigation",
+            "police"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "suspicion",
+              "delta": 10,
+              "reason": "调查员开始核对捐款与药方"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "protection",
+              "delta": -5,
+              "reason": "原本替她说话的人开始躲开"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "门口的队伍没有变短，问题却变具体了"
+            }
+          ],
+          "text": "调查员没有进院子，只在对街的咖啡馆坐了两个下午，数走了多少人、留了多少钱。{subject}隔着窗帘看见他合上本子，知道那不是结束。",
+          "significance": 0.5,
+          "cooldownMonths": 18
+        },
+        {
+          "id": "fm17-saint-scandal",
+          "onTags": [
+            "scandal"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "suspicion",
+              "delta": 8,
+              "reason": "旧丑闻被用来解释新的治愈"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "following",
+              "delta": 3,
+              "reason": "丑闻也带来了看热闹的人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "看热闹的人和求医的人排在一起"
+            }
+          ],
+          "text": "有人把{subject}的旧丑闻剪下来，贴在诊所门口的告示板上。第二天，告示板旁边多了一小束花；再一天，花不见了，多了两张写着药方的纸。",
+          "significance": 0.45,
+          "cooldownMonths": 24
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase17-content-author/faith-miracles",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把公共疗愈者写成同时被需要、被怀疑、被收费和被调查的人；不预先判定其真假。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "fm17-seance.parlor-table",
+      "title": "后厅里的降神会",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "faith",
+        "ritual",
+        "seance",
+        "grief",
+        "spiritualism",
+        "money",
+        "doubt"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "grief",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "medium",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "a-name-she-could-not-know",
+          "weight": 0.35,
+          "text": "{medium}把窗帘拉上，让{subject}把手放在桌面上。铜盘轻轻响了一声，{medium}说出了一个只有{subject}和死者知道的小名，还提到葬礼那天落在棺盖上的一枚铜纽扣。{subject}没有哭，只把手指从桌面上收回来，握住了自己的袖口。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "降神会的场地费与蜡烛钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "听见了一个不该被外人知道的小名"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$medium",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.04,
+              "reason": "一次说得太准的降神会"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "降神会说出了只有我和死者知道的一件小事。",
+              "confidence": 0.7,
+              "sourceKind": "told",
+              "personId": "$medium",
+              "visibility": "private"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_seance_comforted",
+              "add": true,
+              "reason": "降神会给了她一个可以握住的细节"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "reason": "the séance made the circle feel necessary"
+            }
+          ]
+        },
+        {
+          "id": "the-rapping-stops",
+          "weight": 0.35,
+          "text": "桌面响了三下，又响了三下。{medium}说是死者在敲门，可问到最后，没有一个名字、日期或物件对得上。{medium}擦着额头说，有时候灵只说一半；{subject}看着窗帘缝里漏进来的街灯，忽然觉得那三下更像有人在楼下关车门。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "降神会的费用"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "没有人能解释那三下"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "parameters": {
+                "certainty": 35,
+                "attention": 8,
+                "obligation": 3
+              },
+              "durationMonths": 12,
+              "reason": "亲耳听见了无法解释的敲击声"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "桌面响了三下，但没有人能说清那是什么。",
+              "confidence": 0.5,
+              "sourceKind": "witnessed",
+              "visibility": "private"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_seance_unexplained",
+              "add": true,
+              "reason": "一次没有对上任何事实的降神会"
+            }
+          ]
+        },
+        {
+          "id": "a-hand-in-the-wrong-pocket",
+          "weight": 0.3,
+          "text": "{medium}起身去添灯油时，外套从椅背上滑下来，掉出一叠按姓名排好的卡片。{subject}看见自己的名字在最上面，下面写着“丧偶，铜纽扣，易感”。{medium}回来时，{subject}已经把卡片放回原处，也把剩下的钱放回了口袋。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "已经付出去的车马钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "看见了自己的名字和“易感”两个字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$medium",
+              "kind": "acquaintance",
+              "trust": -0.2,
+              "respect": -0.08,
+              "reason": "在降神会者的口袋里看见了客户卡片"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_seance_fraud_seen",
+              "add": true,
+              "reason": "亲眼看见降神会者的客户卡片"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fm17-relic.healing-line",
+      "title": "玻璃匣前的队伍",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "faith",
+        "relic",
+        "healing",
+        "medicine",
+        "chronic_illness",
+        "pilgrimage",
+        "doubt"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "chronic-illness",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "healer",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-swelling-goes-down",
+          "weight": 0.35,
+          "text": "城郊小堂的侧廊里，{healer}让{subject}把手指按在玻璃匣上。玻璃底下据说是一截殉道者的指骨。{subject}闻到了蜡、旧木头和旁边病人身上的汗味；等她站起来时，膝盖的疼确实轻了一些。医生后来说，这种病本来就会时好时坏。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "疼痛在触碰圣物之后减轻"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "chronic-illness",
+              "key": "severity",
+              "delta": -0.08,
+              "reason": "膝盖的肿胀暂时消退"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "蜡烛、车钱与给守堂人的捐献"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "疼确实轻了"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我碰过那截指骨之后，膝盖确实轻了一些；医生说这不能证明什么。",
+              "confidence": 0.55,
+              "sourceKind": "witnessed",
+              "visibility": "private"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_relic_relief",
+              "add": true,
+              "reason": "在圣物前感到疼痛减轻"
+            }
+          ]
+        },
+        {
+          "id": "no-change-at-all",
+          "weight": 0.4,
+          "text": "轮到{subject}时，守堂人已经把玻璃匣擦了三遍。{subject}按了很久，膝盖还是原来的膝盖；{healer}说这是信心还不够，又说可以先买一小瓶圣水。{subject}没有买，只在长椅上坐到队伍散尽，听扫地的声音从祭坛那边过来。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "进城的车钱与蜡烛"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "在石地上跪得太久"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "chronic-illness",
+              "key": "severity",
+              "delta": 0.02,
+              "reason": "长时间排队与跪拜加重了疼痛"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "轮到自己时什么也没有发生"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_relic_no_change",
+              "add": true,
+              "reason": "在圣物前没有感到任何变化"
+            }
+          ]
+        },
+        {
+          "id": "the-line-is-too-long",
+          "weight": 0.25,
+          "text": "队伍从侧廊一直排到教堂门口。一个抱着孩子的女人被守堂人领到前面，说孩子病得急；{subject}往后退了一步，再往后退一步，最后退到了街上。{healer}追出来说下周四还有一次，{subject}点点头，没有问下周四自己还走不走得动。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "白跑一趟的车钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "把位置让给了抱孩子的女人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$healer",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "没有排上圣物前的队伍"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_relic_turned_away",
+              "add": true,
+              "reason": "在队伍里被挤出了教堂"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fm17-confession.velvet-box",
+      "title": "告解室里的丝绒匣",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "faith",
+        "confession",
+        "suspected_witchcraft",
+        "investigation",
+        "priest",
+        "secret",
+        "doubt"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "suspected-witchcraft",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "priest",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-seal-holds",
+          "weight": 0.35,
+          "text": "{subject}隔着木格说出邻居家的母牛、夜里的蜡烛和那个不肯散的梦。{priest}没有问名字，也没有说这是巫术；他只让{subject}把蜡烛收进匣子，别再点。走出告解室时，{subject}听见他在里面把丝绒匣的扣子扣上，声音很轻。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "告解没有被当成审讯"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$priest",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.05,
+              "reason": "神父没有追问名字"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "key": "evidence",
+              "delta": -5,
+              "reason": "告解没有被转成证词"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_confession_sealed",
+              "add": true,
+              "reason": "告解内容留在了丝绒匣里"
+            }
+          ]
+        },
+        {
+          "id": "the-door-had-a-shadow",
+          "weight": 0.35,
+          "text": "告解结束后，{subject}在侧廊看见一个穿灰外套的人从另一扇门出去。一周后，办事员在问话时引用了{subject}在告解里说过的原话，连停顿的位置都一样。{priest}否认自己说过，但教区办公室的登记簿上多了一行别人的笔迹。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 25,
+                "charge": "亵渎与招魂"
+              },
+              "reason": "告解内容出现在了案卷里"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "key": "danger",
+              "delta": 15,
+              "reason": "告解原话被写进了问话记录"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "告解内容被公开引用"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$priest",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "不知道是谁把话传了出去"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "连停顿都被记录了下来"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_confession_leaked",
+              "add": true,
+              "reason": "告解原话出现在案卷里"
+            }
+          ]
+        },
+        {
+          "id": "a-penitent-with-a-ledger",
+          "weight": 0.3,
+          "text": "{subject}没有说自己施了咒，只说害怕。{priest}听完，从丝绒匣里取出一张空白纸，问{subject}要不要给地方法官写一封信，把一切说清楚。{subject}摇头；他把纸放回去，说：“那就先活着，别一个人待着。”",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "有人让她先活着"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$priest",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "respect": 0.06,
+              "reason": "神父没有逼她写自白"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "key": "evidence",
+              "delta": -3,
+              "reason": "她只承认了恐惧，没有承认巫术"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_confession_kept_close",
+              "add": true,
+              "reason": "把恐惧留在告解室里"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fm17-cult.recruitment",
+      "title": "晨星会的免费学堂",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 55
+      },
+      "tags": [
+        "faith",
+        "cult",
+        "recruitment",
+        "family",
+        "child",
+        "school",
+        "money",
+        "curse"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "cursed-by-wish",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "fm17-cult-initiate",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 55
+        },
+        {
+          "key": "recruiter",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 14,
+          "sameHousehold": true
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-child-is-enrolled",
+          "weight": 0.35,
+          "text": "{recruiter}说晨星会在城北租了一间带院子的房子，白天教孩子识字，晚上替人祷告。{subject}去看过一次：桌上没有十字架，只有一盏总也不灭的灯。{subject}在名册上写下{child}的名字，又付了第一个月的煤钱。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "parameters": {
+                "belonging": 65,
+                "obedience": 45,
+                "doubt": 20,
+                "exitCost": 25
+              },
+              "reason": "为了孩子的学堂加入了晨星会"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "晨星会学堂的第一个月费用"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$recruiter",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "respect": 0.03,
+              "reason": "替孩子报名晨星会学堂"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.02,
+              "affection": 0.04,
+              "reason": "一起去看过那间带院子的学堂"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "名册上的名字已经写下"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_cult_school_signed",
+              "add": true,
+              "reason": "把孩子送进了晨星会学堂"
+            }
+          ]
+        },
+        {
+          "id": "declines-the-school",
+          "weight": 0.35,
+          "text": "{recruiter}把学堂说得很好，{subject}却注意到院角堆着没有拆封的床架，孩子们睡在草垫上。{subject}说家里已经找好了学校，牵着{child}往外走。{recruiter}在门口说，诅咒会跟着孩子；{subject}没有回头，只把{child}的手握得更紧。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "被说孩子也会被诅咒"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$recruiter",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "fear": 0.03,
+              "reason": "拒绝了晨星会的学堂"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.06,
+              "reason": "在门口握紧了孩子的手"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_cult_refused",
+              "add": true,
+              "reason": "拒绝把诅咒交给晨星会处理"
+            }
+          ]
+        },
+        {
+          "id": "signs-for-the-childs-medicine",
+          "weight": 0.3,
+          "text": "{child}夜里咳得厉害，医生说肺弱，要花钱买一种苦药。{recruiter}第二天就送来一小包褐色粉末，说是会里替人祈来的。{subject}不信那盏灯，却还是在入会纸上按了手印；药粉冲开以后，{child}确实睡了一夜整觉。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "parameters": {
+                "belonging": 40,
+                "obedience": 30,
+                "doubt": 55,
+                "exitCost": 35
+              },
+              "reason": "为了孩子的药加入了晨星会"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "入会费与药钱"
+            },
+            {
+              "type": "health",
+              "personId": "$child",
+              "amount": 0.02,
+              "reason": "褐色粉末让孩子睡了一夜"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": 0.05,
+              "reason": "为了药按了手印"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "手印比信仰先落下"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_cult_medicine_bargain",
+              "add": true,
+              "reason": "用入会换取孩子的药"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fm17-cult.exit-cost",
+      "title": "把赞美诗留在门口",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 60
+      },
+      "tags": [
+        "faith",
+        "cult",
+        "exit",
+        "family",
+        "child",
+        "money",
+        "belonging"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fm17-cult-initiate",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "leader",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 80
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 16,
+          "sameHousehold": true
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-price-of-the-door",
+          "weight": 0.35,
+          "text": "{leader}没有拦{subject}，只把一张清单推到桌子中间：学堂的煤、祷告会的灯油、替{subject}家“挡灾”的七次仪式费用。{subject}把首饰和这个月的工钱都留下，牵着{child}走到门口。{child}回头问，那本赞美诗能不能带走；{leader}说，书是会的。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "reason": "付清清单后离开了晨星会"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "退出时被要求付清的煤、灯油与仪式费用"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "退出晨星会的消息在熟人里传开"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$leader",
+              "kind": "rival",
+              "trust": -0.25,
+              "fear": 0.1,
+              "reason": "退出时被列了一张清单"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "门口的风比后厅新鲜"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_cult_left",
+              "add": true,
+              "reason": "付清清单后离开了晨星会"
+            }
+          ]
+        },
+        {
+          "id": "stays-for-the-child",
+          "weight": 0.35,
+          "text": "{subject}已经把行李收到门口，{child}却从院里跑回来，说学堂里有人答应教他写字，还说外面的孩子会笑他没有父亲。{subject}在门槛上坐了很久，最后把行李又提回屋里。第二天，{subject}照常去后厅摆椅子。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "key": "obedience",
+              "delta": 10,
+              "reason": "为了孩子留在了会里"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "key": "exitCost",
+              "delta": 15,
+              "reason": "孩子的朋友和学堂都在会里"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "key": "doubt",
+              "delta": 10,
+              "reason": "把自己留了下来，却没有说服自己"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": 0.02,
+              "reason": "为了孩子留在了晨星会"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "行李又提回了屋里"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_cult_stayed_for_child",
+              "add": true,
+              "reason": "为了孩子放弃了退出"
+            }
+          ]
+        },
+        {
+          "id": "exposes-the-circle",
+          "weight": 0.3,
+          "text": "{subject}没有把清单付清，而是把它和一本记着名字与捐款的小册子一起送到了报馆。记者只登了半栏，没有点会长的名，却把“晨星会”三个字印了出来。当天夜里，后厅的灯灭了很久；{subject}家的窗户被人扔了一块石头。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-cult-initiate",
+              "reason": "把会里的账册送到了报馆"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "有人开始把她当成敢说话的人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$leader",
+              "kind": "rival",
+              "trust": -0.3,
+              "fear": 0.08,
+              "reason": "账册被送到报馆"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "修被砸坏的窗户"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "夜里有人往窗户扔石头"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_cult_exposed",
+              "add": true,
+              "reason": "把晨星会的账册交给了报馆"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fm17-saint.first-cure",
+      "title": "被调查者的第一次治愈",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "faith",
+        "healing",
+        "medicine",
+        "saint",
+        "investigation",
+        "child",
+        "reputation",
+        "money"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "under-investigation",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "fm17-saint-or-fraud",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "patient",
+          "kind": "child",
+          "required": true,
+          "minAge": 4,
+          "maxAge": 12
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 4,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-fever-breaks",
+          "weight": 0.35,
+          "text": "调查员刚走，隔壁的女人就把{patient}抱到{subject}门口。孩子烧得说胡话，{subject}用凉水擦了擦他的额头，又把窗开了一条缝。天亮时，{patient}的烧退了；女人在院子里说这是奇迹，{official}却在台阶下站了很久，手里拿着没写完的记录。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "parameters": {
+                "following": 25,
+                "suspicion": 20,
+                "cures": 1,
+                "protection": 10
+              },
+              "reason": "一个孩子的退烧被邻居说成奇迹"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "孩子母亲留下的谢礼"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "院子里的退烧被传成治愈"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patient",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "照顾过这个发烧的孩子"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "孩子确实退了烧"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_first_cure_witnessed",
+              "add": true,
+              "reason": "第一次被邻居说成治愈"
+            }
+          ]
+        },
+        {
+          "id": "the-child-is-worse",
+          "weight": 0.35,
+          "text": "{subject}给孩子擦了额头，也念了女人带来的祷词，但孩子的烧没有退。女人终于去请了医生，医生在门口说，再晚半天就麻烦了。{official}把这一切记进本子，合上时没有看{subject}；走廊里只剩下孩子咳嗽的声音。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$patient",
+              "amount": -0.03,
+              "reason": "延误了请医生的时间"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "delta": 15,
+              "reason": "延误就医被写进了调查记录"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "孩子的病情在院子里传开"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "替孩子家垫付的诊费"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "医生的那句“再晚半天”"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_healing_failed",
+              "add": true,
+              "reason": "第一次被人求治就延误了就医"
+            }
+          ]
+        },
+        {
+          "id": "the-official-offers-a-license",
+          "weight": 0.3,
+          "text": "{official}说，如果{subject}不再称这是奇迹，可以在市立诊所登记做一名护理助手：有工钱，有制服，也有上级。{subject}看着那张表格，想起调查员问过的话，最后在“护理助手”下面签了名，却把“不得施行祝福”那一行折进了纸里。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "parameters": {
+                "following": 10,
+                "suspicion": 10,
+                "cures": 0,
+                "protection": 25
+              },
+              "reason": "官方给了一个受监管的位置"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "lay healer",
+              "add": true,
+              "reason": "在市立诊所登记为护理助手"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "护理助手的第一笔工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.02,
+              "reason": "接受了一个受监管的位置"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_healing_tolerated",
+              "add": true,
+              "reason": "以护理助手的身份被暂时容忍"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fm17-fraud.investigation",
+      "title": "账本上的圣名",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 75
+      },
+      "tags": [
+        "faith",
+        "fraud",
+        "investigation",
+        "healing",
+        "politics",
+        "media",
+        "money",
+        "reputation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fm17-saint-or-fraud",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "journalist",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 4,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-books-do-not-balance",
+          "weight": 0.35,
+          "text": "{journalist}在捐款簿上发现同一笔钱被记了三次，又把{subject}卖过的“圣水”列成一张价目表。{official}带着两个办事员来封了前厅，把玻璃瓶和账本一起装进木箱。围观的人没有散，反而在门口排得更长，像在等一个更刺激的结局。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "suspicion",
+              "delta": 20,
+              "reason": "捐款簿上的重复记录"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "following",
+              "delta": -10,
+              "reason": "一部分求医者转而看热闹"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "protection",
+              "delta": -10,
+              "reason": "原本替她说话的机构退开了"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "parameters": {
+                "progress": 30,
+                "charge": "欺诈与非法行医"
+              },
+              "reason": "捐款簿与圣水价目表成了案卷"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "被报纸写成骗局"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "请人抄写账目副本"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "前厅被贴了封条"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_saint_investigated",
+              "add": true,
+              "reason": "账本被当成欺诈证据"
+            }
+          ]
+        },
+        {
+          "id": "a-cure-that-cannot-be-checked",
+          "weight": 0.35,
+          "text": "被治好的孩子已经随家人搬走，地址没有人知道；另外两个病人一个死了，一个不肯再说话。{official}把案卷合上，说没有原告，也没有药方，只有一叠感谢信。{journalist}还是写了报道，标题用了问号，结尾却没有结论。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "suspicion",
+              "delta": 5,
+              "reason": "治愈无法被独立核实"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "following",
+              "delta": 5,
+              "reason": "报道的问号反而引来更多求助"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "protection",
+              "delta": 5,
+              "reason": "案卷因证据不足而停滞"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "没有结论的报道留下了余地"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "没有被正式定罪"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_saint_case_stalled",
+              "add": true,
+              "reason": "治愈无法验证，案件停滞"
+            }
+          ]
+        },
+        {
+          "id": "the-official-wants-a-share",
+          "weight": 0.3,
+          "text": "{official}在闭门谈话里说，案子可以慢慢查，也可以查得很快；区别在于{subject}愿不愿意把“善款”分出一成，供办事员加班。{subject}把钱数好，推过桌面。走出门时，{journalist}正靠在对面墙上抽烟，什么也没问，只把烟头踩灭。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "给办事员的“加班费”"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "protection",
+              "delta": 20,
+              "reason": "案子被暂时压住"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-saint-or-fraud",
+              "key": "suspicion",
+              "delta": 10,
+              "reason": "给钱本身也成了把柄"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "fear": 0.08,
+              "reason": "用钱换来的暂时庇护"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "钱推过桌面时没有声音"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_saint_paid_off",
+              "add": true,
+              "reason": "用善款买了一次拖延"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fm17-miracle.witness",
+      "title": "墓园里的那团光",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 75
+      },
+      "tags": [
+        "faith",
+        "miracle",
+        "vision",
+        "public_scandal",
+        "witness",
+        "reputation",
+        "doubt"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "fm17-miracle-witness",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "witness",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 4,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "a-light-on-the-grave",
+          "weight": 0.35,
+          "text": "万灵节傍晚，{subject}和{witness}在墓园点蜡烛。一团淡蓝色的光在{subject}母亲的墓碑上方停了几息，又慢慢散开。{witness}先跪下，随后旁边几家人也跪了。没有人问{subject}最近为什么被报纸写，但所有人看{subject}的眼神都变了。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "parameters": {
+                "certainty": 55,
+                "attention": 35,
+                "obligation": 10
+              },
+              "reason": "在墓园看见一团无法解释的光"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "墓园里的光被当成了好兆头"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "母亲的名字被陌生人轻轻念了一遍"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "万灵节那天，母亲的墓碑上方有一团淡蓝色的光。",
+              "confidence": 0.75,
+              "sourceKind": "witnessed",
+              "visibility": "private"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_light_seen",
+              "add": true,
+              "reason": "在墓园看见了无法解释的光"
+            }
+          ]
+        },
+        {
+          "id": "a-reflection-from-the-greenhouse",
+          "weight": 0.35,
+          "text": "光是从墓园围墙外的一家温室照进来的：园丁在玻璃屋顶下点了一盏新灯，正好落在墓碑的斜面上。{subject}指给{witness}看，{witness}却已经把那件事讲给了半条街的人。第二天，有人送来一束花，也有人送来一张写着“请为我丈夫祈祷”的纸条。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "parameters": {
+                "certainty": 20,
+                "attention": 40,
+                "obligation": 20
+              },
+              "reason": "一个被误认成神迹的温室灯光"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "误认的光也带来了好话"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "解释没有人愿意听"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那团光其实是温室屋顶的灯，但街上的人已经把它当成了神迹。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_mundane_light",
+              "add": true,
+              "reason": "看见了光的来源，却无法收回传言"
+            }
+          ]
+        },
+        {
+          "id": "no-one-else-saw-it",
+          "weight": 0.3,
+          "text": "{subject}看见墓碑之间的空气亮了一下，{witness}却正低头点蜡烛，什么也没看见。{subject}张了张嘴，最后只说“风大”。回家的路上，{witness}一直在讲{subject}被报纸冤枉的事；{subject}听着，没有把刚才那一瞬间加进故事里。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "只有自己看见的东西最难说出口"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$witness",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "一起走过墓园的那段路"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "墓园里那一下亮光，只有我一个人看见。",
+              "confidence": 0.4,
+              "sourceKind": "witnessed",
+              "visibility": "private"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_vision_kept_private",
+              "add": true,
+              "reason": "把只有自己看见的亮光咽了回去"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fm17-miracle.aftermath",
+      "title": "门口留下的蜡烛",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "faith",
+        "miracle",
+        "reputation",
+        "obligation",
+        "witness",
+        "community",
+        "money"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fm17-miracle-witness",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-parish-wants-a-statement",
+          "weight": 0.35,
+          "text": "{official}带着一本新的记录簿来，说堂区需要一份签字声明：光是什么颜色、持续多久、当时还有谁在场。{subject}讲到一半，{official}替她补上了“蒙恩”两个字。{neighbor}站在门边听着，等办事员走后，才小声问那两个字是不是她的原话。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "attention",
+              "delta": 15,
+              "reason": "堂区的记录簿把见证写成了正式材料"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "obligation",
+              "delta": 15,
+              "reason": "签字之后，她要对一个官方版本负责"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "certainty",
+              "delta": 5,
+              "reason": "别人替她补上的“蒙恩”"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "在堂区记录簿上签了字"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "堂区给了见证一个正式位置"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_miracle_statement_signed",
+              "add": true,
+              "reason": "在堂区声明上签了字"
+            }
+          ]
+        },
+        {
+          "id": "the-crowd-at-the-door",
+          "weight": 0.35,
+          "text": "门口开始出现不属于这个街区的人：有人留下蜡烛，有人留下铜币，有人把写着病名的纸折成小块塞进门缝。{neighbor}替{subject}把东西收进篮子，收着收着忽然问，能不能给一小块她手帕的边角，好带回去给卧床的母亲。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "attention",
+              "delta": 20,
+              "reason": "陌生人开始从别的街区赶来"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "门口留下的铜币"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "连手帕的边角都成了圣物"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "邻居也开口要一件“圣物”"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_miracle_crowd",
+              "add": true,
+              "reason": "门口形成了自发的朝圣队伍"
+            }
+          ]
+        },
+        {
+          "id": "a-quiet-denial",
+          "weight": 0.3,
+          "text": "{subject}把门口的东西一样样摆回桌上，对来人说：“我不知道那是什么，也不知道是不是神的意思。”有人听完就走了，有人把蜡烛又往前推了一寸。{neighbor}留到最后，帮她把铜币数清，说：“不知道也可以。”",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "attention",
+              "delta": -10,
+              "reason": "公开否认自己知道那是什么"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "certainty",
+              "delta": -10,
+              "reason": "承认不知道反而让确信松动"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "一部分人觉得她不够虔诚"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "respect": 0.04,
+              "reason": "邻居留下来帮她数铜币"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "有人说“不知道也可以”"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_miracle_denied",
+              "add": true,
+              "reason": "公开承认自己不知道那是什么"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fm17-consolation.kitchen",
+      "title": "厨房里的那碗汤",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "faith",
+        "consolation",
+        "grief",
+        "family",
+        "neighbor",
+        "care",
+        "quiet"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "grief",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "soup-and-a-rosary",
+          "weight": 0.4,
+          "text": "{neighbor}带来一锅还热着的扁豆汤，没说要祈祷，也没说死者去了哪里。两个人坐在厨房里，一个念珠，一个喝汤；念到第三遍时，{subject}把碗放下，说了一句只有自己听得见的话。{neighbor}没有追问，只把面包往她那边推了推。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "邻居带来的扁豆汤和面包"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "有人在厨房里陪着，不急着解释"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "affection": 0.05,
+              "reason": "一起度过了一个不提神迹的晚上"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_consolation_without_miracle",
+              "add": true,
+              "reason": "在没有奇迹的厨房里得到安慰"
+            }
+          ]
+        },
+        {
+          "id": "the-argument-about-heaven",
+          "weight": 0.3,
+          "text": "{neighbor}说人死了会在天上重逢，{subject}说没有证据，两个人从厨房吵到楼梯口。吵到最后，{neighbor}承认自己也不知道，只是愿意这么想；{subject}靠在栏杆上笑了一下，说“那你刚才还说得那么肯定”。",
+          "significance": 0.74,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "一场没有胜负的争论"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.03,
+              "reason": "邻居承认自己也不知道"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_consolation_argument",
+              "add": true,
+              "reason": "在争论里得到了一点松弛"
+            }
+          ]
+        },
+        {
+          "id": "the-empty-chair",
+          "weight": 0.3,
+          "text": "{subject}没有开门，只说今天不想见人。{neighbor}把汤留在门口，压了一张纸条：不用回话。天黑以后，{subject}把汤端进来，坐在那张空椅子对面吃完；碗底有一层薄薄的扁豆，她没有倒掉。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "放在门口的汤"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "有人没有逼她开门"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "reason": "一张写着“不用回话”的纸条"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fm17_consolation_at_the_door",
+              "add": true,
+              "reason": "接受了留在门口的一碗汤"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "faith",
+    "cults",
+    "miracles",
+    "fraud",
+    "grief"
+  ],
+  "tone": [
+    "ambiguous",
+    "eerie",
+    "consoling"
+  ],
+  "scope": [
+    "person",
+    "organization"
+  ],
+  "rarity": "rare",
+  "contentWarnings": [
+    "cult coercion",
+    "religious trauma",
+    "fraud",
+    "supernatural ambiguity"
+  ]
+}
