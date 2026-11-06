@@ -1,10 +1,13 @@
 import type {
   EventEffect,
+  PersonAttributeKey,
   Place,
   RoleRequirement,
   SceneCondition,
   SceneFollowupTarget,
   SceneStage,
+  StateOwnerType,
+  StateParameterValue,
 } from '../domain.js';
 import type { GeneratedTaskMeta } from '../generated.js';
 
@@ -110,6 +113,20 @@ export type KernelVariantWhen = {
   };
   /** Persistent flag branch; compiled into a SceneCondition. */
   hasFlag?: string;
+  /** Phase 15 mechanism state branch. */
+  hasState?: {
+    stateId?: string;
+    tag?: string;
+    owner?: StateOwnerType;
+    parameter?: string;
+    min?: number;
+    max?: number;
+    equals?: StateParameterValue;
+  };
+  /** Named capability branch. */
+  attribute?: { key: PersonAttributeKey; min?: number; max?: number };
+  /** Real office branch, not a stage title. */
+  position?: { titleIncludes?: string; authority?: string; organizationId?: string };
 };
 
 export type KernelOutcome = {
@@ -118,6 +135,8 @@ export type KernelOutcome = {
   /** Role tokens such as {subject}, {teacher}; optional {milieu}/{context}. */
   text: string;
   effects: EventEffect[];
+  /** Extra person-level conditions on this outcome. */
+  conditions?: SceneCondition[];
   significance?: number;
   /** Structured motive/conflict/response for the incident trace. */
   trace?: { motive?: string; conflict?: string; response?: string };
@@ -159,9 +178,13 @@ export type PlotKernel = {
   milieus?: string[];
   conditions?: SceneCondition[];
   roles: RoleRequirement[];
+  /** Optional deterministic check that branches among authored outcomes. */
+  check?: import('../domain.js').SceneCheckSpec;
   outcomes: KernelOutcome[];
   variants?: KernelVariant[];
   baseRate?: number;
+  /** Scheduling weight among eligible ordinary scenes. Defaults to 1. */
+  weight?: number;
   cooldownYears?: number;
   significance?: number;
   task?: GeneratedTaskMeta;

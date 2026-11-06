@@ -153,6 +153,48 @@ infra/migrations/005_v4_macro.sql
 
 不变量：死亡不可逆；现金/食物不出现负余额；正现金/食物必须有明确来源（组织、工资或场景 reason）；角色缺失时场景 blocked 而不是生成假人；未知 effect 被拒绝；每个提交事件引用真实人物；世界状态、实体、事件和修订号在同一事务内保存。
 
+## Phase 15 组合故事引擎
+
+Phase 15 在现有 v4 Scene/Task/Kernel 之上增加 State 机制层，而不是第二套 Engine。`StateDefinition` 可声明 slot、参数、typed links、duration、weight/check modifiers、ticks、transitions、reactions 和 onEnter/onExit；`StateInstance` 由 EventFact 创建并持久化。一个 `university-student` 会真正占用 education slot、每年检定、交学费并在毕业/退学时提交 `state_transition`；一个 `cursed-by-wish` 会监听真实 `betrayal` 事件、指向真实 `betrayer` 并造成/承受健康后果；一个 `position` effect 创建真实 Position，而舞台国王只是 state，不获得 authority。
+
+内容工厂位于 `packages/v4/content-factory/`，验证 schema、typed effects/conditions、文本 token、state 引用和真实 composer 编译后才登记。历史索引位于 `packages/v4/history-db/`（446 条参考记录），每五年生成 macro `historyReview`，只记录有/无 committed analogue，不重置时间线。
+
+关键命令：
+
+```bash
+pnpm v4:phase15-author -- --all --fallback   # 工厂 gate + 明确 fallback scaffold
+pnpm v4:phase16-experiments                    # A–F 机制实验
+pnpm v4:phase15-lives -- 60 phase15-a,phase15-b
+```
+
+完整证据与限制见 [Phase 15 report](docs/v4/phase-15-report.md)、[design](docs/v4/phase-15-design.md)、[independent critique](docs/v4/phase-15-critique.md) 与 [ADR 016](docs/decisions/ADR-016-state-mechanism-layer.md)。真实模型 API 在本次环境返回 HTTP 403；交付 pack 是 LLM 子代理撰写并离线验证，不是运行时 worker 成功。
+
+
+## Phase 16 活起来的人生（activation / playtest）
+
+Phase 16 没有重写 Engine。它把 Phase 15 的 State / Position / Content Factory / History 真正接入完整人生：
+
+- **state/position opportunity lane**：已获得的处境获得一次有界机会；先 cast 预检，再加权选择；每人年最多结算一个 state/position 场景。
+- **真实子女**：`autoAttachOnBirth` 创建 household `raising-child`；通用 `child` role 选真实子女；tick/reaction 使用 `links.child`，每个孩子的 school progress 独立。
+- **真实职位权力**：`$positionOrg/$positionId/$positionTitle` 使用最近获得的有效 Position；自然人生中实际发生 hire、预算、私人人情、审计、丑闻与投票移除。
+- **诅咒后果**：自然背叛触发 `cursed-by-wish` reaction，对真实 betrayer 提交 health/condition；失败也推进 triggers，自我 cast 不触发。
+- **历史进入生活**：占领、清洗、罢工委员会成为 place/organization State；place state 会 tick/expire；1945 liberation 会移除占领。work permit 仍未创建就业，这是已知缺口。
+- **数据库与性能**：embedded PostgreSQL 18.6 实际执行 migration/persistence/reload/e2e；20k baseline 4.57 s/年、1% 6.63 s/年、5% 10.28 s/年。
+
+主要命令：
+
+```bash
+pnpm v4:phase16-lives -- 40 phase16-final-c
+pnpm v4:phase16-experiments
+pnpm v4:with-postgres "pnpm exec vitest run tests/v4-state-persistence.test.ts tests/v4-macro-store.test.ts"
+pnpm v4:with-postgres "pnpm test:e2e --config playwright.v4.config.ts"
+# 真实 PostgreSQL stop/start 恢复：
+pnpm v4:with-postgres "pnpm exec tsx scripts/v4-postgres-restart-check.ts seed"
+pnpm v4:with-postgres "pnpm exec tsx scripts/v4-postgres-restart-check.ts load"
+```
+
+完整证据与限制见 [Phase 16 report](docs/v4/phase-16-report.md)、[design](docs/v4/phase-16-design.md)、[critique + revision](docs/v4/phase-16-critique.md)、[model probe](docs/v4/phase-16-model-probe.json) 与 [ADR 017](docs/decisions/ADR-017-state-activation-children-history.md)。真实模型 `/models` 返回 200，但 chat 返回 403（无 active OpenCode Go subscription）；两个新 pack 是离线 LLM 子代理创作并验证，不是 runtime worker 成功。
+
 ## 已知限制与边界
 
 - **内容范围**：静态运行时 183 个事件场景（含 104 个生成场景、519 条生成叙事变体）和 50 个主动 Task（144 outcomes/288 narrations）；另有运行时 content pack 机制，发布后动态加载，仍只是维也纳切片，不是完整 1900 地球人生。离婚、再婚、同性关系、继承和住房容量已有第一版机制，但缺少玩家选择、完整法律程序、再婚/继承分配策略和大规模内容覆盖。

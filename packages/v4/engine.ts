@@ -32,6 +32,7 @@ import {
   type Person,
   type PersonLife,
   type Place,
+  type Position,
   type Project,
   type Relation,
   type SceneChoice,
@@ -42,6 +43,8 @@ import {
   type SceneOutcome,
   type SceneStage,
   type ScheduledEvent,
+  type StateInstance,
+  type StateOwnerType,
   type TaskDefinition,
   type WorldDate,
   type WorldState,
@@ -66,7 +69,37 @@ import {
   refreshAgencyGoal,
 } from './agency.js';
 import { taskUtility } from './tasks.js';
+import { reviewHistoricalWorld } from './history-db/review.js';
 import type { CompositionSource } from './composition/types.js';
+import {
+  activeStates,
+  checkBand,
+  checkModifier,
+  indexStateDefinitions,
+  hasStateContextForPerson,
+  reactionAllowed,
+  reactionTriggered,
+  resolveAttribute,
+  resolveCheck,
+  stateAnchorPerson,
+  stateContextForPerson,
+  stateDueForTick,
+  stateExpired,
+  stateOwnerExists,
+  stateTagsForPerson,
+  stateLookupFor,
+  touchOrganizationRevision,
+  touchStateRevision,
+  type StateDefinitionIndex,
+} from './state/runtime.js';
+import {
+  normalizeStateParameters,
+  stateDuration,
+  type StateDefinition,
+  type StateModifier,
+  type StateTick,
+  type StateTickOutcome,
+} from './state/types.js';
 import {
   advanceHistoricalProcesses,
   ensureHistoricalProcess,
@@ -135,6 +168,10 @@ export type V4AdvanceOptions = {
   tasks?: TaskDefinition[];
   /** Phase 11 context×kernel composition source. Opt-in so old fixtures stay stable. */
   composition?: CompositionSource;
+  /** Phase 15 mechanism state definitions. Opt-in; no states means old behavior. */
+  states?: StateDefinition[];
+  /** Set false only for isolated fixtures that must not tick states. Defaults true. */
+  stateRuntime?: boolean;
   /** Soft cap for ordinary statistical events per person-year. Fact events bypass. */
   maxOrdinaryEventsPerPerson?: number;
   /** Allow required missing roles to be taken from the background cohort. */
@@ -201,6 +238,18 @@ export type V4AdvanceDiagnostics = {
     skippedByMilieu: number;
     cacheHit: boolean;
   };
+  /** Phase 15 state runtime counters. */
+  states?: {
+    active: number;
+    defined: number;
+    added: number;
+    removed: number;
+    transitions: number;
+    ticks: number;
+    reactions: number;
+    blockedAdds: number;
+    orphaned: number;
+  };
   /** Phase 13 scheduling counters. Candidate pools are per person-year; draws
    * are ordinary encounter attempts that reached the source-specific selector. */
   scheduling?: {
@@ -210,6 +259,15 @@ export type V4AdvanceDiagnostics = {
       ratePass: { base: number; composed: number };
       preparedPass: { base: number; composed: number };
       selected: { base: number; composed: number };
+    };
+    /** Phase 16: dedicated state/position opportunity lane. */
+    stateOpportunity: {
+      candidates: number;
+      selected: number;
+      resolved: number;
+      missingRole: number;
+      noOutcome: number;
+      blocked: number;
     };
     resolved: { base: number; composed: number };
     blocked: { base: number; composed: number };
@@ -242,6 +300,8 @@ type NormalizedOptions = {
   outcomePolicy?: V4OutcomePolicy;
   choicePolicy?: V4ChoicePolicy;
   composition?: CompositionSource;
+  states?: StateDefinition[];
+  stateRuntime: boolean;
 };
 
 type EngineContext = {
@@ -258,6 +318,11 @@ type EngineContext = {
   triggerIndex: Map<string, SceneDefinition[]>;
   /** Cached role candidate pools filtered by requirement + subject context. */
   roleCastCache: Map<string, Id[]>;
+  /** Cached state modifiers for a person under the current state/org revision. */
+  stateModifierCache?: Map<
+    Id,
+    { key: string; modifiers: StateModifier[] }
+  >;
   /** Lazily built per-year index of the named population, used to avoid O(n) casts. */
   peopleIndex?: PeopleIndex;
   /** Last committed event month per person, used by death-date anchoring. */
@@ -269,6 +334,10 @@ type EngineContext = {
   tasks: TaskDefinition[];
   tasksByStage: Map<SceneStage, TaskDefinition[]>;
   materializedCount: number;
+  stateIndex: StateDefinitionIndex;
+  /** Guard against reaction chains; bounded and reset per commit. */
+  stateReactionDepth?: number;
+  stateReactionMs?: number;
 };
 
 type EffectBinding = {
@@ -283,6 +352,15 @@ type OutcomeSelection = {
   outcome: SceneOutcome;
   choice?: SceneChoice;
   reason: string;
+  check?: {
+    die: number;
+    modifier: number;
+    total: number;
+    dc: number;
+    band: 'success' | 'failure' | 'critical_success' | 'critical_failure';
+    blockedBy?: string;
+    breakdown: ReturnType<typeof checkModifier>;
+  };
 };
 
 type EventDraft = {
@@ -338,6 +416,21 @@ type WorldHistoryIndex = {
  * every candidate in every year.
  */
 const worldHistoryIndexes = new WeakMap<WorldState, WorldHistoryIndex>();
+/** organization membership/position index; rebuilt when stateRevision changes. */
+const worldOrganizationIndexes = new WeakMap<
+  WorldState,
+  { revision: number; byPerson: Map<Id, Organization[]> }
+>();
+/** State definitions are content, not world facts; keyed by the annual draft. */
+const worldStateIndexes = new WeakMap<WorldState, StateDefinitionIndex>();
+
+function setWorldStateIndex(world: WorldState, index: StateDefinitionIndex): void {
+  worldStateIndexes.set(world, index);
+}
+
+function stateIndexForWorld(world: WorldState): StateDefinitionIndex {
+  return worldStateIndexes.get(world) ?? indexStateDefinitions([]);
+}
 
 function buildWorldHistoryIndex(world: WorldState): WorldHistoryIndex {
   const index: WorldHistoryIndex = { length: world.events.length, byPerson: new Map() };
@@ -383,6 +476,10 @@ function historyFor(world: WorldState, personId: Id): HistoryEntry[] {
   return historyIndexFor(world).byPerson.get(personId) ?? [];
 }
 
+function countHistoryTag(world: WorldState, personId: Id, tag: string, _date: WorldDate): number {
+  return historyFor(world, personId).filter((entry) => entry.tags.includes(tag)).length;
+}
+
 function rememberHistory(world: WorldState, event: EventFact): void {
   const index = worldHistoryIndexes.get(world);
   if (!index) return;
@@ -396,8 +493,6 @@ function historyEntriesMatching(
   condition: Extract<SceneCondition, { kind: 'history' }>,
   date: WorldDate,
 ): HistoryEntry[] {
-  const minCount = condition.minCount ?? 1;
-  const maxCount = condition.maxCount ?? Number.POSITIVE_INFINITY;
   const earliest =
     condition.withinYears !== undefined
       ? monthIndex(date) - Math.max(0, condition.withinYears) * 12
@@ -426,7 +521,6 @@ function historyEntriesMatching(
     if (condition.withRole && entry.role !== condition.withRole) return false;
     return true;
   });
-  if (matches.length < minCount || matches.length > maxCount) return [];
   return matches;
 }
 
@@ -498,6 +592,7 @@ const ROLE_KINDS = new Set([
   'parent',
   'guardian',
   'sibling',
+  'child',
   'partner',
   'teacher',
   'employer',
@@ -549,6 +644,7 @@ function repairPartnerUniqueness(world: WorldState, date: WorldDate): void {
       relation.end = { ...relation.start };
     }
   }
+  touchRelationRevision(world);
 }
 
 /**
@@ -734,6 +830,14 @@ export function advanceV4Year(
       blocked: { base: 0, composed: 0 },
       paths: {},
       blockedReasons: {},
+      stateOpportunity: {
+        candidates: 0,
+        selected: 0,
+        resolved: 0,
+        missingRole: 0,
+        noOutcome: 0,
+        blocked: 0,
+      },
     },
     warnings: [],
   };
@@ -767,7 +871,23 @@ export function advanceV4Year(
     tasks: [],
     tasksByStage: new Map(),
     materializedCount: 0,
+    stateIndex: indexStateDefinitions(normalized.states ?? []),
   };
+  setWorldStateIndex(draft, context.stateIndex);
+
+  if (context.stateIndex.all.length > 0) {
+    diagnostics.states = {
+      active: activeStateCount(draft),
+      defined: context.stateIndex.all.length,
+      added: 0,
+      removed: 0,
+      transitions: 0,
+      ticks: 0,
+      reactions: 0,
+      blockedAdds: 0,
+      orphaned: 0,
+    };
+  }
 
   const composed = normalized.composition?.compile(draft, target);
   if (composed) diagnostics.composition = composed.stats;
@@ -848,6 +968,11 @@ export function advanceV4Year(
   } else {
     runScenes(context, definitions, target, resolvedCounts, false);
   }
+  if (normalized.stateRuntime && context.stateIndex.all.length > 0) {
+    const stateStarted = Date.now();
+    tickStates(context, target);
+    timings.stateTicks = Date.now() - stateStarted;
+  }
   runPendingMacroActions(context, target);
   if (normalized.agencyEnabled) {
     runAgencyYear(context, target, normalized.maxAgencyActorsPerYear);
@@ -916,6 +1041,13 @@ export function advanceV4Year(
     }
     draft.macro = refreshNamedPopulation(draft.macro, draft);
   }
+  // Low-frequency historical review: records which reference candidates have a
+  // committed analogue, and which do not. It never resets the timeline.
+  if (draft.macro && target.year % 5 === 0) {
+    const review = reviewHistoricalWorld(draft, target.year - 4, target.year);
+    draft.macro.historyReview = review;
+    draft.macro.historyReviews = [...(draft.macro.historyReviews ?? []), review].slice(-12);
+  }
   draft.date = target;
 
   diagnostics.personsConsidered = Object.keys(draft.persons).filter(
@@ -933,6 +1065,7 @@ export function advanceV4Year(
   assertWorldV4(draft);
   timings.assert = Date.now() - phaseStarted;
   timings.total = Date.now() - startedAt;
+  timings.stateReactions = context.stateReactionMs ?? 0;
   diagnostics.timings = timings;
 
   return {
@@ -978,6 +1111,7 @@ export function auditCandidatePools(
   scenes: SceneDefinition[],
   tasks: TaskDefinition[] = [],
   composition?: CompositionSource,
+  states: StateDefinition[] = [],
 ): V4CandidatePoolAudit | undefined {
   const person = world.persons[personId];
   if (!person || person.died) return undefined;
@@ -1018,6 +1152,14 @@ export function auditCandidatePools(
       blocked: { base: 0, composed: 0 },
       paths: {},
       blockedReasons: {},
+      stateOpportunity: {
+        candidates: 0,
+        selected: 0,
+        resolved: 0,
+        missingRole: 0,
+        noOutcome: 0,
+        blocked: 0,
+      },
     },
     warnings: [],
   };
@@ -1058,6 +1200,7 @@ export function auditCandidatePools(
     tasks: allTasks,
     tasksByStage: new Map(),
     materializedCount: 0,
+    stateIndex: indexStateDefinitions(states),
   };
   for (const task of allTasks) {
     const list = context.tasksByStage.get(task.stage) ?? [];
@@ -1065,6 +1208,7 @@ export function auditCandidatePools(
     context.tasksByStage.set(task.stage, list);
   }
   const eventPool: V4CandidatePoolAudit['events'] = [];
+  setWorldStateIndex(world, context.stateIndex);
   for (const definition of definitions) {
     if (!sceneEligible(context, definition, person, date)) continue;
     const cast = castSceneRoles(context, definition, person, date);
@@ -1152,6 +1296,8 @@ function normalizeOptions(options: V4AdvanceOptions): NormalizedOptions {
     outcomePolicy: options.outcomePolicy,
     choicePolicy: options.choicePolicy,
     composition: options.composition,
+    states: options.states,
+    stateRuntime: options.stateRuntime !== false,
   };
 }
 
@@ -1176,6 +1322,31 @@ function warnContext(
 function definitionSource(definition: { id: string; packId?: string }): 'base' | 'composed' {
   return definition.packId === 'composition' || definition.id.includes('::') ? 'composed' : 'base';
 }
+
+function touchRelationRevision(world: WorldState): void {
+  world.historyMeta.relationRevision = (world.historyMeta.relationRevision ?? 0) + 1;
+}
+
+/**
+ * One use per content family, not per compiled context variant. Without this,
+ * the same kernel can resolve twice in a person-year through two contexts
+ * (for example a school registration at home and at the hospital) and repeat
+ * the same life decision.
+ */
+function sceneUseKey(definition: SceneDefinition): string {
+  return definition.familyId ?? definition.id;
+}
+
+const CAPABILITY_TAGS: Record<string, string[]> = {
+  literacy: ['education', 'school'],
+  numeracy: ['work', 'market'],
+  social_insight: ['social', 'family'],
+  craft_affinity: ['craft', 'work', 'apprentice'],
+  frail_body: ['health', 'infancy', 'care'],
+  craft: ['work', 'apprentice'],
+  social: ['social', 'family'],
+  health: ['health', 'infancy'],
+};
 
 function bumpRecord(record: Record<string, number>, key: string): void {
   record[key] = (record[key] ?? 0) + 1;
@@ -1556,7 +1727,14 @@ function conditionPasses(
       });
     }
     case 'history':
-      return historyEntriesMatching(world, subject.id, condition, date).length > 0;
+      return (() => {
+        const matches = historyEntriesMatching(world, subject.id, condition, date);
+        const minCount =
+          condition.minCount ??
+          (condition.maxCount !== undefined && condition.maxCount <= 0 ? 0 : 1);
+        const maxCount = condition.maxCount ?? Number.POSITIVE_INFINITY;
+        return matches.length >= minCount && matches.length <= maxCount;
+      })();
     case 'knowledge': {
       const needle = condition.propositionIncludes?.trim().toLowerCase();
       const minConfidence = condition.minConfidence ?? 0;
@@ -1604,6 +1782,89 @@ function conditionPasses(
       });
     case 'hasFlag':
       return subject.life?.flags.includes(condition.flag) === true;
+    case 'attribute': {
+      const value = resolveAttribute(subject, condition.attribute);
+      if (typeof condition.min === 'number' && value < condition.min) return false;
+      if (typeof condition.max === 'number' && value > condition.max) return false;
+      return true;
+    }
+    case 'position':
+      return Object.values(world.positions).some(
+        (position) =>
+          position.holderId === subject.id &&
+          position.end === undefined &&
+          (!condition.organizationId || position.organizationId === condition.organizationId) &&
+          (!condition.titleIncludes ||
+            position.title.toLowerCase().includes(condition.titleIncludes.toLowerCase())) &&
+          (!condition.authority || position.authority.includes(condition.authority)),
+      );
+    case 'hasState': {
+      const ownerType = condition.owner ?? 'person';
+      const ownerId =
+        ownerType === 'person'
+          ? subject.id
+          : ownerType === 'household'
+            ? subject.householdId
+            : ownerType === 'organization'
+              ? (subject.employment?.organizationId ?? '')
+              : ownerType === 'place'
+                ? subject.locationId
+                : ownerType === 'region'
+                  ? (regionIdForPerson(world, subject) ?? '')
+                  : ownerType === 'world'
+                    ? world.id
+                    : '';
+      if (!ownerId) return false;
+      const matchingStates = activeStates(
+        world,
+        ownerType,
+        ownerId,
+        condition.tag,
+        stateIndexForWorld(world),
+        date,
+      ).filter((instance) => !condition.stateId || instance.definitionId === condition.stateId);
+      if (matchingStates.length < (condition.minCount ?? 1)) return false;
+      if (condition.parameter) {
+        const values = matchingStates
+          .map((instance) => instance.parameters[condition.parameter!])
+          .filter((value): value is number | string | boolean => value !== undefined);
+        if (values.length === 0) return false;
+        const numeric = values.filter((value): value is number => typeof value === 'number');
+        if (condition.min !== undefined && !numeric.some((value) => value >= condition.min!))
+          return false;
+        if (condition.max !== undefined && !numeric.some((value) => value <= condition.max!))
+          return false;
+        if (condition.equals !== undefined && !values.includes(condition.equals)) return false;
+      }
+      return true;
+    }
+    case 'notHasState': {
+      const ownerType = condition.owner ?? 'person';
+      const ownerId =
+        ownerType === 'person'
+          ? subject.id
+          : ownerType === 'household'
+            ? subject.householdId
+            : ownerType === 'organization'
+              ? (subject.employment?.organizationId ?? '')
+              : ownerType === 'place'
+                ? subject.locationId
+                : ownerType === 'region'
+                  ? (regionIdForPerson(world, subject) ?? '')
+                  : ownerType === 'world'
+                    ? world.id
+                    : '';
+      if (!ownerId) return true;
+      const matches = activeStates(
+        world,
+        ownerType,
+        ownerId,
+        condition.tag,
+        stateIndexForWorld(world),
+        date,
+      ).filter((instance) => !condition.stateId || instance.definitionId === condition.stateId);
+      return matches.length === 0;
+    }
     case 'hasRelationWith':
       return relationsFor(world, subject.id).some((relation) => {
         if (relation.end !== undefined) return false;
@@ -1817,23 +2078,29 @@ function personPlaceKinds(world: WorldState, person: Person): Set<Place['kind']>
 }
 
 function personOrganizations(world: WorldState, person: Person): Organization[] {
-  const organizations = new Set<Organization>();
-  if (person.employment) {
-    const employer = world.organizations[person.employment.organizationId];
-    if (employer) organizations.add(employer);
-  }
-  for (const organization of Object.values(world.organizations)) {
-    if (organization.memberIds.includes(person.id)) organizations.add(organization);
-    if (
-      organization.positions.some((positionId) => {
-        const position = world.positions[positionId];
-        return position?.holderId === person.id;
-      })
-    ) {
-      organizations.add(organization);
+  const revision = world.historyMeta.organizationRevision ?? 0;
+  let cached = worldOrganizationIndexes.get(world);
+  if (!cached || cached.revision !== revision) {
+    const byPerson = new Map<Id, Organization[]>();
+    for (const organization of Object.values(world.organizations)) {
+      const add = (personId: Id | undefined) => {
+        if (!personId) return;
+        const list = byPerson.get(personId) ?? [];
+        if (!list.some((candidate) => candidate.id === organization.id)) list.push(organization);
+        byPerson.set(personId, list);
+      };
+      for (const memberId of organization.memberIds) add(memberId);
+      for (const positionId of organization.positions) add(world.positions[positionId]?.holderId);
     }
+    for (const list of byPerson.values()) list.sort((a, b) => a.id.localeCompare(b.id));
+    cached = { revision, byPerson };
+    worldOrganizationIndexes.set(world, cached);
   }
-  return [...organizations].sort((a, b) => a.id.localeCompare(b.id));
+  const base = cached.byPerson.get(person.id) ?? [];
+  if (!person.employment) return base;
+  const employer = world.organizations[person.employment.organizationId];
+  if (!employer || base.some((candidate) => candidate.id === employer.id)) return base;
+  return [...base, employer].sort((a, b) => a.id.localeCompare(b.id));
 }
 
 function organizationMatchesRole(
@@ -2022,6 +2289,12 @@ function roleCandidates(
         ...subject.parentIds.map((parentId) => index.byParent.get(parentId)),
       );
       for (const id of siblings) if (id !== subject.id) candidates.add(id);
+      break;
+    }
+    case 'child': {
+      for (const id of index.byParent.get(subject.id) ?? []) {
+        if (id !== subject.id) candidates.add(id);
+      }
       break;
     }
     case 'partner': {
@@ -2786,6 +3059,59 @@ function selectOutcome(
     date.month,
   );
 
+  if (definition.check) {
+    const result = resolveCheck(
+      context.world,
+      subject,
+      definition.check,
+      context.stateIndex,
+      seededRng(context.world.seed, 'check', definition.id, subject.id, date.year, date.month),
+      (tag) => countHistoryTag(context.world, subject.id, tag, date),
+      date,
+    );
+    const band = checkBand(result);
+    const byId = new Map(outcomes.map((outcome) => [outcome.id, outcome]));
+    const candidateIds =
+      band === 'critical_success'
+        ? [
+            ...(definition.check.criticalSuccessOutcomeIds ?? []),
+            ...definition.check.successOutcomeIds,
+          ]
+        : band === 'critical_failure'
+          ? [
+              ...(definition.check.criticalFailureOutcomeIds ?? []),
+              ...definition.check.failureOutcomeIds,
+            ]
+          : band === 'success'
+            ? definition.check.successOutcomeIds
+            : definition.check.failureOutcomeIds;
+    const selected = candidateIds
+      .map((id) => byId.get(id))
+      .find((outcome) => outcome !== undefined);
+    if (selected) {
+      return {
+        outcome: selected,
+        choice,
+        reason: `check:${result.die}${result.modifier >= 0 ? '+' : ''}${result.modifier}=${result.total} vs ${result.dc} (${band})`,
+        check: {
+          die: result.die,
+          modifier: result.modifier,
+          total: result.total,
+          dc: result.dc,
+          band,
+          ...(result.breakdown.blockedBy ? { blockedBy: result.breakdown.blockedBy } : {}),
+          breakdown: result.breakdown,
+        },
+      };
+    }
+    warnContext(
+      context,
+      'check_outcome_missing',
+      `no eligible outcome for ${band} in ${definition.id}`,
+      { personId: subject.id, sceneId: definition.id },
+    );
+  }
+
   if (context.options.outcomePolicy) {
     try {
       const decision = context.options.outcomePolicy({
@@ -3105,6 +3431,27 @@ function birthContractCostEffects(
   return effects;
 }
 
+function cachedStateModifiers(
+  context: EngineContext,
+  subject: Person,
+  date: WorldDate,
+): StateModifier[] {
+  const key = `${context.world.historyMeta.stateRevision ?? 0}:${
+    context.world.historyMeta.organizationRevision ?? 0
+  }:${date.year}:${date.month}`;
+  const cache = (context.stateModifierCache ??= new Map());
+  const cached = cache.get(subject.id);
+  if (cached?.key === key) return cached.modifiers;
+  const modifiers = stateContextForPerson(
+    context.world,
+    subject,
+    context.stateIndex,
+    date,
+  ).flatMap((entry) => entry.definition.modifiers ?? []);
+  cache.set(subject.id, { key, modifiers });
+  return modifiers;
+}
+
 /**
  * Effective per-person rate for an ordinary scene. Exported for content audits
  * and tests so capability/contract weighting is inspectable rather than hidden
@@ -3147,17 +3494,7 @@ export function v4EventRate(
     );
   }
   const capability = subject.life?.flags.find((flag) => flag.startsWith('capability:'))?.slice(11);
-  const capabilityTags: Record<string, string[]> = {
-    literacy: ['education', 'school'],
-    numeracy: ['work', 'market'],
-    social_insight: ['social', 'family'],
-    craft_affinity: ['craft', 'work', 'apprentice'],
-    frail_body: ['health', 'infancy', 'care'],
-    craft: ['work', 'apprentice'],
-    social: ['social', 'family'],
-    health: ['health', 'infancy'],
-  };
-  if (capability && capabilityTags[capability]?.some((tag) => definition.tags.includes(tag)))
+  if (capability && CAPABILITY_TAGS[capability]?.some((tag) => definition.tags.includes(tag)))
     contractMultiplier *= 1.2;
   const matchingLimits = (contract?.limits ?? []).filter((limit) =>
     limit.tags.some((tag) => definition.tags.includes(tag)),
@@ -3184,7 +3521,25 @@ export function v4EventRate(
     context?.poolMultiplierCache?.set(poolKey, pool);
   }
   if (pool <= 0) return 0;
-  return clamp(rate * pool, 0, 1);
+  let stateMultiplier = 1;
+  if (context) {
+    const familyId = definition.familyId;
+    const modifiers = cachedStateModifiers(context, subject, _date);
+    for (const modifier of modifiers) {
+      if (modifier.kind !== 'scene_weight') continue;
+      const tagMatches =
+        (modifier.tags?.length ?? 0) > 0 &&
+        modifier.tags!.some((tag) => definition.tags.includes(tag));
+      const familyMatches =
+        Boolean(familyId) &&
+        (modifier.familyIds?.length ?? 0) > 0 &&
+        modifier.familyIds!.includes(familyId!);
+      if (!tagMatches && !familyMatches) continue;
+      stateMultiplier *= modifier.multiplier;
+    }
+    stateMultiplier = Math.max(0.1, Math.min(6, stateMultiplier));
+  }
+  return clamp(rate * pool * stateMultiplier, 0, 1);
 }
 
 function eventTags(event: EventFact): string[] {
@@ -3220,6 +3575,29 @@ function eventTags(event: EventFact): string[] {
         break;
       case 'health':
         if (effect.amount < 0) tags.add('injury');
+        break;
+      case 'state_add':
+        tags.add('state');
+        tags.add(`state:${effect.stateId}`);
+        tags.add(effect.stateId);
+        break;
+      case 'state_remove':
+        tags.add('state');
+        if (effect.stateId) {
+          tags.add(`state:${effect.stateId}`);
+          tags.add(effect.stateId);
+        }
+        break;
+      case 'state_transition':
+        tags.add('state');
+        tags.add(effect.toStateId);
+        break;
+      case 'position':
+        tags.add(effect.remove ? 'office_end' : 'office');
+        tags.add('power');
+        break;
+      case 'organization_found':
+        tags.add('organization');
         break;
       default:
         break;
@@ -4447,6 +4825,8 @@ type CandidateSet = {
   composed: IndexedScene[];
   milestones: IndexedScene[];
   lifecycle: IndexedScene[];
+  /** Scenes whose positive conditions depend on a state or a real position. */
+  stateDriven: IndexedScene[];
   baseSampler: WeightedSampler;
   composedSampler: WeightedSampler;
 };
@@ -4501,9 +4881,10 @@ function ratePasses(
   date: WorldDate,
   salt: number,
   personSeed: number,
+  minimum = 0,
 ): boolean {
   const definition = entry.definition;
-  const rate = v4EventRate(context, definition, subject, date);
+  const rate = Math.max(v4EventRate(context, definition, subject, date), minimum);
   if (rate >= 1) return true;
   const roll = fastUnit(
     entry.seed ?? hashId(definition.id),
@@ -4540,7 +4921,7 @@ function pickOrdinaryCandidate(
     const source = definitionSource(definition);
     const scheduling = context.diagnostics.scheduling;
     if (scheduling) scheduling.ordinary.draws[source] += 1;
-    if (used.has(definition.id)) continue;
+    if (used.has(sceneUseKey(definition))) continue;
     if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
     if (!indexedSceneFits(context.world, entry, subject, date)) continue;
     if (!ratePasses(context, entry, subject, date, 1, personSeed)) continue;
@@ -4592,6 +4973,11 @@ function runEventYear(
       composed,
       milestones: all.filter((entry) => entry.definition.oncePerPerson === true),
       lifecycle: all.filter((entry) => entry.definition.tags.includes('lifecycle')),
+      stateDriven: all.filter((entry) =>
+        entry.definition.conditions.some(
+          (condition) => condition.kind === 'hasState' || condition.kind === 'position',
+        ),
+      ),
       baseSampler: buildWeightedSampler(base),
       composedSampler: buildWeightedSampler(composed),
     };
@@ -4621,7 +5007,7 @@ function runEventYear(
     // events.
     for (const entry of candidateSet.milestones) {
       const definition = entry.definition;
-      if (used.has(definition.id)) continue;
+      if (used.has(sceneUseKey(definition))) continue;
       if (!indexedSceneFits(context.world, entry, subject, date)) continue;
       if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
       if (!ratePasses(context, entry, subject, date, 3, personSeed)) continue;
@@ -4644,7 +5030,7 @@ function runEventYear(
       }
       resolveScene(context, definition, subject, cast.roles, selection, date, 0);
       ordinary += 1;
-      used.add(definition.id);
+      used.add(sceneUseKey(definition));
       resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
       subject = context.world.persons[personId];
       // Keep the structurally filtered pool for the rest of this person-year.
@@ -4659,7 +5045,7 @@ function runEventYear(
       const lifecycleCandidates: { definition: SceneDefinition; weight: number }[] = [];
       for (const entry of candidateSet.lifecycle) {
         const definition = entry.definition;
-        if (used.has(definition.id)) continue;
+        if (used.has(sceneUseKey(definition))) continue;
         if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
         if (!indexedSceneFits(context.world, entry, subject, date)) continue;
         if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
@@ -4674,7 +5060,7 @@ function runEventYear(
         seededRng(context.world.seed, 'lifecycle-choice', subject.id, date.year),
       );
       if (chosen) {
-        used.add(chosen.definition.id);
+        used.add(sceneUseKey(chosen.definition));
         const cast = castSceneRoles(context, chosen.definition, subject, date);
         if (cast.missing.length > 0) {
           recordBlocked(
@@ -4703,6 +5089,116 @@ function runEventYear(
             subject = context.world.persons[personId];
           }
         }
+      }
+    }
+    // Phase 16: a dedicated opportunity lane for states and real positions.
+    // Without it, state-gated scenes compete in a pool of thousands and a
+    // character can hold an office or a curse for decades without ever seeing
+    // the content that consumes it. This is one bounded attempt per
+    // person-year, not a second scheduler.
+    if (
+      subject &&
+      !subject.died &&
+      ordinary < ordinaryCap &&
+      candidateSet.stateDriven.length > 0 &&
+      hasStateContextForPerson(context.world, subject, date)
+    ) {
+      const stateCandidates: {
+        definition: SceneDefinition;
+        weight: number;
+        cast: CastResult;
+      }[] = [];
+      for (const entry of candidateSet.stateDriven) {
+        const definition = entry.definition;
+        if (used.has(sceneUseKey(definition))) continue;
+        if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
+        if (!indexedSceneFits(context.world, entry, subject, date)) continue;
+        if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
+        if (!ratePasses(context, entry, subject, date, 5, personSeed, 0.35)) continue;
+        // Screen cast availability before the weighted draw. A household with a
+        // newborn should not spend its state opportunity drawing a school scene
+        // that needs a five-year-old who does not exist yet. Counting these as
+        // availability failures keeps the scheduler honest and avoids repeated
+        // no-op casts.
+        const cast = castSceneRoles(context, definition, subject, date);
+        if (cast.missing.length > 0) {
+          if (context.diagnostics.scheduling) {
+            context.diagnostics.scheduling.stateOpportunity.missingRole += 1;
+          }
+          continue;
+        }
+        stateCandidates.push({
+          definition,
+          weight: Math.max(0, definition.weight ?? 1) * 1.5,
+          cast,
+        });
+      }
+      if (context.diagnostics.scheduling) {
+        context.diagnostics.scheduling.stateOpportunity.candidates += stateCandidates.length;
+      }
+      const remaining = [...stateCandidates];
+      // A state can validly be present while its first weighted scene cannot
+      // cast (a dead neighbour, a missing official in a rural year). Try a few
+      // other eligible state scenes before spending the person-year's single
+      // opportunity. This mirrors ordinary casting without weakening the
+      // one-resolved-state-scene-per-year bound.
+      const attempts = Math.min(5, remaining.length);
+      for (let attempt = 0; attempt < attempts; attempt += 1) {
+        const chosen = weightedPick(
+          remaining,
+          seededRng(
+            context.world.seed,
+            'state-opportunity',
+            subject.id,
+            date.year,
+            String(attempt),
+          ),
+        );
+        if (!chosen) break;
+        remaining.splice(remaining.indexOf(chosen), 1);
+        used.add(sceneUseKey(chosen.definition));
+        if (context.diagnostics.scheduling) {
+          context.diagnostics.scheduling.stateOpportunity.selected += 1;
+        }
+        const cast = chosen.cast;
+        const selection = selectOutcome(context, chosen.definition, subject, cast.roles, date);
+        if (!selection) {
+          if (context.diagnostics.scheduling) {
+            context.diagnostics.scheduling.stateOpportunity.noOutcome += 1;
+          }
+          recordBlocked(
+            context,
+            chosen.definition,
+            subject,
+            cast.roles,
+            'no_eligible_outcome',
+            date,
+          );
+          continue;
+        }
+        const event = resolveScene(
+          context,
+          chosen.definition,
+          subject,
+          cast.roles,
+          selection,
+          date,
+          0,
+        );
+        if (!event) {
+          if (context.diagnostics.scheduling) {
+            context.diagnostics.scheduling.stateOpportunity.blocked += 1;
+          }
+          continue;
+        }
+        ordinary += 1;
+        resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
+        if (context.diagnostics.scheduling) {
+          context.diagnostics.scheduling.stateOpportunity.resolved += 1;
+        }
+        // One resolved state/position opportunity per person-year. Further
+        // attempts are only for cast/effect failures, never for a second story.
+        break;
       }
     }
     // For ordinary events, large content libraries use a deterministic sample
@@ -4736,7 +5232,7 @@ function runEventYear(
         const candidates: { definition: SceneDefinition; weight: number }[] = [];
         for (const entry of sourceEntries) {
           const definition = entry.definition;
-          if (used.has(definition.id)) continue;
+          if (used.has(sceneUseKey(definition))) continue;
           if (definition.triggerMode === 'fact' || definition.triggerMode === 'action') continue;
           if (!indexedSceneFits(context.world, entry, subject, date)) continue;
           if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
@@ -4775,7 +5271,7 @@ function runEventYear(
             const candidates: { definition: SceneDefinition; weight: number }[] = [];
             for (const entry of fallbackEntries) {
               const definition = entry.definition;
-              if (used.has(definition.id)) continue;
+              if (used.has(sceneUseKey(definition))) continue;
               if (definition.triggerMode === 'fact' || definition.triggerMode === 'action')
                 continue;
               if (!indexedSceneFits(context.world, entry, subject, date)) continue;
@@ -4801,7 +5297,7 @@ function runEventYear(
         const chosenSource = definitionSource(chosen.definition);
         context.diagnostics.scheduling.ordinary.selected[chosenSource] += 1;
       }
-      used.add(chosen.definition.id);
+      used.add(sceneUseKey(chosen.definition));
       const cast = castSceneRoles(context, chosen.definition, subject, date);
       if (cast.missing.length > 0) {
         recordBlocked(
@@ -4995,6 +5491,18 @@ function describeIncidentEffect(effect: EventEffect): string {
       return `项目 ${effect.project.title ?? effect.project.id}`;
     case 'interaction':
       return `互动 ${effect.interaction.id}`;
+    case 'state_add':
+      return `进入状态 ${effect.stateId}：${effect.reason}`;
+    case 'state_remove':
+      return `退出状态 ${effect.stateId ?? effect.tag ?? '?'}：${effect.reason}`;
+    case 'state_parameter':
+      return `状态参数 ${effect.stateId}.${effect.key}：${effect.reason}`;
+    case 'state_transition':
+      return `状态 ${effect.fromStateId} → ${effect.toStateId}：${effect.reason}`;
+    case 'position':
+      return `${effect.remove ? '卸任' : '就任'} ${effect.title}：${effect.reason}`;
+    case 'organization_found':
+      return `成立组织 ${effect.organization.name}：${effect.reason}`;
     default:
       return (effect as { type: string }).type;
   }
@@ -5130,6 +5638,16 @@ function resolveScene(
       ...materializedContactEffects(context, subject, roles, outcome),
     ]),
   };
+  if (selection.check && draft.trace) {
+    draft.trace.check = {
+      die: selection.check.die,
+      modifier: selection.check.modifier,
+      total: selection.check.total,
+      dc: selection.check.dc,
+      band: selection.check.band,
+      ...(selection.check.blockedBy ? { blockedBy: selection.check.blockedBy } : {}),
+    };
+  }
   const event = commitEvent(
     context,
     draft,
@@ -5224,6 +5742,695 @@ function resolveScene(
 // Committed facts and effects
 // ---------------------------------------------------------------------------
 
+function activeStateCount(world: WorldState): number {
+  return world.states ? Object.values(world.states).filter((state) => state.active).length : 0;
+}
+
+function stateTickOutcome(
+  context: EngineContext,
+  definition: StateDefinition,
+  tick: StateTick,
+  subject: Person,
+  date: WorldDate,
+): { outcome: StateTickOutcome; check?: ReturnType<typeof resolveCheck> } | undefined {
+  let outcomes = tick.outcomes.filter(
+    (outcome) =>
+      outcome &&
+      outcome.weight > 0 &&
+      conditionsPass(context.world, subject, outcome.conditions, date),
+  );
+  if (outcomes.length === 0) return undefined;
+  if (tick.check) {
+    const check = resolveCheck(
+      context.world,
+      subject,
+      tick.check,
+      context.stateIndex,
+      seededRng(
+        context.world.seed,
+        'state-tick-check',
+        definition.id,
+        tick.id,
+        subject.id,
+        date.year,
+        date.month,
+      ),
+      (tag) => countHistoryTag(context.world, subject.id, tag, date),
+      date,
+    );
+    const band = checkBand(check);
+    const preferred = outcomes.filter((outcome) => outcome.result === band);
+    if (preferred.length > 0) {
+      outcomes = preferred;
+    } else if (check.success) {
+      const fallback = outcomes.filter(
+        (outcome) => outcome.result === undefined || outcome.result === 'success',
+      );
+      if (fallback.length > 0) outcomes = fallback;
+    } else {
+      const fallback = outcomes.filter(
+        (outcome) => outcome.result === undefined || outcome.result === 'failure',
+      );
+      if (fallback.length > 0) outcomes = fallback;
+    }
+    const chosen = weightedPick(
+      outcomes,
+      seededRng(
+        context.world.seed,
+        'state-tick-outcome',
+        definition.id,
+        tick.id,
+        subject.id,
+        date.year,
+      ),
+    );
+    return chosen ? { outcome: chosen, check } : undefined;
+  }
+  const chosen = weightedPick(
+    outcomes,
+    seededRng(
+      context.world.seed,
+      'state-tick-outcome',
+      definition.id,
+      tick.id,
+      subject.id,
+      date.year,
+    ),
+  );
+  return chosen ? { outcome: chosen } : undefined;
+}
+
+function linkedPersonRoles(
+  world: WorldState,
+  instance: StateInstance,
+): { roles: Record<Id, Id>; participants: { personId: Id; role: string }[] } {
+  const roles: Record<Id, Id> = {};
+  const participants: { personId: Id; role: string }[] = [];
+  for (const [name, targetId] of Object.entries(instance.links ?? {})) {
+    if (!world.persons[targetId]) continue;
+    roles[name] = targetId;
+    participants.push({ personId: targetId, role: name });
+  }
+  return { roles, participants };
+}
+
+function bindStateEffectsToInstance(
+  effects: EventEffect[],
+  instance: StateInstance,
+): EventEffect[] {
+  return effects.map((effect) => {
+    if (effect.type !== 'state_parameter' && effect.type !== 'state_remove') return effect;
+    if (effect.instanceId) return effect;
+    if (effect.ownerType !== instance.ownerType) return effect;
+    const ownerPlaceholder =
+      (effect.ownerType === 'person' && effect.ownerId === '$subject') ||
+      (effect.ownerType === 'household' && effect.ownerId === '$household') ||
+      (effect.ownerType === 'organization' && effect.ownerId === '$subjectOrg') ||
+      (effect.ownerType === 'place' && effect.ownerId === '$subjectPlace');
+    if (effect.ownerId !== instance.ownerId && !ownerPlaceholder) return effect;
+    if (effect.stateId && effect.stateId !== instance.definitionId) return effect;
+    return { ...effect, instanceId: instance.id };
+  });
+}
+
+function stateTickFact(
+  context: EngineContext,
+  definition: StateDefinition,
+  instance: StateInstance,
+  subject: Person,
+  date: WorldDate,
+  action: string,
+  text: string,
+  effects: EventEffect[],
+  reason: string,
+  tickId?: string,
+): EventFact | undefined {
+  const roles: Record<Id, Id> = { subject: subject.id, owner: subject.id };
+  const linked = linkedPersonRoles(context.world, instance);
+  Object.assign(roles, linked.roles);
+  const participants = [
+    { personId: subject.id, role: 'subject' },
+    ...linked.participants.filter((participant) => participant.personId !== subject.id),
+  ];
+  const event = commitEvent(
+    context,
+    {
+      date: { ...date },
+      placeId: subject.locationId,
+      subjectId: subject.id,
+      participants,
+      action,
+      title: definition.title,
+      tags: [definition.id, ...definition.tags, 'state', 'state_tick'],
+      causes: [],
+      effects: bindStateEffectsToInstance(effects, instance),
+      immediateText: interpolateSceneText(text, context.world, subject, roles, date) || reason,
+      significance: 0.45,
+      visibility: 'participants',
+      provenance: { kind: 'system', sourceId: definition.id },
+    },
+    { roleIds: roles, fundingOrganizationIds: [] },
+    false,
+  );
+  if (!event) return undefined;
+  if (context.diagnostics.states) context.diagnostics.states.ticks += 1;
+  const current = context.world.states?.[instance.id];
+  if (current) {
+    current.lastTickAt = { ...date };
+    if (tickId) {
+      current.tickHistory ??= {};
+      current.tickHistory[tickId] = { ...date };
+    }
+    current.tickCount += 1;
+  }
+  return event;
+}
+
+/**
+ * Annual state pass. Expiry, exit conditions, transitions and authored ticks
+ * are resolved as ordinary facts, not silent field edits. A tick that cannot
+ * commit a fact does not advance its lastTickAt and is retried next year.
+ */
+function tickStates(context: EngineContext, date: WorldDate): void {
+  const states = context.world.states;
+  if (!states) return;
+  const instances = Object.values(states)
+    .filter((instance) => instance.active)
+    .sort((a, b) => a.id.localeCompare(b.id));
+  for (const instance of instances) {
+    if (!instance.active) continue;
+    const definition = context.stateIndex.byId.get(instance.definitionId);
+    if (!definition) {
+      if (context.diagnostics.states) context.diagnostics.states.blockedAdds += 1;
+      warnContext(context, 'unknown_state_instance', instance.definitionId, {
+        eventId: instance.sourceEventId,
+      });
+      continue;
+    }
+    const subject = stateAnchorFor(context, instance.ownerType, instance.ownerId);
+    if (!subject) continue;
+    if (instance.ownerType === 'person' && context.world.persons[instance.ownerId]?.died) continue;
+    // A state created in the same month as the tick pass must not tick before
+    // its own creation fact. Also prevents a January tick from mutating a
+    // state that a later-month scene will add in the same calendar year.
+    if (monthIndex(date) - monthIndex(instance.since) < 1) continue;
+
+    if (stateExpired(instance, date)) {
+      stateTickFact(
+        context,
+        definition,
+        instance,
+        subject,
+        date,
+        `state_expire:${definition.id}`,
+        `${subject.name}的「${definition.title}」到期；${instance.endReason ?? '相关安排结束'}。`,
+        [
+          {
+            type: 'state_remove',
+            ownerType: instance.ownerType,
+            ownerId: instance.ownerId,
+            stateId: definition.id,
+            instanceId: instance.id,
+            reason: 'duration expired',
+          },
+        ],
+        'state expired',
+      );
+      continue;
+    }
+    if (
+      definition.exitWhen &&
+      definition.exitWhen.length > 0 &&
+      conditionsPass(context.world, subject, definition.exitWhen, date)
+    ) {
+      stateTickFact(
+        context,
+        definition,
+        instance,
+        subject,
+        date,
+        `state_exit:${definition.id}`,
+        `${subject.name}不再处于「${definition.title}」；条件已经改变。`,
+        [
+          {
+            type: 'state_remove',
+            ownerType: instance.ownerType,
+            ownerId: instance.ownerId,
+            stateId: definition.id,
+            instanceId: instance.id,
+            reason: 'exit condition met',
+          },
+        ],
+        'state exit condition met',
+      );
+      continue;
+    }
+    for (const transition of definition.transitions ?? []) {
+      if (
+        transition.conditions &&
+        transition.conditions.length > 0 &&
+        !conditionsPass(context.world, subject, transition.conditions, date)
+      ) {
+        continue;
+      }
+      if (transition.chance !== undefined) {
+        const roll = seededRng(
+          context.world.seed,
+          'state-transition',
+          instance.id,
+          transition.id,
+          date.year,
+        )();
+        if (roll >= transition.chance) continue;
+      }
+      if (transition.check) {
+        const result = resolveCheck(
+          context.world,
+          subject,
+          transition.check,
+          context.stateIndex,
+          seededRng(
+            context.world.seed,
+            'state-transition-check',
+            instance.id,
+            transition.id,
+            date.year,
+          ),
+          (tag) => countHistoryTag(context.world, subject.id, tag, date),
+          date,
+        );
+        if (!result.success) continue;
+      }
+      stateTickFact(
+        context,
+        definition,
+        instance,
+        subject,
+        date,
+        `state_transition:${definition.id}/${transition.id}`,
+        `${subject.name}从「${definition.title}」转入另一段处境：${transition.reason}`,
+        [
+          {
+            type: 'state_transition',
+            ownerType: instance.ownerType,
+            ownerId: instance.ownerId,
+            fromStateId: definition.id,
+            toStateId: transition.to,
+            instanceId: instance.id,
+            reason: transition.reason,
+          },
+          ...(transition.effects ?? []),
+        ],
+        transition.reason,
+      );
+      break;
+    }
+    const current = context.world.states?.[instance.id];
+    if (!current?.active) continue;
+    for (const tick of definition.ticks ?? []) {
+      if (!stateDueForTick(instance, tick.id, tick.everyMonths ?? 12, date)) continue;
+      if (
+        tick.conditions &&
+        tick.conditions.length > 0 &&
+        !conditionsPass(context.world, subject, tick.conditions, date)
+      ) {
+        continue;
+      }
+      const picked = stateTickOutcome(context, definition, tick, subject, date);
+      if (!picked) continue;
+      stateTickFact(
+        context,
+        definition,
+        instance,
+        subject,
+        date,
+        `state_tick:${definition.id}/${tick.id}/${picked.outcome.id}`,
+        picked.outcome.text,
+        picked.outcome.effects,
+        picked.outcome.text.slice(0, 80),
+        tick.id,
+      );
+    }
+  }
+}
+
+/**
+ * Event reactions are authored consequences of committed tags. They commit
+ * their own fact with a cause id, and they can never rewrite the triggering
+ * event. Recursion is capped by the caller.
+ */
+function runStateReactions(context: EngineContext, trigger: EventFact, depth: number): void {
+  const states = context.world.states;
+  if (!states) return;
+  const started = Date.now();
+  try {
+    runStateReactionsInner(context, trigger, depth);
+  } finally {
+    context.stateReactionMs = (context.stateReactionMs ?? 0) + (Date.now() - started);
+  }
+}
+
+function runStateReactionsInner(context: EngineContext, trigger: EventFact, depth: number): void {
+  const states = context.world.states;
+  if (!states) return;
+  const people = [
+    trigger.subjectId,
+    ...trigger.participants.map((participant) => participant.personId),
+  ].filter((id, index, list) => list.indexOf(id) === index);
+  const lookup = stateLookupFor(context.world);
+  const candidateMap = new Map<string, StateInstance>();
+  const add = (instance: StateInstance | undefined) => {
+    if (instance) candidateMap.set(instance.id, instance);
+  };
+  for (const personId of people) {
+    const person = context.world.persons[personId];
+    if (!person) continue;
+    for (const instance of activeStates(
+      context.world,
+      'person',
+      person.id,
+      undefined,
+      context.stateIndex,
+      trigger.date,
+    )) {
+      add(instance);
+    }
+    for (const instance of activeStates(
+      context.world,
+      'household',
+      person.householdId,
+      undefined,
+      context.stateIndex,
+      trigger.date,
+    )) {
+      add(instance);
+    }
+    for (const instance of activeStates(
+      context.world,
+      'place',
+      person.locationId,
+      undefined,
+      context.stateIndex,
+      trigger.date,
+    )) {
+      add(instance);
+    }
+    const regionId = context.world.places[person.locationId]?.regionId;
+    if (regionId) {
+      for (const instance of activeStates(
+        context.world,
+        'region',
+        regionId,
+        undefined,
+        context.stateIndex,
+        trigger.date,
+      )) {
+        add(instance);
+      }
+    }
+    for (const organizationId of lookup.orgsByPerson.get(person.id) ?? []) {
+      for (const instance of activeStates(
+        context.world,
+        'organization',
+        organizationId,
+        undefined,
+        context.stateIndex,
+        trigger.date,
+      )) {
+        add(instance);
+      }
+    }
+  }
+  for (const instance of activeStates(
+    context.world,
+    'world',
+    context.world.id,
+    undefined,
+    context.stateIndex,
+    trigger.date,
+  )) {
+    add(instance);
+  }
+  const candidates = [...candidateMap.values()].sort((a, b) => a.id.localeCompare(b.id));
+  for (const instance of candidates) {
+    if (!instance.active) continue;
+    const definition = context.stateIndex.byId.get(instance.definitionId);
+    if (!definition) continue;
+    const subject = stateAnchorFor(context, instance.ownerType, instance.ownerId);
+    if (!subject) continue;
+    for (const reaction of definition.reactions ?? []) {
+      if (!instance.active) break;
+      if (!reactionTriggered(trigger, reaction)) continue;
+      if (
+        reaction.requiresRoles &&
+        !reaction.requiresRoles.every((role) =>
+          trigger.participants.some((participant) => participant.role === role),
+        )
+      ) {
+        continue;
+      }
+      if (reaction.requiresRoles?.includes('betrayer')) {
+        const betrayers = trigger.participants
+          .filter((participant) => participant.role === 'betrayer')
+          .map((participant) => participant.personId)
+          .filter((personId) => {
+            const person = context.world.persons[personId];
+            return Boolean(person && !person.died && personId !== subject.id);
+          });
+        if (betrayers.length === 0) continue;
+      }
+      if (
+        !reactionAllowed(
+          instance,
+          reaction.id,
+          trigger.date,
+          reaction.cooldownMonths ?? 0,
+          reaction.maxPerYear ?? 1,
+        )
+      ) {
+        continue;
+      }
+      if (
+        reaction.conditions &&
+        reaction.conditions.length > 0 &&
+        !conditionsPass(context.world, subject, reaction.conditions, trigger.date)
+      ) {
+        continue;
+      }
+      if (reaction.chance !== undefined) {
+        const roll = seededRng(
+          context.world.seed,
+          'state-reaction-chance',
+          instance.id,
+          reaction.id,
+          trigger.id,
+        )();
+        if (roll >= reaction.chance) continue;
+      }
+      let check: ReturnType<typeof resolveCheck> | undefined;
+      if (reaction.check) {
+        check = resolveCheck(
+          context.world,
+          subject,
+          reaction.check,
+          context.stateIndex,
+          seededRng(
+            context.world.seed,
+            'state-reaction-check',
+            instance.id,
+            reaction.id,
+            trigger.id,
+          ),
+          (tag) => countHistoryTag(context.world, subject.id, tag, trigger.date),
+          trigger.date,
+        );
+      }
+      const success = !check || check.success;
+      const effects = bindStateEffectsToInstance(
+        success ? reaction.effects : (reaction.failureEffects ?? []),
+        instance,
+      );
+      if (effects.length === 0) continue;
+      const roles: Record<Id, Id> = { subject: subject.id, owner: subject.id };
+      for (const participant of trigger.participants) {
+        if (!roles[participant.role]) roles[participant.role] = participant.personId;
+      }
+      const linked = linkedPersonRoles(context.world, instance);
+      for (const [name, personId] of Object.entries(linked.roles)) {
+        if (!roles[name]) roles[name] = personId;
+      }
+      if (instance.ownerType === 'organization') roles.ownerOrg = instance.ownerId;
+      if (instance.ownerType === 'household') roles.ownerHousehold = instance.ownerId;
+      const checked = check
+        ? `（d20 ${check.die}${check.modifier >= 0 ? '+' : ''}${check.modifier}=${check.total} 对 DC ${check.dc}）`
+        : '';
+      const sourceText = success ? reaction.text : (reaction.failureText ?? reaction.text);
+      const event = commitEvent(
+        context,
+        {
+          date: { ...trigger.date },
+          placeId: subject.locationId,
+          subjectId: subject.id,
+          participants: [
+            { personId: subject.id, role: 'subject' },
+            ...trigger.participants
+              .filter((participant) => participant.personId !== subject.id)
+              .map((participant) => ({
+                personId: participant.personId,
+                role: participant.role,
+              })),
+            ...linked.participants.filter(
+              (participant) =>
+                participant.personId !== subject.id &&
+                !trigger.participants.some(
+                  (triggerParticipant) => triggerParticipant.personId === participant.personId,
+                ),
+            ),
+          ],
+          action: `state_reaction:${definition.id}/${reaction.id}`,
+          title: definition.title,
+          tags: [
+            definition.id,
+            ...definition.tags,
+            'state',
+            'state_reaction',
+            ...(trigger.tags ?? []),
+          ],
+          causes: [trigger.id],
+          effects,
+          immediateText:
+            interpolateSceneText(sourceText, context.world, subject, roles, trigger.date) ||
+            sourceText,
+          significance: reaction.significance ?? 0.7,
+          visibility: 'participants',
+          provenance: { kind: 'system', sourceId: definition.id },
+        },
+        { roleIds: roles, fundingOrganizationIds: [] },
+        false,
+      );
+      if (!event) continue;
+      if (context.diagnostics.states) context.diagnostics.states.reactions += 1;
+      instance.reactions ??= {};
+      const previous = instance.reactions[reaction.id];
+      instance.reactions[reaction.id] = {
+        lastAt: { ...trigger.date },
+        count: previous?.lastAt.year === trigger.date.year ? previous.count + 1 : 1,
+      };
+    }
+  }
+}
+
+/**
+ * Preflight the new Phase 15 critical effects. Existing critical effects keep
+ * their historical behavior; a state/position/organisation fact must be
+ * impossible to leave half-applied.
+ */
+function preflightPhase15Effect(
+  context: EngineContext,
+  effect: EventEffect,
+  binding: EffectBinding,
+  pendingOrganizationIds: Set<string> = new Set(),
+): string | undefined {
+  switch (effect.type) {
+    case 'state_add': {
+      const definition = stateDefinitionsFor(context).get(effect.stateId);
+      if (!definition) return `unknown state ${effect.stateId}`;
+      const problem = stateCreationProblem(
+        context,
+        definition,
+        effect.ownerType,
+        effect.ownerId,
+        effect.links,
+        binding.date,
+      );
+      return problem ? `${problem.code}: ${problem.message}` : undefined;
+    }
+    case 'state_transition': {
+      const from = activeStateInstances(context, effect.ownerType, effect.ownerId).find(
+        (instance) =>
+          instance.definitionId === effect.fromStateId &&
+          (!effect.instanceId || instance.id === effect.instanceId),
+      );
+      if (!from) return `missing source state ${effect.fromStateId}`;
+      const target = stateDefinitionsFor(context).get(effect.toStateId);
+      if (!target) return `unknown target state ${effect.toStateId}`;
+      const problem = stateCreationProblem(
+        context,
+        target,
+        effect.ownerType,
+        effect.ownerId,
+        effect.links ?? from.links,
+        binding.date,
+        from.id,
+      );
+      return problem ? `${problem.code}: ${problem.message}` : undefined;
+    }
+    case 'state_remove': {
+      const matches = Object.values(context.world.states ?? {}).filter((instance) => {
+        if (!instance.active) return false;
+        if (instance.ownerType !== effect.ownerType || instance.ownerId !== effect.ownerId)
+          return false;
+        if (effect.instanceId && instance.id !== effect.instanceId) return false;
+        if (effect.stateId && instance.definitionId !== effect.stateId) return false;
+        if (effect.tag) {
+          const definition = stateDefinitionsFor(context).get(instance.definitionId);
+          if (!definition?.tags.includes(effect.tag)) return false;
+        }
+        return true;
+      });
+      return matches.length > 0 ? undefined : 'no matching active state';
+    }
+    case 'state_parameter': {
+      const instance = activeStateInstances(context, effect.ownerType, effect.ownerId).find(
+        (candidate) =>
+          (effect.instanceId ? candidate.id === effect.instanceId : true) &&
+          candidate.definitionId === effect.stateId,
+      );
+      if (!instance) return `missing state ${effect.stateId}`;
+      const definition = stateDefinitionsFor(context).get(effect.stateId);
+      return definition?.parameters?.[effect.key]
+        ? undefined
+        : `undefined parameter ${effect.stateId}.${effect.key}`;
+    }
+    case 'position': {
+      if (effect.remove) {
+        const found = Object.values(context.world.positions).some(
+          (position) =>
+            position.end === undefined &&
+            position.holderId === effect.holderId &&
+            (!effect.positionId || position.id === effect.positionId) &&
+            (!effect.organizationId || position.organizationId === effect.organizationId) &&
+            (!effect.title || position.title === effect.title),
+        );
+        return found ? undefined : 'no matching position to remove';
+      }
+      const organization = effect.organizationId
+        ? context.world.organizations[effect.organizationId]
+        : undefined;
+      if (
+        !organization &&
+        !(effect.organizationId && pendingOrganizationIds.has(effect.organizationId))
+      )
+        return 'position requires an active organisation';
+      const holder = effect.holderId ? context.world.persons[effect.holderId] : undefined;
+      if (!holder || holder.died) return 'position requires a living holder';
+      if (!effect.title || effect.title.trim().length === 0) return 'position title missing';
+      if ((effect.authority?.length ?? 0) > 8) return 'too many authority grants';
+      return undefined;
+    }
+    case 'organization_found': {
+      if (!effect.organization?.name) return 'organisation name missing';
+      if (!effect.organization.placeId && !context.world.persons[binding.subjectId]?.locationId)
+        return 'organisation place missing';
+      if (effect.organization.id && context.world.organizations[effect.organization.id])
+        return 'organisation id already exists';
+      return undefined;
+    }
+    default:
+      return undefined;
+  }
+}
+
 function commitEvent(
   context: EngineContext,
   draft: EventDraft,
@@ -5268,10 +6475,42 @@ function commitEvent(
     'organization_membership',
     'historical_process',
     'historical_participation',
+    'state_add',
+    'state_remove',
+    'state_parameter',
+    'state_transition',
+    'position',
+    'organization_found',
   ]);
   const indexedEffects = draft.effects.map((effect, index) => ({ effect, index }));
   const criticalEffects = indexedEffects.filter(({ effect }) => criticalTypes.has(effect.type));
   const textureEffects = indexedEffects.filter(({ effect }) => !criticalTypes.has(effect.type));
+  const resolvedCritical = criticalEffects.map(({ effect, index }) => ({
+    effect: resolveEffectRefs(effect, binding, context.world),
+    index,
+  }));
+  const pendingOrganizationIds = new Set(
+    resolvedCritical
+      .filter(
+        (
+          entry,
+        ): entry is {
+          effect: Extract<EventEffect, { type: 'organization_found' }>;
+          index: number;
+        } => entry.effect.type === 'organization_found',
+      )
+      .map((entry) => entry.effect.organization.id)
+      .filter((id): id is string => typeof id === 'string' && id.length > 0),
+  );
+  for (const { effect } of resolvedCritical) {
+    const problem = preflightPhase15Effect(context, effect, binding, pendingOrganizationIds);
+    if (problem) {
+      warnContext(context, 'phase15_effect_preflight_failed', `${effect.type}: ${problem}`, {
+        eventId: identity.id,
+      });
+      return undefined;
+    }
+  }
   const appliedByIndex: (EventEffect | undefined)[] = new Array(draft.effects.length);
   const applyOne = (effect: EventEffect, index: number): void => {
     try {
@@ -5301,11 +6540,22 @@ function commitEvent(
   for (const { effect, index } of textureEffects) applyOne(effect, index);
   const applied = appliedByIndex.filter((effect): effect is EventEffect => Boolean(effect));
   if (!force && applied.length === 0) return undefined;
+  const nestedApplied = applied.flatMap((effect) => {
+    if (effect.type === 'state_add')
+      return [...(effect.replacedExitEffects ?? []), ...(effect.entryEffects ?? [])];
+    if (effect.type === 'state_remove') return effect.exitEffects ?? [];
+    if (effect.type === 'state_transition')
+      return [...(effect.exitEffects ?? []), ...(effect.entryEffects ?? [])];
+    if (effect.type === 'death') return effect.exitEffects ?? [];
+    if (effect.type === 'birth') return effect.autoStateEffects ?? [];
+    return [];
+  });
+  const allApplied = [...applied, ...nestedApplied];
 
   const knownEventIds = eventIdsFor(context);
   const causes = [...new Set(draft.causes ?? [])].filter((cause) => knownEventIds.has(cause));
   const dyingIds = new Set(
-    applied
+    allApplied
       .filter(
         (effect): effect is Extract<EventEffect, { type: 'death' }> => effect.type === 'death',
       )
@@ -5333,7 +6583,7 @@ function commitEvent(
     participants,
     action: draft.action,
     title: draft.title,
-    tags: semanticEventTags(draft.action, applied, [
+    tags: semanticEventTags(draft.action, allApplied, [
       ...(draft.tags ?? []),
       ...(draft.provenance.kind === 'project' ? ['project'] : []),
       ...(draft.provenance.kind === 'interaction' ? ['interaction'] : []),
@@ -5343,7 +6593,7 @@ function commitEvent(
     ]),
     historyRefs: draft.historyRefs ? [...new Set(draft.historyRefs)] : undefined,
     causes,
-    effects: applied,
+    effects: allApplied,
     immediateText: draft.immediateText,
     significance: draft.significance,
     visibility: draft.visibility,
@@ -5354,7 +6604,7 @@ function commitEvent(
       ? {
           trace: {
             ...draft.trace,
-            effects: applied.map((effect) => ({
+            effects: allApplied.map((effect) => ({
               type: effect.type,
               description:
                 interpolateSceneText(
@@ -5373,7 +6623,7 @@ function commitEvent(
   // committed earlier in the same annual draft. Anchor both the death date and
   // the event's canonical date to the latest such fact, so no event is dated
   // after the subject's death and no cause is dated after its consequence.
-  const deathDates = applied
+  const deathDates = allApplied
     .filter((effect): effect is Extract<EventEffect, { type: 'death' }> => effect.type === 'death')
     .map((effect) => context.world.persons[effect.personId]?.died)
     .filter((date): date is WorldDate => Boolean(date));
@@ -5412,7 +6662,48 @@ function commitEvent(
   context.world.historyMeta.sequence = identity.sequence;
   context.world.historyMeta.lastEventId = event.id;
   context.newEvents.push(event);
+  if (
+    context.stateIndex.all.length > 0 &&
+    !draft.action.startsWith('state_reaction:') &&
+    !draft.action.startsWith('state_tick:') &&
+    !draft.action.startsWith('state_expire')
+  ) {
+    const depth = context.stateReactionDepth ?? 0;
+    if (depth < 2) {
+      context.stateReactionDepth = depth + 1;
+      try {
+        runStateReactions(context, event, depth);
+      } finally {
+        context.stateReactionDepth = depth;
+      }
+    }
+  }
   return event;
+}
+
+/**
+ * The office a person is currently exercising. A person may hold several real
+ * positions (a party office, a municipal post, a workshop foreman). Content
+ * that says "sign the budget" should act through the most recently acquired
+ * live position rather than whichever position happens to be first in the
+ * object map. This is a scheduling convention, not a new authority system.
+ */
+function activePositionFor(world: WorldState, personId: Id): Position | undefined {
+  let best: Position | undefined;
+  let bestStart = -Infinity;
+  for (const position of Object.values(world.positions)) {
+    if (position.holderId !== personId || position.end !== undefined) continue;
+    const start = position.start ? position.start.year * 12 + position.start.month : -Infinity;
+    if (
+      !best ||
+      start > bestStart ||
+      (start === bestStart && position.id.localeCompare(best.id) > 0)
+    ) {
+      best = position;
+      bestStart = start;
+    }
+  }
+  return best;
 }
 
 /**
@@ -5447,8 +6738,29 @@ function resolveRefKey(key: string, binding: EffectBinding, world: WorldState): 
       const employer = employerId ? world.persons[employerId] : undefined;
       return employer?.employment?.organizationId;
     }
-    default:
+    case 'owner':
+      return binding.roleIds.owner ?? binding.subjectId;
+    case 'positionOrg':
+      return activePositionFor(world, binding.subjectId)?.organizationId;
+    case 'positionId':
+      return activePositionFor(world, binding.subjectId)?.id;
+    case 'positionTitle':
+      return activePositionFor(world, binding.subjectId)?.title;
+    default: {
+      // A state may hold a typed link (lover, creditor, patron, master). Effects
+      // can target it with $link:lover without a second target system.
+      if (key.startsWith('link:') || key.startsWith('link.')) {
+        const linkName = key.slice(5);
+        const subjectId = binding.subjectId;
+        for (const instance of Object.values(world.states ?? {})) {
+          if (!instance.active) continue;
+          if (instance.ownerType !== 'person' || instance.ownerId !== subjectId) continue;
+          const linked = instance.links?.[linkName];
+          if (linked) return linked;
+        }
+      }
       return binding.roleIds[key];
+    }
   }
 }
 
@@ -5458,8 +6770,8 @@ function resolveEffectRef(value: unknown, binding: EffectBinding, world: WorldSt
   // an embedded ref (e.g. `courtship:$eventId`) must stay a string and remain
   // unique per event. Failing to expand embedded refs collapsed every courtship
   // interaction onto one id and silently dropped later proposals.
-  if (/^\$[A-Za-z0-9_]+$/.test(value)) return resolveRefKey(value.slice(1), binding, world);
-  return value.replace(/\$([A-Za-z0-9_]+)/g, (match, key: string) => {
+  if (/^\$[A-Za-z0-9_.:]+$/.test(value)) return resolveRefKey(value.slice(1), binding, world);
+  return value.replace(/\$([A-Za-z0-9_.:]+)/g, (match, key: string) => {
     const resolved = resolveRefKey(key, binding, world);
     return typeof resolved === 'string' && resolved.length > 0 ? resolved : match;
   });
@@ -5501,6 +6813,33 @@ function resolveEffectRefs(
       .map((value) => resolveEffectRef(value, binding, world))
       .filter((value): value is string => typeof value === 'string');
   }
+  if (bound.type === 'state_add' || bound.type === 'state_transition') {
+    if (isRecord(bound.links)) {
+      bound.links = Object.fromEntries(
+        Object.entries(bound.links)
+          .map(([key, value]) => [key, resolveEffectRef(value, binding, world)])
+          .filter(([, value]) => typeof value === 'string' && value.length > 0),
+      );
+    }
+    if (isRecord(bound.parameters)) {
+      bound.parameters = Object.fromEntries(
+        Object.entries(bound.parameters).map(([key, value]) => [
+          key,
+          typeof value === 'string' && value.includes('$')
+            ? resolveEffectRef(value, binding, world)
+            : value,
+        ]),
+      );
+    }
+  }
+  if (bound.type === 'organization_found' && isRecord(bound.organization)) {
+    const organization = { ...bound.organization } as Record<string, unknown>;
+    for (const key of ['id', 'placeId']) {
+      if (typeof organization[key] === 'string')
+        organization[key] = resolveEffectRef(organization[key], binding, world);
+    }
+    bound.organization = organization;
+  }
   if (bound.type === 'interaction' && isRecord(bound.interaction)) {
     const interaction = { ...bound.interaction } as Record<string, unknown>;
     if (typeof interaction.id === 'string')
@@ -5534,6 +6873,7 @@ function resolveEffectRefs(
     'b',
     'heirHouseholdId',
     'holderId',
+    'ownerId',
   ]) {
     if (typeof bound[key] === 'string') {
       const resolved = resolveEffectRef(bound[key], binding, world);
@@ -5604,6 +6944,8 @@ function applyEffect(
     'heirHouseholdId',
     'holderId',
     'processId',
+    'ownerId',
+    'positionId',
   ];
   const unresolved = refKeys.find((key) => {
     const value = (effect as unknown as Record<string, unknown>)[key];
@@ -5691,6 +7033,18 @@ function applyEffect(
       return applyEstate(context, effect, binding);
     case 'organization_funds':
       return applyOrganizationFunds(context, effect, binding);
+    case 'state_add':
+      return applyStateAdd(context, effect, binding);
+    case 'state_remove':
+      return applyStateRemove(context, effect, binding);
+    case 'state_parameter':
+      return applyStateParameter(context, effect, binding);
+    case 'state_transition':
+      return applyStateTransition(context, effect, binding);
+    case 'position':
+      return applyPosition(context, effect, binding);
+    case 'organization_found':
+      return applyOrganizationFound(context, effect, binding);
     default: {
       const unknownEffect = effect as unknown as { type?: unknown };
       warnContext(context, 'unknown_effect', `unknown effect type ${String(unknownEffect.type)}`, {
@@ -5959,6 +7313,7 @@ function applyRelationEnd(
   );
   if (!relation) return undefined;
   relation.end = { ...binding.date };
+  touchRelationRevision(context.world);
   return { ...effect };
 }
 
@@ -6149,6 +7504,538 @@ function applyOrganizationFunds(
   if (typeof effect.reason !== 'string' || effect.reason.trim().length === 0) return undefined;
   organization.treasury = roundMoney(organization.treasury + amount);
   return { ...effect };
+}
+
+function slugKey(value: string): string {
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 48) || 'x'
+  );
+}
+
+function nextStateSequence(context: EngineContext): number {
+  const next = (context.world.historyMeta.stateSequence ?? 0) + 1;
+  context.world.historyMeta.stateSequence = next;
+  return next;
+}
+
+function stateDefinitionsFor(context: EngineContext): Map<string, StateDefinition> {
+  return context.stateIndex.byId;
+}
+
+function activeStateInstances(
+  context: EngineContext,
+  ownerType: StateOwnerType,
+  ownerId: string,
+): StateInstance[] {
+  return activeStates(
+    context.world,
+    ownerType,
+    ownerId,
+    undefined,
+    context.stateIndex,
+    context.world.date,
+  );
+}
+
+function stateAnchorFor(
+  context: EngineContext,
+  ownerType: StateOwnerType,
+  ownerId: string,
+): Person | undefined {
+  return stateAnchorPerson(context.world, ownerType, ownerId);
+}
+
+function applyNestedStateEntryEffects(
+  context: EngineContext,
+  effects: EventEffect[] | undefined,
+  binding: EffectBinding,
+): EventEffect[] {
+  const applied: EventEffect[] = [];
+  for (const effect of effects ?? []) {
+    // Nested state changes on enter/exit would make creation recursively
+    // dependent on itself and are hard to replay. Authors put those in a tick.
+    if (
+      effect.type === 'state_add' ||
+      effect.type === 'state_remove' ||
+      effect.type === 'state_transition' ||
+      effect.type === 'state_parameter'
+    ) {
+      warnContext(context, 'nested_state_effect_ignored', `onEnter/onExit ${effect.type}`, {
+        eventId: binding.eventId,
+      });
+      continue;
+    }
+    try {
+      const result = applyEffect(context, effect, binding);
+      if (result) applied.push(result);
+    } catch (error) {
+      warnContext(context, 'state_entry_effect_failed', String(error), {
+        eventId: binding.eventId,
+      });
+    }
+  }
+  return applied;
+}
+
+function endStateInstance(
+  context: EngineContext,
+  instance: StateInstance,
+  date: WorldDate,
+  reason: string,
+  binding: EffectBinding,
+): EventEffect[] {
+  if (!instance.active) return [];
+  instance.active = false;
+  instance.endedAt = { ...date };
+  instance.endReason = reason;
+  touchStateRevision(context.world);
+  if (context.diagnostics.states) context.diagnostics.states.removed += 1;
+  const definition = stateDefinitionsFor(context).get(instance.definitionId);
+  return definition ? applyNestedStateEntryEffects(context, definition.onExit, binding) : [];
+}
+
+type StateCreationProblem = { code: string; message: string };
+
+function stateCreationProblem(
+  context: EngineContext,
+  definition: StateDefinition,
+  ownerType: StateOwnerType,
+  ownerId: string,
+  links: Record<string, string> | undefined,
+  date: WorldDate,
+  ignoreInstanceId?: string,
+): StateCreationProblem | undefined {
+  if (definition.owner !== ownerType) {
+    return {
+      code: 'state_owner_type_mismatch',
+      message: `${definition.id} owner is ${definition.owner}`,
+    };
+  }
+  if (!stateOwnerExists(context.world, ownerType, ownerId)) {
+    return { code: 'state_owner_missing', message: `${ownerType}:${ownerId}` };
+  }
+  if (ownerType === 'person') {
+    const person = context.world.persons[ownerId];
+    if (!person || person.died) return { code: 'state_owner_dead', message: ownerId };
+  }
+  const anchor = stateAnchorFor(context, ownerType, ownerId);
+  if ((definition.enterConditions?.length ?? 0) > 0) {
+    if (!anchor || !conditionsPass(context.world, anchor, definition.enterConditions, date)) {
+      return { code: 'state_entry_conditions_failed', message: definition.id };
+    }
+  }
+  for (const [key, expected] of Object.entries(definition.links ?? {})) {
+    const value = links?.[key];
+    if (!value) continue;
+    if (!stateOwnerExists(context.world, expected, value)) {
+      return { code: 'state_link_missing', message: `${definition.id}.${key} -> ${value}` };
+    }
+  }
+  if (definition.slot) {
+    const occupants = activeStateInstances(context, ownerType, ownerId).filter((instance) => {
+      if (ignoreInstanceId && instance.id === ignoreInstanceId) return false;
+      const other = stateDefinitionsFor(context).get(instance.definitionId);
+      return other?.slot === definition.slot;
+    });
+    if (occupants.length > 0) {
+      const conflict = definition.conflict ?? 'block';
+      if (conflict === 'block')
+        return { code: 'state_slot_conflict', message: `${definition.id} slot ${definition.slot}` };
+      if (conflict === 'stack') {
+        const same = occupants.filter((instance) => instance.definitionId === definition.id);
+        if (same.length >= (definition.maxStacks ?? 2))
+          return { code: 'state_stack_limit', message: definition.id };
+      }
+    }
+  }
+  return undefined;
+}
+
+type CreatedState = {
+  instance: StateInstance;
+  entryEffects: EventEffect[];
+  replacedExitEffects: EventEffect[];
+};
+
+/** Shared creation path for state_add and state_transition. */
+function createStateInstance(
+  context: EngineContext,
+  definition: StateDefinition,
+  ownerType: StateOwnerType,
+  ownerId: string,
+  parameters: Record<string, string | number | boolean> | undefined,
+  links: Record<string, string> | undefined,
+  durationMonths: number | undefined,
+  binding: EffectBinding,
+): CreatedState | undefined {
+  const problem = stateCreationProblem(
+    context,
+    definition,
+    ownerType,
+    ownerId,
+    links,
+    binding.date,
+  );
+  if (problem) {
+    if (context.diagnostics.states) context.diagnostics.states.blockedAdds += 1;
+    warnContext(context, problem.code, problem.message, {
+      eventId: binding.eventId,
+    });
+    return undefined;
+  }
+  const anchor = stateAnchorFor(context, ownerType, ownerId);
+  const current = activeStateInstances(context, ownerType, ownerId);
+  const replacedExitEffects: EventEffect[] = [];
+  const slot = definition.slot;
+  if (slot) {
+    const occupants = current.filter((instance) => {
+      const other = stateDefinitionsFor(context).get(instance.definitionId);
+      return other?.slot === slot;
+    });
+    if (occupants.length > 0) {
+      const conflict = definition.conflict ?? 'block';
+      if (conflict === 'replace') {
+        for (const occupant of occupants) {
+          replacedExitEffects.push(
+            ...endStateInstance(
+              context,
+              occupant,
+              binding.date,
+              `replaced_by:${definition.id}`,
+              binding,
+            ),
+          );
+        }
+      }
+    }
+  }
+  const rng = seededRng(
+    context.world.seed,
+    'state-duration',
+    definition.id,
+    ownerId,
+    binding.eventId,
+  );
+  const months = stateDuration(definition, rng, durationMonths);
+  const normalizedLinks: Record<string, string> = {};
+  for (const [key, expected] of Object.entries(definition.links ?? {})) {
+    const value = links?.[key];
+    if (!value) continue;
+    if (!stateOwnerExists(context.world, expected, value)) {
+      if (context.diagnostics.states) context.diagnostics.states.blockedAdds += 1;
+      warnContext(context, 'state_link_missing', `${definition.id}.${key} -> ${value}`, {
+        eventId: binding.eventId,
+      });
+      return undefined;
+    }
+    normalizedLinks[key] = value;
+  }
+  const instance: StateInstance = {
+    id: `state:${context.world.id}:${nextStateSequence(context)}`,
+    definitionId: definition.id,
+    version: definition.version,
+    ownerType,
+    ownerId,
+    since: { ...binding.date },
+    parameters: normalizeStateParameters(definition, parameters),
+    ...(Object.keys(normalizedLinks).length > 0 ? { links: normalizedLinks } : {}),
+    sourceEventId: binding.eventId,
+    active: true,
+    tickCount: 0,
+    ...(months !== undefined ? { expiresAt: addMonths(binding.date, Math.max(1, months)) } : {}),
+  };
+  context.world.states ??= {};
+  context.world.states[instance.id] = instance;
+  touchStateRevision(context.world);
+  if (context.diagnostics.states) context.diagnostics.states.added += 1;
+  const entryEffects = applyNestedStateEntryEffects(context, definition.onEnter, binding);
+  return { instance, entryEffects, replacedExitEffects };
+}
+
+function applyStateAdd(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'state_add' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const definition = stateDefinitionsFor(context).get(effect.stateId);
+  if (!definition) {
+    warnContext(context, 'unknown_state', effect.stateId, { eventId: binding.eventId });
+    return undefined;
+  }
+  const created = createStateInstance(
+    context,
+    definition,
+    effect.ownerType,
+    effect.ownerId,
+    effect.parameters,
+    effect.links,
+    effect.durationMonths,
+    binding,
+  );
+  if (!created) return undefined;
+  return {
+    ...effect,
+    instanceId: created.instance.id,
+    definitionVersion: definition.version,
+    ...(created.replacedExitEffects.length > 0
+      ? { replacedExitEffects: created.replacedExitEffects }
+      : {}),
+    ...(created.entryEffects.length > 0 ? { entryEffects: created.entryEffects } : {}),
+    reason: effect.reason,
+  };
+}
+
+function applyStateRemove(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'state_remove' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const matches = Object.values(context.world.states ?? {}).filter(
+    (instance) => {
+      if (!instance.active) return false;
+      if (instance.ownerType !== effect.ownerType || instance.ownerId !== effect.ownerId)
+        return false;
+      if (effect.instanceId && instance.id !== effect.instanceId) return false;
+      if (effect.stateId && instance.definitionId !== effect.stateId) return false;
+      if (effect.tag) {
+        const definition = stateDefinitionsFor(context).get(instance.definitionId);
+        if (!definition?.tags.includes(effect.tag)) return false;
+      }
+      return true;
+    },
+  );
+  if (matches.length === 0) return undefined;
+  const exitEffects: EventEffect[] = [];
+  for (const instance of matches) {
+    exitEffects.push(...endStateInstance(context, instance, binding.date, effect.reason, binding));
+  }
+  return {
+    ...effect,
+    instanceId: matches[0]?.id,
+    instanceIds: matches.map((instance) => instance.id),
+    definitionVersion: matches[0]
+      ? stateDefinitionsFor(context).get(matches[0].definitionId)?.version
+      : undefined,
+    ...(exitEffects.length > 0 ? { exitEffects } : {}),
+  };
+}
+
+function applyStateParameter(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'state_parameter' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const instance = activeStateInstances(context, effect.ownerType, effect.ownerId).find(
+    (candidate) =>
+      (effect.instanceId ? candidate.id === effect.instanceId : true) &&
+      candidate.definitionId === effect.stateId,
+  );
+  if (!instance) return undefined;
+  const definition = stateDefinitionsFor(context).get(effect.stateId);
+  const spec = definition?.parameters?.[effect.key];
+  if (!spec) return undefined;
+  const previous = instance.parameters[effect.key];
+  if (spec.type === 'number') {
+    const before =
+      typeof instance.parameters[effect.key] === 'number'
+        ? (instance.parameters[effect.key] as number)
+        : ((spec.default as number | undefined) ?? 0);
+    const delta =
+      typeof effect.delta === 'number' && Number.isFinite(effect.delta) ? effect.delta : 0;
+    const value = typeof effect.value === 'number' ? effect.value : before + delta;
+    instance.parameters[effect.key] = Math.max(spec.min ?? -1e9, Math.min(spec.max ?? 1e9, value));
+  } else if (spec.type === 'boolean') {
+    if (typeof effect.value === 'boolean') instance.parameters[effect.key] = effect.value;
+  } else if (typeof effect.value === 'string') {
+    instance.parameters[effect.key] = effect.value.slice(0, 120);
+  } else {
+    return undefined;
+  }
+  return {
+    ...effect,
+    instanceId: instance.id,
+    ...(previous !== undefined ? { previous } : {}),
+    final: instance.parameters[effect.key],
+  };
+}
+
+function applyStateTransition(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'state_transition' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const from = activeStateInstances(context, effect.ownerType, effect.ownerId).find(
+    (instance) =>
+      instance.definitionId === effect.fromStateId &&
+      (!effect.instanceId || instance.id === effect.instanceId),
+  );
+  if (!from) return undefined;
+  const target = stateDefinitionsFor(context).get(effect.toStateId);
+  if (!target) return undefined;
+  // Validate the target before ending the source. A failed transition must
+  // leave the original state intact.
+  const problem = stateCreationProblem(
+    context,
+    target,
+    effect.ownerType,
+    effect.ownerId,
+    effect.links ?? from.links,
+    binding.date,
+    from.id,
+  );
+  if (problem) {
+    warnContext(context, problem.code, problem.message, { eventId: binding.eventId });
+    return undefined;
+  }
+  const exitEffects = endStateInstance(context, from, binding.date, effect.reason, binding);
+  const created = createStateInstance(
+    context,
+    target,
+    effect.ownerType,
+    effect.ownerId,
+    effect.parameters ?? from.parameters,
+    effect.links ?? from.links,
+    undefined,
+    binding,
+  );
+  if (!created) return undefined;
+  if (context.diagnostics.states) context.diagnostics.states.transitions += 1;
+  const allExitEffects = [...exitEffects, ...created.replacedExitEffects];
+  return {
+    ...effect,
+    instanceId: from.id,
+    toInstanceId: created.instance.id,
+    definitionVersion: target.version,
+    ...(allExitEffects.length > 0 ? { exitEffects: allExitEffects } : {}),
+    ...(created.entryEffects.length > 0 ? { entryEffects: created.entryEffects } : {}),
+  };
+}
+
+function applyPosition(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'position' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const organization = effect.organizationId
+    ? context.world.organizations[effect.organizationId]
+    : undefined;
+  if (!effect.remove && (!organization || organization.status !== 'active')) return undefined;
+  if (effect.remove) {
+    const position =
+      (effect.positionId ? context.world.positions[effect.positionId] : undefined) ??
+      Object.values(context.world.positions).find(
+        (candidate) =>
+          candidate.end === undefined &&
+          candidate.holderId === effect.holderId &&
+          (!organization || candidate.organizationId === organization.id) &&
+          (!effect.title || candidate.title === effect.title),
+      );
+    if (!position) return undefined;
+    position.holderId = undefined;
+    position.end = { ...binding.date };
+    return {
+      ...effect,
+      organizationId: position.organizationId,
+      positionId: position.id,
+      title: position.title,
+    };
+  }
+  if (!organization) return undefined;
+  const holder = effect.holderId ? context.world.persons[effect.holderId] : undefined;
+  if (!holder || holder.died) return undefined;
+  if (typeof effect.title !== 'string' || effect.title.trim().length === 0) return undefined;
+  const existing = organization.positions
+    .map((id) => context.world.positions[id])
+    .find(
+      (candidate) =>
+        candidate && candidate.end === undefined && candidate.title === effect.title.trim(),
+    );
+  const id =
+    existing?.id ??
+    `pos:${organization.id}:${slugKey(effect.title)}:${context.world.historyMeta.sequence + 1}`;
+  const position = existing ?? {
+    id,
+    organizationId: organization.id,
+    title: effect.title.trim(),
+    holderId: holder.id,
+    authority: (effect.authority ?? []).slice(0, 8),
+    wage: effect.wage,
+    start: { ...binding.date },
+  };
+  if (existing) {
+    existing.holderId = holder.id;
+    existing.start = { ...binding.date };
+    if (effect.authority) existing.authority = effect.authority.slice(0, 8);
+    if (effect.wage !== undefined) existing.wage = effect.wage;
+  } else {
+    context.world.positions[position.id] = position;
+    organization.positions.push(position.id);
+  }
+  if (!organization.memberIds.includes(holder.id)) organization.memberIds.push(holder.id);
+  const officeRole = `office:${slugKey(effect.title)}`;
+  if (!holder.roles.includes(officeRole)) holder.roles.push(officeRole);
+  touchOrganizationRevision(context.world);
+  return {
+    ...effect,
+    positionId: position.id,
+    title: position.title,
+    holderId: holder.id,
+  };
+}
+
+function applyOrganizationFound(
+  context: EngineContext,
+  effect: Extract<EventEffect, { type: 'organization_found' }>,
+  binding: EffectBinding,
+): EventEffect | undefined {
+  const subject = context.world.persons[binding.subjectId];
+  if (!subject || subject.died) return undefined;
+  if (!effect.organization?.name || !effect.organization.kind) return undefined;
+  if (
+    ![
+      'household_firm',
+      'factory',
+      'school',
+      'union',
+      'party',
+      'army',
+      'state',
+      'church',
+      'other',
+    ].includes(effect.organization.kind)
+  ) {
+    return undefined;
+  }
+  const placeId = effect.organization.placeId ?? subject.locationId;
+  if (!context.world.places[placeId]) return undefined;
+  const id =
+    effect.organization.id ??
+    `org:${context.world.id}:${slugKey(effect.organization.name)}:${nextStateSequence(context)}`;
+  if (context.world.organizations[id]) return undefined;
+  const organization: Organization = {
+    id,
+    name: effect.organization.name.slice(0, 120),
+    kind: effect.organization.kind,
+    placeId,
+    memberIds: [subject.id],
+    positions: [],
+    treasury: Math.max(0, roundMoney(effect.organization.treasury ?? 0)),
+    monthlyRevenue: 0,
+    authorityRules: (effect.organization.authorityRules ?? []).slice(0, 8),
+    projects: [],
+    status: 'active',
+    causeIds: [binding.eventId],
+  };
+  context.world.organizations[id] = organization;
+  touchOrganizationRevision(context.world);
+  return {
+    ...effect,
+    organization: { ...effect.organization, id, placeId },
+  };
 }
 
 function applyEstate(
@@ -6381,6 +8268,7 @@ function applyRelation(
       sharedEventIds: [],
     };
     context.world.relations[id] = relation;
+    touchRelationRevision(context.world);
     rememberRelation(context.world, relation);
     if (!a.relationshipIds.includes(id)) a.relationshipIds.push(id);
     if (!b.relationshipIds.includes(id)) b.relationshipIds.push(id);
@@ -6457,6 +8345,7 @@ function applyOrganizationMembership(
     if (index < 0) return undefined;
     organization.memberIds.splice(index, 1);
   }
+  touchOrganizationRevision(context.world);
   return { ...effect };
 }
 
@@ -6918,8 +8807,42 @@ function applyBirth(
         sharedEventIds: [binding.eventId],
       };
       context.world.relations[relation.id] = relation;
+      touchRelationRevision(context.world);
       child.relationshipIds.push(relation.id);
       parent.relationshipIds.push(relation.id);
+    }
+  }
+  const autoStateEffects: EventEffect[] = [];
+  for (const definition of stateDefinitionsFor(context).values()) {
+    const auto = definition.autoAttachOnBirth;
+    if (!auto) continue;
+    const owners =
+      auto.owner === 'household'
+        ? [{ type: 'household' as const, id: household.id }]
+        : parents.map((parent) => ({ type: 'person' as const, id: parent.id }));
+    for (const owner of owners) {
+      const created = createStateInstance(
+        context,
+        definition,
+        owner.type,
+        owner.id,
+        undefined,
+        { [auto.link]: child.id },
+        undefined,
+        binding,
+      );
+      if (!created) continue;
+      autoStateEffects.push({
+        type: 'state_add',
+        ownerType: owner.type,
+        ownerId: owner.id,
+        stateId: definition.id,
+        links: { [auto.link]: child.id },
+        instanceId: created.instance.id,
+        definitionVersion: definition.version,
+        reason: auto.reason ?? `attached on birth of ${child.name}`,
+        ...(created.entryEffects.length > 0 ? { entryEffects: created.entryEffects } : {}),
+      });
     }
   }
   return {
@@ -6927,6 +8850,7 @@ function applyBirth(
     parentIds: parents.map((parent) => parent.id),
     childId: child.id,
     childName: child.name,
+    ...(autoStateEffects.length > 0 ? { autoStateEffects } : {}),
   };
 }
 
@@ -7019,6 +8943,7 @@ function repairGuardiansAfterDeath(world: WorldState, deceased: Person, date: Wo
         sharedEventIds: [],
       };
       world.relations[relationId] = relation;
+      touchRelationRevision(world);
       if (!child.relationshipIds.includes(relationId)) child.relationshipIds.push(relationId);
       if (!guardian.relationshipIds.includes(relationId)) guardian.relationshipIds.push(relationId);
     }
@@ -7080,6 +9005,17 @@ function applyDeath(
     previousEventDate && monthIndex(previousEventDate) > monthIndex(binding.date)
       ? { ...previousEventDate }
       : { ...binding.date };
+  const endedStateIds: Id[] = [];
+  const exitEffects: EventEffect[] = [];
+  for (const instance of Object.values(context.world.states ?? {}).filter(
+    (candidate) =>
+      candidate.active && candidate.ownerType === 'person' && candidate.ownerId === person.id,
+  )) {
+    endedStateIds.push(instance.id);
+    exitEffects.push(
+      ...endStateInstance(context, instance, deathDate, 'owner_died', binding),
+    );
+  }
   person.died = deathDate;
   person.deathCause = effect.cause;
   person.health.vitality = 0;
@@ -7131,6 +9067,8 @@ function applyDeath(
   return {
     ...effect,
     ...(estate ? { estateTo: estate.heirHouseholdId, estateAmount: estate.amount } : {}),
+    ...(endedStateIds.length > 0 ? { endedStateIds } : {}),
+    ...(exitEffects.length > 0 ? { exitEffects } : {}),
   };
 }
 

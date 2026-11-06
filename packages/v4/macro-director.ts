@@ -124,6 +124,7 @@ export function macroDirectorMessages(
 - 快照中的 organizations 是真实存在的组织与当前负责人。可以用 actions 提出具体行动：organize（组织会议/项目）、recruit（招募）、negotiate（谈判）、publish（出版/宣传）、relief（救济）、repress（压制）、reform（推动改革）、spawn_process（从现有组织形成新的持续进程）。actions 只描述意图和参与者，Engine 会按其资源、关系和反对力量结算成功或失败；不要直接写“已经成功”“已经夺权”“已经死亡”。
 - actions 必须引用快照中的 organizationId/actorPersonId；negotiate 还必须引用 targetOrganizationId；reform/spawn_process 应引用已有的 processId 或现有组织。每次最多 6 条，intensity 0..1。
 - historicalLegacy 是过去进程留下的制度/记忆/战后状态。你可以提出与这些持久后果相称的新机会，但不要用一个 support +0.1 代替制度变化。
+- snapshot.historyReview 是确定性的五年对照，不是历史事实，也不是重置命令。matched 只表示有共同 hook 的已提交事件；no-committed-analogue 可能是世界分叉，也可能只是没有被具名人口目击。不要因为它就强行制造真实历史事件，也不要偷偷把世界拉回现实时间线。
 - 可以返回“维持现状”：parameterChanges、eventPoolChanges、historicalMoves 和 actions 都为空时必须让 developments 为空，并明确 summary 为维持现状。除此之外不要返回空提案。
 - 只输出 JSON，不要 Markdown。
 

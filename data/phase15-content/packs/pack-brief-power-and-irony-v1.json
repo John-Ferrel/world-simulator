@@ -1,0 +1,107 @@
+{
+  "id": "pack-brief-power-and-irony",
+  "version": 1,
+  "title": "权力愿望：真实权力、傀儡与误认",
+  "description": "自由度最高的愿望目前只被编译成 focus 和几个数值；舞台上的国王与现实中的职位没有被机械地区分。",
+  "author": "deterministic-fallback",
+  "model": "none",
+  "sourceBriefId": "brief-power-and-irony",
+  "rationale": "Deterministic scaffold generated without a model. It is valid executable content but does not satisfy the LLM authoring requirement.",
+  "states": [
+    {
+      "id": "court-favourite",
+      "version": 1,
+      "packId": "pack-brief-power-and-irony",
+      "title": "权力愿望：真实权力、傀儡与误认",
+      "description": "自由度最高的愿望目前只被编译成 focus 和几个数值；舞台上的国王与现实中的职位没有被机械地区分。",
+      "owner": "person",
+      "slot": "status",
+      "conflict": "replace",
+      "tags": [
+        "court",
+        "power",
+        "favour",
+        "fallback"
+      ],
+      "parameters": {
+        "progress": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 24
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "court",
+            "power",
+            "favour"
+          ],
+          "multiplier": 1.25
+        }
+      ],
+      "ticks": [
+        {
+          "id": "annual",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "continue",
+              "weight": 1,
+              "text": "{subject}仍然被允许站在权力附近，但没有新的任命状。",
+              "effects": [
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "state continues"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "court-favourite",
+                  "key": "progress",
+                  "delta": 5,
+                  "reason": "a year inside the state"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "reaction",
+          "onTags": [
+            "humiliation"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "court-favourite:reacted",
+              "add": true,
+              "reason": "the state answered a real event"
+            }
+          ],
+          "text": "{subject}在公开场合被羞辱；这一次没有头衔可以挡在前面。",
+          "cooldownMonths": 12
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "deterministic-fallback",
+        "model": "none",
+        "rationale": "No model available; this is an executable scaffold, not LLM-authored content."
+      }
+    }
+  ]
+}

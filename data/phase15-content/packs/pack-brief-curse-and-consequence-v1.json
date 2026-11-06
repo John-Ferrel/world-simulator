@@ -1,0 +1,107 @@
+{
+  "id": "pack-brief-curse-and-consequence",
+  "version": 1,
+  "title": "诅咒、背叛与真实后果",
+  "description": "特殊能力人生仍像一段插入的奇观；诅咒没有监听真实背叛、没有目标、没有反噬，也没有普通人的反应。",
+  "author": "deterministic-fallback",
+  "model": "none",
+  "sourceBriefId": "brief-curse-and-consequence",
+  "rationale": "Deterministic scaffold generated without a model. It is valid executable content but does not satisfy the LLM authoring requirement.",
+  "states": [
+    {
+      "id": "curse-mark",
+      "version": 1,
+      "packId": "pack-brief-curse-and-consequence",
+      "title": "诅咒、背叛与真实后果",
+      "description": "特殊能力人生仍像一段插入的奇观；诅咒没有监听真实背叛、没有目标、没有反噬，也没有普通人的反应。",
+      "owner": "person",
+      "slot": "special",
+      "conflict": "replace",
+      "tags": [
+        "curse",
+        "mark",
+        "fear",
+        "fallback"
+      ],
+      "parameters": {
+        "progress": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 120,
+        "max": 600
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "curse",
+            "mark",
+            "fear"
+          ],
+          "multiplier": 1.25
+        }
+      ],
+      "ticks": [
+        {
+          "id": "annual",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "continue",
+              "weight": 1,
+              "text": "{subject}身上的记号没有消失；看见它的人反应各不相同。",
+              "effects": [
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "state continues"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "curse-mark",
+                  "key": "progress",
+                  "delta": 5,
+                  "reason": "a year inside the state"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "reaction",
+          "onTags": [
+            "betrayal"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "curse-mark:reacted",
+              "add": true,
+              "reason": "the state answered a real event"
+            }
+          ],
+          "text": "{subject}又听见那声很轻的响；这一次没有人倒下。",
+          "cooldownMonths": 12
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "deterministic-fallback",
+        "model": "none",
+        "rationale": "No model available; this is an executable scaffold, not LLM-authored content."
+      }
+    }
+  ]
+}

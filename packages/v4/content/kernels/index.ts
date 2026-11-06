@@ -8,6 +8,8 @@ import { KIT_RECIPES } from './recipes/kit-recipes.js';
 import { RECIPE_PACKS } from './recipes/registry.js';
 import { PHASE13_RECIPE_PACKS } from './recipes/registry13.js';
 import { PHASE14_RECIPE_PACKS } from './recipes/registry14.js';
+import { BATCH15_STATE_KERNELS } from './recipes/batch15-state-kernels.js';
+import { GENERATED_STATE_KERNELS } from '../states/generated/index.js';
 
 /** Plot Kernel registry. Each domain file exports its own independent array. */
 export const KERNEL_LIBRARY: PlotKernel[] = [
@@ -20,4 +22,6 @@ export const KERNEL_LIBRARY: PlotKernel[] = [
   ...RECIPE_PACKS,
   ...PHASE13_RECIPE_PACKS,
   ...PHASE14_RECIPE_PACKS,
+  ...BATCH15_STATE_KERNELS,
+  ...GENERATED_STATE_KERNELS,
 ];

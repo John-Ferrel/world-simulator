@@ -3,7 +3,7 @@ import { migrate as migrateBase, pool } from '../storage/index.js';
 import type { EventFact, Household, Person, Place, Relation, WorldState } from './domain.js';
 import { defaultMacroState, type MacroState } from './macro.js';
 
-const V4_MIGRATION_VERSION = 7;
+const V4_MIGRATION_VERSION = 8;
 
 /**
  * Apply the v4 schema. The schema is additive and independent of the archived
@@ -30,6 +30,7 @@ export async function migrateV4(): Promise<void> {
       5: '005_v4_macro.sql',
       6: '006_v4_runtime_content.sql',
       7: '007_v4_macro_world_year.sql',
+      8: '008_v4_states.sql',
     };
     for (let version = Math.max(3, latest + 1); version <= V4_MIGRATION_VERSION; version += 1) {
       const file = migrationFiles[version];
@@ -136,6 +137,7 @@ export async function loadV4World(worldId: string): Promise<WorldState | undefin
     knowledge,
     scenes,
     events,
+    states,
   ] = await Promise.all([
     rows<any>('v4_places', worldId),
     rows<any>('v4_households', worldId),
@@ -148,6 +150,7 @@ export async function loadV4World(worldId: string): Promise<WorldState | undefin
     rows<any>('v4_knowledge', worldId),
     rows<any>('v4_scenes', worldId),
     rows<any>('v4_events', worldId),
+    rows<any>('v4_states', worldId),
   ]);
   const byId = <T extends { id: string }>(values: T[]) =>
     Object.fromEntries(values.map((value) => [value.id, value]));
@@ -168,6 +171,7 @@ export async function loadV4World(worldId: string): Promise<WorldState | undefin
     interactions: byId(interactions),
     relations: byId(relations),
     knowledge: byId(knowledge),
+    states: byId(states),
     scenes,
     events: events.sort(
       (a, b) =>
@@ -790,6 +794,22 @@ async function writeEntities(client: any, world: WorldState) {
        SELECT $1, item->>'id', item FROM jsonb_array_elements($2::jsonb) AS item
        ON CONFLICT(world_id,id) DO UPDATE SET payload=EXCLUDED.payload`,
       [world.id, JSON.stringify(values)],
+    );
+  }
+  const states = Object.values(world.states ?? {});
+  if (states.length > 0) {
+    await client.query(
+      `INSERT INTO v4_states(world_id,id,owner_type,owner_id,definition_id,active,payload)
+       SELECT $1, item->>'id', item->>'ownerType', item->>'ownerId',
+              item->>'definitionId', coalesce((item->>'active')::boolean, true), item
+       FROM jsonb_array_elements($2::jsonb) AS item
+       ON CONFLICT(world_id,id) DO UPDATE SET
+         owner_type=EXCLUDED.owner_type,
+         owner_id=EXCLUDED.owner_id,
+         definition_id=EXCLUDED.definition_id,
+         active=EXCLUDED.active,
+         payload=EXCLUDED.payload`,
+      [world.id, JSON.stringify(states)],
     );
   }
   if (world.scenes.length)

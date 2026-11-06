@@ -1,0 +1,1956 @@
+{
+  "id": "pack-absurd-power",
+  "version": 1,
+  "title": "荒诞权力：舞台君主、宫廷厨子与转移的诅咒",
+  "description": "把舞台上的王冠、宫廷厨房的差事和一个会转移的诅咒写成三种有参数的处境。假君主可以被人群当真，却不会因此得到职位；真任命必须走 position。愿望可以成功、部分成功或失败。",
+  "author": "phase15-author-history",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-05",
+  "sourceBriefId": "brief-curse-and-consequence",
+  "rationale": "这一包要解决两个常见偷懒：把舞台头衔当成真实权力，以及把一切愿望都写成反噬。stage-sovereign 永不发出 position 效果；真实的办公室只由明确的任命 scenes 用 position 创建。诅咒有三个分支：成功转移、部分分裂、失败但付出代价。另有一个安静结局和一个真正滑稽的任命结局。",
+  "states": [
+    {
+      "id": "stage-sovereign",
+      "version": 1,
+      "packId": "pack-absurd-power",
+      "title": "舞台上的君主",
+      "description": "在戏里扮演君主：掌声、戏服和人群的误认都是真的，王冠和命令权不是。这个状态只改变别人如何看这个人，绝不创建职位或真实权力。",
+      "owner": "person",
+      "slot": "performance",
+      "conflict": "replace",
+      "tags": [
+        "performance",
+        "theatre",
+        "pretend",
+        "status",
+        "irony",
+        "power",
+        "no-real-authority"
+      ],
+      "parameters": {
+        "production": {
+          "type": "string",
+          "default": "《冬日王冠》"
+        },
+        "role": {
+          "type": "string",
+          "default": "被废黜的国王"
+        },
+        "publicBelief": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "costumeQuality": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "scandal": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 100
+        },
+        "performances": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 2,
+        "max": 24
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "performance",
+            "theatre",
+            "crowd",
+            "power",
+            "rumor"
+          ],
+          "multiplier": 1.7
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "factory",
+            "ordinary"
+          ],
+          "multiplier": 0.7
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "performance",
+            "theatre",
+            "deception"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "stage_sovereign",
+          "add": true,
+          "reason": "被选为舞台上的君主"
+        },
+        {
+          "type": "reputation",
+          "personId": "$subject",
+          "amount": 0.04,
+          "reason": "一个引人注目的舞台角色"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "stage_sovereign",
+          "add": false,
+          "reason": "舞台演出结束"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "performance-run",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "charisma",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "held-the-crowd",
+              "result": "success",
+              "weight": 3,
+              "text": "又一年在舞台上扮演君主。{subject}学会了在说错台词时停顿，让观众以为那是表演；散场后，有人在门口等着看{subject}卸妆，想确认王冠下面是不是一张普通的脸。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "stage-sovereign",
+                  "key": "publicBelief",
+                  "delta": 8,
+                  "reason": "观众越来越相信这个角色"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "stage-sovereign",
+                  "key": "performances",
+                  "delta": 10,
+                  "reason": "又演完一轮"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.03,
+                  "reason": "舞台上的成功"
+                }
+              ]
+            },
+            {
+              "id": "lost-the-crowd",
+              "result": "failure",
+              "weight": 2,
+              "text": "新排的戏没有坐满。{subject}在第二幕听见后排有人笑，不是笑台词，是笑那顶歪掉的王冠。散场后，经理说下一轮要换一个更年轻的国王。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "stage-sovereign",
+                  "key": "publicBelief",
+                  "delta": -8,
+                  "reason": "观众不再相信这个角色"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "stage-sovereign",
+                  "key": "scandal",
+                  "delta": 6,
+                  "reason": "失败的首演"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "被观众嘲笑"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "crowd-acclaim",
+          "onTags": [
+            "revolution",
+            "crowd",
+            "protest"
+          ],
+          "chance": 0.25,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "key": "publicBelief",
+              "delta": 10,
+              "reason": "人群把舞台角色当成真的"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "key": "scandal",
+              "delta": 8,
+              "reason": "误认带来了政治危险"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mistaken_for_sovereign",
+              "add": true,
+              "reason": "人群把演员当成了君主"
+            }
+          ],
+          "text": "散场后，人群把{subject}从后台抬到街上，喊的名字不是角色，而是{subject}本人。{subject}没有纠正，因为街对面的警察已经把手放在枪套上。",
+          "significance": 0.6,
+          "cooldownMonths": 60,
+          "maxPerYear": 1
+        }
+      ],
+      "historicalBasis": "戏剧、假君主和群众误认是文学与城市史上的常见母题；本状态刻意声明没有任何真实权力。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase15-author-history",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让舞台头衔只改变观感与风险，把真实任命留给独立的 position 效果。"
+      }
+    },
+    {
+      "id": "royal-servant",
+      "version": 1,
+      "packId": "pack-absurd-power",
+      "title": "宫廷厨房的差事",
+      "description": "在宫廷厨房里有一份差事：知道谁吃什么、谁和谁一起吃饭，也知道一道菜凉掉会落到谁头上。它提供接近权力的通道，不提供权力本身。",
+      "owner": "person",
+      "slot": "court_service",
+      "conflict": "replace",
+      "tags": [
+        "court",
+        "kitchen",
+        "service",
+        "power",
+        "food",
+        "work"
+      ],
+      "parameters": {
+        "station": {
+          "type": "string",
+          "default": "甜点台"
+        },
+        "access": {
+          "type": "number",
+          "default": 1,
+          "min": 0,
+          "max": 3
+        },
+        "favor": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        },
+        "tasterDuty": {
+          "type": "boolean",
+          "default": false
+        },
+        "poisonScares": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 5
+        },
+        "wage": {
+          "type": "number",
+          "default": 3,
+          "min": 0,
+          "max": 20
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "court",
+            "kitchen",
+            "banquet",
+            "politics"
+          ],
+          "multiplier": 1.6
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "hunger",
+            "poverty"
+          ],
+          "multiplier": 0.7
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "court_servant",
+          "add": true,
+          "reason": "进入宫廷厨房当差"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "court_servant",
+          "add": false,
+          "reason": "离开宫廷厨房"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "kitchen-year",
+          "everyMonths": 12,
+          "check": {
+            "skill": "craft",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "held-the-kitchen",
+              "result": "success",
+              "weight": 3,
+              "text": "又一年在厨房里过去。{subject}没有升职，但灶台前的人开始先问{subject}的意思；{subject}也学会了在油烟里分辨谁的话算数，这比头衔更接近权力，也更累。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "royal-servant",
+                  "key": "favor",
+                  "delta": 6,
+                  "reason": "厨房里的地位上升"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "royal-servant",
+                  "key": "wage",
+                  "delta": 1,
+                  "reason": "工钱略有增加"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "被厨房需要"
+                }
+              ]
+            },
+            {
+              "id": "burnt-the-soup",
+              "result": "failure",
+              "weight": 2,
+              "text": "一道汤咸了，{subject}被罚去洗整晚的铜锅。第二天，{subject}的手上多了两道烫痕，菜单上却没有留下任何名字，只有洗锅的人记得那锅汤的颜色。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "royal-servant",
+                  "key": "favor",
+                  "delta": -8,
+                  "reason": "一道失败的汤"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "royal-servant",
+                  "key": "poisonScares",
+                  "delta": 1,
+                  "reason": "厨房开始频繁检查味道"
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "洗铜锅烫伤"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "poison-scare",
+          "onTags": [
+            "poison",
+            "banquet",
+            "court"
+          ],
+          "chance": 0.3,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "先尝了有问题的菜"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "royal-servant",
+              "key": "poisonScares",
+              "delta": 1,
+              "reason": "一次中毒惊吓"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "tasted_poison",
+              "add": true,
+              "reason": "替主君尝出异味"
+            }
+          ],
+          "text": "{subject}尝了一口汤，舌尖先尝到苦味，随后才是盐。旁边的管事问怎么了，{subject}说没事，把剩下半勺倒回锅里；那天晚上，{subject}没有睡。",
+          "significance": 0.55,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        }
+      ],
+      "historicalBasis": "宫廷厨房、试毒和近侍政治是跨文化的宫廷机制；本状态不绑定任何真实王朝或人物。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase15-author-history",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "用厨房差事承载接近权力的通道，同时明确它不是正式职位。"
+      }
+    },
+    {
+      "id": "curse-mark",
+      "version": 1,
+      "packId": "pack-absurd-power",
+      "title": "转移来的诅咒印记",
+      "description": "一个从别处转来的诅咒印记：有形态、有严重程度、有触发次数。它不会让所有事都变坏，只在特定的背叛、仪式和家族场景里索取代价。",
+      "owner": "person",
+      "slot": "curse",
+      "conflict": "replace",
+      "tags": [
+        "curse",
+        "superstition",
+        "family",
+        "transfer",
+        "fear",
+        "omen"
+      ],
+      "parameters": {
+        "form": {
+          "type": "string",
+          "default": "迟延"
+        },
+        "severity": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "triggers": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 9
+        },
+        "bearerKnown": {
+          "type": "boolean",
+          "default": false
+        },
+        "sourceName": {
+          "type": "string",
+          "default": "一句没有说完的祝福"
+        },
+        "boundToHousehold": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "durationMonths": {
+        "min": 12,
+        "max": 240
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "curse",
+            "omen",
+            "ritual",
+            "fear",
+            "family"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "courtship",
+            "celebration"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "ritual",
+            "omen"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "curse_mark",
+          "add": true,
+          "reason": "得到一个转移来的诅咒印记"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "curse_mark",
+          "add": false,
+          "reason": "诅咒印记离开或失效"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "curse-pressure",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "willpower",
+            "dc": 12
+          },
+          "outcomes": [
+            {
+              "id": "kept-it-quiet",
+              "result": "success",
+              "weight": 2,
+              "text": "{subject}按老法子把盐撒在门槛上，夜里没有做梦。诅咒没有消失，但今年它没有再伸手；{subject}把这当作一种可以续期的安静。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "curse-mark",
+                  "key": "severity",
+                  "delta": -4,
+                  "reason": "一年的压制仪式"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "诅咒暂时安静"
+                }
+              ]
+            },
+            {
+              "id": "it-stretched",
+              "result": "failure",
+              "weight": 2,
+              "text": "{subject}在镜子里看见一道不属于自己的影子。第二天，家里的牛奶酸了，孩子发烧，门框上多了一道划痕；没有人把这些事连在一起。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "curse-mark",
+                  "key": "severity",
+                  "delta": 6,
+                  "reason": "诅咒继续加深"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "curse-mark",
+                  "key": "triggers",
+                  "delta": 1,
+                  "reason": "诅咒又触发了一次"
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "被诅咒拖累的身体"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "answer-a-betrayal",
+          "onTags": [
+            "betrayal"
+          ],
+          "requiresRoles": [
+            "betrayer"
+          ],
+          "chance": 0.6,
+          "check": {
+            "attribute": "willpower",
+            "dc": 11
+          },
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$betrayer",
+              "amount": -0.12,
+              "reason": "诅咒回应了一次真实的背叛"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-mark",
+              "key": "severity",
+              "delta": 8,
+              "reason": "诅咒索取了代价"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-mark",
+              "key": "triggers",
+              "delta": 1,
+              "reason": "诅咒回应了背叛"
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "诅咒反噬持有者"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-mark",
+              "key": "severity",
+              "delta": 4,
+              "reason": "诅咒没有被正确引导"
+            }
+          ],
+          "text": "背叛发生后的夜里，{subject}听见墙里有一声轻响。第二天，{betrayer}病倒了；没有人把这两件事放在一起，只有{subject}知道那声轻响落在哪一面墙上。",
+          "significance": 0.75,
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        }
+      ],
+      "historicalBasis": "转移诅咒、仪式性净化和替身观念出现在多种民间传统中；本状态只将其作为有参数的虚构机制。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase15-author-history",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让诅咒有形态、严重程度和触发次数，并且只在真实背叛发生时回应。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "absurd15-stage.cast-the-king",
+      "title": "铅皮王冠的试镜",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 65
+      },
+      "tags": [
+        "performance",
+        "theatre",
+        "power",
+        "irony",
+        "work",
+        "pretend"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "stage-sovereign"
+        },
+        {
+          "kind": "attribute",
+          "attribute": "charisma",
+          "min": 0.4
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "director",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 55
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "cast-as-king",
+          "weight": 0.45,
+          "text": "{director}把一顶掉漆的铅皮王冠扣在{subject}头上，说不用演得像国王，只要像一个人突然被允许坐下。首演那天，{subject}在台上忘了两句台词，观众却以为那是停顿。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "parameters": {
+                "production": "《铅皮王冠》",
+                "role": "被废黜的国王",
+                "publicBelief": 20,
+                "costumeQuality": 65,
+                "scandal": 0,
+                "performances": 0
+              },
+              "durationMonths": 12,
+              "reason": "首演夜被选为舞台君主"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "首演酬劳"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "actor",
+              "add": true,
+              "reason": "成为剧院签约演员"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "一次成功的舞台亮相"
+            }
+          ]
+        },
+        {
+          "id": "understudy-contract",
+          "weight": 0.3,
+          "text": "{rival}演主角，{subject}拿到的是替角合同：国王的戏服先按主角的尺寸做，{subject}只能在排练时穿。导演说这不是坏事，至少不用负责谢幕。首演夜，{subject}坐在后台，听见前台每一次掌声都像在敲自己的门。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "parameters": {
+                "production": "《铅皮王冠》",
+                "role": "国王替角",
+                "publicBelief": 5,
+                "costumeQuality": 35,
+                "scandal": 0,
+                "performances": 0
+              },
+              "durationMonths": 8,
+              "reason": "签下替角合同"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "替角的排练补贴"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "坐在后台听掌声"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "understudy_king",
+              "add": true,
+              "reason": "成为舞台君主的替角"
+            }
+          ]
+        },
+        {
+          "id": "not-king-material",
+          "weight": 0.25,
+          "text": "{director}看了{subject}的手，说这双手适合拿账本，不适合拿权杖。{subject}回家路上买了一张最便宜的站票，在最后一排看完了整场戏；散场时，{subject}记住的不是国王的台词，而是他坐下时椅子发出的声音。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.03,
+              "reason": "观察演员的表演"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "试镜被拒"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "买了一张站票"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cast_refused",
+              "add": true,
+              "reason": "试镜被剧院拒绝"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "absurd15-stage.mistaken-procession",
+      "title": "人群抬着演员走过桥",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "performance",
+        "crowd",
+        "power",
+        "mistake",
+        "politics",
+        "irony"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "stage-sovereign",
+          "owner": "person",
+          "parameter": "publicBelief",
+          "min": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "officer",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "acclaimed-as-pretend-king",
+          "weight": 0.4,
+          "text": "人群在剧院门口认出{subject}，把{subject}抬上一辆送煤的马车。有人喊{subject}“陛下”，{subject}没有否认，只把戏里的台词又说了一遍。警察跟在车后，没有动手，因为整条街都在喊同一个名字。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "key": "publicBelief",
+              "delta": 15,
+              "reason": "人群的误认加深"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "key": "scandal",
+              "delta": 8,
+              "reason": "误认变成公共事件"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "全城都看见了这张脸"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "crowd_acclaimed_stage_king",
+              "add": true,
+              "reason": "被人群当作真正的君主"
+            }
+          ]
+        },
+        {
+          "id": "gutter-commissioner",
+          "weight": 0.35,
+          "text": "市政厅怕人群堵住桥，临时成立了一个礼仪委员会，任命{subject}为礼宾专员。任命书上有印章、有薪水，也有第一条职责：检查市政厅后院的排水沟。{subject}穿着戏服去看了那条沟，发现它确实堵了。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "org:absurd15-ceremony:$eventId",
+                "name": "临时礼仪委员会",
+                "kind": "state",
+                "treasury": 1,
+                "authorityRules": [
+                  "礼宾专员由委员会任命",
+                  "任期至庆典结束"
+                ]
+              },
+              "reason": "市政厅为疏散人群设立临时委员会"
+            },
+            {
+              "type": "position",
+              "organizationId": "org:absurd15-ceremony:$eventId",
+              "title": "礼宾专员",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "主持仪式",
+                "检查排水"
+              ],
+              "reason": "一份真实但很小的市政任命"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "被市政厅正式任命"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "key": "scandal",
+              "delta": 4,
+              "reason": "戏服出现在市政厅"
+            }
+          ]
+        },
+        {
+          "id": "arrested-on-the-bridge",
+          "weight": 0.25,
+          "text": "{officer}在桥头拦住{subject}，说冒充君主足够关到明天早上。{subject}被带走时，人群还在喊；拘留室里有人认出{subject}，请{subject}签个名，签在墙上那张竞选海报的背面。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "因误认被短暂拘留"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "被关进拘留室"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "保释与罚金"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$officer",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "在桥头被逮捕"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "arrested_as_stage_king",
+              "add": true,
+              "reason": "因舞台君主身份被拘留"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "absurd15-stage.after-the-run",
+      "title": "停演后的帽盒",
+      "domain": "culture",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 70
+      },
+      "tags": [
+        "performance",
+        "theatre",
+        "aftermath",
+        "work",
+        "irony",
+        "quiet"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "stage-sovereign",
+          "owner": "person",
+          "parameter": "performances",
+          "min": 60
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.2,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "fold-the-crown",
+          "weight": 0.4,
+          "text": "戏演满六十场后停演。{subject}把王冠交回道具间，只留下帽盒里的一小片金漆。白天，{subject}去仓库做守夜人；街口的孩子仍叫{subject}“国王”，{subject}不再回头，只在换班时把外套领子竖起来。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "reason": "演出季结束"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "night_watchman",
+              "add": true,
+              "reason": "去仓库做守夜人"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "守夜工作的第一笔工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "舞台生活结束"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "folded_the_crown",
+              "add": true,
+              "reason": "把舞台王冠收进帽盒"
+            }
+          ]
+        },
+        {
+          "id": "typecast-on-the-road",
+          "weight": 0.35,
+          "text": "一个外省剧团请{subject}去演同一个国王，连戏服都照旧。{subject}在火车上背台词，发现每句话都比上一次更顺口。新城市的观众也鼓掌，只是没有人知道{subject}在上一座城市里已经演过这个结局。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "外省剧团的巡演酬劳"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "key": "performances",
+              "value": 0,
+              "reason": "在新城市重新开演"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "key": "publicBelief",
+              "delta": 5,
+              "reason": "新观众也认这张脸"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "巡演带来一点名声"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "typecast_as_king",
+              "add": true,
+              "reason": "被定型为舞台君主"
+            }
+          ]
+        },
+        {
+          "id": "teach-the-sitting-down",
+          "weight": 0.25,
+          "text": "剧院学校请{subject}教一门表演课。{subject}第一次站在没有观众席的房间里，让学生反复练习“坐下”这个动作。有人说这太简单，{subject}说国王难演的地方，就是坐下时还要让人相信椅子属于自己。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "reason": "从舞台转到剧院学校"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "acting_teacher",
+              "add": true,
+              "reason": "受聘教授表演"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "表演课的薪水"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "成为剧院学校的教师"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "把经验传给别人"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "absurd15-court.chef-taster",
+      "title": "第一勺汤",
+      "domain": "court",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "court",
+        "kitchen",
+        "poison",
+        "taster",
+        "food",
+        "dark-humour"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "royal-servant",
+          "owner": "person",
+          "parameter": "tasterDuty",
+          "equals": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "rival_cook",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "taste-and-hold",
+          "weight": 0.4,
+          "text": "{subject}替主君尝了第一勺汤。苦味很淡，像杏仁藏在奶油后面。{subject}把勺子放下，说汤不要再端上去；厨房里没有人问为什么，只有人迅速把锅端走。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "尝到有问题的汤"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "royal-servant",
+              "key": "poisonScares",
+              "delta": 1,
+              "reason": "一次未遂的中毒"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "royal-servant",
+              "key": "favor",
+              "delta": 6,
+              "reason": "替主君挡下一次危险"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "汤里有苦杏仁味。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "tasted_for_sovereign",
+              "add": true,
+              "reason": "替主君试毒"
+            }
+          ]
+        },
+        {
+          "id": "swap-the-bowls",
+          "weight": 0.35,
+          "text": "{subject}把两碗汤换了位置。{rival_cook}喝下那一碗，半小时后脸色发白，却坚持说只是累了。管事夸{subject}临危不乱，给{subject}加了半份工钱；{rival_cook}在储藏室里吐了一夜。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival_cook",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.1,
+              "reason": "把有问题的汤换给对方"
+            },
+            {
+              "type": "health",
+              "personId": "$rival_cook",
+              "amount": -0.06,
+              "reason": "喝下被换过的汤"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "royal-servant",
+              "key": "poisonScares",
+              "delta": 1,
+              "reason": "厨房里的中毒事件"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "royal-servant",
+              "key": "favor",
+              "delta": 2,
+              "reason": "管事认为{subject}处理得当"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "管事的赏钱"
+            }
+          ]
+        },
+        {
+          "id": "herring-not-poison",
+          "weight": 0.25,
+          "text": "汤里的怪味不是毒，是厨房新来的伙计把腌鲱鱼汁当成醋倒了进去。医生闻了闻，说可以放心；主君却很喜欢，命令把这道汤写进菜单。{subject}从洗碗台被调到酱汁台，工钱涨了一枚银币。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "调岗后的工钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "royal-servant",
+              "key": "favor",
+              "delta": 8,
+              "reason": "主君喜欢这道误做的汤"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "royal-servant",
+              "key": "poisonScares",
+              "delta": 1,
+              "reason": "厨房为味道虚惊一场"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "sauce_cook",
+              "add": true,
+              "reason": "被调到酱汁台"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "herring_poison_scare",
+              "add": true,
+              "reason": "把腌鲱鱼汁当成毒药"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "absurd15-court.banquet-substitution",
+      "title": "使节在厨房门口鞠了一躬",
+      "domain": "court",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "court",
+        "kitchen",
+        "banquet",
+        "mistake",
+        "quiet",
+        "irony"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "royal-servant",
+          "owner": "person",
+          "parameter": "favor",
+          "min": 40
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "sovereign",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 80
+        },
+        {
+          "key": "envoy",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "praised-at-table",
+          "weight": 0.4,
+          "text": "{subject}做的一道炖菜被端上{sovereign}的桌子。{sovereign}吃完，问是谁做的；管事报了{subject}的名字。那天晚上，{subject}第一次被允许从正门离开厨房，围裙上还沾着一点肉汁。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "主君的赏钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "royal-servant",
+              "key": "favor",
+              "delta": 10,
+              "reason": "一道被主君记住的菜"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sovereign",
+              "kind": "acquaintance",
+              "respect": 0.1,
+              "reason": "主君记住了{subject}的名字"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "royal_praise",
+              "add": true,
+              "reason": "得到主君当众称赞"
+            }
+          ]
+        },
+        {
+          "id": "envoy-bows-to-the-cook",
+          "weight": 0.35,
+          "text": "{envoy}走错门，在厨房门口看见{subject}系着{sovereign}的旧外套，立刻鞠了一躬。{subject}手里还拿着汤勺，便按戏里的姿势回了一礼。使节走后，{subject}才发现外套口袋里有一封没有送出的信。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "parameters": {
+                "production": "宫廷晚宴",
+                "role": "被误认的君主",
+                "publicBelief": 35,
+                "costumeQuality": 70,
+                "scandal": 0,
+                "performances": 0
+              },
+              "durationMonths": 3,
+              "reason": "外国使节把厨子误认成君主"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "使节把误认传了出去"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "被当成君主行礼"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "envoy_bowed_to_cook",
+              "add": true,
+              "reason": "被外国使节误认"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "外套口袋里有一封没有送出的信。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "kitchen-sealed",
+          "weight": 0.25,
+          "text": "{sovereign}在席间突然不适，被扶出餐厅。厨房随即被封，所有人交出手里的刀。{subject}抱着自己的围裙站在走廊里，等到天亮，只等到一句“今晚不用做饭了”。{subject}知道这句话的意思是没有下一次。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "royal-servant",
+              "reason": "厨房因主君不适被封"
+            },
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "宫廷厨房被解散"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "失去宫廷差事"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "没有拿到最后一笔工钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kitchen_sealed",
+              "add": true,
+              "reason": "宫廷厨房被查封"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "absurd15-curse.transfer-at-table",
+      "title": "饭桌底下的黑纽扣",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 70
+      },
+      "tags": [
+        "curse",
+        "ritual",
+        "betrayal",
+        "family",
+        "transfer",
+        "wish"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "curse-mark",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "rival",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "curse-moves-house",
+          "weight": 0.35,
+          "text": "{subject}在饭桌底下把一枚黑纽扣塞进{rival}的外套口袋，念完那串没人听得懂的词。第二天，{subject}醒来时门槛上的盐是干的；{rival}家却开始夜夜听见墙里有响动。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$rival",
+              "stateId": "curse-mark",
+              "parameters": {
+                "form": "迟延",
+                "severity": 25,
+                "triggers": 0,
+                "bearerKnown": false,
+                "sourceName": "一枚黑纽扣",
+                "boundToHousehold": false
+              },
+              "durationMonths": 36,
+              "reason": "诅咒被转移到饭桌对面的人身上"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-mark",
+              "reason": "诅咒离开了原持有人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "把诅咒塞进对方口袋"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "身上轻了一些"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "passed_the_curse",
+              "add": true,
+              "reason": "成功把诅咒转给别人"
+            }
+          ]
+        },
+        {
+          "id": "curse-splits",
+          "weight": 0.35,
+          "text": "仪式只做了一半，蜡烛被风吹灭。{subject}觉得胸口轻了一些，{rival}却在第二天摔碎了家里的镜子。诅咒没有离开，只是分成了两半，各自跟着一个人回家。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-mark",
+              "key": "severity",
+              "delta": -15,
+              "reason": "诅咒被分走一部分"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$rival",
+              "stateId": "curse-mark",
+              "parameters": {
+                "form": "迟延",
+                "severity": 12,
+                "triggers": 0,
+                "bearerKnown": false,
+                "sourceName": "半截蜡烛",
+                "boundToHousehold": false
+              },
+              "durationMonths": 24,
+              "reason": "诅咒在仪式中分裂"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "两个人各自带走了一半诅咒"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "curse_split",
+              "add": true,
+              "reason": "诅咒没有被完全转移"
+            }
+          ]
+        },
+        {
+          "id": "the-word-does-nothing",
+          "weight": 0.3,
+          "text": "{subject}花了两枚银币请人念词，碗里的水始终没有变黑。{rival}在门口笑出了声，说这种把戏连小孩都骗不了。{subject}把碗收进柜子，夜里还是听见墙里那声轻响。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-mark",
+              "key": "severity",
+              "delta": 5,
+              "reason": "失败的转移仪式让诅咒更重"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "请人念词的费用"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "被对方看见失败的仪式"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "仪式失败"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "curse_transfer_failed",
+              "add": true,
+              "reason": "转移诅咒失败"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "absurd15-wish.crown-for-a-day",
+      "title": "王冠一天的三种结局",
+      "domain": "wish",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 70
+      },
+      "tags": [
+        "wish",
+        "power",
+        "crown",
+        "office",
+        "irony",
+        "festival"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "tag": "wish:power",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "stage-sovereign"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.2,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "real-tiny-office",
+          "weight": 0.35,
+          "text": "一个市民代表团真的来到{subject}门口，带来一份任命书：公共礼仪官，负责节庆、吊唁和接待。职位不大，薪水也不高，但上面有印章，有任期，有一间可以锁门的办公室。{subject}把任命书读了三遍，才确认这不是戏票。",
+          "significance": 0.92,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "org:absurd15-wish-office:$eventId",
+                "name": "市民礼仪处",
+                "kind": "state",
+                "treasury": 1,
+                "authorityRules": [
+                  "礼仪官由市民代表团任命",
+                  "任期一年，可续任"
+                ]
+              },
+              "reason": "市民代表团为愿望设立一个真实职位"
+            },
+            {
+              "type": "position",
+              "organizationId": "org:absurd15-wish-office:$eventId",
+              "title": "公共礼仪官",
+              "holderId": "$subject",
+              "wage": 3,
+              "authority": [
+                "主持仪式",
+                "签发礼节函",
+                "安排吊唁"
+              ],
+              "reason": "愿望以真实任命的方式实现"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "获得真实职位"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "愿望真的实现了"
+            }
+          ]
+        },
+        {
+          "id": "festival-king-only",
+          "weight": 0.4,
+          "text": "代表团没有带来任命书，只带来一套戏服：市庆游行需要一个“国王”，一天两场，管一顿饭。{subject}穿上戏服时，围观的人鼓起掌来。掌声是真的，王冠是假的，晚饭也是真的。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "stage-sovereign",
+              "parameters": {
+                "production": "市庆游行",
+                "role": "节日国王",
+                "publicBelief": 25,
+                "costumeQuality": 55,
+                "scandal": 0,
+                "performances": 0
+              },
+              "durationMonths": 2,
+              "reason": "愿望只换来一个节日表演角色"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "游行演出的酬劳"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hired_as_festival_king",
+              "add": true,
+              "reason": "在市庆游行中扮演国王"
+            }
+          ]
+        },
+        {
+          "id": "the-delegation-never-comes",
+          "weight": 0.25,
+          "text": "{subject}等了一整天，代表团没有来。傍晚，{subject}在窗户里看见游行队伍从街口经过，新的“国王”骑着借来的白马，朝人群挥手。{subject}把订做的戏服退掉，押金没有拿回来。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "订做戏服的押金"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "愿望没有实现"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wish_crown_failed",
+              "add": true,
+              "reason": "愿望既没有成功也没有反噬"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

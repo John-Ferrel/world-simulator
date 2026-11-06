@@ -1,0 +1,1990 @@
+{
+  "id": "pack-office-influence",
+  "version": 1,
+  "title": "办公室里的权力：任命、预算与失去",
+  "description": "这一包不另建办公室。它只让已经由 position 效果创建的真实职位能够被使用：雇人、签字、批许可、做人情、应付动议、丑闻和审计。职位仍是 Position；这里的两套状态只记录使用权力之后留下的人情与压力。",
+  "author": "phase16-content-author",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-06",
+  "sourceBriefId": "phase16-office-influence",
+  "rationale": "Phase 15 的批评指出：职位被记录，却从未在后续场景中被使用。这一包的每个 kernel 都以 position 条件开场，并用 $positionOrg / $positionId 把效果落在同一个真实组织与职位上。权力可以办成事，也可以被用来做人情；失败、丑闻和丢官都存在，但不是每一次使用权力都被惩罚。",
+  "states": [
+    {
+      "id": "office-patronage",
+      "version": 1,
+      "packId": "pack-office-influence",
+      "title": "办公室的人情账",
+      "description": "一个真实职位周围的用人网络：谁被安排进来、谁欠着人情、谁在账外等候。职位本身仍由 Position 记录，这个状态只描述它能否被使用，以及使用之后留下的负担。",
+      "owner": "person",
+      "slot": "power",
+      "conflict": "replace",
+      "tags": ["office", "patronage", "politics", "power", "network", "obligation"],
+      "parameters": {
+        "appointees": { "type": "number", "default": 0, "min": 0, "max": 20 },
+        "favorDebt": { "type": "number", "default": 20, "min": 0, "max": 100 },
+        "loyalty": { "type": "number", "default": 50, "min": 0, "max": 100 },
+        "exposure": { "type": "number", "default": 10, "min": 0, "max": 100 },
+        "officeTitle": { "type": "string", "default": "现任职位" },
+        "positionId": { "type": "string", "default": "" }
+      },
+      "durationMonths": { "min": 12, "max": 60 },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": ["office", "patronage", "politics", "budget", "appointment", "scandal"],
+          "multiplier": 1.4
+        },
+        { "kind": "check_bonus", "tags": ["office", "politics"], "bonus": 1 }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "office_patronage_network",
+          "add": true,
+          "reason": "office network formed"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "office_patronage_network",
+          "add": false,
+          "reason": "office network ended"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "patronage-year",
+          "everyMonths": 12,
+          "check": { "attribute": "cunning", "dc": 12 },
+          "outcomes": [
+            {
+              "id": "network-holds",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}把今年的任命名单又看了一遍。三个名字是自己写的，两个是别人硬塞的；他们都记得是谁让他们进来的。办公室没有多一把椅子，但走廊里打招呼的人多了。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-patronage",
+                  "key": "appointees",
+                  "delta": 1,
+                  "reason": "another appointee joined the network"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-patronage",
+                  "key": "loyalty",
+                  "delta": 4,
+                  "reason": "the network held"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-patronage",
+                  "key": "favorDebt",
+                  "delta": -2,
+                  "reason": "one obligation was discharged"
+                },
+                { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the office is working" }
+              ]
+            },
+            {
+              "id": "someone-talks",
+              "result": "failure",
+              "weight": 2,
+              "text": "一个没被续聘的临时文书把名单抄给了外面。{subject}在咖啡馆听见自己的名字和“照顾自己人”连在一起；没有人当面问，但下午的会议多了一把空椅子。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-patronage",
+                  "key": "exposure",
+                  "delta": 12,
+                  "reason": "the appointment list leaked"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-patronage",
+                  "key": "loyalty",
+                  "delta": -6,
+                  "reason": "the network tightened"
+                },
+                { "type": "reputation", "personId": "$subject", "amount": -0.03, "reason": "patronage rumour" },
+                { "type": "mood", "personId": "$subject", "amount": -0.03, "reason": "talk behind the door" },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "patronage_rumor",
+                  "add": true,
+                  "reason": "the list was copied outside"
+                }
+              ]
+            },
+            {
+              "id": "a-favor-called-in",
+              "result": "success",
+              "weight": 1,
+              "text": "一个当年被安排进来的老职员来找{subject}，要的不是升职，而是让他的侄子进档案室。{subject}翻出编制表，发现空位只有一个，名字已经有人先写了。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-patronage",
+                  "key": "favorDebt",
+                  "delta": 6,
+                  "reason": "an old favour was called in"
+                },
+                { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "too many claims on one post" },
+                {
+                  "type": "knowledge",
+                  "holderId": "$subject",
+                  "proposition": "编制表上的空位只剩一个，名字已经被人先写。",
+                  "confidence": 0.9,
+                  "sourceKind": "document",
+                  "visibility": "private",
+                  "trueInWorld": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase16-content-author",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "记录一个真实职位周围的人情网络；它不提供职位或命令权，只让用人、欠人情和名单泄露有持续参数。"
+      }
+    },
+    {
+      "id": "office-under-siege",
+      "version": 1,
+      "packId": "pack-office-influence",
+      "title": "职位受围",
+      "description": "一份职位正在被公开质疑：报纸、审计、同僚或街头都在等一个答复。它不夺走 Position，只让每一次使用权力都多一层代价。",
+      "owner": "person",
+      "slot": "power",
+      "conflict": "replace",
+      "tags": ["office", "scandal", "pressure", "politics", "legal", "risk"],
+      "parameters": {
+        "exposure": { "type": "number", "default": 40, "min": 0, "max": 100 },
+        "support": { "type": "number", "default": 45, "min": 0, "max": 100 },
+        "months": { "type": "number", "default": 0, "min": 0, "max": 36 },
+        "cause": { "type": "string", "default": "public allegation" },
+        "positionId": { "type": "string", "default": "" }
+      },
+      "durationMonths": { "min": 3, "max": 24 },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": ["office", "scandal", "politics", "legal", "media", "removal"],
+          "multiplier": 1.6
+        },
+        { "kind": "scene_weight", "tags": ["quiet", "administration"], "multiplier": 0.75 },
+        { "kind": "check_bonus", "tags": ["scandal", "legal"], "bonus": -1 }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "office_under_siege",
+          "add": true,
+          "reason": "the office is under public pressure"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "office_under_siege",
+          "add": false,
+          "reason": "the pressure on the office ended"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "pressure-year",
+          "everyMonths": 6,
+          "check": { "attribute": "willpower", "dc": 12 },
+          "outcomes": [
+            {
+              "id": "held-on",
+              "result": "success",
+              "weight": 2,
+              "text": "质询会开了两个小时，{subject}把每一笔签字都念了一遍。没有人被说服，但也没有人再追问；散会时，支持{subject}的人比进门时多了两个。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-under-siege",
+                  "key": "support",
+                  "delta": 5,
+                  "reason": "the hearing did not break the office"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-under-siege",
+                  "key": "exposure",
+                  "delta": -4,
+                  "reason": "one allegation was answered"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-under-siege",
+                  "key": "months",
+                  "delta": 1,
+                  "reason": "another month under pressure"
+                },
+                { "type": "mood", "personId": "$subject", "amount": 0.01, "reason": "the hearing held" }
+              ]
+            },
+            {
+              "id": "new-allegation",
+              "result": "failure",
+              "weight": 2,
+              "text": "第二天的报纸又登了一封匿名信，说{subject}把一份合同给了亲戚。信里没有证据，但足够让两个原本答应到场的人临时出差。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-under-siege",
+                  "key": "exposure",
+                  "delta": 10,
+                  "reason": "a new anonymous allegation"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-under-siege",
+                  "key": "support",
+                  "delta": -6,
+                  "reason": "two supporters stayed away"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "office-under-siege",
+                  "key": "months",
+                  "delta": 1,
+                  "reason": "another month under pressure"
+                },
+                { "type": "reputation", "personId": "$subject", "amount": -0.03, "reason": "a fresh allegation" },
+                { "type": "mood", "personId": "$subject", "amount": -0.04, "reason": "the story will not close" }
+              ]
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "recovered",
+          "to": "office-patronage",
+          "conditions": [
+            { "kind": "hasState", "stateId": "office-under-siege", "parameter": "support", "min": 70 }
+          ],
+          "reason": "the holder rebuilt a working majority",
+          "effects": [
+            { "type": "reputation", "personId": "$subject", "amount": 0.03, "reason": "the office recovered" }
+          ]
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase16-content-author",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把公开质询写成有支持度、曝光度和月数的压力状态；它不删除 Position，只改变下一次使用职位的代价。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "office16-hire.protege",
+      "title": "编制表上的空行",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 26, "max": 70 },
+      "tags": ["office", "hire", "patronage", "bureaucracy", "work", "power"],
+      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
+      "conditions": [{ "kind": "position" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 26, "maxAge": 70 },
+        { "key": "protege", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 35 },
+        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+      ],
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "hired-competent",
+          "weight": 0.4,
+          "text": "{subject}把{protege}的名字写在编制表的空行上，又在旁边注了“试用三个月”。{clerk}提醒说预算只够半个位置，{subject}还是把名字留下了。第二天，{protege}提前半小时到，把走廊里的旧档案按年份重新排了一遍。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "position",
+              "organizationId": "$positionOrg",
+              "title": "助理文书",
+              "holderId": "$protege",
+              "wage": 2,
+              "authority": ["整理档案", "安排会面"],
+              "reason": "a real junior post was created for the protege"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$protege",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "the protege joined the office organisation"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "the new post is paid from the office budget"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$protege",
+              "kind": "colleague",
+              "trust": 0.12,
+              "reason": "hired and vouched for the protege"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": 0.03, "reason": "the hire worked" },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hired_protege",
+              "add": true,
+              "reason": "brought a protege into the office"
+            }
+          ]
+        },
+        {
+          "id": "hired-relative",
+          "weight": 0.3,
+          "text": "名单上添的是{protege}，一个连公文格式都分不清的远房亲戚。{clerk}把考勤表放在桌上，没有问原因；{subject}也没有解释，只在签字栏里写得比平时慢。第一个月，{protege}迟到了七次，工资照发。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "position",
+              "organizationId": "$positionOrg",
+              "title": "档案助理",
+              "holderId": "$protege",
+              "wage": 2,
+              "authority": ["领取文具", "保管副本"],
+              "reason": "a relative received a paid post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$protege",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "the relative was added to the office"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "the relative's wage"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$protege",
+              "kind": "kin",
+              "trust": 0.08,
+              "reason": "a family appointment"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hired_relative",
+              "add": true,
+              "reason": "appointed a relative"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "考勤表上记了七次迟到，工资一次没有扣。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the family was looked after" }
+          ]
+        },
+        {
+          "id": "refused-by-committee",
+          "weight": 0.2,
+          "text": "编制委员会只用了十分钟就否掉了{protege}的名字：预算冻结，岗位归并，连桌子都要搬去仓库。{subject}把那张表折起来，答应明年再试。{protege}说没关系，第二天去了另一家事务所面试。",
+          "significance": 0.65,
+          "effects": [
+            { "type": "mood", "personId": "$subject", "amount": -0.04, "reason": "the hire was blocked" },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$protege",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "a promised post did not materialise"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "protege_hiring_refused",
+              "add": true,
+              "reason": "the appointment committee refused the post"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "编制委员会今年冻住了所有新增岗位。",
+              "confidence": 0.85,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-post-already-exists",
+          "weight": 0.1,
+          "text": "人事处翻出一张一九〇七年的任命书：助理文书的位子一直没撤，上一任在退休后仍每月来领一次钥匙。{subject}把{protege}的名字补在下面，第二天，两个人一起打开了那间堆满未拆信件的办公室。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "position",
+              "organizationId": "$positionOrg",
+              "title": "助理文书",
+              "holderId": "$protege",
+              "wage": 1,
+              "authority": ["拆阅旧信", "保管钥匙"],
+              "reason": "an old post was revived with a new holder"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$protege",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "the revived post was filled"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "the revived post's token wage"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "inherited_ghost_post",
+              "add": true,
+              "reason": "revived a forgotten post"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "助理文书的职位从一九〇七年起就没有正式撤销，柜子里还有未拆的公务信件。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "an absurd old post became useful" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "office16-budget.sign-or-block",
+      "title": "预算表上的两支笔",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 24, "max": 70 },
+      "tags": ["office", "budget", "permit", "administration", "power", "economy"],
+      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
+      "conditions": [{ "kind": "position" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 24, "maxAge": 70 },
+        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 },
+        { "key": "contractor", "kind": "worker", "required": true, "minAge": 22, "maxAge": 65 }
+      ],
+      "baseRate": 0.2,
+      "weight": 4,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "signed-with-margin",
+          "weight": 0.35,
+          "text": "{subject}在预算表上签了字，把冬季煤房的款项从三笔并成一笔，又给夜班守卫加了半份津贴。{clerk}算出省下的钱刚好够修屋顶；没有人鼓掌，但一月的会议室不再需要穿大衣。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "the approved budget paid for the roof repair"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": 0.04, "reason": "an ordinary budget was made to work" },
+            { "type": "skill", "personId": "$subject", "skill": "numeracy", "amount": 0.03, "reason": "hands-on budget work" },
+            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the office ran better" },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "signed_balanced_budget",
+              "add": true,
+              "reason": "signed a working budget"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "把冬季煤房的款项并成一笔后，省下的钱够修会议室屋顶。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "blocked-the-permit",
+          "weight": 0.3,
+          "text": "{subject}把一份扩建许可证压在抽屉最下面，理由是排水和消防通道不合规。申请人{contractor}在走廊里等到下班，最后只拿到一张写着“补件”的纸条。{subject}知道这份许可明年还会再来，但今年不会从自己的桌上出去。",
+          "significance": 0.75,
+          "effects": [
+            { "type": "reputation", "personId": "$subject", "amount": 0.02, "reason": "the permit was refused on the record" },
+            { "type": "skill", "personId": "$subject", "skill": "numeracy", "amount": 0.01, "reason": "checked the drainage and fire documents" },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$contractor",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "the permit was blocked"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "blocked_permit",
+              "add": true,
+              "reason": "used office to refuse a permit"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "扩建申请的排水图与消防通道不符合现行规定。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "signed-for-a-favor",
+          "weight": 0.25,
+          "text": "{contractor}在签字前把一张剧院包厢的票根留在桌上，说是“给孩子的”。{subject}把票根推回去，却在许可证上签了名；排水图仍缺一页，但窗口当天就盖了章。扩建开工后，第一场雨把后院淹了半尺。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "emergency drainage after the permit was rushed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$contractor",
+              "kind": "friend",
+              "trust": 0.12,
+              "reason": "a permit was signed as a favour"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "permit_for_favor",
+              "add": true,
+              "reason": "signed a permit outside the file"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "许可证少了一页排水图，盖章时没有补。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the favour was done" }
+          ]
+        },
+        {
+          "id": "the-budget-was-already-spent",
+          "weight": 0.1,
+          "text": "账本上那笔“市政美化”已经花掉了：前年在广场立了一座铜像，去年给铜像换了底座。{subject}仍把许可证签了，因为申请人已经把材料款付给了铜像的承包商。冬天，铜像底下多了一圈没有报批的围栏。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "an unbudgeted fence was charged to the office"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": -0.04, "reason": "the signed permit embarrassed the office" },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "budget_already_spent",
+              "add": true,
+              "reason": "signed against an exhausted budget line"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "市政美化预算已经被铜像和底座用掉，许可证的款项来自同一个承包商。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": -0.03, "reason": "the money was already gone" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "office16-favor.private-sinecure",
+      "title": "一张给熟人的椅子",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 24, "max": 70 },
+      "tags": ["office", "favor", "corruption", "patronage", "family", "power"],
+      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
+      "conditions": [{ "kind": "position" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 24, "maxAge": 70 },
+        { "key": "beneficiary", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 70 },
+        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "sinecure-created",
+          "weight": 0.4,
+          "text": "{subject}在编制表最下面添了一行“顾问”，月薪两克朗，职责是“必要时提供咨询”。{beneficiary}第二天就搬来一张靠窗的桌子，带来一盆天竺葵；一个月后，{clerk}发现顾问唯一经手的文件是自己的午餐菜单。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "position",
+              "organizationId": "$positionOrg",
+              "title": "顾问",
+              "holderId": "$beneficiary",
+              "wage": 2,
+              "authority": ["提供咨询"],
+              "reason": "a quiet sinecure was created"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$beneficiary",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "the beneficiary joined the office"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "the sinecure wage"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beneficiary",
+              "kind": "friend",
+              "trust": 0.15,
+              "reason": "a private favour became a post"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "private_sinecure",
+              "add": true,
+              "reason": "created a post for a private acquaintance"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "顾问岗位没有固定职责，考勤由我签字。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the favour was settled" }
+          ]
+        },
+        {
+          "id": "favor-refused",
+          "weight": 0.3,
+          "text": "{beneficiary}把一篮鸡蛋放在{subject}家门口，说只要一个不用打卡的位子。{subject}把鸡蛋拎回对方手里，说编制表不是自家的抽屉。两个人站在楼梯间，谁也没有再提这件事；第二天见面，还是点了头。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beneficiary",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "reason": "the private favour was refused"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": 0.03, "reason": "the office was not used as a private drawer" },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_private_favor",
+              "add": true,
+              "reason": "refused a personal sinecure"
+            },
+            { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "the refusal cost a friendship" }
+          ]
+        },
+        {
+          "id": "the-favor-was-already-owed",
+          "weight": 0.2,
+          "text": "{beneficiary}早在{subject}上任前就挂在一个“临时调查员”的名下，工资由上一任签字。{subject}不能新设岗位，只能补一份追认函；函上写明“工作内容另行通知”，而通知一直没有发出。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "a predecessor's off-book post was regularised"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beneficiary",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "an old favour was acknowledged"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "retroactive_sinecure",
+              "add": true,
+              "reason": "signed a retroactive appointment"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "临时调查员的岗位是上一任留下的，工作内容从未书面通知。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.01, "reason": "the old favour was quietly honoured" }
+          ]
+        },
+        {
+          "id": "audit-noticed",
+          "weight": 0.1,
+          "text": "审计员在顾问的考勤卡上看见连续四十个“外勤”，而外勤地点写的是同一家咖啡馆。{subject}把考勤卡收进抽屉，补了一张“社区联络”的说明；{beneficiary}的工资没有停，但办公室门口多了一张审计通知。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "audit response and back pay review"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": -0.06, "reason": "a sinecure attracted an audit" },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "parameters": {
+                "exposure": 45,
+                "support": 40,
+                "months": 0,
+                "cause": "sinecure audit",
+                "positionId": "$positionId"
+              },
+              "durationMonths": 12,
+              "reason": "the private post became an audit"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sinecure_audited",
+              "add": true,
+              "reason": "the private post was audited"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "考勤卡上的四十次外勤都指向同一家咖啡馆。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": -0.05, "reason": "the favour left a paper trail" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "office16-rival.removal-motion",
+      "title": "会议室里的动议",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 26, "max": 75 },
+      "tags": ["office", "rivalry", "politics", "removal", "power", "intrigue"],
+      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
+      "conditions": [{ "kind": "position" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 26, "maxAge": 75 },
+        { "key": "rival", "kind": "official", "required": true, "minAge": 26, "maxAge": 75 },
+        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+      ],
+      "baseRate": 0.17,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "motion-fails",
+          "weight": 0.35,
+          "text": "会议室里有人念了一份动议，说{subject}把预算当成人情。{rival}把签名页传了一圈，最后停在自己手里：支持票比反对票少三张。{subject}没有发言，只把下一季度的支出表放在桌上，表上每一笔都有收据。",
+          "significance": 0.8,
+          "effects": [
+            { "type": "reputation", "personId": "$subject", "amount": 0.04, "reason": "the removal motion failed" },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "a public removal attempt"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "survived_removal_motion",
+              "add": true,
+              "reason": "survived a removal vote"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "动议只拿到少数支持，三名原本签名的委员在投票前撤回了。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.03, "reason": "the office held" }
+          ]
+        },
+        {
+          "id": "motion-carries",
+          "weight": 0.25,
+          "text": "投票结果是十九比十七。{subject}把印章、钥匙和一本写满批注的账本放进纸箱，最后一圈走廊走得比平时慢。{rival}在门口等着接手，手里已经拿着新的编制表；表上第一个被划掉的名字是{subject}的秘书。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "position",
+              "holderId": "$subject",
+              "remove": true,
+              "reason": "removed by a vote of the committee"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": -0.05, "reason": "voted out of office" },
+            { "type": "mood", "personId": "$subject", "amount": -0.08, "reason": "the office was lost by vote" },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "former officeholder",
+              "add": true,
+              "reason": "removed from office"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.22,
+              "reason": "the rival took the office"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "removed_by_vote",
+              "add": true,
+              "reason": "lost office through a vote"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "新编制表第一个划掉的是我的秘书。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "counter-motion",
+          "weight": 0.25,
+          "text": "{subject}没有等投票，而是让{clerk}把委员会过去三年的差旅账目复印了十份。会议开始前，{rival}的动议被一份“程序审查”取代；审查没有找到{subject}的问题，却找到了两次重复报销。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "emergency audit of the committee's travel books"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": -0.03, "reason": "the counter-move frightened the room" },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.25,
+              "reason": "the rival's expenses were exposed"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rival_audited",
+              "add": true,
+              "reason": "turned the removal motion into an audit"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "委员会的差旅账目里有两次重复报销。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.01, "reason": "the counter-move worked" }
+          ]
+        },
+        {
+          "id": "the-vote-ties",
+          "weight": 0.15,
+          "text": "第二轮投票是十七比十七。按章程，主席可以投第二票；{subject}把自己的名字念了两遍，会议室里没有人笑。散会后，{rival}在门口说下一次会带更多的人来，{subject}说椅子够用。",
+          "significance": 0.8,
+          "effects": [
+            { "type": "reputation", "personId": "$subject", "amount": -0.02, "reason": "the tie was broken by the chair" },
+            { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "a procedural victory" },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "the tie was broken against the rival"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "a second ballot was printed"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "tie_broken_by_chair",
+              "add": true,
+              "reason": "used the chair's second vote"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "章程允许主席在平票时投第二票，但没有人记得上一次使用是什么时候。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "office16-scandal.public-hearing",
+      "title": "报纸头版上的签名",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 24, "max": 70 },
+      "tags": ["office", "scandal", "media", "reputation", "politics", "power"],
+      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
+      "conditions": [{ "kind": "position" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 24, "maxAge": 70 },
+        { "key": "reporter", "kind": "neighbor", "required": true, "minAge": 20, "maxAge": 70 },
+        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 },
+        { "key": "successor", "kind": "official", "required": false, "minAge": 26, "maxAge": 75 }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "weathered",
+          "weight": 0.35,
+          "text": "报纸在头版登了{subject}和承包商在一张桌子上的照片，配文只有一句“谁签的字”。质询会开了三个小时，{subject}把合同、比价单和验收记录一页页摊开；记者第二天没有再写，但把照片留在了档案里。",
+          "significance": 0.85,
+          "effects": [
+            { "type": "reputation", "personId": "$subject", "amount": -0.03, "reason": "a photograph became a public question" },
+            { "type": "mood", "personId": "$subject", "amount": -0.03, "reason": "the hearing was exhausting" },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "parameters": {
+                "exposure": 30,
+                "support": 60,
+                "months": 0,
+                "cause": "newspaper photograph",
+                "positionId": "$positionId"
+              },
+              "durationMonths": 18,
+              "reason": "the office stayed under public scrutiny"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "scandal_weathered",
+              "add": true,
+              "reason": "survived a public hearing"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "照片是真的，合同也是真的；报纸没有再追，但档案里留了底片。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "resigned",
+          "weight": 0.25,
+          "text": "{reporter}在门口堵了三天，第四天把{subject}的辞职信全文登了出来。信只有四行，最后一行是“为避免机构继续为我的判断付出代价”。{subject}把办公室的钥匙交给{successor}，没有带走任何文件。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "position",
+              "holderId": "$subject",
+              "remove": true,
+              "reason": "resigned after the scandal"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": -0.08, "reason": "resigned under a public cloud" },
+            { "type": "mood", "personId": "$subject", "amount": -0.1, "reason": "the office ended in public" },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "former officeholder",
+              "add": true,
+              "reason": "left office over a scandal"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "resigned_over_scandal",
+              "add": true,
+              "reason": "resigned rather than be removed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "辞职信被全文刊登，接任者当天就搬进了办公室。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "public",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-scandal-helps",
+          "weight": 0.25,
+          "text": "照片登出后，{subject}收到十七封邀请函，都是请去讲“如何面对舆论”。一个工商业协会送来一笔“研究资助”，请{subject}去讲一次闭门课；课酬刚好补上办公室这个月的缺口。",
+          "significance": 0.85,
+          "effects": [
+            { "type": "reputation", "personId": "$subject", "amount": 0.05, "reason": "notoriety became an invitation" },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": 1,
+              "reason": "a speaking fee covered the office shortfall"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "parameters": {
+                "exposure": 60,
+                "support": 45,
+                "months": 0,
+                "cause": "scandal turned into publicity",
+                "positionId": "$positionId"
+              },
+              "durationMonths": 6,
+              "reason": "the office became more visible, not safer"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "scandal_turned_into_speaking_fee",
+              "add": true,
+              "reason": "a scandal paid for the office"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "十七封邀请函里，有十二封问的是同一件事：能不能把丑闻讲成经验。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.04, "reason": "the scandal was profitable" }
+          ]
+        },
+        {
+          "id": "the-wrong-signature",
+          "weight": 0.15,
+          "text": "报纸放大的签名其实是{clerk}的：两个字母写得太像。更正启事登在第七版，只有三行；{subject}的名字被拿掉了，{clerk}的名字留了下来。第二天，{clerk}没有来上班，桌上的茶杯还是满的。",
+          "significance": 0.8,
+          "effects": [
+            { "type": "reputation", "personId": "$subject", "amount": 0.02, "reason": "the newspaper corrected the record" },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "the clerk carried the mistake"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "scandal_misdirected",
+              "add": true,
+              "reason": "the wrong signature was printed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "被登出来的签名是书记员的，更正启事在第七版。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "someone else paid for the mistake" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "office16-admin.quiet-ledger",
+      "title": "没有掌声的年度账",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 24, "max": 70 },
+      "tags": ["office", "administration", "budget", "competence", "quiet", "power"],
+      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
+      "conditions": [{ "kind": "position" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 24, "maxAge": 70 },
+        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 },
+        { "key": "auditor", "kind": "official", "required": false, "minAge": 26, "maxAge": 75 }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "balanced",
+          "weight": 0.35,
+          "text": "{subject}用三个月把账本上的零碎支出并成四类，又停掉两份没有人看的简报。年底结账时，{clerk}发现不仅没有赤字，还剩下够换一批档案柜的钱；没有剪彩，只有仓库里新柜子的木头味。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": 2,
+              "reason": "streamlined spending left a small balance"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": 0.04, "reason": "the office ran within its means" },
+            { "type": "skill", "personId": "$subject", "skill": "numeracy", "amount": 0.03, "reason": "hands-on ledger work" },
+            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "quiet competence" },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "balanced_the_books",
+              "add": true,
+              "reason": "balanced the office books"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "停掉两份简报、合并零碎支出后，年底还剩一笔够换档案柜的钱。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "small-surplus",
+          "weight": 0.25,
+          "text": "账目连续第二年没有超支，{auditor}在报告里加了一句“未发现异常”。{subject}用结余给夜班守卫换了炉子，又把旧账本按年份装进箱子；没有人写报道，但来办事的人发现窗口开得比从前早。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": 3,
+              "reason": "a second clean year left a surplus"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": 0.06, "reason": "a clean audit and earlier service" },
+            { "type": "skill", "personId": "$subject", "skill": "numeracy", "amount": 0.03, "reason": "another year of ledger work" },
+            { "type": "mood", "personId": "$subject", "amount": 0.03, "reason": "the office worked quietly" },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$auditor",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "the auditor found no irregularities"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "quiet_surplus",
+              "add": true,
+              "reason": "ran a quiet surplus"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "审计报告里只有一句“未发现异常”，但窗口提前开门被办事的人记住了。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "nothing-moved",
+          "weight": 0.3,
+          "text": "账本看上去是平的：修屋顶的钱被挪去补煤款，煤款又被挪去付印刷费。{subject}在每一栏都签了字，知道明年还会这样。散会后，{clerk}把一张催修屋顶的纸条压在台灯下面。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "deferred roof repairs were charged to the budget"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": -0.01, "reason": "the books balanced by delay" },
+            { "type": "mood", "personId": "$subject", "amount": -0.03, "reason": "nothing was really fixed" },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "deferred_maintenance",
+              "add": true,
+              "reason": "the roof repair was deferred again"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "屋顶的修理费被挪去补煤款，煤款又被挪去付印刷费。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-ledger-was-cooked",
+          "weight": 0.1,
+          "text": "前任留下的账本太整齐了：每一笔都落在同一个日期，连墨水颜色都一样。{subject}让{auditor}抽了三页去核对，发现其中两页的收据号码连续，却来自两家不同的商号。{auditor}合上本子，问要不要现在报上去。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "forensic review of the predecessor's ledger"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": -0.02, "reason": "the office inherited a cooked ledger" },
+            { "type": "mood", "personId": "$subject", "amount": -0.04, "reason": "the predecessor's books were false" },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "parameters": {
+                "exposure": 35,
+                "support": 50,
+                "months": 0,
+                "cause": "predecessor ledger",
+                "positionId": "$positionId"
+              },
+              "durationMonths": 9,
+              "reason": "the predecessor's ledger put the office under scrutiny"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "found_cooked_ledger",
+              "add": true,
+              "reason": "found a cooked ledger"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "前任账本里两页收据号码连续，却来自两家不同商号。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "office16-office.lose-the-chair",
+      "title": "任期最后一天",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 26, "max": 75 },
+      "tags": ["office", "removal", "loss", "politics", "power", "transition"],
+      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
+      "conditions": [{ "kind": "position" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 26, "maxAge": 75 },
+        { "key": "successor", "kind": "official", "required": false, "minAge": 26, "maxAge": 75 },
+        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "term-ends-clean",
+          "weight": 0.35,
+          "text": "任期在十二月三十一日结束。{subject}把印章擦干净，钥匙串上只剩自己家的那把；{successor}来接手续，两个人把最后一份移交清单对了两遍。走出大门时，门房照旧叫了一声“先生”，没有加头衔。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "position",
+              "holderId": "$subject",
+              "remove": true,
+              "reason": "the term ended in order"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": 0.02, "reason": "left office in order" },
+            { "type": "mood", "personId": "$subject", "amount": -0.04, "reason": "the term ended" },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "former officeholder",
+              "add": true,
+              "reason": "the term ended"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "left_office_in_order",
+              "add": true,
+              "reason": "completed a clean handover"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "移交清单上最后一项是印章，钥匙串上只剩自己家的那把。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "carried-out",
+          "weight": 0.25,
+          "text": "最后一次会议没有让{subject}发言。保安把纸箱搬到门口，箱子里有半瓶墨水、一只坏掉的台灯和没写完的年度报告。{successor}跟在后面，手里拿着新的门锁；走廊尽头，秘书已经把名牌翻了过去。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "position",
+              "holderId": "$subject",
+              "remove": true,
+              "reason": "forced out of office"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": -0.06, "reason": "carried out of the building" },
+            { "type": "mood", "personId": "$subject", "amount": -0.08, "reason": "a forced departure" },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "former officeholder",
+              "add": true,
+              "reason": "forced out of office"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "carried_out_of_office",
+              "add": true,
+              "reason": "was carried out of the office"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "名牌在会议结束前就被翻了过去。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "kept-the-keys",
+          "weight": 0.2,
+          "text": "移交清单少了一把储藏室的钥匙。{subject}没有提，{successor}也没有问；三个月后，清洁工在储藏室发现两箱以{subject}名义订阅的行业期刊，收件地址仍是这间办公室。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "position",
+              "holderId": "$subject",
+              "remove": true,
+              "reason": "left office but kept a key"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$successor",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "a key was not handed over"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_office_keys",
+              "add": true,
+              "reason": "kept a storage-room key"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "储藏室有两箱以我的名义订阅的期刊，收件地址仍是这间办公室。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "a small door remained open" }
+          ]
+        },
+        {
+          "id": "reappointed",
+          "weight": 0.2,
+          "text": "计票拖到凌晨，{subject}以两票之差留任。{successor}把已经写好的交接清单折起来，笑着说下次再来。{subject}回到办公室，发现桌上的文件被人重新排过；最上面那份，是新一年的预算草案。",
+          "significance": 0.9,
+          "effects": [
+            { "type": "reputation", "personId": "$subject", "amount": 0.06, "reason": "reappointed by two votes" },
+            { "type": "mood", "personId": "$subject", "amount": 0.06, "reason": "the office was kept" },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": 1,
+              "reason": "the new year's office allowance"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "parameters": {
+                "appointees": 2,
+                "favorDebt": 25,
+                "loyalty": 55,
+                "exposure": 15,
+                "officeTitle": "$positionTitle",
+                "positionId": "$positionId"
+              },
+              "durationMonths": 36,
+              "reason": "reappointment renewed the office network"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reappointed",
+              "add": true,
+              "reason": "was reappointed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "桌上的文件被人重新排过，最上面是新一年的预算草案。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "office16-appointment.patronage-ledger",
+      "title": "名单上的第四十一个名字",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 24, "max": 70 },
+      "tags": ["office", "appointment", "patronage", "organization", "politics", "power"],
+      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
+      "conditions": [{ "kind": "position" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 24, "maxAge": 70 },
+        { "key": "ally", "kind": "neighbor", "required": true, "minAge": 20, "maxAge": 70 },
+        { "key": "rival", "kind": "official", "required": false, "minAge": 26, "maxAge": 75 },
+        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "appointed-ally",
+          "weight": 0.35,
+          "text": "{subject}把{ally}的名字写在“联络员”后面，月薪一克朗，职责是每周来两次、把外面的消息带进来。{clerk}说这个岗位没有编制，{subject}说先按临时用工算；第一个月，{ally}带来的消息比文件还多。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "position",
+              "organizationId": "$positionOrg",
+              "title": "联络员",
+              "holderId": "$ally",
+              "wage": 1,
+              "authority": ["传递文件", "安排来访"],
+              "reason": "an ally received a working post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$ally",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "the ally joined the office"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "the liaison post's wage"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "colleague",
+              "trust": 0.12,
+              "reason": "appointed an ally"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "appointed_ally",
+              "add": true,
+              "reason": "gave an ally a post"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "联络员不在正式编制里，工资走临时用工。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "a loyal person was placed" }
+          ]
+        },
+        {
+          "id": "appointed-rival",
+          "weight": 0.25,
+          "text": "{subject}给{rival}安排了一个“礼仪顾问”的位置：有办公室、有名牌、有固定工资，没有任何需要签字的文件。{rival}接受了，并且在第一次会议上坐到了离主席最远的那把椅子上。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "position",
+              "organizationId": "$positionOrg",
+              "title": "礼仪顾问",
+              "holderId": "$rival",
+              "wage": 1,
+              "authority": [],
+              "reason": "a rival was bought off with an empty post"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$rival",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "the rival joined the office"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "the ceremonial adviser's wage"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": 0.05,
+              "fear": 0.1,
+              "reason": "a rival was bought off"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bought_off_rival",
+              "add": true,
+              "reason": "gave a rival an empty post"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "礼仪顾问的岗位没有需要签字的文件。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the opposition was seated elsewhere" }
+          ]
+        },
+        {
+          "id": "list-rejected",
+          "weight": 0.25,
+          "text": "名单在委员会卡住了。{ally}的名字被划掉，理由是“没有相关资历”；{subject}没有争，只把名单收回公文包。晚上，{ally}来问结果，{subject}说再等一年；{ally}没有坐，站了一会儿就走了。",
+          "significance": 0.7,
+          "effects": [
+            { "type": "reputation", "personId": "$subject", "amount": -0.02, "reason": "the appointment list was rejected" },
+            { "type": "mood", "personId": "$subject", "amount": -0.03, "reason": "a promise could not be kept" },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "friend",
+              "trust": -0.06,
+              "reason": "the appointment fell through"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "appointment_list_rejected",
+              "add": true,
+              "reason": "the committee rejected the list"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "委员会以“没有相关资历”为由划掉了联络员的名字。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-list-was-already-signed",
+          "weight": 0.15,
+          "text": "上一任在离任前签了一份四十人的任命名单，最后一行没有日期。{subject}把{ally}的名字添在第四十一行，注明“补录”；发薪日，会计问这四十一个人里为什么有六个已经去世。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "position",
+              "organizationId": "$positionOrg",
+              "title": "编外顾问",
+              "holderId": "$ally",
+              "wage": 0,
+              "authority": [],
+              "reason": "an ally was added to a dead man's list"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$ally",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "the ally was added to the organisation"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "the forty-first name was put on payroll"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "forty_first_name",
+              "add": true,
+              "reason": "added a name to a predecessor's list"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "上一任留下的四十人名单里，有六个已经去世。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": -0.02, "reason": "the list was longer than the living" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "office16-corruption.inspection",
+      "title": "审计员带来的两只箱子",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 28, "max": 75 },
+      "tags": ["office", "corruption", "audit", "legal", "power", "dark"],
+      "contexts": ["vienna", "urban", "peace", "reform", "crisis", "postwar"],
+      "conditions": [{ "kind": "position" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 28, "maxAge": 75 },
+        { "key": "auditor", "kind": "official", "required": true, "minAge": 26, "maxAge": 75 },
+        { "key": "beneficiary", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 70 },
+        { "key": "clerk", "kind": "official", "required": false, "minAge": 24, "maxAge": 70 }
+      ],
+      "baseRate": 0.13,
+      "weight": 4,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "clean-audit",
+          "weight": 0.35,
+          "text": "{auditor}带了两只空箱子来，走的时候还是空的。{subject}把三年的合同、收据和会议记录按月份排在地上，{auditor}抽查了十二份，每一份都能对上签字人；最后一句是“下次可以少准备一点”。",
+          "significance": 0.85,
+          "effects": [
+            { "type": "reputation", "personId": "$subject", "amount": 0.05, "reason": "the audit found nothing" },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": 1,
+              "reason": "an unspent balance was returned to the office"
+            },
+            { "type": "skill", "personId": "$subject", "skill": "numeracy", "amount": 0.02, "reason": "prepared three years of records" },
+            { "type": "mood", "personId": "$subject", "amount": 0.03, "reason": "a clean audit" },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "passed_audit",
+              "add": true,
+              "reason": "passed a full audit"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "审计抽查了十二份合同，每一份都能对上签字人。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "fined",
+          "weight": 0.3,
+          "text": "{auditor}在第三份合同上停住了：同一批纸张被报了两次价，第二次的签字是{subject}。罚款单当场开出，金额不算大，但足够让下一季度的办公用品全部改成最便宜的牌子。{subject}没有争辩，只在收据背面写了日期。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -3,
+              "reason": "a fine for double-invoiced paper"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": -0.05, "reason": "a formal audit finding" },
+            { "type": "mood", "personId": "$subject", "amount": -0.06, "reason": "the fine was personal" },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "parameters": {
+                "exposure": 40,
+                "support": 45,
+                "months": 0,
+                "cause": "double invoiced paper",
+                "positionId": "$positionId"
+              },
+              "durationMonths": 9,
+              "reason": "the audit finding put the office under pressure"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fined_after_audit",
+              "add": true,
+              "reason": "fined after an audit"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "同一批纸张被报了两次价，第二次的签字是我的。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "cover-up",
+          "weight": 0.25,
+          "text": "{subject}请{auditor}去咖啡馆，把一只没有标记的信封留在桌上。{auditor}没有碰信封，只把报告里“重复报销”改成“记账口径不一”；作为交换，{subject}签了{auditor}侄子的实习证明。两个人都没有提那只信封后来去了哪里。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "a quiet consulting fee to the auditor"
+            },
+            { "type": "reputation", "personId": "$subject", "amount": -0.02, "reason": "the audit was softened" },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$auditor",
+              "kind": "acquaintance",
+              "trust": 0.06,
+              "fear": 0.12,
+              "reason": "a report was rewritten"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bribed_auditor",
+              "add": true,
+              "reason": "traded a favour for a softer audit"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "审计报告里的“重复报销”被改成了“记账口径不一”，实习证明由我签字。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the report was closed" }
+          ]
+        },
+        {
+          "id": "auditor-is-the-beneficiary",
+          "weight": 0.1,
+          "text": "审计开始前，{auditor}把名片放在桌上：他是{beneficiary}的弟弟。{subject}看着他翻开哥哥的考勤卡，又合上，说家里的事不影响审计。抽查只做了半天，报告只有一页，最后一页的签名是空的。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "an inconclusive half-day audit"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$auditor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "the auditor was compromised by kinship"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "auditor_was_beneficiary",
+              "add": true,
+              "reason": "the auditor was related to the sinecure holder"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "审计员的哥哥就是去年那个顾问，报告最后一页没有签名。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            { "type": "mood", "personId": "$subject", "amount": 0.02, "reason": "the audit was a family matter" }
+          ]
+        }
+      ]
+    }
+  ]
+}

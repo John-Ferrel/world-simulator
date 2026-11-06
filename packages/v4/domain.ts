@@ -149,6 +149,56 @@ export type PersonLife = {
 };
 export type Sex = 'female' | 'male' | 'intersex';
 
+/**
+ * Named capabilities used by checks. They are optional: old people derive a
+ * stable value from traits/skills at read time, so no save migration is needed.
+ * Values are normalized 0..1.
+ */
+export type PersonAttributeKey =
+  | 'intelligence'
+  | 'willpower'
+  | 'charisma'
+  | 'empathy'
+  | 'cunning'
+  | 'resilience'
+  | 'perception'
+  | 'luck';
+export type PersonAttributes = Partial<Record<PersonAttributeKey, number>>;
+
+/**
+ * Phase 15 state instances. A state is a persisted mechanism with duration,
+ * parameters, ticks, reactions and slots. It is not a tag and not a second
+ * authority for Person.education / employment / Relation.
+ */
+export type StateOwnerType = 'person' | 'organization' | 'household' | 'place' | 'region' | 'world';
+export type StateParameterValue = number | string | boolean;
+
+export type StateInstance = {
+  id: Id;
+  definitionId: string;
+  version: number;
+  ownerType: StateOwnerType;
+  ownerId: Id;
+  since: WorldDate;
+  expiresAt?: WorldDate;
+  parameters: Record<string, StateParameterValue>;
+  /** Typed references to other world objects, e.g. lover, creditor, patron. */
+  links?: Record<string, Id>;
+  /** The committed fact that created this instance. */
+  sourceEventId: Id;
+  active: boolean;
+  endedAt?: WorldDate;
+  endReason?: string;
+  lastTickAt?: WorldDate;
+  /** Per-tick schedule, so a short tick cannot starve a long tick. */
+  tickHistory?: Record<string, WorldDate>;
+  tickCount: number;
+  /** Per-reaction cooldown bookkeeping, bounded by authored reaction ids. */
+  reactions?: Record<string, { lastAt: WorldDate; count: number }>;
+  /** Bounded audit of substitutions; a replace is never silent. */
+  replacedStateId?: Id;
+};
+
 export type Person = {
   id: Id;
   name: string;
@@ -180,6 +230,8 @@ export type Person = {
     agreeableness: number;
     neuroticism: number;
   };
+  /** Optional named capabilities. Missing values are derived deterministically. */
+  attributes?: PersonAttributes;
   education: {
     status: 'none' | 'home' | 'primary' | 'secondary' | 'apprenticeship' | 'higher';
     level: number;
@@ -210,6 +262,8 @@ export type Person = {
     traitDeltas?: Partial<Person['traits']>;
     /** Content tag for later scene eligibility, not a superpower. */
     focus?: 'education' | 'work' | 'family' | 'faith' | 'politics' | 'health' | 'craft' | 'none';
+    /** Phase 15 bounded wish archetype used by wish-state content. */
+    wishArchetype?: string;
     /** A private boundary the child may later act around, stored as text. */
     taboo?: string;
     /** One concrete private goal; not a guaranteed plot. */
@@ -469,6 +523,8 @@ export type EventEffect =
       /** Filled by the engine after the child exists. */
       childId?: Id;
       childName?: string;
+      /** States automatically attached by definitions with autoAttachOnBirth. */
+      autoStateEffects?: EventEffect[];
     }
   | {
       type: 'death';
@@ -478,6 +534,9 @@ export type EventEffect =
       /** Filled when an extinct household's cash passes to an heir. */
       estateTo?: Id;
       estateAmount?: number;
+      /** Person states ended by this death, recorded for replay. */
+      endedStateIds?: Id[];
+      exitEffects?: EventEffect[];
     }
   | {
       type: 'estate';
@@ -532,6 +591,98 @@ export type EventEffect =
         objectives?: string[];
         sourceIds?: string[];
       };
+    }
+  | {
+      /** Add a persisted mechanism state. The definition must be registered. */
+      type: 'state_add';
+      ownerType: StateOwnerType;
+      ownerId: Id;
+      stateId: string;
+      parameters?: Record<string, StateParameterValue>;
+      /** Bounded references resolved from roles, e.g. { lover: "$lover" }. */
+      links?: Record<string, Id>;
+      durationMonths?: number;
+      /** Filled by the engine for replay/audit. */
+      instanceId?: Id;
+      definitionVersion?: number;
+      /** Effects actually applied by the state definition on entry. */
+      entryEffects?: EventEffect[];
+      /** Exit effects applied when a replace policy ended an occupying state. */
+      replacedExitEffects?: EventEffect[];
+      reason: string;
+    }
+  | {
+      type: 'state_remove';
+      ownerType: StateOwnerType;
+      ownerId: Id;
+      stateId?: string;
+      tag?: string;
+      /** Optional exact instance selector; preferred for expiry/tick facts. */
+      instanceId?: Id;
+      /** Filled by the engine for replay/audit. */
+      instanceIds?: Id[];
+      definitionVersion?: number;
+      /** Effects actually applied by the state definition on exit. */
+      exitEffects?: EventEffect[];
+      reason: string;
+    }
+  | {
+      type: 'state_parameter';
+      ownerType: StateOwnerType;
+      ownerId: Id;
+      stateId: string;
+      key: string;
+      value?: StateParameterValue;
+      delta?: number;
+      /** Filled by the engine for replay/audit. */
+      instanceId?: Id;
+      previous?: StateParameterValue;
+      final?: StateParameterValue;
+      reason: string;
+    }
+  | {
+      type: 'state_transition';
+      ownerType: StateOwnerType;
+      ownerId: Id;
+      fromStateId: string;
+      toStateId: string;
+      parameters?: Record<string, StateParameterValue>;
+      links?: Record<string, Id>;
+      /** Optional exact source instance selector. */
+      instanceId?: Id;
+      /** Filled by the engine for replay/audit. */
+      toInstanceId?: Id;
+      definitionVersion?: number;
+      /** Effects actually applied when ending the old state / entering the new. */
+      exitEffects?: EventEffect[];
+      entryEffects?: EventEffect[];
+      reason: string;
+    }
+  | {
+      /** Real authority: a named office in an existing organisation. */
+      type: 'position';
+      /** Omit only when removing by holder/title across organisations. */
+      organizationId?: Id;
+      title: string;
+      holderId?: Id;
+      positionId?: string;
+      wage?: number;
+      authority?: string[];
+      remove?: boolean;
+      reason: string;
+    }
+  | {
+      /** A real organisation founded by a committed event. */
+      type: 'organization_found';
+      organization: {
+        id?: string;
+        name: string;
+        kind: Organization['kind'];
+        placeId?: Id;
+        treasury?: number;
+        authorityRules?: string[];
+      };
+      reason: string;
     };
 
 /**
@@ -580,6 +731,7 @@ export type RoleRequirement = {
     | 'parent'
     | 'guardian'
     | 'sibling'
+    | 'child'
     | 'partner'
     | 'teacher'
     | 'employer'
@@ -702,7 +854,56 @@ export type SceneCondition =
       partnerSex?: Person['sex'];
     }
   /** A persistent personal flag set by an earlier committed effect. */
-  | { kind: 'hasFlag'; flag: string };
+  | { kind: 'hasFlag'; flag: string }
+  /**
+   * An active Phase 15 mechanism state. `stateId` matches exactly; `tag` matches
+   * any active state definition carrying that tag. `owner` defaults to the
+   * subject's person states.
+   */
+  | {
+      kind: 'hasState';
+      stateId?: string;
+      tag?: string;
+      owner?: StateOwnerType;
+      /** State parameters are read from the first matching instance. */
+      parameter?: string;
+      min?: number;
+      max?: number;
+      equals?: StateParameterValue;
+      minCount?: number;
+    }
+  | { kind: 'notHasState'; stateId?: string; tag?: string; owner?: StateOwnerType }
+  /** A named capability, resolved from Person.attributes or derived. */
+  | { kind: 'attribute'; attribute: PersonAttributeKey; min?: number; max?: number }
+  /** The subject actually holds a recorded office/position, not a stage title. */
+  | {
+      kind: 'position';
+      organizationId?: Id;
+      titleIncludes?: string;
+      authority?: string;
+    };
+
+/**
+ * A deterministic d20 check that selects an authored outcome. It is not a
+ * second resolution system: success/failure still resolve to ordinary
+ * SceneOutcome objects with typed effects.
+ */
+export type SceneCheckSpec = {
+  attribute?: PersonAttributeKey;
+  skill?: keyof PersonLife['skills'];
+  /** Difficulty class. A modifier of +3 against DC 12 succeeds on 9+. */
+  dc: number;
+  /** Bonus when an active state carries each tag. */
+  stateBonus?: Record<string, number>;
+  /** Bonus per matching past event, capped. */
+  historyBonus?: { tag: string; perCount: number; max: number };
+  /** Any matching state tag forces a normal failure regardless of roll. */
+  blockedByStateTags?: string[];
+  successOutcomeIds: string[];
+  failureOutcomeIds: string[];
+  criticalSuccessOutcomeIds?: string[];
+  criticalFailureOutcomeIds?: string[];
+};
 
 export type SceneEffect = EventEffect; // v4 effects are the same typed vocabulary.
 
@@ -741,6 +942,15 @@ export type IncidentTrace = {
   motive?: string;
   conflict?: string;
   response?: string;
+  /** Deterministic d20 check used to select the outcome. */
+  check?: {
+    die: number;
+    modifier: number;
+    total: number;
+    dc: number;
+    band: 'success' | 'failure' | 'critical_success' | 'critical_failure';
+    blockedBy?: string;
+  };
   effects: { type: EventEffect['type']; description: string }[];
 };
 
@@ -797,6 +1007,8 @@ export type SceneDefinition = {
   narration?: NarrationVariant[];
   /** Fact tags this event subscribes to (injury, death, unemployment, ...). */
   triggerTags?: string[];
+  /** Optional ability check that selects among the authored outcomes. */
+  check?: SceneCheckSpec;
   historicalBasis?: string;
   sourceIds?: string[];
   /**
@@ -897,6 +1109,8 @@ export type WorldState = {
   places: Record<Id, Place>;
   households: Record<Id, Household>;
   persons: Record<Id, Person>;
+  /** Phase 15 mechanism states. Optional for old saves and fixtures. */
+  states?: Record<Id, StateInstance>;
   organizations: Record<Id, Organization>;
   positions: Record<Id, Position>;
   projects: Record<Id, Project>;
@@ -913,6 +1127,14 @@ export type WorldState = {
     lastSceneId?: string;
     lastEventId?: string;
     sequence: number;
+    /** Phase 15 state instance id sequence. */
+    stateSequence?: number;
+    /** Bumped on state/owner-membership changes; used to invalidate query indexes. */
+    stateRevision?: number;
+    /** Bumped when organisation membership/positions change. */
+    organizationRevision?: number;
+    /** Bumped when a relation is created, restored or ended. */
+    relationRevision?: number;
     scheduledEvents?: ScheduledEvent[];
   };
   status: 'running' | 'archived';
@@ -971,6 +1193,13 @@ export type AmbientEventDefinition = {
 
 /** A strict invariant check used after every mutation; throws on impossible state. */
 export function assertWorldV4(world: WorldState): void {
+  const isValidWorldDate = (value: unknown): value is WorldDate =>
+    Boolean(value) &&
+    typeof value === 'object' &&
+    Number.isInteger((value as WorldDate).year) &&
+    Number.isInteger((value as WorldDate).month) &&
+    (value as WorldDate).month >= 1 &&
+    (value as WorldDate).month <= 12;
   const ids = new Set<string>();
   const add = (id: string, kind: string, record: unknown) => {
     if (!id || ids.has(id)) throw new Error(`v4: duplicate or empty ${kind} id ${id}`);
@@ -991,6 +1220,23 @@ export function assertWorldV4(world: WorldState): void {
     if (h.cash < 0 || h.food < 0) throw new Error(`v4: household ${id} has negative stock`);
   }
   for (const [id, place] of Object.entries(world.places)) add(id, 'place', place);
+  for (const [id, state] of Object.entries(world.states ?? {})) {
+    add(id, 'state', state);
+    if (!state.definitionId) throw new Error(`v4: state ${id} has no definition`);
+    if (!state.sourceEventId) throw new Error(`v4: state ${id} has no source event`);
+    const ownerExists =
+      (state.ownerType === 'person' && Boolean(world.persons[state.ownerId])) ||
+      (state.ownerType === 'organization' && Boolean(world.organizations[state.ownerId])) ||
+      (state.ownerType === 'household' && Boolean(world.households[state.ownerId])) ||
+      (state.ownerType === 'place' && Boolean(world.places[state.ownerId])) ||
+      (state.ownerType === 'region' && Boolean(world.macro?.regions[state.ownerId])) ||
+      (state.ownerType === 'world' && state.ownerId === world.id);
+    if (!ownerExists) throw new Error(`v4: state ${id} has no ${state.ownerType} owner`);
+    if (state.expiresAt && !isValidWorldDate(state.expiresAt))
+      throw new Error(`v4: state ${id} has invalid expiry`);
+    if (state.active && state.endedAt) throw new Error(`v4: active state ${id} has endedAt`);
+    if (!state.active && !state.endedAt) throw new Error(`v4: ended state ${id} has no endedAt`);
+  }
   for (const [id, org] of Object.entries(world.organizations)) {
     add(id, 'organization', org);
     if (!world.places[org.placeId]) throw new Error(`v4: organization ${id} has no place`);

@@ -104,6 +104,12 @@ const VALID_EFFECTS = new Set<EventEffect['type']>([
   'historical_influence',
   'historical_process',
   'organization_funds',
+  'state_add',
+  'state_remove',
+  'state_parameter',
+  'state_transition',
+  'position',
+  'organization_found',
 ]);
 
 const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
@@ -128,6 +134,10 @@ const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
   'historicalProcess',
   'legacy',
   'hasRelationWith',
+  'hasState',
+  'notHasState',
+  'attribute',
+  'position',
 ]);
 
 export type AuthoredValidationOptions = {

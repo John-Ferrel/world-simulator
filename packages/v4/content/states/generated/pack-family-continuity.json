@@ -1,0 +1,3099 @@
+{
+  "id": "pack-family-continuity",
+  "version": 1,
+  "title": "亲代延续、遗属与家产",
+  "description": "把抚养孩子、战争遗属、再婚和家产继承做成持续状态，让离家的孩子能带着具体经历回来，让寡妇的抚恤金不是一句背景，也让家产真正改变家庭每年的选择。",
+  "author": "phase15-author-love",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-05",
+  "sourceBriefId": "brief-education-continuity",
+  "rationale": "Phase 14 的孩子在出生后容易消失，遗属和家产只是一次性叙事。这个包用三个户/人状态维持亲代责任、抚恤资格和家产 upkeep，并要求孩子的离开与归来使用同一个人、同一件物品和同一段历史。",
+  "states": [
+    {
+      "id": "raising-child",
+      "version": 1,
+      "packId": "pack-family-continuity",
+      "title": "家里有个正在长大的孩子",
+      "description": "一个家庭正在承担抚养、学费和日常照护。孩子不是背景数字：学校、饭桌、离家与归来都会改变这个状态的参数，也改变家庭接下来的可用资源。",
+      "owner": "household",
+      "slot": "care",
+      "conflict": "stack",
+      "tags": [
+        "family",
+        "child",
+        "care",
+        "school",
+        "household"
+      ],
+      "parameters": {
+        "caregiverBurden": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "schoolProgress": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "childConfidence": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "careDebt": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 100
+        },
+        "schoolEnrolled": {
+          "type": "boolean",
+          "default": false
+        },
+        "leftHome": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "links": {
+        "child": "person"
+      },
+      "enterConditions": [
+        {
+          "kind": "householdSize",
+          "min": 2
+        }
+      ],
+      "durationMonths": {
+        "min": 216,
+        "max": 300
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "family",
+            "child",
+            "school",
+            "care"
+          ],
+          "multiplier": 1.55
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "travel",
+            "leisure"
+          ],
+          "multiplier": 0.75
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "child",
+            "care",
+            "school"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "school-year",
+          "everyMonths": 24,
+          "check": {
+            "attribute": "empathy",
+            "dc": 10,
+            "successOutcomeIds": [
+              "learns"
+            ],
+            "failureOutcomeIds": [
+              "struggles"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "learns",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}把{child}的旧课本包上书皮，又在本子上签了名。{child}今年学会了自己系鞋带，也学会了在饭桌上说“不”；{subject}听着，觉得屋子比去年更满。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "raising-child",
+                  "key": "schoolProgress",
+                  "delta": 8,
+                  "reason": "a school year with steady attendance"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "raising-child",
+                  "key": "caregiverBurden",
+                  "delta": -3,
+                  "reason": "the child became a little more independent"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "a small sign of growing up"
+                }
+              ]
+            },
+            {
+              "id": "struggles",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}被叫到学校，老师说{child}这学期总在课上看窗外。回家的路上，{subject}没有骂，只把买好的铅笔又数了一遍；晚饭时，两个人都吃得很少。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "raising-child",
+                  "key": "schoolProgress",
+                  "delta": -5,
+                  "reason": "a difficult school term"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "raising-child",
+                  "key": "caregiverBurden",
+                  "delta": 5,
+                  "reason": "the school asked for more attention"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -2,
+                  "reason": "extra lessons and replacement pencils"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "a quiet dinner after a bad report"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "household-budget",
+          "everyMonths": 24,
+          "outcomes": [
+            {
+              "id": "tight-month",
+              "weight": 1,
+              "text": "{subject}把房租、煤钱和{child}的学费写在同一张纸上，算到最后还是少一截。{child}说可以不去郊游；{subject}说再等等，然后把那张纸折起来，压到盐罐底下。",
+              "effects": [
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "the household budget is short again"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "raising-child",
+                  "key": "careDebt",
+                  "delta": 2,
+                  "reason": "school and household costs were deferred"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "an unpaid bill folded into the salt tin"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "child-death-in-the-household",
+          "onTags": [
+            "death"
+          ],
+          "requiresRoles": [
+            "child"
+          ],
+          "chance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "delta": -30,
+              "reason": "the household lost the child it was raising"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "delta": 15,
+              "reason": "the routines of care remain after the death"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "a child's death"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lost_child",
+              "add": true,
+              "reason": "the household lost a child"
+            }
+          ],
+          "text": "孩子的名字从学校的名册上被划掉以后，家里的碗还多摆了一副。{subject}没有把它收起来，直到有一天发现碗沿积了灰，才拿去洗。",
+          "cooldownMonths": 60,
+          "maxPerYear": 1
+        },
+        {
+          "id": "school-note",
+          "onTags": [
+            "school"
+          ],
+          "chance": 0.2,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolProgress",
+              "delta": 3,
+              "reason": "a teacher's note arrived at home"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a small piece of good news from school"
+            }
+          ],
+          "text": "老师托人带来一张纸条，说{child}这周主动擦了黑板。{subject}把纸条压在桌玻璃下面；那张玻璃下面已经有三张纸条了。",
+          "cooldownMonths": 24
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "householdSize",
+          "max": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "raising_child_active",
+          "add": true,
+          "reason": "the household began raising a child"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "raising_child_active",
+          "add": false,
+          "reason": "the household is no longer raising a child"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase15-author-love",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "brief-education-continuity"
+        ],
+        "rationale": "Childhood needs continuity: the school year, the household budget and the child's departure must all read the same persisted care relationship."
+      },
+      "maxStacks": 8,
+      "autoAttachOnBirth": {
+        "owner": "household",
+        "link": "child",
+        "reason": "a live child joined the household"
+      }
+    },
+    {
+      "id": "war-widow-with-children",
+      "version": 1,
+      "packId": "pack-family-continuity",
+      "title": "带着孩子的战争遗属",
+      "description": "配偶死在战争里，家里还有需要抚养的孩子。抚恤金不是一次性的慰问，而是每年都要重新证明的资格；再婚、孩子的意见和丧恸会一起改变这个状态。",
+      "owner": "person",
+      "slot": "family",
+      "conflict": "replace",
+      "tags": [
+        "war",
+        "family",
+        "widow",
+        "children",
+        "grief",
+        "welfare"
+      ],
+      "parameters": {
+        "pensionStatus": {
+          "type": "string",
+          "default": "pending"
+        },
+        "monthlyPension": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 40
+        },
+        "dependentCount": {
+          "type": "number",
+          "default": 2,
+          "min": 0,
+          "max": 6
+        },
+        "grief": {
+          "type": "number",
+          "default": 60,
+          "min": 0,
+          "max": 100
+        },
+        "remarried": {
+          "type": "boolean",
+          "default": false
+        },
+        "arrearsMonths": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 12
+        }
+      },
+      "links": {
+        "eldestChild": "person"
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 20,
+          "max": 70
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        },
+        {
+          "kind": "sex",
+          "in": [
+            "female"
+          ]
+        }
+      ],
+      "durationMonths": {
+        "min": 24,
+        "max": 240
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "war",
+            "family",
+            "welfare",
+            "grief",
+            "work"
+          ],
+          "multiplier": 1.4
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "courtship",
+            "marriage"
+          ],
+          "multiplier": 0.7
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "welfare",
+            "family"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "pension-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "intelligence",
+            "skill": "literacy",
+            "dc": 11,
+            "successOutcomeIds": [
+              "paid"
+            ],
+            "failureOutcomeIds": [
+              "pending"
+            ],
+            "criticalFailureOutcomeIds": [
+              "denied"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "paid",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}在办事处排了一上午，终于领到这个月的抚恤金。窗口后的职员换了人，表格没有换；{subject}把钱分成三份，先买煤，再买面包，最后把剩下的压进铁盒。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "war-widow-with-children",
+                  "key": "pensionStatus",
+                  "value": "paid",
+                  "reason": "the pension office approved this year's claim"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "war-widow-with-children",
+                  "key": "monthlyPension",
+                  "delta": 1,
+                  "reason": "a small cost-of-living adjustment"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 2,
+                  "reason": "the pension payment arrived"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "war-widow-with-children",
+                  "key": "grief",
+                  "delta": -2,
+                  "reason": "the payment made the household slightly steadier"
+                }
+              ]
+            },
+            {
+              "id": "pending",
+              "result": "failure",
+              "weight": 2,
+              "text": "{subject}又被告知“下个月再来”。表格上多了一个红章，理由写得很小；{subject}没有争辩，只把孩子的外套裹紧，走进雨里。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "war-widow-with-children",
+                  "key": "pensionStatus",
+                  "value": "pending",
+                  "reason": "the file was sent back for another stamp"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "war-widow-with-children",
+                  "key": "arrearsMonths",
+                  "delta": 1,
+                  "reason": "the payment is one month late"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "travel and a missed day of work"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "another month without the payment"
+                }
+              ]
+            },
+            {
+              "id": "denied",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "{subject}收到一封退件，上面说材料不足。{subject}把丈夫的军帽从柜子里拿出来，放在桌上看了很久；孩子问那是什么，{subject}说是一件旧衣服。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "war-widow-with-children",
+                  "key": "pensionStatus",
+                  "value": "denied",
+                  "reason": "the claim was refused"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "war-widow-with-children",
+                  "key": "arrearsMonths",
+                  "delta": 2,
+                  "reason": "two months of unpaid pension"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "war-widow-with-children",
+                  "key": "grief",
+                  "delta": 4,
+                  "reason": "the refusal reopened the loss"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -2,
+                  "reason": "the household had counted on the payment"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "widow_pension_denied",
+                  "add": true,
+                  "reason": "the pension office denied the claim"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "grief-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "resilience",
+            "dc": 11,
+            "successOutcomeIds": [
+              "carried"
+            ],
+            "failureOutcomeIds": [
+              "anniversary"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "carried",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}又过了一年。那个人的名字不再每天出现，但在某些气味和街道上仍会回来；{subject}把照片擦干净，放回原来的位置。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "war-widow-with-children",
+                  "key": "grief",
+                  "delta": -4,
+                  "reason": "the grief became more bearable"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "a manageable anniversary"
+                }
+              ]
+            },
+            {
+              "id": "anniversary",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}在周年那天把孩子送到邻居家，自己坐到天黑。桌上的第二副碗筷没有收；第二天早晨，{subject}把它们洗了，放回柜子最上层。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "war-widow-with-children",
+                  "key": "grief",
+                  "delta": 6,
+                  "reason": "the anniversary was harder than expected"
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "a night without sleep or food"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "child-death-while-widowed",
+          "onTags": [
+            "death"
+          ],
+          "requiresRoles": [
+            "child"
+          ],
+          "chance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "grief",
+              "delta": 15,
+              "reason": "the household lost a second person"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "dependentCount",
+              "delta": -1,
+              "reason": "one dependent is gone"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "a child's death"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lost_child",
+              "add": true,
+              "reason": "the widow lost a child"
+            }
+          ],
+          "text": "孩子的葬礼上，{subject}没有哭。回家以后，{subject}把孩子的鞋摆在门口，第二天又收进柜子；邻居来送汤时，{subject}说“他刚睡”。",
+          "cooldownMonths": 60,
+          "maxPerYear": 1
+        },
+        {
+          "id": "war-news-again",
+          "onTags": [
+            "war_death_news"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "grief",
+              "delta": 5,
+              "reason": "another death notice from the same war"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the war keeps returning in other people's names"
+            }
+          ],
+          "text": "又一个熟人死在同一条战线上。{subject}去帮忙折纸花，听遗属念名单；念到一半，{subject}发现自己已经把丈夫的名字也在心里排了进去。",
+          "cooldownMonths": 12
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "war-widow-with-children",
+          "parameter": "remarried",
+          "equals": true
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "war_widow_with_children",
+          "add": true,
+          "reason": "a war widow with dependent children entered the pension system"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "war_widow_with_children",
+          "add": false,
+          "reason": "the widowhood state ended"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase15-author-love",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "brief-education-continuity"
+        ],
+        "rationale": "Widowhood with children needs a recurring pension mechanism, a grief parameter and an explicit remarriage exit; it cannot be a single condolence scene."
+      }
+    },
+    {
+      "id": "family-estate",
+      "version": 1,
+      "packId": "pack-family-continuity",
+      "title": "一处要维持的家产",
+      "description": "一处房屋、果园或田地，带着地租、修缮、债务和继承争议。它不是一个财富数字，而是每年都要决定修哪里、卖什么、让谁住进去的家庭机制。",
+      "owner": "household",
+      "slot": "property",
+      "conflict": "block",
+      "tags": [
+        "family",
+        "estate",
+        "inheritance",
+        "property",
+        "rural"
+      ],
+      "parameters": {
+        "acres": {
+          "type": "number",
+          "default": 8,
+          "min": 0,
+          "max": 200
+        },
+        "debt": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        },
+        "heirNamed": {
+          "type": "boolean",
+          "default": false
+        },
+        "contested": {
+          "type": "boolean",
+          "default": false
+        },
+        "upkeep": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "links": {
+        "heir": "person"
+      },
+      "durationMonths": {
+        "min": 60,
+        "max": 360
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "family",
+            "estate",
+            "inheritance",
+            "rural",
+            "property"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "travel",
+            "leisure"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "inheritance",
+            "estate"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "estate-year",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "intelligence",
+            "skill": "numeracy",
+            "dc": 11,
+            "successOutcomeIds": [
+              "steady"
+            ],
+            "failureOutcomeIds": [
+              "repairs"
+            ],
+            "criticalFailureOutcomeIds": [
+              "claim"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "steady",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}修好了仓房的一扇门，又把地租账本重新誊了一遍。今年的收成不算好，但屋顶没有漏；{subject}在账本最后一页写下“尚可”，然后去厨房烧水。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "family-estate",
+                  "key": "upkeep",
+                  "delta": -3,
+                  "reason": "the estate held together for another year"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 2,
+                  "reason": "rent and a small harvest"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "family-estate",
+                  "key": "debt",
+                  "delta": -2,
+                  "reason": "a small payment on the estate debt"
+                }
+              ]
+            },
+            {
+              "id": "repairs",
+              "result": "failure",
+              "weight": 2,
+              "text": "{subject}发现地窖的墙裂了一道缝，请人来看，报价比预想多一倍。钱只能从冬天的煤里挪；{subject}点着灯算到半夜，最后把祖上传下来的银勺包起来，准备明天送去当铺。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "family-estate",
+                  "key": "upkeep",
+                  "delta": 5,
+                  "reason": "a cracked cellar wall needs repair"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "family-estate",
+                  "key": "debt",
+                  "delta": 6,
+                  "reason": "the repair was paid on credit"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -2,
+                  "reason": "materials for the cellar wall"
+                }
+              ]
+            },
+            {
+              "id": "claim",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "{subject}收到一封律师信，说远房亲戚认为地界划错了。{subject}把旧地图铺在桌上，发现自己也说不清那棵梨树到底在哪一边；从那天起，每次有人敲门，{subject}都先看对方手里有没有纸。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "family-estate",
+                  "key": "contested",
+                  "value": true,
+                  "reason": "a relative contested the boundary"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "family-estate",
+                  "key": "debt",
+                  "delta": 10,
+                  "reason": "legal costs and a surveyor"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -3,
+                  "reason": "the lawyer's retainer"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "estate_contested",
+                  "add": true,
+                  "reason": "the estate boundary was challenged"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "roof-and-taxes",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "fixed-costs",
+              "weight": 1,
+              "text": "{subject}把今年的地税、屋顶修补和井绳钱一笔笔记进账本。每一笔都不大，加起来却正好吃掉卖苹果的收入；{subject}合上账本，去院子里看了看那棵老梨树。",
+              "effects": [
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -2,
+                  "reason": "land tax, roof repairs and a new well rope"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "family-estate",
+                  "key": "upkeep",
+                  "delta": 4,
+                  "reason": "the fixed costs of keeping the estate"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "the accounts balanced badly"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "death-in-the-estate-household",
+          "onTags": [
+            "death"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "contested",
+              "value": true,
+              "reason": "a death reopened the question of inheritance"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": 5,
+              "reason": "the funeral and the probate costs"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "inheritance_dispute",
+              "add": true,
+              "reason": "a death triggered an inheritance dispute"
+            }
+          ],
+          "text": "葬礼结束以后，亲戚们没有急着走。有人问起地契放在哪里，有人去看仓房的锁；{subject}把最后一盘冷菜端回厨房，发现桌边已经没有人说话。",
+          "cooldownMonths": 36
+        },
+        {
+          "id": "inheritance-arrives",
+          "onTags": [
+            "inheritance"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "contested",
+              "value": true,
+              "reason": "an inheritance claim was filed"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": 3,
+              "reason": "the claim requires legal work"
+            }
+          ],
+          "text": "继承的消息传来时，{subject}正在修一把坏掉的椅子。来人说有一块地、一间仓房和一笔旧债；{subject}把锤子放下，先问“债是谁签的字”。",
+          "cooldownMonths": 36
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "family-estate",
+          "parameter": "acres",
+          "max": 0
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "family_estate_active",
+          "add": true,
+          "reason": "the household holds a family estate"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "family_estate_active",
+          "add": false,
+          "reason": "the family estate was sold or lost"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase15-author-love",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "brief-education-continuity"
+        ],
+        "rationale": "Inheritance must have upkeep, debt and a contest mechanism. The estate is a household state, not a one-off cash effect."
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "r15-fam.school-registration",
+      "title": "名册最后一行",
+      "domain": "education",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 55
+      },
+      "tags": [
+        "family",
+        "child",
+        "school",
+        "education",
+        "school_child"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "war",
+        "postwar",
+        "rural",
+        "schooling"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household",
+          "parameter": "schoolEnrolled",
+          "equals": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 55
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 12,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "enrolls",
+          "weight": 4,
+          "text": "{subject}带着{child}去学校登记。孩子的名字被写在名册最后一行，墨水还没有干；回家的路上，{child}一直捏着那张课程表，{subject}则在算这个月还能剩下多少煤钱。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "value": 45,
+              "reason": "the child was enrolled and the household began raising a schoolchild"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolProgress",
+              "value": 20,
+              "reason": "the child was enrolled and the household began raising a schoolchild"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "value": 55,
+              "reason": "the child was enrolled and the household began raising a schoolchild"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "careDebt",
+              "value": 0,
+              "reason": "the child was enrolled and the household began raising a schoolchild"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolEnrolled",
+              "value": true,
+              "reason": "the child was enrolled and the household began raising a schoolchild"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "leftHome",
+              "value": false,
+              "reason": "the child was enrolled and the household began raising a schoolchild"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the first school books and a slate"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.08,
+              "reason": "the first school registration"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a child in school"
+            }
+          ]
+        },
+        {
+          "id": "keeps-home",
+          "weight": 2,
+          "text": "{subject}没有给{child}报名。家里需要一双能看摊的手，学校也还欠着上一学期的纸笔钱；晚上{child}把别人的课本借来看，{subject}假装没有看见。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "value": 55,
+              "reason": "the household kept the child home for work"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolProgress",
+              "value": 8,
+              "reason": "the household kept the child home for work"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "value": 40,
+              "reason": "the household kept the child home for work"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "careDebt",
+              "value": 6,
+              "reason": "the household kept the child home for work"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolEnrolled",
+              "value": false,
+              "reason": "the household kept the child home for work"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "leftHome",
+              "value": false,
+              "reason": "the household kept the child home for work"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the child's small earnings at the stall"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": 0.05,
+              "reason": "a shared household decision"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_kept_from_school",
+              "add": true,
+              "reason": "school was deferred for household work"
+            }
+          ]
+        },
+        {
+          "id": "half-scholarship",
+          "weight": 1,
+          "text": "校长看了{child}的算术本，说可以免掉一半学费。{subject}在办公室里坐了很久，反复确认“不是借的”；出来时，{child}正在操场上追一只皮球，鞋底已经磨穿了。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "value": 38,
+              "reason": "a half scholarship made school affordable"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolProgress",
+              "value": 32,
+              "reason": "a half scholarship made school affordable"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "value": 65,
+              "reason": "a half scholarship made school affordable"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "careDebt",
+              "value": 0,
+              "reason": "a half scholarship made school affordable"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolEnrolled",
+              "value": true,
+              "reason": "a half scholarship made school affordable"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "leftHome",
+              "value": false,
+              "reason": "a half scholarship made school affordable"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the first instalment of the school grant"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.06,
+              "affection": 0.08,
+              "reason": "the child's ability was recognised"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a scholarship is a public sign of a promising child"
+            }
+          ]
+        },
+        {
+          "id": "wrong-register",
+          "weight": 0.4,
+          "text": "登记处的老职员把{child}的名字写成了{subject}小时候的名字。{subject}指出错误，对方却说“你们家的人长得都一样”；{child}拿着写错名字的课程表回家，一路上都在偷笑。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "value": 45,
+              "reason": "the child was registered under the wrong name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolProgress",
+              "value": 15,
+              "reason": "the child was registered under the wrong name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "value": 58,
+              "reason": "the child was registered under the wrong name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "careDebt",
+              "value": 2,
+              "reason": "the child was registered under the wrong name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolEnrolled",
+              "value": true,
+              "reason": "the child was registered under the wrong name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "leftHome",
+              "value": false,
+              "reason": "the child was registered under the wrong name"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": 0.06,
+              "reason": "they shared the joke about the old register"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wrong_school_register",
+              "add": true,
+              "reason": "the school register used the parent's childhood name"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.2,
+      "weight": 3,
+      "cooldownYears": 6
+    },
+    {
+      "id": "r15-fam.child-leaves",
+      "title": "孩子上了那班火车",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 35,
+        "max": 65
+      },
+      "tags": [
+        "family",
+        "child",
+        "leaving",
+        "home",
+        "child_left_home"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "war",
+        "postwar",
+        "rural",
+        "port"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household",
+          "parameter": "schoolProgress",
+          "min": 30
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household",
+          "parameter": "leftHome",
+          "equals": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 65
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 15,
+          "maxAge": 25,
+          "sharedHistoryTag": "school_child"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "takes-the-train",
+          "weight": 3,
+          "text": "{child}把行李捆在自行车后座上，说要去城里找活。{subject}往包里塞了两个面包和一双旧袜子，没有送到车站；火车开走以后，{subject}才发现自己一直站在原地数车厢。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "move",
+              "personId": "$child",
+              "locationId": "@station",
+              "reason": "the child left for the city"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "leftHome",
+              "value": true,
+              "reason": "the child left the household"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_left_home",
+              "add": true,
+              "reason": "a child left home for work"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "reason": "the departure was allowed, not fought"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "one fewer mouth at the table"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the room stayed empty"
+            }
+          ]
+        },
+        {
+          "id": "stays-for-now",
+          "weight": 3,
+          "text": "{child}说再等一年，等家里的债还掉一点。{subject}没有劝，只把晚饭多添了一勺；夜里{subject}听见{child}在隔壁翻书，煤油灯一直亮到后半夜。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolProgress",
+              "delta": 5,
+              "reason": "the child stayed and kept studying"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "delta": 4,
+              "reason": "the household still supports the child"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "another year of food and lamp oil"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the child is still under the roof"
+            }
+          ]
+        },
+        {
+          "id": "sends-wages-home",
+          "weight": 1,
+          "text": "{child}在城里找到一份工，第一个月就寄回了钱。信里说住的地方很小，但窗户朝南；{subject}把钱数了两遍，最后只留下买煤的那一份，其余塞回信封。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "move",
+              "personId": "$child",
+              "locationId": "@station",
+              "reason": "the child left for a job in the city"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "leftHome",
+              "value": true,
+              "reason": "the child left home and sends money back"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_left_home",
+              "add": true,
+              "reason": "a child left home for work"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "the child's first wages sent home"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "delta": -5,
+              "reason": "the child's wages eased the household"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.06,
+              "reason": "the wages came with a letter"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_sends_money",
+              "add": true,
+              "reason": "the child sends part of the wages home"
+            }
+          ]
+        },
+        {
+          "id": "wrong-train",
+          "weight": 0.4,
+          "text": "{child}上错了火车，半夜又提着别人的箱子回来。箱子里是一套戏服和一顶礼帽；{subject}没有骂，只把箱子送到车站，回来时{child}已经趴在桌上睡着了。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wrong_train_suitcase",
+              "add": true,
+              "reason": "the child returned with the wrong suitcase"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "delta": 3,
+              "reason": "the false departure cost a night"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the child came home hungry"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.02,
+              "affection": 0.04,
+              "reason": "the mistake became a family story"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "relief disguised as annoyance"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 5
+    },
+    {
+      "id": "r15-fam.child-returns",
+      "title": "门口的旧箱子",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 40,
+        "max": 75
+      },
+      "tags": [
+        "family",
+        "child",
+        "return",
+        "home",
+        "child_returned"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "war",
+        "postwar",
+        "rural",
+        "port"
+      ],
+      "conditions": [
+        {
+          "kind": "hasFlag",
+          "flag": "child_left_home"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household",
+          "parameter": "leftHome",
+          "equals": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 40,
+          "maxAge": 75
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 35,
+          "sharedHistoryTag": "child_left_home"
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "comes-home-to-stay",
+          "weight": 3,
+          "text": "{child}带着一只旧箱子回来了，说城里的活不长久。{subject}把原来的房间收拾出来，发现床已经短了一截；晚饭时两个人谁也没提这些年，只商量明天去哪里买木料。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "household",
+              "personId": "$child",
+              "householdId": "$household",
+              "reason": "the child returned to the household"
+            },
+            {
+              "type": "move",
+              "personId": "$child",
+              "locationId": "@home",
+              "reason": "the child came back to the family home"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "leftHome",
+              "value": false,
+              "reason": "the child returned"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "delta": 8,
+              "reason": "the household has another adult to feed"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_left_home",
+              "add": false,
+              "reason": "the child is home again"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a new bed frame and winter coal"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.05,
+              "affection": 0.08,
+              "reason": "the return was accepted without a lecture"
+            }
+          ]
+        },
+        {
+          "id": "visits-for-supper",
+          "weight": 2,
+          "text": "{child}只是回来吃顿饭。{subject}做了{child}小时候爱吃的菜，{child}吃了两碗，又在天黑前赶末班车走；门关上以后，{subject}把剩下的菜分装成两份，一份放进橱柜。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a child's visit brought food and company"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a full table, briefly"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": 0.06,
+              "reason": "the visit was warm and short"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "delta": 2,
+              "reason": "the household cooked for a visitor"
+            }
+          ]
+        },
+        {
+          "id": "returns-as-rent-collector",
+          "weight": 0.6,
+          "text": "{child}穿着一身新制服回来，替房东清点屋里的家具。{subject}把租约和收据一张张摊在桌上，{child}低头记在本子上；临走时，{child}说“这是工作”，声音很轻。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "the rent arrears were entered in the landlord's book"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.05,
+              "reason": "the child came back as the landlord's agent"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "leftHome",
+              "value": false,
+              "reason": "the child is back in the household register, but not in the old role"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "delta": 5,
+              "reason": "the return brought a rent demand"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_left_home",
+              "add": false,
+              "reason": "the child is home, though changed"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_returned_as_agent",
+              "add": true,
+              "reason": "the child returned working for the landlord"
+            }
+          ]
+        },
+        {
+          "id": "returns-with-tools",
+          "weight": 1,
+          "text": "{child}带回一箱工具，说在城里跟人学了木工。{subject}摸着那些刨子，想起{child}小时候连钉子都拿不稳；那天下午，两个人把家里所有松动的椅子都修了一遍。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "household",
+              "personId": "$child",
+              "householdId": "$household",
+              "reason": "the child returned with a trade"
+            },
+            {
+              "type": "move",
+              "personId": "$child",
+              "locationId": "@home",
+              "reason": "the child came back to the family home"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "leftHome",
+              "value": false,
+              "reason": "the child returned with tools and work"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "careDebt",
+              "delta": -15,
+              "reason": "the child's wages paid down the care debt"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "the first repair jobs taken in the neighbourhood"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_left_home",
+              "add": false,
+              "reason": "the child is home again"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.08,
+              "affection": 0.1,
+              "reason": "the child returned with a usable trade"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_brought_tools",
+              "add": true,
+              "reason": "the child came home with a tool chest"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 8
+    },
+    {
+      "id": "r15-fam.widow-pension",
+      "title": "抚恤金窗口",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "war",
+        "family",
+        "widow",
+        "welfare",
+        "children"
+      ],
+      "contexts": [
+        "war",
+        "postwar",
+        "crisis",
+        "peace",
+        "urban"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "war-widow-with-children"
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        },
+        {
+          "kind": "sex",
+          "in": [
+            "female"
+          ]
+        },
+        {
+          "kind": "hasState",
+          "stateId": "grief"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 3,
+          "maxAge": 16,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "pension-approved",
+          "weight": 3,
+          "text": "{subject}在办事处排了一上午，终于把{child}的抚养费和自己的抚恤金办下来。窗口后的职员换了人，表格没有换；{subject}把钱分成三份，先交房租，再买煤，最后给{child}买了一双新鞋。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "parameters": {
+                "pensionStatus": "paid",
+                "monthlyPension": 3,
+                "dependentCount": 2,
+                "grief": 55,
+                "remarried": false,
+                "arrearsMonths": 0
+              },
+              "links": {
+                "eldestChild": "$child"
+              },
+              "reason": "the pension office recognised the widow and her dependent child"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the first pension payment"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "acquaintance",
+              "trust": 0.03,
+              "reason": "the clerk processed the claim"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.04,
+              "affection": 0.05,
+              "reason": "the child received new shoes"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the claim was recognised"
+            }
+          ]
+        },
+        {
+          "id": "pension-delayed",
+          "weight": 2,
+          "text": "{subject}又被告知“下个月再来”。表格上多了一个红章，理由写得很小；{child}在走廊里睡着了，{subject}把外套盖在孩子身上，自己继续等。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "parameters": {
+                "pensionStatus": "pending",
+                "monthlyPension": 0,
+                "dependentCount": 2,
+                "grief": 60,
+                "remarried": false,
+                "arrearsMonths": 1
+              },
+              "links": {
+                "eldestChild": "$child"
+              },
+              "reason": "the claim entered the pension queue"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the trip to the office and a missed shift"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "the clerk sent the file back again"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "another month of waiting"
+            }
+          ]
+        },
+        {
+          "id": "pension-denied",
+          "weight": 1,
+          "text": "{subject}收到一封退件，上面说材料不足。{subject}把丈夫的军帽从柜子里拿出来，放在桌上看了很久；{child}问那是什么，{subject}说是一件旧衣服。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "parameters": {
+                "pensionStatus": "denied",
+                "monthlyPension": 0,
+                "dependentCount": 2,
+                "grief": 70,
+                "remarried": false,
+                "arrearsMonths": 2
+              },
+              "links": {
+                "eldestChild": "$child"
+              },
+              "reason": "the pension claim was denied"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the household had counted on the payment"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "rival",
+              "trust": -0.05,
+              "reason": "the clerk refused the file"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "widow_pension_denied",
+              "add": true,
+              "reason": "the pension office denied the claim"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the denial reopened the loss"
+            }
+          ]
+        },
+        {
+          "id": "paid-in-soup-coupons",
+          "weight": 0.5,
+          "text": "办事处说现金不够，先发三个月的汤券。{subject}拿着一叠券去指定食堂，发现队伍比领钱时还长；{child}倒是很高兴，因为汤里偶尔能捞到一块肉。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "parameters": {
+                "pensionStatus": "paid",
+                "monthlyPension": 1,
+                "dependentCount": 2,
+                "grief": 55,
+                "remarried": false,
+                "arrearsMonths": 0
+              },
+              "links": {
+                "eldestChild": "$child"
+              },
+              "reason": "the pension was paid partly in soup coupons"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "three months of soup coupons"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the cash portion of the pension"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "pension_in_coupons",
+              "add": true,
+              "reason": "the pension office paid in soup coupons"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 3,
+      "cooldownYears": 6
+    },
+    {
+      "id": "r15-fam.remarriage-widow",
+      "title": "第二次登记",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 25,
+        "max": 65
+      },
+      "tags": [
+        "family",
+        "marriage",
+        "widow",
+        "children",
+        "remarriage"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "war",
+        "postwar",
+        "rural"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "war-widow-with-children",
+          "parameter": "remarried",
+          "equals": false
+        },
+        {
+          "kind": "hasState",
+          "stateId": "war-widow-with-children",
+          "parameter": "grief",
+          "max": 70
+        },
+        {
+          "kind": "notHasRelation",
+          "relationKind": "partner"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65
+        },
+        {
+          "key": "suitor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 4,
+          "maxAge": 16,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "quiet-marriage",
+          "weight": 3,
+          "text": "{subject}和{suitor}在登记处结了婚，{child}站在旁边，手里攥着母亲的旧手套。回家的路上，{suitor}把{subject}的箱子接过去；{child}走在后面，第一次没有问“我们什么时候回去”。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$suitor",
+              "kind": "partner",
+              "trust": 0.1,
+              "affection": 0.15,
+              "reason": "a quiet remarriage"
+            },
+            {
+              "type": "household",
+              "personId": "$suitor",
+              "householdId": "$household",
+              "reason": "the new spouse joined the household"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.02,
+              "reason": "the child came to the registry"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "remarried",
+              "value": true,
+              "reason": "the widow remarried"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "monthlyPension",
+              "delta": -1,
+              "reason": "the pension was reduced on remarriage"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "reason": "remarriage ended the widowhood state"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the licence, a witness and a small meal"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a quiet remarriage"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "remarried_widow",
+              "add": true,
+              "reason": "the widow remarried"
+            }
+          ]
+        },
+        {
+          "id": "child-objects",
+          "weight": 2,
+          "text": "{child}当着{suitor}的面把父亲的军帽放在桌上，说这个家只能有一个男主人。{subject}想解释，最后只把帽子收进柜子；{suitor}走后，{child}在房间里哭，{subject}在厨房里坐着。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.08,
+              "reason": "the child refused the remarriage"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$suitor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "the suitor left after the child's refusal"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "grief",
+              "delta": 8,
+              "reason": "the child's refusal reopened the loss"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a wasted registration fee"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "two people crying in separate rooms"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_refused_remarriage",
+              "add": true,
+              "reason": "the child vetoed the remarriage"
+            }
+          ]
+        },
+        {
+          "id": "suitor-withdraws",
+          "weight": 1,
+          "text": "{suitor}来过三次，第四次只送来一封信。信里说家里不同意，也说自己没有准备好；{subject}把信读完，折好，放进丈夫留下的那本账簿里，第二天照常去上工。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$suitor",
+              "kind": "acquaintance",
+              "trust": -0.03,
+              "reason": "the suitor withdrew"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "grief",
+              "delta": 4,
+              "reason": "a second abandonment, smaller than the first"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the letter was folded into the ledger"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "suitor_left",
+              "add": true,
+              "reason": "the suitor withdrew from the marriage"
+            }
+          ]
+        },
+        {
+          "id": "wrong-banns",
+          "weight": 0.4,
+          "text": "登记员从旧抚恤档案里抄错了名字，结婚证书上写的是死去丈夫的姓名。{subject}发现时，{suitor}已经签了字；两个人站在窗口前，谁也不知道该先笑还是先去找律师。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$suitor",
+              "kind": "partner",
+              "trust": 0.08,
+              "affection": 0.12,
+              "reason": "a marriage recorded under the wrong name"
+            },
+            {
+              "type": "household",
+              "personId": "$suitor",
+              "householdId": "$household",
+              "reason": "the new spouse joined the household"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "remarried",
+              "value": true,
+              "reason": "the registry recorded a remarriage"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "monthlyPension",
+              "delta": -2,
+              "reason": "the pension file was flagged for review"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "reason": "the remarriage ended the widowhood state, despite the wrong name"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the fee to correct the marriage record"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the wrong name became a registry joke"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wrong_banns",
+              "add": true,
+              "reason": "the marriage certificate copied the dead husband's name"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 2,
+      "cooldownYears": 10
+    },
+    {
+      "id": "r15-fam.inheritance-division",
+      "title": "地契上的两个名字",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 70
+      },
+      "tags": [
+        "family",
+        "estate",
+        "inheritance",
+        "property",
+        "sibling"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "postwar",
+        "rural"
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "family-estate",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "grief"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 75
+        },
+        {
+          "key": "lawyer",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 75
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "shared-orchard",
+          "weight": 3,
+          "text": "{subject}和{sibling}没有卖地，只把果园和仓房分了使用权。{lawyer}把条款念了两遍，两个人都在末尾按了手印；秋天第一筐苹果摘下来时，{subject}给{sibling}送去一半，没有称重。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "parameters": {
+                "acres": 6,
+                "debt": 10,
+                "heirNamed": true,
+                "contested": false,
+                "upkeep": 35
+              },
+              "links": {
+                "heir": "$subject"
+              },
+              "reason": "the siblings kept the orchard and registered the estate"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the first shared apple harvest"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "apples from the shared orchard"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": -5,
+              "reason": "the siblings paid part of the old debt"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": 0.06,
+              "reason": "the division was fair enough"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "orchard_shared",
+              "add": true,
+              "reason": "the orchard was kept and shared"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-meadow",
+          "weight": 2,
+          "text": "{subject}和{sibling}决定卖掉河边的草地。钱到账那天，两个人先去还了旧债，剩下的刚够修屋顶；{subject}站在空掉的草地上，发现比想象中更平整。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "parameters": {
+                "acres": 3,
+                "debt": 0,
+                "heirNamed": true,
+                "contested": false,
+                "upkeep": 25
+              },
+              "links": {
+                "heir": "$subject"
+              },
+              "reason": "the meadow was sold and the core estate retained"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 6,
+              "reason": "the sale of the river meadow"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": -10,
+              "reason": "the old debt was paid from the sale"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "trust": -0.03,
+              "reason": "the sale settled a disagreement"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "meadow_sold",
+              "add": true,
+              "reason": "the river meadow was sold"
+            }
+          ]
+        },
+        {
+          "id": "contested-will",
+          "weight": 1,
+          "text": "{sibling}拿出一张更早的遗嘱，说{subject}多占了半间仓房。{lawyer}建议先调解，{subject}却把旧账本摔在桌上；从那天起，两家孩子上学都绕开同一条路。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "parameters": {
+                "acres": 6,
+                "debt": 25,
+                "heirNamed": false,
+                "contested": true,
+                "upkeep": 45
+              },
+              "links": {
+                "heir": "$subject"
+              },
+              "reason": "the inheritance remained contested"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the lawyer's mediation fee"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": 5,
+              "reason": "the dispute required a survey"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "rival",
+              "trust": -0.08,
+              "reason": "the inheritance dispute split the siblings"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "will_contested",
+              "add": true,
+              "reason": "an older will was produced"
+            }
+          ]
+        },
+        {
+          "id": "cow-in-the-will",
+          "weight": 0.5,
+          "text": "遗嘱里有一行把一头奶牛写成了“共同继承人”。{lawyer}说这可能是笔误，但必须走程序；{subject}和{sibling}为了那头牛的草料钱又吵了一架，最后牛归了邻居。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "parameters": {
+                "acres": 6,
+                "debt": 20,
+                "heirNamed": false,
+                "contested": true,
+                "upkeep": 50
+              },
+              "links": {
+                "heir": "$subject"
+              },
+              "reason": "the estate was registered while the will was disputed"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "the lawyer's fee for the probate"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "delta": 4,
+              "reason": "the cow's feed and the probate costs"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lawyer",
+              "kind": "acquaintance",
+              "trust": 0.04,
+              "reason": "the lawyer handled the absurd clause"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cow_in_the_will",
+              "add": true,
+              "reason": "the will named a cow as a co-heir"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 2,
+      "cooldownYears": 8
+    },
+    {
+      "id": "r15-fam.ordinary-supper",
+      "title": "家产厨房里的晚饭",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 65
+      },
+      "tags": [
+        "family",
+        "child",
+        "estate",
+        "supper",
+        "ordinary"
+      ],
+      "contexts": [
+        "peace",
+        "urban",
+        "crisis",
+        "postwar",
+        "rural"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "family-estate",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 65
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 4,
+          "maxAge": 14,
+          "sameHousehold": true
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "soup-and-homework",
+          "weight": 4,
+          "text": "{subject}把汤端上桌，{child}正趴在作业本上算一道除法。窗外下着雨，屋里只有勺子碰碗的声音；{subject}忽然觉得，这样的晚上如果一直重复，也不算坏。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a hot supper at the estate kitchen"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "an ordinary evening that felt enough"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "upkeep",
+              "delta": -2,
+              "reason": "the household kept the kitchen warm"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": 0.05,
+              "reason": "a quiet supper together"
+            }
+          ]
+        },
+        {
+          "id": "child-tells-a-joke",
+          "weight": 2,
+          "text": "{child}讲了一个从学校听来的笑话，{subject}没有听懂，还是笑了。{child}又讲了一遍，这次连自己都笑倒在桌上；汤凉了，两个人谁也没有去热。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a joke at the supper table"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.03,
+              "affection": 0.06,
+              "reason": "shared laughter"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "upkeep",
+              "delta": -1,
+              "reason": "a cheerful evening in the old house"
+            }
+          ]
+        },
+        {
+          "id": "burnt-pudding",
+          "weight": 1,
+          "text": "{subject}把布丁烤糊了，厨房里全是烟。{child}说糊的部分更甜，把焦皮全刮到自己碗里；{subject}假装没看见，转身去开窗，嘴角一直压不住。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the burnt pudding was still eaten"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the child's diplomacy"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the wasted sugar and eggs"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.02,
+              "affection": 0.04,
+              "reason": "the child covered for the cook"
+            }
+          ]
+        },
+        {
+          "id": "supper-on-the-stairs",
+          "weight": 0.3,
+          "text": "炉子倒烟，屋里坐不住人。{subject}和{child}端着碗坐到楼梯口，楼下的邻居也出来了；大家分着吃一锅炖菜，谁家的盐都放进去了，味道居然不错。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a shared pot on the stairs"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the smoke made the evening communal"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "smoke from the blocked stove"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "supper_on_stairs",
+              "add": true,
+              "reason": "the family ate on the stairs because of the stove smoke"
+            }
+          ]
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 2,
+      "cooldownYears": 3
+    }
+  ]
+}

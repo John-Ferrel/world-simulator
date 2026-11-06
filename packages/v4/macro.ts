@@ -242,6 +242,8 @@ export type PendingMacroAction = MacroActionProposal & {
   sourceProposalId?: string;
 };
 
+import type { HistoricalReview } from './history-db/review.js';
+
 export type MacroState = {
   version: number;
   updatedAt: WorldDate;
@@ -251,6 +253,10 @@ export type MacroState = {
   developments?: Record<string, WorldDevelopment>;
   /** Durable consequences of processes; indexed by stable legacy id. */
   legacy?: Record<string, HistoricalLegacy>;
+  /** Low-frequency reference review; never a timeline reset command. */
+  historyReview?: HistoricalReview;
+  /** Bounded prior reviews, newest last. */
+  historyReviews?: HistoricalReview[];
   /** Bounded Director action proposals waiting for the engine's annual tick. */
   pendingActions?: PendingMacroAction[];
   history: MacroHistoryEntry[];
@@ -392,6 +398,7 @@ export type MacroSnapshot = {
     eventWeights: Record<string, number>;
   }[];
   availableFamilies: string[];
+  historyReview?: HistoricalReview;
 };
 
 const MacroDateSchema = z.object({
@@ -1262,6 +1269,7 @@ export function macroSnapshot(
         eventWeights: legacy.eventWeights,
       })),
     availableFamilies: [...knownFamilies].sort(),
+    ...(state.historyReview ? { historyReview: state.historyReview } : {}),
   };
 }
 

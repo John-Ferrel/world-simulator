@@ -35,6 +35,7 @@ import {
   ALL_EVENT_SCENES,
   ALL_TASKS,
 } from '../packages/v4/content/generated/index.js';
+import { ALL_STATES } from '../packages/v4/content/states/index.js';
 
 export type PlaytestOptions = {
   /** Hard horizon in simulated years from 1912. Defaults to 88 (1912–2000). */
@@ -451,6 +452,7 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
     },
     resolved: { base: 0, composed: 0 },
     blocked: { base: 0, composed: 0 },
+    stateOpportunity: { candidates: 0, selected: 0, resolved: 0, missingRole: 0, noOutcome: 0, blocked: 0 },
     paths: {} as Record<string, number>,
     blockedReasons: {} as Record<string, number>,
   };
@@ -479,6 +481,7 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
       agency: true,
       tasks: process.env.V4_PLAYTEST_TASKS === '0' ? [] : ALL_TASKS,
       composition: DEFAULT_COMPOSITION,
+      states: ALL_STATES,
       maxOrdinaryEventsPerPerson,
       ...(maxScenesPerPerson === undefined ? {} : { maxScenesPerPerson }),
     });
@@ -504,6 +507,9 @@ export function runV4Playtest(options: PlaytestOptions = {}) {
       }
       for (const [pathKey, count] of Object.entries(scheduling.paths ?? {})) {
         schedulingAudit.paths[pathKey] = (schedulingAudit.paths[pathKey] ?? 0) + count;
+      }
+      for (const key of ['candidates', 'selected', 'resolved', 'missingRole', 'noOutcome', 'blocked'] as const) {
+        schedulingAudit.stateOpportunity[key] += scheduling.stateOpportunity[key];
       }
     }
     const alive = Object.values(world.persons).filter((person) => !person.died).length;

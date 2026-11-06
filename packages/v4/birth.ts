@@ -6,6 +6,7 @@ import {
   type Relation,
   type WorldState,
 } from './domain.js';
+import { applyWishState } from './wish-compiler.js';
 
 export type V4BirthInput = {
   name: string;
@@ -195,6 +196,7 @@ export function createV4Birth(
   };
   draft.events.push(event);
   draft.historyMeta.lastEventId = event.id;
+  applyWishState(draft, child.id, input.wish);
   assertWorldV4(draft);
   return { world: draft, childId: child.id, event };
 }

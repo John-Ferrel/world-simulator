@@ -1,0 +1,2136 @@
+{
+  "id": "pack-history-fork",
+  "version": 1,
+  "title": "历史岔路：占领、清洗与罢工",
+  "description": "把占领、组织清洗和罢工写成可查询、可执行的持续状态，再让普通人面对征用、名单、空桌和复工顺序。历史只提供机会和压力，不替这一世宣布结果。",
+  "author": "phase15-author-history",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-05",
+  "sourceBriefId": "brief-power-and-irony",
+  "rationale": "占领、清洗和罢工如果只是新闻标题，就不会改变任何人的下一年。这里把它们变成有参数、有反应、有间接影响的状态：征用会反复发生，名单会改变组织权重，罢工委员会能谈判也能被排除。所有历史条件都是机会，不绑定真实日期、人物或必然结局。",
+  "states": [
+    {
+      "id": "occupied-city-regime",
+      "version": 1,
+      "packId": "pack-history-fork",
+      "title": "被占领城市的军政管制",
+      "description": "外国或本国军事当局对一座城市实行宵禁、征用、通行许可和集体罚款。它不是一条战报，而是每天改变谁能出门、谁家少粮、谁被征去修路的持续条件。",
+      "owner": "place",
+      "slot": "political",
+      "conflict": "replace",
+      "tags": [
+        "occupation",
+        "war",
+        "repression",
+        "curfew",
+        "requisition",
+        "shortage",
+        "place"
+      ],
+      "parameters": {
+        "authority": {
+          "type": "string",
+          "default": "城防司令部"
+        },
+        "severity": {
+          "type": "number",
+          "default": 0.5,
+          "min": 0,
+          "max": 1
+        },
+        "curfewHour": {
+          "type": "number",
+          "default": 20,
+          "min": 18,
+          "max": 23
+        },
+        "requisitionPressure": {
+          "type": "number",
+          "default": 0.4,
+          "min": 0,
+          "max": 1
+        },
+        "permitsOpen": {
+          "type": "boolean",
+          "default": false
+        },
+        "resistance": {
+          "type": "number",
+          "default": 0.2,
+          "min": 0,
+          "max": 1
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "occupation",
+            "curfew",
+            "requisition",
+            "shortage",
+            "police",
+            "war"
+          ],
+          "multiplier": 1.7
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "leisure",
+            "culture",
+            "travel",
+            "education"
+          ],
+          "multiplier": 0.55
+        }
+      ],
+      "reactions": [
+        {
+          "id": "curfew-detention",
+          "onTags": [
+            "assembly",
+            "strike",
+            "protest"
+          ],
+          "chance": 0.35,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "宵禁后在外停留"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被巡逻队盘问"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "curfew_detention",
+              "add": true,
+              "reason": "姓名被记入巡逻册"
+            }
+          ],
+          "text": "宵禁后，{subject}在回家的巷口被巡逻队拦下。证件没有问题，但对方把{subject}的姓名和住址记进一本油污的小册子，才放人走。",
+          "significance": 0.4,
+          "cooldownMonths": 6,
+          "maxPerYear": 1
+        },
+        {
+          "id": "requisition-echo",
+          "onTags": [
+            "harvest",
+            "market",
+            "food"
+          ],
+          "chance": 0.3,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "征用队再次搜粮"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "家里的存粮减少"
+            }
+          ],
+          "text": "征用队又来了，这次没有清单，只把厨房里腌着的一罐卷心菜搬走。{subject}没有争辩，因为上个月争辩的人家到现在还没拿回门板。",
+          "significance": 0.35,
+          "cooldownMonths": 8,
+          "maxPerYear": 1
+        },
+        {
+          "id": "liberation-ends-occupation",
+          "onTags": [
+            "liberation"
+          ],
+          "chance": 1,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "occupied-city-regime",
+              "reason": "the city was liberated"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the occupation ended"
+            }
+          ],
+          "text": "城里的旗子又换了一次。{subject}站在街口，看见第一批士兵把岗哨撤走；没有人解释接下来会怎样，但通行证不再需要每天重签了。",
+          "significance": 0.7,
+          "maxPerYear": 1
+        }
+      ],
+      "historicalBasis": "占领城市中的宵禁、征用和通行管制是跨时期的常见机制；本状态不绑定任何真实城市、日期或政权。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase15-author-history",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让占领成为可查询的地方状态，而不是一次性战报；人物场景通过 hasState 读取它。"
+      }
+    },
+    {
+      "id": "institution-purge",
+      "version": 1,
+      "packId": "pack-history-fork",
+      "title": "组织清洗",
+      "description": "一个组织正在清查它认为不可靠的成员：谈话、名单、停职和突然空出的办公桌。清洗会改变谁能留下、谁能升职，也会让留下的人学会沉默。",
+      "owner": "organization",
+      "slot": "political",
+      "conflict": "replace",
+      "tags": [
+        "purge",
+        "repression",
+        "organization",
+        "loyalty",
+        "surveillance",
+        "politics"
+      ],
+      "parameters": {
+        "target": {
+          "type": "string",
+          "default": "不可靠成员"
+        },
+        "intensity": {
+          "type": "number",
+          "default": 0.5,
+          "min": 0,
+          "max": 1
+        },
+        "denunciations": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        },
+        "vacancies": {
+          "type": "number",
+          "default": 3,
+          "min": 0,
+          "max": 50
+        },
+        "reviewOpen": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "durationMonths": {
+        "min": 3,
+        "max": 36
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "purge",
+            "repression",
+            "surveillance",
+            "organization",
+            "politics"
+          ],
+          "multiplier": 1.8
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "social",
+            "leisure",
+            "culture"
+          ],
+          "multiplier": 0.6
+        }
+      ],
+      "reactions": [
+        {
+          "id": "denunciation-echo",
+          "onTags": [
+            "denunciation"
+          ],
+          "requiresRoles": [
+            "denouncer"
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$ownerOrg",
+              "stateId": "institution-purge",
+              "key": "denunciations",
+              "delta": 5,
+              "reason": "又一份名单进入档案"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "办公室气氛更紧"
+            }
+          ],
+          "text": "又有一份名单被交上去。{subject}不在这份名单上，但办公室里空出的椅子已经多到没人再数；每个留下的人都在猜下一份名单会不会轮到自己。",
+          "significance": 0.5,
+          "cooldownMonths": 6,
+          "maxPerYear": 2
+        },
+        {
+          "id": "arrest-vacancy",
+          "onTags": [
+            "arrest"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$ownerOrg",
+              "stateId": "institution-purge",
+              "key": "vacancies",
+              "delta": 1,
+              "reason": "有人被带走后留下空桌"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$ownerOrg",
+              "stateId": "institution-purge",
+              "key": "denunciations",
+              "delta": 2,
+              "reason": "逮捕引发新一轮检举"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "同事被带走"
+            }
+          ],
+          "text": "有人在午休时被带走，桌上的茶还热着。下午，{subject}看见人事科的人拿着钥匙站在那张桌前，记下抽屉里每一件东西。",
+          "significance": 0.55,
+          "cooldownMonths": 6,
+          "maxPerYear": 1
+        }
+      ],
+      "historicalBasis": "组织内部清洗、忠诚审查和检举机制在多国多时期出现；本状态只描述机制，不指向任何具体组织或事件。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase15-author-history",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "用组织所有权承载清洗，使一个参数变化能影响所有成员，而不是只惩罚场景中的主角。"
+      }
+    },
+    {
+      "id": "strike-committee",
+      "version": 1,
+      "packId": "pack-history-fork",
+      "title": "罢工委员会",
+      "description": "一场罢工有了自己的委员会、罢工基金和谈判代表。它决定谁去交涉、谁先撑不住、谁在复工那天被留在门外；工钱和尊严都要在桌面上换算。",
+      "owner": "organization",
+      "slot": "labor",
+      "conflict": "replace",
+      "tags": [
+        "strike",
+        "work",
+        "union",
+        "negotiation",
+        "organization",
+        "labor"
+      ],
+      "parameters": {
+        "demand": {
+          "type": "string",
+          "default": "恢复工钱并撤回黑名单"
+        },
+        "solidarity": {
+          "type": "number",
+          "default": 0.55,
+          "min": 0,
+          "max": 1
+        },
+        "fund": {
+          "type": "number",
+          "default": 8,
+          "min": 0,
+          "max": 100
+        },
+        "daysOut": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 120
+        },
+        "blacklistRisk": {
+          "type": "number",
+          "default": 0.4,
+          "min": 0,
+          "max": 1
+        },
+        "settlementOffered": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "durationMonths": {
+        "min": 1,
+        "max": 12
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "strike",
+            "work",
+            "union",
+            "factory",
+            "police"
+          ],
+          "multiplier": 1.75
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "leisure",
+            "courtship",
+            "travel"
+          ],
+          "multiplier": 0.7
+        }
+      ],
+      "reactions": [
+        {
+          "id": "strike-fund-pays",
+          "onTags": [
+            "unemployment",
+            "hunger"
+          ],
+          "chance": 0.3,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$ownerOrg",
+              "stateId": "strike-committee",
+              "key": "fund",
+              "delta": -1,
+              "reason": "罢工基金支付救济"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "罢工基金买来的面包"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "基金见底"
+            }
+          ],
+          "text": "罢工基金又少了一笔。{subject}把最后几张钞票数了两遍，还是不够给所有家庭买面包；有人开始把孩子的鞋拿去典当。",
+          "significance": 0.45,
+          "cooldownMonths": 3,
+          "maxPerYear": 3
+        },
+        {
+          "id": "police-pressure",
+          "onTags": [
+            "police",
+            "arrest"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$ownerOrg",
+              "stateId": "strike-committee",
+              "key": "blacklistRisk",
+              "delta": 0.08,
+              "reason": "警察施压提高了被清算的风险"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "厂门口的警察"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "strike_police_pressure",
+              "add": true,
+              "reason": "罢工遭到警察监视"
+            }
+          ],
+          "text": "警察在厂门口站了一整天，没有抓人，只是看着每个进出的工人。晚上，两个本来最积极的工人没有来开会，{subject}把他们的名字从发言顺序上划掉。",
+          "significance": 0.5,
+          "cooldownMonths": 4,
+          "maxPerYear": 1
+        }
+      ],
+      "historicalBasis": "罢工委员会、罢工基金和复工顺序是劳工史上的常见机制；本状态不宣称任何具体罢工的必然过程。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase15-author-history",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把罢工写成组织所有的持续状态，让谈判结果和基金耗尽影响所有参与者。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "hist15-occ.requisition-notice",
+      "title": "征用通知贴在面包房门口",
+      "domain": "history",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 72
+      },
+      "tags": [
+        "occupation",
+        "requisition",
+        "shortage",
+        "institution",
+        "history",
+        "family"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 72
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 16,
+          "maxAge": 80
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "hand-over-the-grain",
+          "weight": 0.45,
+          "text": "{clerk}把征用单按在柜台上，{subject}家里的两袋面粉被划走一袋，换回一张盖蓝章的收据。{clerk}说下周还会来，如果地窖里再翻出粮食，收据就不作数了。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "被征用的粮食折价"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "面粉被征用"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "requisition_receipt",
+              "add": true,
+              "reason": "拿到征用收据"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "征用收据只在下一批检查前有效。",
+              "confidence": 0.7,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "hide-the-last-sack",
+          "weight": 0.35,
+          "text": "{subject}把最后一袋黑麦埋进煤堆下面，夜里听见巡逻队从窗前走过。第二天面包房照常开门，但货架上少了三排面包；{subject}知道那不是因为城里没有粮。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "藏起的黑麦"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "暂时保住了口粮"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hidden_grain",
+              "add": true,
+              "reason": "把粮食藏在煤堆下"
+            }
+          ]
+        },
+        {
+          "id": "name-the-neighbor",
+          "weight": 0.2,
+          "text": "{subject}告诉{clerk}，{neighbor}家的地窖里还有两桶猪油。征用队下午就去了那户人家。{subject}拿到一小袋盐和一张优先配给卡，回家时没有走平时那条街。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "检举邻居得到的配给奖励"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "被征用队视为合作者"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": -0.2,
+              "fear": 0.1,
+              "reason": "向征用队说出邻居的存粮"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "denounced_neighbor_for_grain",
+              "add": true,
+              "reason": "用邻居的存粮换取配给"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist15-occ.work-permit",
+      "title": "劳动局的通行证窗口",
+      "domain": "history",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 17,
+        "max": 65
+      },
+      "tags": [
+        "occupation",
+        "work",
+        "permit",
+        "institution",
+        "shortage",
+        "history"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        },
+        {
+          "kind": "employment",
+          "employed": false
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 17,
+          "maxAge": 65
+        },
+        {
+          "key": "officer",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "check": {
+        "attribute": "cunning",
+        "skill": "social",
+        "dc": 12,
+        "successOutcomeIds": [
+          "permit-granted",
+          "forged-permit"
+        ],
+        "failureOutcomeIds": [
+          "permit-refused"
+        ]
+      },
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "permit-granted",
+          "weight": 0.45,
+          "text": "{officer}在通行证上盖了章，又用铅笔在角落写了一个日期。{subject}拿到许可，可以去城西的修配厂上工；走出劳动局时，{subject}把证件摸了三遍，确认它还在口袋里。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "通行证手续费"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "permit_holder",
+              "add": true,
+              "reason": "获得占领当局的劳动通行证"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "work_permit_granted",
+              "add": true,
+              "reason": "劳动局发放通行证"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "城西修配厂只认盖蓝章的通行证。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "forged-permit",
+          "weight": 0.3,
+          "text": "{subject}从旧货摊买来一张空白证件，照着墙上的样本描了章。{officer}翻看时，{subject}盯着自己的鞋尖，听见窗外有人喊下一号。章盖下去的那一刻，{subject}知道这张纸经不起一场雨。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "买空白证件和假印章"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "使用伪造证件"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "forged_work_permit",
+              "add": true,
+              "reason": "伪造劳动通行证"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "假印章在雨天会洇开。",
+              "confidence": 0.8,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "permit-refused",
+          "weight": 0.25,
+          "text": "{officer}把表格推回来，说{subject}的住址不在招工范围。{subject}问哪里还在招人，对方已经低头叫下一位。回家路上，{subject}看见修配厂门口排着另一条队，队尾的人比早上更多。",
+          "significance": 0.6,
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "没有劳动通行证"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "没有工钱，家里少吃一顿"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "申请被拒"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "permit_refused",
+              "add": true,
+              "reason": "劳动局拒绝发证"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist15-purge.loyalty-questionnaire",
+      "title": "谈话室里的空白名单",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "purge",
+        "repression",
+        "loyalty",
+        "denunciation",
+        "organization",
+        "history"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "institution-purge",
+          "owner": "organization"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "officer",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "colleague",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.2,
+      "weight": 4,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "name-a-colleague",
+          "weight": 0.4,
+          "text": "{officer}把一张空白名单推到{subject}面前，说只要写出三个名字，谈话就可以结束。{subject}写下{colleague}的名字，笔尖在纸上停了一下；第二天那张桌子就空了。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "institution-purge",
+              "key": "denunciations",
+              "delta": 5,
+              "reason": "一份新名单进入清洗档案"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$colleague",
+              "kind": "colleague",
+              "trust": -0.25,
+              "fear": 0.1,
+              "reason": "在谈话室里说出对方的名字"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "被审查者视为配合"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "named_a_colleague",
+              "add": true,
+              "reason": "在忠诚谈话中检举同事"
+            }
+          ]
+        },
+        {
+          "id": "refuse-the-list",
+          "weight": 0.3,
+          "text": "{subject}把名单推回去，说记不清。{officer}没有发火，只在{subject}的档案上添了一行。走廊里的人都低着头，没有人问谈话持续了多久。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_loyalty_questionnaire",
+              "add": true,
+              "reason": "拒绝在忠诚名单上签字"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "档案上多了一行"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "institution-purge",
+              "key": "intensity",
+              "delta": 0.02,
+              "reason": "拒绝配合使审查收紧"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "拒绝在名单上签字会被记入档案。",
+              "confidence": 0.75,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "write-three-ghosts",
+          "weight": 0.3,
+          "text": "{subject}在名单上写了三个已经调走的人。{officer}看了很久，最终把纸收进夹子。{subject}保住了一张桌子，却不知道那三个人会不会被找回来。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "forged_loyalty_form",
+              "add": true,
+              "reason": "用已调走的人名应付审查"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "social",
+              "amount": 0.02,
+              "reason": "在审查中周旋"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "institution-purge",
+              "key": "intensity",
+              "delta": -0.02,
+              "reason": "一份名单被草率结案"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "审查者并不核对每一个被写下的名字。",
+              "confidence": 0.6,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist15-purge.vacancy",
+      "title": "空桌上的代理任命",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 60
+      },
+      "tags": [
+        "purge",
+        "organization",
+        "office",
+        "promotion",
+        "risk",
+        "history"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "institution-purge",
+          "owner": "organization"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "institution-purge",
+          "owner": "organization",
+          "parameter": "vacancies",
+          "min": 1
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 60
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 70
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 75
+        },
+        {
+          "key": "colleague",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "take-the-dead-mans-desk",
+          "weight": 0.45,
+          "text": "{official}领{subject}到那张空桌前。抽屉里还有前任的眼镜和半包烟。{subject}签下代理科长的任命，第一次有权在排班表上划掉一个名字；{official}提醒说，这个位置上一任只坐了四个月。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "position",
+              "organizationId": "$employerOrg",
+              "title": "代理科长",
+              "holderId": "$subject",
+              "wage": 4,
+              "authority": [
+                "签字",
+                "排班",
+                "调阅档案"
+              ],
+              "reason": "清洗空出的位置由场景正式任命"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "institution-purge",
+              "key": "vacancies",
+              "delta": -1,
+              "reason": "一个空缺被填补"
+            },
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "acting_head",
+              "add": true,
+              "reason": "代理科长"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "代理科长的前任只在这个位置上坐了四个月。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "refuse-the-desk",
+          "weight": 0.3,
+          "text": "{subject}说不能坐那张桌子。{official}把任命书收回，态度没有变，只把{subject}的名字从下一批外派名单里划掉。{subject}回到原来的位置，发现同事看自己的眼神已经不一样了。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "拒绝空出的职位"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "colleague",
+              "trust": -0.1,
+              "reason": "拒绝任命让上司难堪"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "declined_dead_mans_desk",
+              "add": true,
+              "reason": "拒绝代理科长任命"
+            }
+          ]
+        },
+        {
+          "id": "use-the-desk-to-shield",
+          "weight": 0.25,
+          "text": "{subject}接过职位，第一件事是把{colleague}从清洗名单上撤下来。{official}没有反对，只要求换一个名字上去。{subject}在夜里翻了很久档案，最后填了一个已经退休的人。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "institution-purge",
+              "key": "intensity",
+              "delta": -0.04,
+              "reason": "代理科长压下一份名单"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$colleague",
+              "kind": "colleague",
+              "trust": 0.12,
+              "obligation": 0.05,
+              "reason": "把对方从清洗名单上撤下"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hid_a_name",
+              "add": true,
+              "reason": "利用新职位保护一名同事"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "不得不换一个名字交差"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist15-strike.ward-assembly",
+      "title": "车间里的罢工推举",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 62
+      },
+      "tags": [
+        "strike",
+        "work",
+        "union",
+        "assembly",
+        "organization",
+        "history"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "strike-committee",
+          "owner": "organization"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "coworker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 65
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.2,
+      "weight": 4,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "elected-delegate",
+          "weight": 0.4,
+          "text": "车间推举{subject}进罢工委员会。{coworker}把一只雪茄盒递过来，里面是罢工基金和几张欠条。{subject}第一次在众人面前讲话，声音发抖，但没有人笑。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "role",
+              "personId": "$subject",
+              "role": "strike_delegate",
+              "add": true,
+              "reason": "被车间推举为罢工代表"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "成为罢工代表"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "strike-committee",
+              "key": "solidarity",
+              "delta": 0.08,
+              "reason": "新的代表提高了士气"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "罢工基金只剩下一只雪茄盒里的钞票和几张欠条。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "return-to-the-floor",
+          "weight": 0.35,
+          "text": "{subject}在第三天回到车间。{employer}没有问原因，只把工牌推回来。{coworker}从队伍里看着{subject}走过，没有说话；那天晚上，罢工名单上少了一个名字。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "复工后的第一笔工钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$coworker",
+              "kind": "colleague",
+              "trust": -0.15,
+              "reason": "在罢工期间单独复工"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "strike-committee",
+              "key": "solidarity",
+              "delta": -0.1,
+              "reason": "一名工人退出罢工"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "returned_during_strike",
+              "add": true,
+              "reason": "在罢工结束前复工"
+            }
+          ]
+        },
+        {
+          "id": "narrow-the-demands",
+          "weight": 0.25,
+          "text": "{subject}提议先只谈拖欠的工钱，把复职和工时留到下一轮。{coworker}同意，另几个人不同意。委员会把新条件写在黑板上，字迹很重，像怕被谁擦掉。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "strike-committee",
+              "key": "demand",
+              "value": "先补发拖欠工钱",
+              "reason": "罢工条件被收窄"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "strike-committee",
+              "key": "solidarity",
+              "delta": -0.03,
+              "reason": "部分工人反对收窄条件"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "委员会内部对谈判条件并不一致。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "narrowed_strike_demands",
+              "add": true,
+              "reason": "推动罢工接受更窄的条件"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist15-strike.settlement",
+      "title": "罢工第七天的协议",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 62
+      },
+      "tags": [
+        "strike",
+        "work",
+        "union",
+        "settlement",
+        "organization",
+        "history"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "strike-committee",
+          "owner": "organization",
+          "parameter": "solidarity",
+          "min": 0.35
+        },
+        {
+          "kind": "history",
+          "tag": "strike",
+          "minCount": 1
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 75
+        },
+        {
+          "key": "coworker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 16,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "partial-win",
+          "weight": 0.4,
+          "text": "第七天，{employer}同意补发一半欠薪并让工人回到车间。{subject}在协议上签字，{coworker}站在门外没有进来。机器重新开动时，{subject}发现自己的工位已经被人擦过。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "strike-committee",
+              "reason": "部分协议结束了罢工"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "补发的部分欠薪"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "带回一份协议"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "respect": 0.08,
+              "reason": "谈判后重新回到工位"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "partial_strike_win",
+              "add": true,
+              "reason": "罢工以部分协议结束"
+            }
+          ]
+        },
+        {
+          "id": "left-outside-the-gate",
+          "weight": 0.35,
+          "text": "{employer}招回了第一批复工的人，却把{subject}留在门外。保安说名单上没有这个名字。{subject}在街角站到换班，机器声从墙里传出来，像什么都没有发生过。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "工厂拒绝接收罢工骨干"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "失去工钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "被排除在复工名单外"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "blacklisted_after_strike",
+              "add": true,
+              "reason": "罢工后被厂方列入黑名单"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "工厂用复工顺序惩罚罢工骨干。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "settled-without-subject",
+          "weight": 0.25,
+          "text": "工会和{employer}谈成了，条件里没有提到{subject}。{coworker}来道歉，说这是大家的选择。{subject}收下赔偿金，把工会证夹进一本书里，没有再参加过会议。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "strike-committee",
+              "key": "solidarity",
+              "delta": -0.15,
+              "reason": "协议牺牲了部分参与者"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "协议中的个人赔偿"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$coworker",
+              "kind": "colleague",
+              "trust": -0.1,
+              "reason": "接受了一份没有提到自己的协议"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "settled_without_subject",
+              "add": true,
+              "reason": "在罢工协议中被排除"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被集体决定留下"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist15-purge.list-on-the-door",
+      "title": "公告栏上的新名单",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 62
+      },
+      "tags": [
+        "purge",
+        "denunciation",
+        "organization",
+        "institution",
+        "indirect",
+        "history"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "institution-purge",
+          "owner": "organization"
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 62
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 75
+        },
+        {
+          "key": "coworker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "post-the-list",
+          "weight": 0.4,
+          "text": "{subject}把新名单钉在公告栏上。纸很长，最下面一行还没有干透。午休前，三个被划掉名字的人收拾了抽屉；留下的人经过公告栏时都走得更快。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "institution-purge",
+              "key": "intensity",
+              "delta": 0.06,
+              "reason": "新名单扩大了清洗范围"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "institution-purge",
+              "key": "denunciations",
+              "delta": 8,
+              "reason": "公告栏引发新一轮检举"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "institution-purge",
+              "key": "vacancies",
+              "delta": 1,
+              "reason": "名单制造了新的空缺"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "被看作可靠的执行者"
+            }
+          ]
+        },
+        {
+          "id": "scrape-off-a-name",
+          "weight": 0.35,
+          "text": "{subject}趁没人，把{coworker}的名字从名单上刮掉。纸面留下一道白痕，像一条没有愈合的口子。第二天{coworker}照常来上班，什么也没问，只把一包烟放在{subject}的工具箱里。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "institution-purge",
+              "key": "denunciations",
+              "delta": -3,
+              "reason": "一个名字被从名单上刮掉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$coworker",
+              "kind": "colleague",
+              "trust": 0.12,
+              "obligation": 0.05,
+              "reason": "把对方的名字从清洗名单上刮掉"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "removed_a_name",
+              "add": true,
+              "reason": "私自改动清洗名单"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "担心白痕被发现"
+            }
+          ]
+        },
+        {
+          "id": "lose-the-list",
+          "weight": 0.25,
+          "text": "{subject}把名单落在电车上。回到办公室时，抽屉已经被打开，{official}坐在椅子上等{subject}。名单后来在另一个区被找到，上面的名字多了一个，少了一个，没有人解释。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "organization",
+              "ownerId": "$employerOrg",
+              "stateId": "institution-purge",
+              "key": "intensity",
+              "delta": 0.02,
+              "reason": "名单遗失使审查扩大"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "清洗名单在传递途中被人改动过。",
+              "confidence": 0.6,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "名单遗失后被盘问"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lost_purge_list",
+              "add": true,
+              "reason": "遗失清洗名单"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hist15-occ.seed-occupation",
+      "title": "城门口的岗哨换了旗",
+      "domain": "history",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 80
+      },
+      "tags": [
+        "occupation",
+        "war",
+        "curfew",
+        "history",
+        "place",
+        "institution"
+      ],
+      "familyId": "hist15-occ.seed-occupation",
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1938,
+          "max": 1945
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        },
+        {
+          "key": "officer",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.25,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-flag-changes",
+          "weight": 0.55,
+          "text": "城门口的旗换了颜色，岗哨开始检查每一张纸。{subject}回家时发现街角新钉了一块告示牌：天黑以后不许出门，地窖里的粮食要登记。晚上，巡逻队的靴声从窗下经过，比钟声还准。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "occupied-city-regime",
+              "parameters": {
+                "authority": "城防司令部",
+                "severity": 0.6,
+                "curfewHour": 20,
+                "requisitionPressure": 0.55,
+                "permitsOpen": false,
+                "resistance": 0.2
+              },
+              "durationMonths": 30,
+              "reason": "the city came under occupation during a war"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the occupation changed the street"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saw_the_occupation_flag",
+              "add": true,
+              "reason": "watched the flag change at the checkpoint"
+            }
+          ]
+        },
+        {
+          "id": "the-old-clerk-stays",
+          "weight": 0.45,
+          "text": "新来的军官站在市政厅门口，旧办事员还在窗后盖章。{subject}排队领一张新的通行证，窗口里的人低声说：“名字照旧写，住址别改。”队伍里没有人说话，只有纸张翻动的声音。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "occupied-city-regime",
+              "parameters": {
+                "authority": "城防司令部",
+                "severity": 0.4,
+                "curfewHour": 21,
+                "requisitionPressure": 0.35,
+                "permitsOpen": true,
+                "resistance": 0.25
+              },
+              "durationMonths": 24,
+              "reason": "the occupation kept the old paperwork alive"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a permit with the same address"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧办事员仍在窗后盖章，只要名字和住址不改，通行证还能办。",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "oncePerPerson": true
+    },
+    {
+      "id": "hist15-purge.seed",
+      "title": "走廊尽头多了一张空桌",
+      "domain": "history",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 65
+      },
+      "tags": [
+        "purge",
+        "repression",
+        "organization",
+        "surveillance",
+        "history",
+        "work"
+      ],
+      "familyId": "hist15-purge.seed",
+      "conditions": [
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "institution-purge",
+          "owner": "organization"
+        },
+        {
+          "kind": "worldYear",
+          "min": 1934,
+          "max": 1950
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "colleague",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.22,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "a-name-is-read",
+          "weight": 0.5,
+          "text": "处里开会时，名单被念到一半。{subject}听见自己的名字后面跟着“待审查”，也听见{colleague}的椅子在地上拖了一下。散会后，走廊尽头多了一张空桌，抽屉里还留着别人的铅笔。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "institution-purge",
+              "parameters": {
+                "target": "待审查成员",
+                "intensity": 0.55,
+                "denunciations": 8,
+                "vacancies": 2,
+                "reviewOpen": true
+              },
+              "durationMonths": 18,
+              "reason": "a political purge reached the workplace"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "a name was read at the meeting"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saw_the_purge_list",
+              "add": true,
+              "reason": "was present when the list was read"
+            }
+          ]
+        },
+        {
+          "id": "the-file-stays-closed",
+          "weight": 0.5,
+          "text": "人事科的门开了又关，{subject}的档案被放在最下面。没有人解释为什么，只有{colleague}把一叠旧表格推过来，说“先把这个月做完”。窗外的口号声一阵高一阵低，处里的打字机一直没有停。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "institution-purge",
+              "parameters": {
+                "target": "未说明",
+                "intensity": 0.35,
+                "denunciations": 3,
+                "vacancies": 1,
+                "reviewOpen": true
+              },
+              "durationMonths": 12,
+              "reason": "the purge remained a quiet file"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the file stayed at the bottom"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "审查名单还没有公开，但人事科已经把所有档案重新排过。",
+              "confidence": 0.75,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ],
+      "oncePerPerson": true
+    },
+    {
+      "id": "hist15-strike.seed",
+      "title": "午休的哨声没有响",
+      "domain": "history",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 62
+      },
+      "tags": [
+        "strike",
+        "work",
+        "union",
+        "organization",
+        "history",
+        "labor"
+      ],
+      "familyId": "hist15-strike.seed",
+      "conditions": [
+        {
+          "kind": "history",
+          "tag": "strike",
+          "minCount": 1
+        },
+        {
+          "kind": "employment",
+          "employed": true
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "strike-committee",
+          "owner": "organization"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 62
+        },
+        {
+          "key": "coworker",
+          "kind": "worker",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 62
+        }
+      ],
+      "baseRate": 0.3,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "the-floor-stops",
+          "weight": 0.55,
+          "text": "午休的哨声没有响，机器却一台接一台停了。{subject}和{coworker}把工具箱推到墙边，选出三个人去谈条件。车间里没有人喊口号，只有窗外的雨声和一张写满签名的纸。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-committee",
+              "parameters": {
+                "demand": "恢复工钱并撤回黑名单",
+                "solidarity": 0.6,
+                "fund": 6,
+                "daysOut": 0,
+                "blacklistRisk": 0.45,
+                "settlementOffered": false
+              },
+              "durationMonths": 6,
+              "reason": "the workshop formed a strike committee"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the workshop stopped together"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "joined_strike_committee",
+              "add": true,
+              "reason": "helped form the committee"
+            }
+          ]
+        },
+        {
+          "id": "the-committee-is-too-late",
+          "weight": 0.45,
+          "text": "{subject}赶到时，车间已经选出代表，名单上没有自己的名字。{coworker}把一张纸条塞过来：“先看着，别签。”机器停到傍晚，厂主答应下周谈；第二天，车间门口多了一道新的考勤栏。",
+          "significance": 0.65,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "organization",
+              "ownerId": "$subjectOrg",
+              "stateId": "strike-committee",
+              "parameters": {
+                "demand": "补发停工日工钱",
+                "solidarity": 0.4,
+                "fund": 2,
+                "daysOut": 1,
+                "blacklistRisk": 0.55,
+                "settlementOffered": true
+              },
+              "durationMonths": 3,
+              "reason": "a strike committee formed without the subject"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "was late to the committee"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "厂主答应下周谈，但车间门口已经多了一道新的考勤栏。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -137,6 +137,21 @@ function personConditions(when: KernelVariantWhen | undefined): SceneCondition[]
     });
   }
   if (when.hasFlag) conditions.push({ kind: 'hasFlag', flag: when.hasFlag });
+  if (when.hasState) conditions.push({ kind: 'hasState', ...when.hasState });
+  if (when.attribute)
+    conditions.push({
+      kind: 'attribute',
+      attribute: when.attribute.key,
+      ...(when.attribute.min !== undefined ? { min: when.attribute.min } : {}),
+      ...(when.attribute.max !== undefined ? { max: when.attribute.max } : {}),
+    });
+  if (when.position)
+    conditions.push({
+      kind: 'position',
+      ...(when.position.titleIncludes ? { titleIncludes: when.position.titleIncludes } : {}),
+      ...(when.position.authority ? { authority: when.position.authority } : {}),
+      ...(when.position.organizationId ? { organizationId: when.position.organizationId } : {}),
+    });
   if (when.history) {
     conditions.push({ kind: 'history', ...when.history });
   }
@@ -217,7 +232,7 @@ function compileOutcomes(
     if (outcome.when && !compileTimeMatches(outcome.when, world, context, milieu)) {
       continue;
     }
-    const branchConditions = personConditions(outcome.when);
+    const branchConditions = [...personConditions(outcome.when), ...(outcome.conditions ?? [])];
     const effects: EventEffect[] = [];
     let majorFailure = false;
     for (const effect of outcome.effects) {
@@ -341,7 +356,7 @@ function compileKernel(
       'historical_activation',
     ] as SceneDefinition['subjectProvenance'],
     cooldownYears: kernel.cooldownYears ?? 2,
-    weight: 1,
+    weight: kernel.weight ?? 1,
     ...(kernel.historicalBasis ? { historicalBasis: kernel.historicalBasis } : {}),
     ...(kernel.sourceIds ? { sourceIds: kernel.sourceIds } : {}),
   };
@@ -368,6 +383,7 @@ function compileKernel(
   }
   const scene: SceneDefinition = {
     ...base,
+    ...(kernel.check ? { check: kernel.check } : {}),
     rate: Math.max(0, (kernel.baseRate ?? 0.12) * (variant?.rateMultiplier ?? 1)),
     outcomes,
   };

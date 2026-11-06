@@ -1,0 +1,107 @@
+{
+  "id": "pack-brief-education-continuity",
+  "version": 1,
+  "title": "教育不是一次性事件",
+  "description": "Phase 14 的奖学金、退学、学徒和大学经常互相覆盖；人物拿到学位后，下一场事件又把他当成没读过书的人。",
+  "author": "deterministic-fallback",
+  "model": "none",
+  "sourceBriefId": "brief-education-continuity",
+  "rationale": "Deterministic scaffold generated without a model. It is valid executable content but does not satisfy the LLM authoring requirement.",
+  "states": [
+    {
+      "id": "night-school",
+      "version": 1,
+      "packId": "pack-brief-education-continuity",
+      "title": "教育不是一次性事件",
+      "description": "Phase 14 的奖学金、退学、学徒和大学经常互相覆盖；人物拿到学位后，下一场事件又把他当成没读过书的人。",
+      "owner": "person",
+      "slot": "education",
+      "conflict": "replace",
+      "tags": [
+        "education",
+        "night_school",
+        "work",
+        "fallback"
+      ],
+      "parameters": {
+        "progress": {
+          "type": "number",
+          "default": 0,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 12,
+        "max": 36
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "education",
+            "night_school",
+            "work"
+          ],
+          "multiplier": 1.25
+        }
+      ],
+      "ticks": [
+        {
+          "id": "annual",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "continue",
+              "weight": 1,
+              "text": "{subject}在夜校和工位之间来回；这一年没有退学，也没有真正学会多少。",
+              "effects": [
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "state continues"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "night-school",
+                  "key": "progress",
+                  "delta": 5,
+                  "reason": "a year inside the state"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "reaction",
+          "onTags": [
+            "unemployment"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "night-school:reacted",
+              "add": true,
+              "reason": "the state answered a real event"
+            }
+          ],
+          "text": "{subject}失业后第一次认真考虑把夜校读到底。",
+          "cooldownMonths": 12
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "deterministic-fallback",
+        "model": "none",
+        "rationale": "No model available; this is an executable scaffold, not LLM-authored content."
+      }
+    }
+  ]
+}

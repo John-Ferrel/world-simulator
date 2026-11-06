@@ -1,5 +1,11 @@
 # 完整游戏关键路径
 
+> 2026-11-05 Phase 15：State 机制层、内容工厂、历史索引与 60 年人生证据。设计见 [v4/phase-15-design.md](v4/phase-15-design.md)，验收见 [v4/phase-15-report.md](v4/phase-15-report.md)，独立评审见 [v4/phase-15-critique.md](v4/phase-15-critique.md)。
+>
+> Phase 15 关键路径：StateDefinition/Instance → 条件/权重/检定/转移/反应 → Engine 事务与持久化 → 内容工厂 validator/registry → 历史索引/五年 Review → 作者 State/Event pack → 60 年人生与 A–F 实验 → 独立 Critic。
+>
+> 已完成：48 个 StateDefinition、56 个 Phase 15 event/task kernel、4 个 LLM 子代理 pack、446 条历史参考记录、五年 review、state/历史/内容测试、20k 性能测量。未完成：真实模型 API（403）、PostgreSQL 迁移实测、5% state 密度下 <5s/年、全量文学达标。
+
 > 2026-11-04 Phase 11 关键路径：见 [v4/phase-11-plan.md](v4/phase-11-plan.md)。
 >
 > 2026-11-03 Phase 10 关键路径：见 [v4/phase-10-plan.md](v4/phase-10-plan.md)。
@@ -136,7 +142,6 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - UI：稳定 ID 人物/事件/进程高亮、Hover 档案、事件/进程 modal；e2e 通过。
 - 未完成：不是百万/千级定义库；教育/出生覆盖下降；64/140 Task 单样本未触发；无正式逮捕/养老金/租金持久 effect；无 20k 完整内容+DB/API 验收。
 
-
 ## Phase 11 执行状态（2026-11-04）
 
 - 组合层：Context × Milieu × Plot Kernel → 现有 Scene/Task；150 Kernel / 10 Context / 12 Milieu / 98 variants / 450 base outcomes。
@@ -192,3 +197,20 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - **文学**：Critic 阶段样本整生均分 19/30；事件 7/15（46.7%，均分 29.73），composed 5/8，结局 0/2；见 `phase-14-critique.md`，最终 dossier 未重评。
 - **验证**：`pnpm test` 85 files/497 pass/36 skip；v4 36 files/217 pass；build/e2e/性能见报告。
 - **未完成**：文学样本有限、r14 84/265 覆盖、出生低于死亡、10,742 blocked casts、无生产 DB/API 与运行时 LLM 验证。
+
+## Phase 16 执行状态（2026-11-06）
+
+- **目标**：不再扩大 State 定义数量，而是让 Phase 15 的 State/Position/Content Factory/History 真正进入完整人生。
+- **激活**：新增 state/position opportunity lane；先做 cast 预检，最低 rate 0.35，权重 ×1.5，每人年成功结算一次。`stateOpportunity` 分开记录 candidates/selected/resolved/missingRole/noOutcome/blocked。
+- **子女**：`autoAttachOnBirth` + household `raising-child` + 通用 `child` role；tick/reaction 使用 `links.child` 并绑定具体 StateInstance；家庭 school registration / child leaves / child returns 已自然触发。
+- **职位**：`$positionOrg` / `$positionId` / `$positionTitle` 取最近获得的有效 Position；office pack 在自然人生中可以 hire、签预算、做人情、被审计、被投票移除。
+- **诅咒**：curse pack 的 wish/ritual → real betrayal → `cursed-by-wish` reaction → notice/aftermath 在自然人生中可达；success 分支提交 health/condition，failure 也增加 triggers；自我 cast 不会触发。
+- **历史**：history pack 新增 occupation/purge/strike 种子；place/region state 可 anchor、tick/expire；1945 liberation reaction 移除占领；work permit 仍不创建就业。
+- **内容**：`pack-office-influence` 2 states/9 kernels/126 scenes；`pack-curse-betrayal` 2 states/8 kernels/112 scenes；family/history pack 修订后分别 3/7/98、3/10/140；全部通过 validator。
+- **模型 403**：`/models` 200，chat 403 “An active OpenCode Go subscription is required…”；两个新 pack 是离线 LLM 子代理创作，不冒充 runtime worker 成功。证据 `docs/v4/phase-16-model-probe.json`。
+- **PostgreSQL**：embedded PostgreSQL 18.6；state persistence + macro store 2/2 passed；browser e2e 1 passed；未做生产规模。
+- **性能**：20k baseline 4.57 s/年，1% 6.63 s/年，5% 10.28 s/年；已从初期 8.29/11.99 优化下来，但 1% 仍未完全回到 5 s。
+- **测试**：88 files / 521 pass / 37 skip；typecheck 无输出；A–F 6/6 passed（受控实验）。
+- **自然人生**：final-c 40 年 14,435 事件 / 342 人 / 146 births / 132 deaths / 30 distinct states；final-a 50 年 22,102 事件，final-b 45 年 19,512 事件。
+- **未完成**：widow/inheritance/family-estate 内容仍未自然触发；office downstream 仍少；love/knowledge/craft 愿望仍弱；repeatRate 0.1543；生产 DB/API 与 runtime LLM 未验证。
+- 交付：`docs/v4/phase-16-design.md`、`phase-16-critique.md`、`phase-16-report.md`、ADR-017。

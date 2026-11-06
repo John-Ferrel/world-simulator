@@ -163,6 +163,12 @@ const VALID_EFFECTS = new Set<EventEffect['type']>([
   'historical_influence',
   'historical_process',
   'organization_funds',
+  'state_add',
+  'state_remove',
+  'state_parameter',
+  'state_transition',
+  'position',
+  'organization_found',
 ]);
 const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
   'age',
@@ -186,6 +192,10 @@ const VALID_CONDITIONS = new Set<SceneCondition['kind']>([
   'historicalProcess',
   'legacy',
   'hasRelationWith',
+  'hasState',
+  'notHasState',
+  'attribute',
+  'position',
 ]);
 
 export type GeneratedValidation = {
@@ -457,6 +467,44 @@ function validateEffect(nodeId: string, outcomeId: string, effect: EventEffect, 
         typeof effect.reason !== 'string'
       )
         errors.push(`${label}: bad organization funds`);
+      break;
+    case 'state_add':
+      if (
+        !ref(effect.ownerId) ||
+        !['person', 'organization', 'household', 'place', 'region', 'world'].includes(
+          effect.ownerType,
+        ) ||
+        !/^[a-z0-9][a-z0-9._:-]{2,119}$/.test(effect.stateId)
+      )
+        errors.push(`${label}: bad state_add`);
+      break;
+    case 'state_remove':
+      if (!ref(effect.ownerId) || (!effect.stateId && !effect.tag))
+        errors.push(`${label}: bad state_remove`);
+      break;
+    case 'state_parameter':
+      if (!ref(effect.ownerId) || !effect.stateId || !effect.key)
+        errors.push(`${label}: bad state_parameter`);
+      break;
+    case 'state_transition':
+      if (!ref(effect.ownerId) || !effect.fromStateId || !effect.toStateId)
+        errors.push(`${label}: bad state_transition`);
+      break;
+    case 'position':
+      if (
+        (!effect.remove && !ref(effect.organizationId)) ||
+        typeof effect.title !== 'string' ||
+        !effect.reason
+      )
+        errors.push(`${label}: bad position`);
+      break;
+    case 'organization_found':
+      if (
+        !effect.organization ||
+        typeof effect.organization.name !== 'string' ||
+        typeof effect.organization.kind !== 'string'
+      )
+        errors.push(`${label}: bad organization_found`);
       break;
     default:
       break;

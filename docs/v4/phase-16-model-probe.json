@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-06",
+  "provider": "opencode-go",
+  "baseUrl": "https://opencode.ai/zen/go/v1",
+  "configuredModel": "opencode-go/deepseek-v4.1-flash",
+  "wireModel": "deepseek-v4.1-flash",
+  "credentialPresent": true,
+  "getModels": {
+    "status": 200,
+    "modelVisible": true
+  },
+  "chatCompletion": {
+    "status": 403,
+    "errorType": "server_error",
+    "message": "Upstream request failed: An active OpenCode Go subscription is required to use Go models.",
+    "attempts": 2
+  },
+  "actualContentFactoryRun": {
+    "command": "tsx scripts/v4-phase15-author.ts --brief=brief-power-and-irony",
+    "result": "fallback",
+    "usedFallback": true,
+    "ok": false,
+    "attempts": [
+      { "attempt": 1, "tokens": 0, "errors": ["Model HTTP 403 (server_error)"] },
+      { "attempt": 2, "tokens": 0, "errors": ["Model HTTP 403 (server_error)"] }
+    ],
+    "report": "data/phase15-content/generation-report.json"
+  },
+  "interpretation": "The endpoint and key are accepted for model discovery, but the upstream account has no active OpenCode Go subscription. This is an external entitlement blocker, not a schema or endpoint bug. No model output was fabricated. Offline OpenCode subagents were used for the two Phase 16 packs and are identified separately in their provenance.",
+  "secretsIncluded": false
+}

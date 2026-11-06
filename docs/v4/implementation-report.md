@@ -1,8 +1,13 @@
 # v4 实现与验收报告
 
-日期：2026-11-01
+日期：2026-11-06（滚动更新；最近一轮为 Phase 16）
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
+
+> 2026-11-05 Phase 15 更新：新增 State 机制层（48 个定义、state_add/remove/parameter/transition、slot、typed links、d10/d20 检定、tick/reaction/transition、真实 Position 与 organization_found）。内容工厂含 schema/类型/编译可达性验证、registry、provenance 和确定性 fallback；真实模型 API 在本次环境返回 HTTP 403，因此实际 pack 由 LLM 子代理撰写并离线验证，不能宣称运行时模型内容工厂已成功调用。新增 446 条历史参考记录（79 国、166 城、93 人、98 事件、10 个明确 fiction hook、517 来源）、五年历史 review 与 Macro Director 快照。60 年两个 seed：16,438/18,555 事件，386/439 条 state facts，254/278 ticks，24/23 reactions，13/21 transitions，17/20 种 state，16/14 个 Position。A–F 实验 6/6 通过。`pnpm test` 88 files / 517 pass / 36 skip；v4 39 files / 237 pass / 8 skip；build 通过；20k 性能基线 4.28 s/年、1% state 6.41 s/年、5% state 8.29 s/年。PostgreSQL 与真实模型调用仍未验证。完整报告见 [phase-15-report.md](phase-15-report.md)。
+
+
+> 2026-11-06 Phase 16 更新：不再扩 State 数量，而是让已有机制进入自然人生。新增 state/position opportunity lane（cast 预检、最低 rate 0.35、每人年一次）、`autoAttachOnBirth`、通用 `child` role、StateInstance 级 tick/reaction 绑定、最近有效 Position 的 `$positionOrg`、place/region state anchor 与 1945 liberation 移除占领。自然 run `phase16-final-c`：40 年 14,435 事件 / 342 人 / 146 births / 132 deaths / 30 distinct states / 972 ticks / 559 reactions / 318 resolved state opportunities；office pack 85 events / 25 Position 创建 / 10 结束；family pack 141 states / 24 child-leaves / 6 returns；curse 在 1931 对真实 betrayer 提交 health -0.18 + condition；history occupation 11 states 全部结束。`phase16-final-a` 50 年 22,102 事件 / 33 Position 创建 / 10 curse reactions。真实模型 `/models` 200、chat 403（无 active Go subscription），两个新 pack 是离线 LLM 子代理创作并验证；PostgreSQL 18.6 state persistence + macro store 2/2、真实 stop/start 重启恢复 ok=true、e2e 1 passed；`pnpm test` 88 files / 521 pass / 37 skip；20k baseline 4.57 s/年、1% 6.63、5% 10.28。仍未完成：widow/inheritance 内容可达性、office 持续下游、love/knowledge/craft 愿望、生产规模 DB/API、runtime LLM worker。完整报告见 [phase-16-report.md](phase-16-report.md)。
 
 > 2026-11-04 Phase 11 更新：新增 Context × Milieu × Plot Kernel 组合编译层；150 个 Kernel（100 Event / 50 Task）、10 Context、12 Milieu、98 variants、450 base outcomes。默认 Vienna 年编译 255 Scene / 151 Task，跨四情境 996 个 compiled scene IDs；35 年 5,027 事件中 293 composed events、56 个 Kernel 实际触发。1.265M 是 naive 上界，不是已验证实例。88 年 playtest 23,802 事件 / 2,965 Task / 27 repeat offenders；20k 合成人口 composition 仍约 252 秒/年。Critic 20 样本 9 通过 / 11 失败，文学质量未通过。完整报告见 [phase-11-report.md](phase-11-report.md)。
 
@@ -280,3 +285,42 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 验证 | `pnpm test` 85 files/497 pass/36 skip；v4 36 files/217 pass；build 3.00s；e2e 1 pass 13.4s |
 
 未完成/限制：文学仍在结局、女性主体代词、伴侣/子女连续性上失败；r14 覆盖 105/265；出生仍略低于死亡（357/464）；12,392 次 blocked casts；79 scheduled expired、30 household_full；没有生产 PostgreSQL/API 规模验证与运行时 LLM 叙事。不得把 870/1,057 条链接或 1,174,428 候选情境称为全部已演出人生。
+
+## Phase 15（2026-11-05）— Composable Story Engine
+
+完整报告：`docs/v4/phase-15-report.md`；设计：`phase-15-design.md`；ADR：`ADR-016-state-mechanism-layer.md`；独立机制评审：`phase-15-mechanics-review.md`；文学评审：`phase-15-critique.md`。
+
+| 项 | 实测 |
+|---|---|
+| State 层 | 48 个 StateDefinition；state_add/remove/parameter/transition；slot/conflict；typed links；tick/reaction/transition；d20 check；真实 Position 与 organization_found |
+| 查询/条件 | `hasState`/`notHasState`/`attribute`/`position`；state weight/check modifiers；per-tick history |
+| 内容工厂 | brief→prompt→JSON→forbidden/typed/compile/reachability 验证→registry/hash/provenance；确定性 fallback 明确标为无 event scaffold |
+| 真实模型 | **HTTP 403 (server_error)**，两次尝试均失败；4 个交付 pack 由 LLM 子代理撰写并离线验证，不能宣称运行时 worker 成功 |
+| 历史 | 446 条参考记录：79 国、166 城、93 人、98 事件（90 fact/8 inference）、10 fiction hooks、517 来源；五年 review 写入 macro/Director snapshot |
+| 60 年人生 A | 16,438 events / 432 persons / 213 alive；386 state facts / 254 ticks / 24 reactions / 13 transitions / 17 state types / 16 positions |
+| 60 年人生 B | 18,555 events / 438 persons / 221 alive；439 state facts / 278 ticks / 23 reactions / 21 transitions / 20 state types / 14 positions |
+| A–F 实验 | 6/6：教育连续、真实权力 vs 舞台、诅咒反噬/伤害、间接资助、组织状态、历史 review |
+| 性能 | 20k 基线 4,283 ms/年；1% state 6,414 ms/年；5% state 8,286 ms/年；heap 471/711/526 MB |
+| 验证 | `pnpm test` 88 files/517 pass/36 skip；v4 39 files/237 pass/8 skip；build 2.96s；e2e 因无 PostgreSQL 阻塞 |
+
+未完成/限制：State 内容可达性不均（curse、university、war-widow 在最终人生中未稳定出现）、子女仍是 birth/relation 而非可靠 State、局部 Position 不随搬家关闭、嵌套 onEnter/onExit 的关键效果失败仍可能留下已创建 State；真实 PostgreSQL 迁移、模型 API、20k DB/API 和生产规模均未验证；5% 密度性能超过 5s/年目标；历史覆盖严重偏欧洲/Vienna；文学质量由独立 Critique 判断，不能由确定性 critic 的 “pass” 代替。
+
+## Phase 16（2026-11-06）— Living Stories（activation / playtest / iteration）
+
+完整报告：`docs/v4/phase-16-report.md`；设计：`phase-16-design.md`；独立批评与修订：`phase-16-critique.md`；ADR：`ADR-017-state-activation-children-history.md`。
+
+| 项 | 实测 |
+|---|---|
+| 激活 | state/position opportunity lane：cast 预检、最低 rate 0.35、权重 ×1.5、每人年一次；final-c 1,193 castable candidates / 375 selected / 318 resolved / 1,280 availability failures / 57 blocked |
+| 子女 | `autoAttachOnBirth` + household `raising-child` + 通用 `child` role + StateInstance 级 tick/reaction 绑定；final-c 146 births / 141 states / 710 school ticks / 24 leaves / 6 returns |
+| 职位 | `$positionOrg/$positionId/$positionTitle` 取最近有效 Position；final-c 85 office events / 25 positions created / 10 ended；final-a 95 / 33 / 11 |
+| 诅咒 | final-c 1931.01 真实背叛后 reaction 提交 health -0.18 + condition + triggers；final-a 10 reactions，final-b 0，自然稀有性可见 |
+| 历史 | occupation/purge/strike 种子；place/region state anchor + expiry + 1945 liberation reaction；final-c 11 occupation states 全部 ended；live-e 9 个 review 窗口 21 matched / 7 unobserved |
+| 内容 | office 2/9/126；curse 2/8/112；family 3/7/98；history 3/10/140；全部 validator `ok:true`；两个新 pack 由离线 LLM 子代理创作并标注 provenance |
+| 模型 | `/models` 200，chat **403** “An active OpenCode Go subscription is required to use Go models.”；实际 author 运行 2 次均 403，fallback 且 `ok:false`，不冒充成功 |
+| PostgreSQL | embedded PostgreSQL 18.6；state persistence + macro store **2 passed**；真实 stop/start 重启恢复 **ok=true**（`v4-postgres-restart-check.ts`）；browser e2e **1 passed**；顺序执行，未触碰生产数据 |
+| 自然人生 | final-c 40 年 14,435 events / 342 persons / 208 alive / 30 distinct states；final-a 50 年 22,102 events；final-b 45 年 19,512 events |
+| 性能 | 20k baseline **4,569 ms/年**；1% **6,628 ms/年**；5% **10,283 ms/年**；从初期 8.29/11.99 优化下来，1% 仍未完全回到 5s |
+| 验证 | `pnpm test` 88 files / **521 pass / 37 skip**；typecheck 无输出；A–F 6/6（受控实验） |
+
+未完成/限制：widow-pension / inheritance-division / family-estate 仍零自然触发；office follow-up 0–6 个/seed，`office-patronage` 仅 2–3 adds；love/knowledge/craft 愿望仍弱；final-c repeatRate 0.1543；work-permit 未创建就业；组织 treasury 尺度不合理；历史日期为 1 月占位；生产 DB/API、runtime LLM worker、公网部署未验证；独立 Critic 修订前 19/30，不能把机制激活等同于文学质量提升。

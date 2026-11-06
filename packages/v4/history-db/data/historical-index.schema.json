@@ -1,0 +1,973 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://world-simulator.local/schemas/historical-index/1.0.0/historical-index.schema.json",
+  "title": "World Simulator Historical Reference Index",
+  "description": "Versioned schema for the 1900-2000 curated historical reference index. Records are reference material, not world state. Fiction hooks are a separate record type and must never be loaded as reference.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/countryCollection"
+    },
+    {
+      "$ref": "#/$defs/cityCollection"
+    },
+    {
+      "$ref": "#/$defs/personCollection"
+    },
+    {
+      "$ref": "#/$defs/eventCollection"
+    },
+    {
+      "$ref": "#/$defs/fictionCollection"
+    },
+    {
+      "$ref": "#/$defs/sourceCollection"
+    },
+    {
+      "$ref": "#/$defs/manifest"
+    }
+  ],
+  "$defs": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "isoDate": {
+      "type": "string",
+      "pattern": "^(18|19|20)[0-9]{2}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+    },
+    "sourceType": {
+      "type": "string",
+      "enum": ["fact", "inference", "fiction"]
+    },
+    "regionCode": {
+      "type": "string",
+      "enum": [
+        "GLOBAL",
+        "EUROPE",
+        "CENTRAL_EUROPE",
+        "WESTERN_EUROPE",
+        "NORTHERN_EUROPE",
+        "SOUTHERN_EUROPE",
+        "SOUTHEAST_EUROPE",
+        "EASTERN_EUROPE",
+        "NORTH_AMERICA",
+        "LATIN_AMERICA",
+        "CARIBBEAN",
+        "SOUTH_AMERICA",
+        "AFRICA",
+        "NORTH_AFRICA",
+        "WEST_AFRICA",
+        "EAST_AFRICA",
+        "CENTRAL_AFRICA",
+        "SOUTHERN_AFRICA",
+        "SUB_SAHARAN_AFRICA",
+        "ASIA",
+        "SOUTH_ASIA",
+        "EAST_ASIA",
+        "SOUTHEAST_ASIA",
+        "WEST_ASIA",
+        "CENTRAL_ASIA",
+        "MIDDLE_EAST",
+        "OCEANIA",
+        "AUSTRALASIA",
+        "PACIFIC"
+      ]
+    },
+    "countryCode": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "causalTag": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_:-]*$"
+    },
+    "dateRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "precision"],
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/isoDate"
+        },
+        "end": {
+          "$ref": "#/$defs/isoDate"
+        },
+        "precision": {
+          "type": "string",
+          "enum": ["day", "month", "year"]
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "baseRecord": {
+      "type": "object",
+      "required": [
+        "id",
+        "recordType",
+        "title",
+        "date",
+        "countryCodes",
+        "regionCodes",
+        "sourceIds",
+        "sourceType",
+        "confidence",
+        "curation"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(country|city|person|event|fiction):[a-z0-9][a-z0-9-]*$"
+        },
+        "recordType": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "date": {
+          "$ref": "#/$defs/dateRange"
+        },
+        "countryCodes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/countryCode"
+          }
+        },
+        "regionCodes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/regionCode"
+          }
+        },
+        "sourceIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^src-[a-z0-9-]+$"
+          }
+        },
+        "sourceType": {
+          "$ref": "#/$defs/sourceType"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "causalTags": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/causalTag"
+          }
+        },
+        "curation": {
+          "type": "string",
+          "enum": ["curated_reference", "curated_fiction"]
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "indexBasis": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      }
+    },
+    "countryRecord": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseRecord"
+        },
+        {
+          "type": "object",
+          "required": ["iso3", "existencePeriods", "existenceNote", "modernCodeBasis"],
+          "properties": {
+            "recordType": {
+              "const": "country"
+            },
+            "sourceType": {
+              "const": "fact"
+            },
+            "curation": {
+              "const": "curated_reference"
+            },
+            "iso3": {
+              "$ref": "#/$defs/countryCode"
+            },
+            "capitalCityId": {
+              "type": "string",
+              "pattern": "^city:[a-z0-9][a-z0-9-]*$"
+            },
+            "existencePeriods": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 10,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["from", "to", "label"],
+                "properties": {
+                  "from": {
+                    "$ref": "#/$defs/isoDate"
+                  },
+                  "to": {
+                    "$ref": "#/$defs/isoDate"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "note": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                }
+              }
+            },
+            "existenceNote": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "modernCodeBasis": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        }
+      ]
+    },
+    "cityRecord": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseRecord"
+        },
+        {
+          "type": "object",
+          "required": [
+            "countryCode",
+            "coordinates",
+            "roles",
+            "historicalContext",
+            "coordinatePrecision",
+            "coordinateSourceId",
+            "indexBasis"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "city"
+            },
+            "sourceType": {
+              "const": "fact"
+            },
+            "curation": {
+              "const": "curated_reference"
+            },
+            "countryCode": {
+              "$ref": "#/$defs/countryCode"
+            },
+            "coordinates": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["lat", "lon"],
+              "properties": {
+                "lat": {
+                  "type": "number",
+                  "minimum": -90,
+                  "maximum": 90
+                },
+                "lon": {
+                  "type": "number",
+                  "minimum": -180,
+                  "maximum": 180
+                }
+              }
+            },
+            "roles": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": ["capital", "port", "industrial_center", "cultural_center", "major_city"]
+              }
+            },
+            "historicalContext": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1200
+            },
+            "coordinatePrecision": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "coordinateSourceId": {
+              "type": "string",
+              "pattern": "^src-[a-z0-9-]+$"
+            }
+          }
+        }
+      ]
+    },
+    "personRecord": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseRecord"
+        },
+        {
+          "type": "object",
+          "required": [
+            "wikidataId",
+            "wikidataUrl",
+            "birth",
+            "death",
+            "occupation",
+            "summary",
+            "viennaRelevance",
+            "notScriptedFate",
+            "indexRole"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "person"
+            },
+            "sourceType": {
+              "const": "fact"
+            },
+            "curation": {
+              "const": "curated_reference"
+            },
+            "wikidataId": {
+              "type": "string",
+              "pattern": "^Q[0-9]+$"
+            },
+            "wikidataUrl": {
+              "type": "string",
+              "pattern": "^https://www\\.wikidata\\.org/wiki/Q[0-9]+$"
+            },
+            "birth": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["date", "precision"],
+              "properties": {
+                "date": {
+                  "$ref": "#/$defs/isoDate"
+                },
+                "precision": {
+                  "type": "string",
+                  "enum": ["day", "month", "year"]
+                }
+              }
+            },
+            "death": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["date", "precision"],
+              "properties": {
+                "date": {
+                  "$ref": "#/$defs/isoDate"
+                },
+                "precision": {
+                  "type": "string",
+                  "enum": ["day", "month", "year"]
+                }
+              }
+            },
+            "occupation": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "viennaRelevance": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1200
+            },
+            "notScriptedFate": {
+              "const": true
+            },
+            "indexRole": {
+              "const": "identity_reference"
+            },
+            "beyondIndexWindow": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    },
+    "eventRecord": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseRecord"
+        },
+        {
+          "type": "object",
+          "required": [
+            "eventType",
+            "placeCityIds",
+            "summary",
+            "candidateHooks",
+            "candidateMaterial"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "event"
+            },
+            "sourceType": {
+              "type": "string",
+              "enum": ["fact", "inference"]
+            },
+            "curation": {
+              "const": "curated_reference"
+            },
+            "eventType": {
+              "type": "string",
+              "enum": [
+                "institution",
+                "war",
+                "revolution",
+                "reform",
+                "diplomacy",
+                "politics",
+                "persecution",
+                "treaty",
+                "peace",
+                "epidemic",
+                "economic",
+                "annexation",
+                "liberation",
+                "justice",
+                "cold_war",
+                "science",
+                "terrorism",
+                "social_movement",
+                "disaster",
+                "protest",
+                "genocide",
+                "migration",
+                "culture"
+              ]
+            },
+            "placeCityIds": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^city:[a-z0-9][a-z0-9-]*$"
+              }
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1200
+            },
+            "candidateHooks": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_:-]*$"
+              }
+            },
+            "candidateMaterial": {
+              "const": true
+            },
+            "inferenceNote": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          },
+          "if": {
+            "properties": {
+              "sourceType": {
+                "const": "inference"
+              }
+            }
+          },
+          "then": {
+            "required": ["inferenceNote"]
+          }
+        }
+      ]
+    },
+    "fictionRecord": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseRecord"
+        },
+        {
+          "type": "object",
+          "required": [
+            "fiction",
+            "notHistoricalClaim",
+            "disclaimer",
+            "anchorEventIds",
+            "divergence",
+            "premise",
+            "constraints",
+            "candidateHooks",
+            "confidenceMeaning"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "fiction_hook"
+            },
+            "sourceType": {
+              "const": "fiction"
+            },
+            "confidence": {
+              "const": 0
+            },
+            "curation": {
+              "const": "curated_fiction"
+            },
+            "fiction": {
+              "const": true
+            },
+            "notHistoricalClaim": {
+              "const": true
+            },
+            "disclaimer": {
+              "type": "string",
+              "minLength": 40,
+              "maxLength": 1000
+            },
+            "confidenceMeaning": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "anchorEventIds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^event:[a-z0-9][a-z0-9-]*$"
+              }
+            },
+            "divergence": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "premise": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "constraints": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 12,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "candidateHooks": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_:-]*$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sourceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "recordType",
+        "title",
+        "publisher",
+        "url",
+        "accessed",
+        "verification",
+        "kind",
+        "license",
+        "note"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^src-[a-z0-9-]+$"
+        },
+        "recordType": {
+          "const": "source"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "publisher": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "accessed": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "verification": {
+          "type": "string",
+          "enum": ["fetched", "blocked", "url_only"]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "tertiary_reference",
+            "structured_data",
+            "encyclopedia",
+            "museum",
+            "intergovernmental",
+            "government",
+            "primary_dataset",
+            "gazetteer",
+            "academic"
+          ]
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    "collectionBase": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "recordType",
+        "generatedAt",
+        "curation",
+        "indexScope",
+        "records"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "schemaVersion": {
+          "$ref": "#/$defs/version"
+        },
+        "recordType": {
+          "type": "string"
+        },
+        "generatedAt": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "curation": {
+          "type": "string",
+          "enum": ["curated_reference", "curated_fiction"]
+        },
+        "indexScope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "usage": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "disclaimer": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      }
+    },
+    "countryCollection": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/collectionBase"
+        },
+        {
+          "properties": {
+            "recordType": {
+              "const": "country"
+            },
+            "curation": {
+              "const": "curated_reference"
+            },
+            "records": {
+              "type": "array",
+              "minItems": 40,
+              "items": {
+                "$ref": "#/$defs/countryRecord"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "cityCollection": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/collectionBase"
+        },
+        {
+          "properties": {
+            "recordType": {
+              "const": "city"
+            },
+            "curation": {
+              "const": "curated_reference"
+            },
+            "records": {
+              "type": "array",
+              "minItems": 50,
+              "items": {
+                "$ref": "#/$defs/cityRecord"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "personCollection": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/collectionBase"
+        },
+        {
+          "properties": {
+            "recordType": {
+              "const": "person"
+            },
+            "curation": {
+              "const": "curated_reference"
+            },
+            "records": {
+              "type": "array",
+              "minItems": 25,
+              "items": {
+                "$ref": "#/$defs/personRecord"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "eventCollection": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/collectionBase"
+        },
+        {
+          "properties": {
+            "recordType": {
+              "const": "event"
+            },
+            "curation": {
+              "const": "curated_reference"
+            },
+            "records": {
+              "type": "array",
+              "minItems": 10,
+              "items": {
+                "$ref": "#/$defs/eventRecord"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "fictionCollection": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/collectionBase"
+        },
+        {
+          "properties": {
+            "recordType": {
+              "const": "fiction_hook"
+            },
+            "curation": {
+              "const": "curated_fiction"
+            },
+            "records": {
+              "type": "array",
+              "minItems": 8,
+              "maxItems": 12,
+              "items": {
+                "$ref": "#/$defs/fictionRecord"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sourceCollection": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/collectionBase"
+        },
+        {
+          "properties": {
+            "recordType": {
+              "const": "source"
+            },
+            "curation": {
+              "const": "curated_reference"
+            },
+            "records": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/sourceRecord"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "manifestVersion",
+        "indexId",
+        "title",
+        "generatedAt",
+        "ordering",
+        "checksumAlgorithm",
+        "counts",
+        "coverage",
+        "files",
+        "limitations"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "$ref": "#/$defs/version"
+        },
+        "manifestVersion": {
+          "$ref": "#/$defs/version"
+        },
+        "indexId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "generatedAt": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "ordering": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "checksumAlgorithm": {
+          "const": "sha256"
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "coverage": {
+          "type": "object"
+        },
+        "files": {
+          "type": "array",
+          "minItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256", "bytes", "records", "recordType"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+\\.json$"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "records": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "recordType": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      }
+    }
+  }
+}

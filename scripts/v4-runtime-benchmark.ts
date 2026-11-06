@@ -2,6 +2,7 @@ import { performance } from 'node:perf_hooks';
 import { advanceV4Year } from '../packages/v4/engine.js';
 import { defaultMacroState } from '../packages/v4/macro.js';
 import { ALL_TASKS, GENERATED_TASKS } from '../packages/v4/content/generated/index.js';
+import { ALL_STATES } from '../packages/v4/content/states/index.js';
 import { DEFAULT_COMPOSITION } from '../packages/v4/composition/default.js';
 import type {
   Household,
@@ -129,6 +130,26 @@ const count = Number(process.argv[2] ?? 1000);
 const years = Number(process.argv[3] ?? 5);
 const world = makeWorld(count);
 if (process.env.V4_BENCH_MACRO !== '0') world.macro = defaultMacroState(world);
+if (process.env.V4_BENCH_STATES === '1') {
+  const density = Math.max(0.01, Math.min(1, Number(process.env.V4_BENCH_STATE_DENSITY ?? 0.05)));
+  world.states = {};
+  for (let i = 0; i < count; i += 1) {
+    if (i % Math.max(1, Math.round(1 / density)) !== 0) continue;
+    const id = `p-${i}`;
+    world.states[`state:bench:${i}`] = {
+      id: `state:bench:${i}`,
+      definitionId: 'wish-power',
+      version: 1,
+      ownerType: 'person',
+      ownerId: id,
+      since: { ...world.date },
+      parameters: { intensity: 0.6, fixation: 0.4, irony: 0.3 },
+      sourceEventId: `evt:bench:${i}`,
+      active: true,
+      tickCount: 0,
+    };
+  }
+}
 const definitions = scenes();
 const started = performance.now();
 let current = world;
@@ -140,6 +161,7 @@ for (let i = 0; i < years; i += 1) {
     eventRuntime: true,
     agency: true,
     ...(process.env.V4_BENCH_COMPOSITION === '1' ? { composition: DEFAULT_COMPOSITION } : {}),
+    ...(process.env.V4_BENCH_STATES === '1' ? { states: ALL_STATES } : {}),
     tasks:
       process.env.V4_BENCH_TASKS === '0'
         ? []
@@ -151,6 +173,16 @@ for (let i = 0; i < years; i += 1) {
   current = result.world;
   events += result.events.length;
   lastTimings = result.diagnostics.timings;
+  if (process.env.V4_BENCH_VERBOSE === '1') {
+    console.error(
+      JSON.stringify({
+        year: current.date.year,
+        ms: result.diagnostics.timings?.total,
+        states: Object.values(current.states ?? {}).filter((state) => state.active).length,
+        events: result.events.length,
+      }),
+    );
+  }
 }
 const elapsed = performance.now() - started;
 console.log(
@@ -158,6 +190,8 @@ console.log(
     persons: count,
     years,
     composition: process.env.V4_BENCH_COMPOSITION === '1',
+    states: process.env.V4_BENCH_STATES === '1',
+    stateCount: Object.keys(world.states ?? {}).length,
     tasks:
       process.env.V4_BENCH_TASKS === '0'
         ? 0

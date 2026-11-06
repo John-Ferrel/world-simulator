@@ -12,7 +12,7 @@ if (!url || !new URL(url).pathname.endsWith('_e2e'))
 await migrateV4();
 await pool.query(
   `TRUNCATE v4_birth_contracts, v4_birth_requests, v4_events, v4_scenes, v4_knowledge, v4_relations,
-   v4_interactions, v4_projects, v4_positions, v4_organizations, v4_persons,
+   v4_states, v4_interactions, v4_projects, v4_positions, v4_organizations, v4_persons,
    v4_households, v4_places, v4_worlds, sessions, users RESTART IDENTITY CASCADE`,
 );
 const e2eWorld = applyViennaHistoricalWorld({

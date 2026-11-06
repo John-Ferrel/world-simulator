@@ -10,6 +10,7 @@ import {
   type PersonAgency,
   type PersonAgencyGoal,
   type Project,
+  type Relation,
   type WorldDate,
   type WorldState,
 } from './domain.js';
@@ -100,8 +101,33 @@ function activeProcesses(world: WorldState, regionId: string) {
     );
 }
 
+const relationIndexes = new WeakMap<
+  WorldState,
+  { version: number; byPerson: Map<Id, Relation[]> }
+>();
+
+function relationIndexFor(world: WorldState): Map<Id, Relation[]> {
+  // Events change constantly; relation membership changes far less often.
+  // Keying this index by world.events.length rebuilt every relation bucket
+  // after every committed event, which dominated 20k-person agency runs.
+  const version = world.historyMeta.relationRevision ?? 0;
+  const cached = relationIndexes.get(world);
+  if (cached && cached.version === version) return cached.byPerson;
+  const byPerson = new Map<Id, Relation[]>();
+  for (const relation of Object.values(world.relations)) {
+    if (relation.end !== undefined) continue;
+    for (const id of [relation.a, relation.b]) {
+      const list = byPerson.get(id) ?? [];
+      list.push(relation);
+      byPerson.set(id, list);
+    }
+  }
+  relationIndexes.set(world, { version, byPerson });
+  return byPerson;
+}
+
 function relationTo(world: WorldState, a: Id, b: Id) {
-  return Object.values(world.relations).find(
+  return (relationIndexFor(world).get(a) ?? []).find(
     (relation) =>
       relation.end === undefined &&
       ((relation.a === a && relation.b === b) || (relation.a === b && relation.b === a)),

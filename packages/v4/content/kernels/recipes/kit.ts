@@ -5,6 +5,7 @@ import type {
   Place,
   Relation,
   RoleRequirement,
+  SceneCheckSpec,
   SceneCondition,
   SceneStage,
 } from '../../../domain.js';
@@ -95,6 +96,8 @@ export type OutcomeSpec = {
   /** Structured motive/conflict/response used by Incident Trace. */
   trace?: { motive?: string; conflict?: string; response?: string };
   when?: KernelVariantWhen;
+  /** Extra per-outcome conditions, e.g. state parameters. */
+  conditions?: SceneCondition[];
   /** Kernel ids to schedule after this outcome. */
   followup?: FollowupSpec | FollowupSpec[];
   /** One shorthand bundle, or several applied in order. */
@@ -125,9 +128,11 @@ export type RecipeSpec = {
   milieus?: string[];
   conditions?: SceneCondition[];
   roles?: Record<string, RoleDecl>;
+  check?: SceneCheckSpec;
   outcomes: OutcomeSpec[];
   variants?: VariantSpec[];
   baseRate?: number;
+  weight?: number;
   cooldownYears?: number;
   significance?: number;
   subjectOccupation?: 'primary' | 'secondary';
@@ -348,6 +353,7 @@ function compileOutcome(spec: OutcomeSpec, fallbackReason: string): KernelOutcom
     ...(spec.significance !== undefined ? { significance: spec.significance } : {}),
     ...(spec.trace ? { trace: spec.trace } : {}),
     ...(spec.when ? { when: spec.when } : {}),
+    ...(spec.conditions && spec.conditions.length > 0 ? { conditions: spec.conditions } : {}),
     ...(followupTargets.length > 0 ? { followupTargets } : {}),
   };
 }
@@ -420,11 +426,13 @@ export function recipe(spec: RecipeSpec): PlotKernel {
       ? { conditions: [...(spec.conditions ?? []), ...extraConditions] }
       : {}),
     roles,
+    ...(spec.check ? { check: spec.check } : {}),
     outcomes: spec.outcomes.map((outcome) => compileOutcome(outcome, spec.title)),
     ...(spec.variants
       ? { variants: spec.variants.map((variant) => compileVariant(variant, spec.title)) }
       : {}),
     ...(spec.baseRate !== undefined ? { baseRate: spec.baseRate } : {}),
+    ...(spec.weight !== undefined ? { weight: spec.weight } : {}),
     ...(spec.cooldownYears !== undefined ? { cooldownYears: spec.cooldownYears } : {}),
     ...(spec.significance !== undefined ? { significance: spec.significance } : {}),
     ...(spec.subjectOccupation ? { subjectOccupation: spec.subjectOccupation } : {}),

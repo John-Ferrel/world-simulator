@@ -1,0 +1,1615 @@
+{
+  "id": "pack-curse-betrayal",
+  "version": 1,
+  "title": "诅咒、背叛与一整套账",
+  "description": "一个愿望或一次仪式可以真的把 cursed-by-wish 挂到人身上，但诅咒只在真实背叛发生时由既有反应判定。本包补的是诅咒前后的人间部分：定金、背叛、误认、利用、调查与封口。",
+  "author": "phase16-content-author",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-06",
+  "sourceBriefId": "brief-curse-and-consequence",
+  "rationale": "既有 cursed-by-wish 已经能监听 betrayal 并指向 betrayer；缺的是让它被真实仪式/愿望触发、让持有者参与真实背叛、并在事后承受关系、调查、名誉与金钱后果的内容。curse-bargain 只记录仪式的定金，不判定背叛；suspected-witchcraft 只承载社会怀疑。两者都不替代既有诅咒反应。",
+  "states": [
+    {
+      "id": "curse-bargain",
+      "version": 1,
+      "packId": "pack-curse-betrayal",
+      "title": "诅咒的定金",
+      "description": "一次真实的许愿或仪式留下的债：有价格、有怀疑、有封口与否。它本身不判定背叛，也不替代 cursed-by-wish 的反应；它只记录这笔交易还没有结清。",
+      "owner": "person",
+      "slot": "curse",
+      "conflict": "replace",
+      "tags": ["curse", "ritual", "wish", "bargain", "debt", "secret", "supernatural"],
+      "parameters": {
+        "request": { "type": "string", "default": "让那个人也尝尝" },
+        "price": { "type": "number", "default": 2, "min": 0, "max": 12 },
+        "doubt": { "type": "number", "default": 35, "min": 0, "max": 100 },
+        "sealed": { "type": "boolean", "default": false }
+      },
+      "durationMonths": { "min": 3, "max": 24 },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": ["curse", "ritual", "omen", "bargain", "wish"],
+          "multiplier": 1.45
+        },
+        {
+          "kind": "scene_weight",
+          "tags": ["celebration", "courtship"],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": ["ritual", "omen"],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "curse_bargain_made",
+          "add": true,
+          "reason": "一次仪式或许愿留下了具体的债"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "curse_bargain_closed",
+          "add": true,
+          "reason": "仪式的账不再占据当前生活"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "bargain-year",
+          "everyMonths": 12,
+          "check": { "attribute": "willpower", "dc": 11 },
+          "outcomes": [
+            {
+              "id": "kept-quiet",
+              "result": "success",
+              "weight": 2,
+              "text": "又过了一年，{subject}没有再去找那个后间。门槛上的盐换了三次，纸上的名字没有褪；{subject}开始相信，安静也是一种利息。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "curse-bargain",
+                  "key": "doubt",
+                  "delta": -6,
+                  "reason": "又一年没有去确认那笔交易"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "仪式暂时安静"
+                }
+              ]
+            },
+            {
+              "id": "price-collected",
+              "result": "failure",
+              "weight": 1,
+              "text": "月底，{subject}发现钱袋里少了一枚银币，抽屉里多出一张不认识的收据。收据背面只写着日期，正是{subject}第一次点蜡烛的那天。{subject}把收据压回抽屉，没有去问。",
+              "effects": [
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "仪式的定金又收了一次"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "curse-bargain",
+                  "key": "doubt",
+                  "delta": 8,
+                  "reason": "收据让怀疑加深"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "看不懂的账目"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "the-curse-lands",
+          "to": "cursed-by-wish",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "curse-bargain",
+              "parameter": "sealed",
+              "equals": true
+            },
+            {
+              "kind": "hasState",
+              "stateId": "curse-bargain",
+              "parameter": "doubt",
+              "max": 45
+            }
+          ],
+          "chance": 0.9,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "curse_landed_after_bargain",
+              "add": true,
+              "reason": "仪式的定金结成了诅咒"
+            }
+          ],
+          "reason": "封好的仪式终于把既有诅咒状态挂到了这个人身上"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase16-content-author",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把仪式写成有价格、有怀疑、会到期的债；真正的诅咒判定仍只在 cursed-by-wish 中发生。"
+      }
+    },
+    {
+      "id": "suspected-witchcraft",
+      "version": 1,
+      "packId": "pack-curse-betrayal",
+      "title": "被疑巫术",
+      "description": "邻居、教区或办事处开始把一连串不幸归到这个人的身上。它不证明诅咒存在，只改变别人如何看她、如何记录她、以及她需要花多少钱让某一页翻过去。",
+      "owner": "person",
+      "slot": "accusation",
+      "conflict": "replace",
+      "tags": ["witchcraft", "rumor", "religion", "legal", "reputation", "fear", "supernatural"],
+      "parameters": {
+        "evidence": { "type": "number", "default": 20, "min": 0, "max": 100 },
+        "danger": { "type": "number", "default": 25, "min": 0, "max": 100 },
+        "accuserKnown": { "type": "boolean", "default": false },
+        "healerConsulted": { "type": "boolean", "default": false }
+      },
+      "durationMonths": { "min": 6, "max": 48 },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": ["rumor", "church", "court", "investigation", "betrayal", "witchcraft", "curse"],
+          "multiplier": 1.65
+        },
+        {
+          "kind": "scene_weight",
+          "tags": ["work", "courtship", "celebration", "travel"],
+          "multiplier": 0.65
+        },
+        {
+          "kind": "check_bonus",
+          "tags": ["rumor", "court"],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "rumor-season",
+          "everyMonths": 12,
+          "check": { "attribute": "cunning", "dc": 12 },
+          "outcomes": [
+            {
+              "id": "whispers-fade",
+              "result": "success",
+              "weight": 2,
+              "text": "一年过去，{subject}没有再点蜡烛，也没有再去那家后间。教堂的登记册翻到了新的一页，旧页边缘留着指甲划过的痕迹；街上的人开始讨论别的事。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "suspected-witchcraft",
+                  "key": "evidence",
+                  "delta": -8,
+                  "reason": "一年没有新的把柄"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "流言暂时退潮"
+                }
+              ]
+            },
+            {
+              "id": "new-accuser",
+              "result": "failure",
+              "weight": 2,
+              "text": "又一个人站了出来，说自家的母牛在{subject}经过之后不再产奶。{subject}没有辩解，因为辩解本身也需要被登记。{subject}开始绕远路去市场，每月多出几枚铜币的车钱。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "suspected-witchcraft",
+                  "key": "danger",
+                  "delta": 10,
+                  "reason": "新的指控出现"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "新的流言在街上流传"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": -1,
+                  "reason": "绕远路增加的车钱"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "被再次指认"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "another-name",
+          "onTags": ["betrayal"],
+          "requiresRoles": ["betrayer"],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "key": "evidence",
+              "delta": 10,
+              "reason": "背叛者为指控添了一句话"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "第二份证词落下"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.15,
+              "fear": 0.05,
+              "reason": "背叛者在调查中添了名字"
+            }
+          ],
+          "text": "{betrayer}在指控{subject}的人面前添了一句话，说{subject}曾经在夜里念过谁的名字。那句话没有证据，但登记册上又多了一行。{subject}后来才知道，添这句话的人就是{betrayer}。",
+          "significance": 0.55,
+          "cooldownMonths": 12,
+          "maxPerYear": 1
+        }
+      ],
+      "transitions": [
+        {
+          "id": "case-opened",
+          "to": "under-investigation",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "suspected-witchcraft",
+              "parameter": "danger",
+              "min": 50
+            }
+          ],
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "witchcraft_case_opened",
+              "add": true,
+              "reason": "社会怀疑变成了正式案件"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "progress",
+              "value": 15,
+              "reason": "案件已经开卷"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "under-investigation",
+              "key": "charge",
+              "value": "巫术与投毒嫌疑",
+              "reason": "指控被写进正式案卷"
+            }
+          ],
+          "reason": "指控积累到足以开出正式案件"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase16-content-author",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "让诅咒的余波进入普通的流言、教区、调查和金钱关系，而不是另造一套超自然系统。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "curse15-bargain.revenge-candle",
+      "title": "半截黑蜡烛",
+      "domain": "wish",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 18, "max": 70 },
+      "tags": ["curse", "ritual", "wish", "revenge", "betrayal", "bargain", "supernatural"],
+      "conditions": [
+        { "kind": "hasState", "tag": "wish:revenge", "owner": "person" },
+        { "kind": "notHasState", "stateId": "cursed-by-wish", "owner": "person" }
+      ],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 70 },
+        { "key": "broker", "kind": "neighbor", "required": true, "minAge": 35, "maxAge": 80 }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-candle-takes",
+          "weight": 0.4,
+          "text": "旧城后间里，{broker}把半截黑蜡烛按在{subject}手心里，让{subject}把一个名字写在纸上再烧掉。第二天早晨，那张纸完整地躺在门槛上，字迹比昨天更深。{broker}收走两枚银币，说这不是诅咒，只是一笔已经记上的账。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "请人主持仪式的费用"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-bargain",
+              "parameters": {
+                "request": "让那个人也尝尝",
+                "price": 2,
+                "doubt": 25,
+                "sealed": true
+              },
+              "durationMonths": 12,
+              "reason": "一场真实的复仇仪式留下了定金"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我把一个名字烧掉，第二天它完整地回到了门槛上。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$broker",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "fear": 0.08,
+              "reason": "从这个人手里买过一次仪式"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "纸上的字迹没有消失"
+            }
+          ]
+        },
+        {
+          "id": "ash-cools",
+          "weight": 0.35,
+          "text": "{subject}把名字写完，火苗却在纸角停住，像被谁捏了一下。{broker}把灰扫进碗里，说名字太轻，或者对方根本不在这个城里。{subject}付了钱，回家的路上把剩下的纸片一路捏碎，第二天照常去上工。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "失败的仪式仍然要付钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "curse_ritual_failed",
+              "add": true,
+              "reason": "仪式没有留下诅咒"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "愿望被当成一场普通的骗局"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$broker",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "reason": "交易没有兑现"
+            }
+          ]
+        },
+        {
+          "id": "it-turns-first",
+          "weight": 0.25,
+          "text": "蜡烛烧到一半，{subject}先咳出一口带黑丝的血。{broker}没有扶，只把碗推远一点，说名字写反了。当天夜里，{subject}发起高烧，而那个被写下的名字第二天照常出现在街上。{subject}知道这笔账落在了自己身上。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.09,
+              "reason": "诅咒先落在写下名字的人身上"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-bargain",
+              "parameters": {
+                "request": "让那个人也尝尝",
+                "price": 2,
+                "doubt": 25,
+                "sealed": true
+              },
+              "durationMonths": 18,
+              "reason": "写反名字的仪式留下了一笔更重的债"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "curse_recoiled_at_once",
+              "add": true,
+              "reason": "仪式第一次就反噬持有者"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "仪式费用与药钱"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "名字写反了"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curse15-bargain.borrowed-name",
+      "title": "借来的名字",
+      "domain": "wish",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 20, "max": 65 },
+      "tags": ["wish", "power", "curse", "ritual", "bargain", "office", "irony"],
+      "conditions": [
+        { "kind": "hasState", "tag": "wish:power", "owner": "person" },
+        { "kind": "notHasState", "stateId": "cursed-by-wish", "owner": "person" }
+      ],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 20, "maxAge": 65 },
+        { "key": "clerk", "kind": "official", "required": true, "minAge": 28, "maxAge": 75 }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "a-key-and-a-title",
+          "weight": 0.4,
+          "text": "办事处后门的{clerk}把一份旧名册翻到空页，让{subject}在“会长”后面签下名字。三天后，{subject}真的收到一枚铜钥匙和一张聘书：夜校同学会会长，职责是保管储物间。同学会只有三个成员，储物间的锁已经坏了。{clerk}没有再出现。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "org:curse15-borrowed:$eventId",
+                "name": "夜校同学会",
+                "kind": "other",
+                "treasury": 0,
+                "authorityRules": ["会长保管储物间的铜钥匙", "会员每年重新登记一次"]
+              },
+              "reason": "一次仪式真的留下了一个组织"
+            },
+            {
+              "type": "position",
+              "organizationId": "org:curse15-borrowed:$eventId",
+              "title": "夜校同学会会长",
+              "holderId": "$subject",
+              "wage": 0,
+              "authority": ["保管储物间钥匙"],
+              "reason": "愿望以真实但无用的职位实现"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-bargain",
+              "parameters": {
+                "request": "借一个位置",
+                "price": 1,
+                "doubt": 30,
+                "sealed": true
+              },
+              "durationMonths": 12,
+              "reason": "借名仪式留下定金"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "拿到一个真实但很小的职位"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "聘书与印花的费用"
+            }
+          ]
+        },
+        {
+          "id": "the-price-is-a-name",
+          "weight": 0.35,
+          "text": "{clerk}只要{subject}在一张空白委任状上写下真名，说剩下的由办事处去办。一个月过去，职位没有来，{subject}的名字却出现在一份领款单上，金额和签名都不属于{subject}。{clerk}调走了，窗口换了人，没有人愿意查那张纸是从哪一叠里抽出来的。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "打点办事处的钱"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "name_used_without_office",
+              "add": true,
+              "reason": "真名被用在领款单上"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "名字与一笔来路不明的钱连在一起"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "reason": "一场没有兑现的委任"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "职位没有来"
+            }
+          ]
+        },
+        {
+          "id": "the-candle-bites",
+          "weight": 0.25,
+          "text": "仪式做完，{clerk}把铜钥匙放进{subject}手里，钥匙却烫得像刚从炉子里夹出来。{subject}松手时掌心已经起泡；第二天，聘书上的名字褪成一片空白，只有{subject}的手还疼。{clerk}说这算成了，也算没成。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "仪式在持有者身上留下烫伤"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "curse-bargain",
+              "parameters": {
+                "request": "借一个位置",
+                "price": 1,
+                "doubt": 25,
+                "sealed": true
+              },
+              "durationMonths": 12,
+              "reason": "烫伤之后仪式仍然留下了一笔定金"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "curse_recoiled_at_once",
+              "add": true,
+              "reason": "仪式第一次就烧伤了持有者"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "烫伤的药膏"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "聘书上的名字消失了"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curse15-betrayal.ledger-share",
+      "title": "账本上少了一页",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 20, "max": 70 },
+      "tags": ["betrayal", "money", "family", "trust", "curse", "secret"],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 20, "maxAge": 70 },
+        { "key": "betrayer", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 75 }
+      ],
+      "baseRate": 0.18,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "sold-the-share",
+          "weight": 0.4,
+          "text": "{betrayer}把{subject}寄放在杂货铺后间的木箱搬走了，里面是两个人合买的缝纫机零件和一小袋银币。{subject}追到码头时，{betrayer}已经上了船，只留下一张写着“算我借的”的纸条。一个月后，{subject}在旧货摊上看见那台缝纫机，摊主说是从当铺收来的。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "被卷走的合买本钱"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.3,
+              "respect": -0.1,
+              "reason": "合伙的钱被带走"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "betrayed_over_money",
+              "add": true,
+              "reason": "被合伙人卷走合买本钱"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我的合伙人带着合买的零件和银币上了船。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "reported theft",
+              "add": true,
+              "reason": "为追回本钱报了案"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "在旧货摊上看见自己的缝纫机"
+            }
+          ]
+        },
+        {
+          "id": "rent-book-rewritten",
+          "weight": 0.3,
+          "text": "{betrayer}在房东的租金簿上把{subject}的名字划掉，换成自己的，又把两个人合住的房间说成是{betrayer}一个人租的。房东没有多问，只让{subject}月底前搬走。{betrayer}站在门口，手里拿着那本不该由{betrayer}保管的簿子。",
+          "significance": 0.86,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "临时找住处与搬家的费用"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.25,
+              "reason": "租约上的名字被替换"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "被房东赶出门的消息传开"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rent_book_taken",
+              "add": true,
+              "reason": "租金簿上的名字被换掉"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "lost lodging",
+              "add": true,
+              "reason": "失去合住的房间"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "月底前必须搬走"
+            }
+          ]
+        },
+        {
+          "id": "the-witness-stays-quiet",
+          "weight": 0.3,
+          "text": "{betrayer}在办事处说了{subject}一整个下午的坏话，从欠债说到那场没人看见的火灾。旁边的人没有替{subject}说一句话。几天后，{subject}发现自己的名字从互助会的名单上被划掉了，{betrayer}只说“我也要养家”。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "互助会名单上的名字被划掉"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.05,
+              "reason": "在办事处散播坏话"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "互助会停止发放的补贴"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "socially shunned",
+              "add": true,
+              "reason": "欠债与火灾的旧事被当众重提"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "reputation_damaged_by_betrayal",
+              "add": true,
+              "reason": "被熟人当众败坏名声"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curse15-betrayal.name-on-the-list",
+      "title": "名单上的第二个名字",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 18, "max": 75 },
+      "tags": ["betrayal", "politics", "investigation", "curse", "denunciation", "secret"],
+      "conditions": [{ "kind": "hasState", "stateId": "cursed-by-wish", "owner": "person" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 75 },
+        { "key": "betrayer", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 75 }
+      ],
+      "baseRate": 0.17,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "denounced",
+          "weight": 0.4,
+          "text": "{betrayer}把{subject}在夜里说过的话整理成三页纸，交到了办事处。纸上没有一句是假的，但每一句都离开了原来的房间。第二天，{subject}被叫去问话，问话的人已经知道该问什么。{betrayer}在走廊里遇见{subject}，点了头，像只是借过一支笔。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "parameters": {
+                "evidence": 20,
+                "danger": 25,
+                "accuserKnown": true,
+                "healerConsulted": false
+              },
+              "reason": "被熟人整理成三页证词，连诅咒的旧话一起被记下"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "被叫去问话"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.2,
+              "fear": 0.05,
+              "reason": "私下的谈话被交到办事处"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "denounced_by_known_person",
+              "add": true,
+              "reason": "被认识的人告发"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "走廊里的点头"
+            }
+          ]
+        },
+        {
+          "id": "sold-the-letter",
+          "weight": 0.3,
+          "text": "{betrayer}把{subject}托付保管的一封旧信卖给了收旧纸的人。信里提到几个已经不用的名字，买主又把信转给了另一个买主。{subject}再见到那封信时，它被压在一块玻璃下面，标价是{subject}半个月的工钱。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "买回自己的旧信"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "旧信里的名字被公开兜售"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "托付保管的信被卖掉"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我写的一封旧信被人压在玻璃下面标价出售。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "private_letter_sold",
+              "add": true,
+              "reason": "私信流入旧货市场"
+            }
+          ]
+        },
+        {
+          "id": "the-accusation-fails",
+          "weight": 0.3,
+          "text": "{betrayer}在众人面前说{subject}用诅咒害人。没有人接话，因为上个月{betrayer}也用同样的话说过另一个人。事情没有闹大，但{subject}发现，从此每次走进那间屋子，都有人先看{subject}的手。",
+          "significance": 0.76,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "指控虽然没有被相信，却留下印象"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "被当众指认为施咒者"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "parameters": {
+                "evidence": 15,
+                "danger": 20,
+                "accuserKnown": true,
+                "healerConsulted": false
+              },
+              "reason": "失败的指控仍然留下社会怀疑"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "accusation_echoed",
+              "add": true,
+              "reason": "同一个人此前也这样指认过别人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "别人先看自己的手"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curse15-betrayal.signature",
+      "title": "印章不在抽屉里",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 25, "max": 70 },
+      "tags": ["betrayal", "office", "power", "politics", "curse", "institution"],
+      "conditions": [{ "kind": "position" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 25, "maxAge": 70 },
+        { "key": "betrayer", "kind": "worker", "required": true, "minAge": 22, "maxAge": 70 }
+      ],
+      "baseRate": 0.16,
+      "weight": 3,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-seal-was-used",
+          "weight": 0.4,
+          "text": "{betrayer}用{subject}留在抽屉里的印章签了一份采购单，把库房里最后一批煤卖给了城外的砖厂。{subject}发现时，账已经做平，签字栏里是{subject}自己的名字。{betrayer}说只是替{subject}省了麻烦，还把那支用旧的印泥放回了原处。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "为平账先垫出去的钱"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.1,
+              "reason": "签字栏里是本人的名字"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.3,
+              "fear": 0.05,
+              "reason": "印章被身边的人盗用"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "under audit",
+              "add": true,
+              "reason": "采购单引起审计"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "seal_used_by_trusted_hand",
+              "add": true,
+              "reason": "被信任的人用印章签字"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "账已经做平"
+            }
+          ]
+        },
+        {
+          "id": "the-vote-in-the-corridor",
+          "weight": 0.3,
+          "text": "{betrayer}在走廊里凑够了票数，把{subject}负责的那间办公室转给了一个更听话的人。会议记录写得很干净：因工作需要。{subject}回到办公室时，门牌已经换了，钥匙还能插进去，只是转不动。",
+          "significance": 0.87,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "办公室被转给别人"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.25,
+              "fear": 0.1,
+              "reason": "在走廊里被凑票架空"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "office taken",
+              "add": true,
+              "reason": "办公室易手的消息传遍机关"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "office_quietly_taken",
+              "add": true,
+              "reason": "门牌换了，钥匙转不动"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "重新置办办公用品的钱"
+            }
+          ]
+        },
+        {
+          "id": "the-files-went-first",
+          "weight": 0.3,
+          "text": "{betrayer}先把{subject}抽屉里的往来信件搬空，再在会议上说{subject}从来没有保存过记录。没有人能证明那些信存在过，除了{subject}自己。散会后，有人让{subject}回家休息几天，工资照发。{subject}知道这不是照顾，是让{subject}别再回来。",
+          "significance": 0.88,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "档案缺失的罪名落在本人头上"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$betrayer",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "信件在会议前被搬空"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我经手的信件在会议前被人搬空了。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "under internal review",
+              "add": true,
+              "reason": "档案缺失引起内部审查"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "records_removed",
+              "add": true,
+              "reason": "往来信件在会议前消失"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curse15-notice.the-second-illness",
+      "title": "第二次发烧",
+      "domain": "curse",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 18, "max": 80 },
+      "tags": ["curse", "notice", "illness", "fear", "knowledge", "supernatural"],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "cursed-by-wish",
+          "owner": "person"
+        },
+        {
+          "kind": "history",
+          "actionPrefix": "state_reaction:cursed-by-wish",
+          "minCount": 1
+        }
+      ],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 80 }
+      ],
+      "baseRate": 0.2,
+      "weight": 3,
+      "cooldownYears": 2,
+      "outcomes": [
+        {
+          "id": "counts-the-interval",
+          "weight": 0.35,
+          "text": "{subject}把两次背叛和两次发烧的日期写在同一张纸上，发现中间都隔着十一天。{subject}没有告诉任何人，只把纸折成很小的一块，塞进缝衣盒的夹层。那天夜里，{subject}第一次试着在门口撒盐，动作熟练得让自己停了一下。",
+          "significance": 0.84,
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "背叛与发烧之间隔着十一天。",
+              "confidence": 0.7,
+              "sourceKind": "inferred",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "curse_counted",
+              "add": true,
+              "reason": "把背叛与发烧的日期记在一起"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "numeracy",
+              "amount": 0.02,
+              "reason": "反复计算日期之间的间隔"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "规律比巧合更让人不安"
+            }
+          ]
+        },
+        {
+          "id": "calls-it-a-fever",
+          "weight": 0.35,
+          "text": "医生说只是换季的烧，{subject}便也这么说。第二次退烧后，{subject}把那张写满日期的纸烧了，灰倒进花盆。花盆里的植物活了下来，{subject}因此更愿意相信巧合，也不再去数下一个十一天。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "curse_dismissed_as_fever",
+              "add": true,
+              "reason": "把诅咒的规律当成换季发烧"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "recovered from fever",
+              "add": true,
+              "reason": "第二次发烧已经退去"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "相信那只是巧合"
+            }
+          ]
+        },
+        {
+          "id": "tells-the-priest",
+          "weight": 0.3,
+          "text": "{subject}在告解室里把事情说了一遍，没有提名字。神父沉默了很久，只问{subject}是否愿意把那张纸交出来。{subject}说没有纸。走出教堂时，{subject}发现街对面有人一直在等，手里拿着一本新的登记册。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "parameters": {
+                "evidence": 25,
+                "danger": 30,
+                "accuserKnown": false,
+                "healerConsulted": false
+              },
+              "reason": "告解内容进入了教区的耳朵"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "教堂外有人拿着新的登记册"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "known to parish",
+              "add": true,
+              "reason": "教区开始记录这个人的名字"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "告解没有带来安宁"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curse15-notice.borrowed-mourning",
+      "title": "替人守灵",
+      "domain": "curse",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 18, "max": 75 },
+      "tags": ["curse", "money", "fear", "client", "ritual", "supernatural", "work"],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "cursed-by-wish",
+          "owner": "person"
+        },
+        {
+          "kind": "history",
+          "actionPrefix": "state_reaction:cursed-by-wish",
+          "minCount": 1
+        }
+      ],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 75 },
+        { "key": "client", "kind": "neighbor", "required": true, "minAge": 20, "maxAge": 80 }
+      ],
+      "baseRate": 0.15,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "sells-the-mourning",
+          "weight": 0.4,
+          "text": "{client}请{subject}去家里坐一夜，说只要{subject}在灵堂待到天亮，那个欠钱的人就会自己上门。{subject}收了钱，在灵堂坐到天亮，什么也没有发生。一个月后，那个人真的来了，送来一袋面粉；{client}把面粉分给{subject}一半，没有解释。",
+          "significance": 0.82,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "替人守灵的酬劳"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "开始有人把这种事找上门"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$client",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "fear": 0.1,
+              "reason": "一起守过一夜灵堂"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_mourning_service",
+              "add": true,
+              "reason": "把诅咒的传闻变成一项收入"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "rumored to have the sight",
+              "add": true,
+              "reason": "邻居开始相信这个人能看见什么"
+            }
+          ]
+        },
+        {
+          "id": "refuses-the-money",
+          "weight": 0.3,
+          "text": "{client}把钱推过来，{subject}又推回去。{subject}说自己只是倒霉，不是什么会看事的人。{client}把钱留在桌上走了，第二天又派人来取。{subject}把那一夜省下来的蜡烛收进柜子，没有点过。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$client",
+              "kind": "acquaintance",
+              "trust": 0.02,
+              "respect": 0.05,
+              "reason": "拒绝把诅咒当成生意"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_curse_work",
+              "add": true,
+              "reason": "拒绝替人使用诅咒"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "把蜡烛收进柜子"
+            }
+          ]
+        },
+        {
+          "id": "it-turns-in-the-hand",
+          "weight": 0.3,
+          "text": "{subject}收了钱，却在灵堂里试着把那个名字指向{client}。蜡烛刚点着，{subject}自己的手先抖起来，火苗顺着袖口爬上去。{client}扑灭了火，没有喊人，只把门打开。{subject}走出去时，听见身后有人在数剩下的蜡烛。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "诅咒在灵堂里反噬持有者"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "灵堂里的火被人看见"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$client",
+              "kind": "rival",
+              "trust": -0.3,
+              "fear": 0.1,
+              "reason": "试图把诅咒转向雇主"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cursed-by-wish",
+              "key": "severity",
+              "delta": 0.1,
+              "reason": "反噬让诅咒更重"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "parameters": {
+                "evidence": 30,
+                "danger": 35,
+                "accuserKnown": true,
+                "healerConsulted": false
+              },
+              "reason": "雇主亲眼看见灵堂里的火"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "curse_recoiled_on_holder",
+              "add": true,
+              "reason": "试图使用诅咒时烧到自己"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curse15-aftermath.the-inquiry",
+      "title": "登记册上的空白",
+      "domain": "legal",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": { "min": 18, "max": 80 },
+      "tags": ["witchcraft", "investigation", "reputation", "rumor", "legal", "aftermath"],
+      "conditions": [{ "kind": "hasState", "stateId": "suspected-witchcraft", "owner": "person" }],
+      "roles": [
+        { "key": "subject", "kind": "subject", "required": true, "minAge": 18, "maxAge": 80 },
+        { "key": "investigator", "kind": "official", "required": true, "minAge": 25, "maxAge": 70 },
+        { "key": "accuser", "kind": "neighbor", "required": true, "minAge": 18, "maxAge": 80 }
+      ],
+      "baseRate": 0.2,
+      "weight": 3,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "a-statement-is-taken",
+          "weight": 0.4,
+          "text": "{investigator}把{subject}叫进办公室，桌上摊着{accuser}交来的三页证词。{subject}逐条回答，{investigator}逐条记录，写到“是否曾诅咒他人”时停了很久。最后{subject}被允许回家，但门口多了一个每月来一次的访客。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "key": "danger",
+              "delta": 25,
+              "reason": "证词进入正式问话"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "key": "evidence",
+              "delta": 10,
+              "reason": "问话记录比上次更长"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "under church inquiry",
+              "add": true,
+              "reason": "教区与办事处开始合看这份证词"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "被叫进办公室问话"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$investigator",
+              "kind": "acquaintance",
+              "trust": -0.02,
+              "fear": 0.1,
+              "reason": "每月来一次的访客"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$accuser",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "三页证词来自这个人"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "问话记录比想象中长"
+            }
+          ]
+        },
+        {
+          "id": "the-parish-clears-it",
+          "weight": 0.3,
+          "text": "教区派人来问了两天，最后在登记册上写：无实据。{accuser}不肯签字，笔被{investigator}收走了。{subject}以为事情到此为止，直到发现邻居开始把自家孩子叫回屋里，只因为{subject}在门口多站了一会儿。",
+          "significance": 0.78,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "reason": "教区登记为无实据"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "教区还了清白"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$accuser",
+              "kind": "rival",
+              "trust": -0.1,
+              "reason": "指控者拒绝签字"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parish_found_no_evidence",
+              "add": true,
+              "reason": "教区在登记册上写下无实据"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "清白没有改变邻居的动作"
+            }
+          ]
+        },
+        {
+          "id": "money-closes-the-file",
+          "weight": 0.3,
+          "text": "{accuser}托人带话，说只要{subject}出钱修好教堂的侧门，证词就可以当作没有写过。{subject}把钱数了三遍，最后交出去。侧门修好了，{accuser}在门框上刻了一行小字，刻的是{subject}的名字。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "修教堂侧门的封口钱"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "key": "evidence",
+              "delta": -15,
+              "reason": "证词被私下撤回"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$accuser",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "收钱后不再追究"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "封口的事仍然留下痕迹"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "paid_to_close_accusation",
+              "add": true,
+              "reason": "出钱让证词消失"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

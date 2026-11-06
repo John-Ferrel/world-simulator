@@ -7,6 +7,7 @@ const ROLE_KINDS = new Set<RoleRequirement['kind']>([
   'parent',
   'guardian',
   'sibling',
+  'child',
   'partner',
   'teacher',
   'employer',
@@ -26,6 +27,9 @@ const BUILTIN_EFFECT_REFS = new Set([
   'subjectPlace',
   'subjectOrg',
   'employerOrg',
+  'positionOrg',
+  'positionId',
+  'positionTitle',
   'eventId',
 ]);
 const BUILTIN_TEXT_TOKENS = new Set([
@@ -71,6 +75,16 @@ const MAJOR_EFFECTS = new Set<EventEffect['type']>([
   'move',
   'condition',
   'flag',
+  'knowledge',
+  'state_add',
+  'historical_participation',
+  'historical_influence',
+  'historical_process',
+  'state_remove',
+  'state_parameter',
+  'state_transition',
+  'position',
+  'organization_found',
 ]);
 
 function validateOutcome(
