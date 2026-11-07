@@ -1786,6 +1786,72 @@
           "stateId": "oj18-workplace-legend",
           "owner": "person"
         }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "famous-projectionist",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "fame",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.8,
+          "checkBonus": 2,
+          "tags": [
+            "reputation",
+            "media"
+          ]
+        },
+        {
+          "id": "public-scandal",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "public-scandal",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.6,
+          "checkBonus": -2,
+          "tags": [
+            "scandal",
+            "reputation"
+          ]
+        },
+        {
+          "id": "blacklisted",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "blacklisted",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.5,
+          "checkBonus": -3,
+          "tags": [
+            "employment",
+            "stigma"
+          ]
+        },
+        {
+          "id": "chronic-illness",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "chronic-illness",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.4,
+          "checkBonus": -2,
+          "tags": [
+            "health",
+            "body"
+          ]
+        }
       ]
     },
     {
@@ -2586,6 +2652,56 @@
           "kind": "notHasState",
           "stateId": "oj18-workplace-legend",
           "owner": "person"
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "famous-keeper",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "fame",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.7,
+          "checkBonus": 1,
+          "tags": [
+            "reputation",
+            "public"
+          ]
+        },
+        {
+          "id": "grieving-keeper",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "grief",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.6,
+          "checkBonus": -2,
+          "tags": [
+            "grief",
+            "care"
+          ]
+        },
+        {
+          "id": "chronically-ill-keeper",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "chronic-illness",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.5,
+          "checkBonus": -3,
+          "tags": [
+            "health",
+            "night"
+          ]
         }
       ]
     },
@@ -3628,6 +3744,56 @@
           "kind": "notHasState",
           "stateId": "oj18-workplace-legend",
           "owner": "person"
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "grieving-mourner",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "grief",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.8,
+          "checkBonus": -2,
+          "tags": [
+            "grief",
+            "death"
+          ]
+        },
+        {
+          "id": "famous-mourner",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "fame",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.5,
+          "checkBonus": 2,
+          "tags": [
+            "reputation",
+            "public"
+          ]
+        },
+        {
+          "id": "under-investigation",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "under-investigation",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.6,
+          "checkBonus": -2,
+          "tags": [
+            "legal",
+            "suspicion"
+          ]
         }
       ]
     },

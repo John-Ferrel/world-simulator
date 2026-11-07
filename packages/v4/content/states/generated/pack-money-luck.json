@@ -4653,6 +4653,56 @@
             }
           ]
         }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "debt-pressure",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "debt-bondage",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.8,
+          "checkBonus": -2,
+          "tags": [
+            "debt",
+            "money"
+          ]
+        },
+        {
+          "id": "raising-child",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "raising-child",
+              "owner": "household"
+            }
+          ],
+          "weightMultiplier": 1.6,
+          "checkBonus": 1,
+          "tags": [
+            "family",
+            "child"
+          ]
+        },
+        {
+          "id": "public-scandal",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "public-scandal",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.5,
+          "checkBonus": -2,
+          "tags": [
+            "scandal",
+            "public"
+          ]
+        }
       ]
     },
     {

@@ -136,7 +136,7 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 
 - 内容：24 authored 重大事件 + 6 authored 任务 + 8 个生成 Family（48 nodes）；Phase 10 新增 78 nodes / 233 outcomes。
 - 总池：140 Task / 333 Event definitions（254 generated + 79 authored），共 473 个可执行定义。
-- 45 年重大审计：6,741 事件 / 1,048 major；employment 2→11、unemployment 7→18、move 19→37、residence 24→50、death 97→122。
+- 45 年重大审计：6,741 事件 / 1,048 major；employment 2→11、unemployment 7→18、move 19→37、residence 24→50、death 97→125。
 - 文学：Critic 13 样本首轮 5 通过；定向改写后 11 个 P0 节点全部 ≥36/50（2 个窄过）。
 - 88 年 playtest：27,510 事件 / 3,490 Task；44 个重复 offender；0 未解析 token、0 死亡后事件。
 - UI：稳定 ID 人物/事件/进程高亮、Hover 档案、事件/进程 modal；e2e 通过。
@@ -177,7 +177,7 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 
 - 内容：1,311 kernels（1,060 event + 251 task）、5,290 outcomes、914 variants、1,047 人物分支；新增 300 个 Phase 13 recipes（200 Task + 100 Event）。
 - 运行：source-aware 普通遭遇调度、基础 scene rate cap（lifecycle/once 除外）、Agency actors 96、儿童/老年 actor、晚期三个 context（1934–2000）。组合事件从 Phase 12 的 443 条提升到 **6,227 条**（3,573 composed scene + 2,654 composed task），触发 661 个不同 kernel。
-- 人口：88 年 **375 births / 449 deaths / 757 persons / 306 alive**；Phase 12 为 100 births / 482 persons。出生路径不再产生“陌生父亲”，same-sex/non-cohabiting 死锁已处理；但仍低于替代水平并依赖 materialization。
+- 人口：88 年 **367 births / 449 deaths / 757 persons / 306 alive**；Phase 12 为 100 births / 482 persons。出生路径不再产生“陌生父亲”，same-sex/non-cohabiting 死锁已处理；但仍低于替代水平并依赖 materialization。
 - 文学：首轮 10/20 (mean 30.55)，最终 15 样本 **12/15 (80%)，mean 33.67**，刚好达到 75% 门槛、零余量；剩余问题主要是 base content 的 cast/POV 纪律和少量效果可见性。
 - 机制：修复 subject cache、stranger father、same-sex/divorce deadlock、zero-effect commit、cash sign、post-death participant；最终 playtest 0 unresolved token、0 post-death subject/participant（death event 除外）。仍有 20,472 blocked casts、304 unresolved_effect_ref、33 invalid_relation。
 - 性能：20k **2,757 ms/年** composed-only；原 benchmark **3,631 ms/年**；heap 378–465 MB，<5s 目标保持。
@@ -259,3 +259,17 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - **受控实验**：4/4 allPassed（power/family/luck/elder 多 State 场景执行）。
 - **未完成/限制**：focal 转化仍弱；`fw19-separated-household`、`eh19-inherited-cause` 自然 0；新 Pack 下游仍少；家庭/伴侣 slot machine、horizon、生产级 runtime 未修。
 - 交付：`docs/v4/phase-19-design.md`、`phase-19-content-collisions.md`、`phase-19-playtests.json`、`phase-19-critique.md`、`phase-19-report.md`、`docs/decisions/ADR-019-cross-pack-collisions-and-life-continuity.md`。
+
+## Phase 20 执行状态（2026-11-07）
+
+- **目标**：Living Consequences；普通事件对人物处境敏感，重要转折有后续；不重写 Engine。
+- **AdaptiveContext**：`packages/v4/composition/adaptive.ts` + `SceneDefinition.adaptiveContexts` + `PlotKernel.adaptiveContexts`；可选条件不 gate，只改 weight/check；`selectOutcome` 把 checkBonus 转为更低 DC；普通/生命周期/state lane 权重生效；validator 检查 0.25–4 / -10..10。
+- **内容规模**：107 / 2,060 / 29 → **111 states / 2,108 kernels / 31 packs**；2 个 Adaptive Pack（24+24 Kernel、4 State）、8 个旧 Kernel retrofit（25 contexts）。
+- **Adaptive 内容**：`pack-adaptive-everyday` 24 Kernel / 108 contexts / 8 check / 16 conditional；`pack-living-consequences` 24 / 97 / 9 / 24；`ad20-public-attention`、`ad20-private-bargain`、`pc20-second-chance`、`pc20-public-reversal` 全部 creation+consumer。
+- **受控实验**：A/B/C/D 4/4；A 同一面试 fame vs scandal 产生 DC 9 success vs DC 15 failure；B curse-lifted；C same-key；D re-accused。
+- **自然 A/B/C**：65,137 events / 5,593 focal；新 Pack 1,227（1.88%）、focal 97（1.73%）、来自 adaptive-capable Kernel 的 focal 125（2.23%）；4/4 新 State；repeatRate 0.2290。Elder 84/3，mixed 361/40。
+- **Adaptive audit**：56 adaptive kernels / 230 contexts；A/B/C 37 个出现，加 cohort 40（16 未出现）；181 adaptive focal / 7,751 = 2.34%。
+- **Retrofit**：8 个旧 Kernel（odd-jobs/elder/money/mystery/love）加 25 contexts；多数无 check，checkBonus 休眠，weightMultiplier 生效。
+- **独立 Critic**：修订前 Scene **22/30**、Life **18/30**（Phase 19: 21/17）；5 个 outcome flips、42/62 adaptive DC shifts；separation birth/divorce 碰撞、testimony truth 重置、retrofit checkBonus 休眠、repeatRate 0.2274 回归（修订后 0.2290）。修订补 `ad20-job-interview` 的 `public-scandal` context 并重跑实验/自然 dossier；Critic 分数不冒充修订后评分。
+- **未完成/限制**：focal share 1.73% <12%；repeatRate 0.2290 > Phase19 0.2104；部分 pc20 分支未自然出现；旧 Kernel checkBonus 未激活；家庭/伴侣 slot machine、horizon、生产 runtime 未修。
+- 交付：`docs/v4/phase-20-design.md`、`phase-20-content.md`、`phase-20-playtests.json`、`phase-20-critique.md`、`phase-20-report.md`；ADR：`docs/decisions/ADR-020-adaptive-storylets-and-living-consequences.md`。

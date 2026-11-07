@@ -70,6 +70,11 @@ const packRows = GENERATED_STATE_PACKS.map((pack) => {
     model: pack.model,
     states,
     kernels: kernels.length,
+    adaptiveKernels: kernels.filter((kernel) => (kernel.adaptiveContexts?.length ?? 0) > 0).length,
+    adaptiveContexts: kernels.reduce(
+      (sum, kernel) => sum + (kernel.adaptiveContexts?.length ?? 0),
+      0,
+    ),
     domains: [...new Set(kernels.map((kernel) => kernel.domain))].sort(),
     stages: [...new Set(kernels.map((kernel) => kernel.stage))].sort(),
     tags: [...new Set(pack.states.flatMap((state) => state.tags))].sort(),
@@ -111,6 +116,11 @@ const catalog = {
     generatedPacks: GENERATED_STATE_PACKS.length,
     generatedStates: GENERATED_STATE_PACKS.reduce((sum, pack) => sum + pack.states.length, 0),
     generatedKernels: GENERATED_STATE_PACKS.reduce((sum, pack) => sum + (pack.kernels?.length ?? 0), 0),
+    adaptiveKernels: KERNEL_LIBRARY.filter((kernel) => (kernel.adaptiveContexts?.length ?? 0) > 0).length,
+    adaptiveContexts: KERNEL_LIBRARY.reduce(
+      (sum, kernel) => sum + (kernel.adaptiveContexts?.length ?? 0),
+      0,
+    ),
   },
   domains,
   stages,
@@ -168,6 +178,14 @@ for (const pack of packRows) {
   md.push(
     `| \`${pack.id}\` | ${pack.states.length} | ${pack.kernels} | ${pack.domains.join(', ')} | ${pack.stages.join(', ')} | ${pack.externalStatesConsumed.slice(0, 8).join(', ') || '—'} |`,
   );
+}
+md.push('');
+md.push('## Adaptive storylets');
+md.push('');
+md.push('| Pack | Adaptive kernels | Adaptive contexts |');
+md.push('|---|---:|---:|');
+for (const pack of packRows.filter((row) => row.adaptiveKernels > 0)) {
+  md.push(`| \`${pack.id}\` | ${pack.adaptiveKernels} | ${pack.adaptiveContexts} |`);
 }
 md.push('');
 md.push('## Pack metadata');

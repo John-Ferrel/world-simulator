@@ -20,6 +20,7 @@ type Shape = {
   conditions: string[];
   effects: string[];
   productionTargets: string[];
+  adaptiveContexts: string[];
   branchCount: number;
   shapeKey: string;
 };
@@ -34,6 +35,7 @@ type KernelReview = {
   conditions: string[];
   roles: string[];
   productionTargets: string[];
+  adaptiveContexts: string[];
   outcomes: number;
   shapeKey: string;
   sampleOutcome: string;
@@ -102,6 +104,9 @@ function shapeOf(kernel: PlotKernel): Shape {
       ),
     ),
   ].sort();
+  const adaptiveContexts = (kernel.adaptiveContexts ?? [])
+    .map((context) => `${context.id}:${context.weightMultiplier ?? 1}:${context.checkBonus ?? 0}`)
+    .sort();
   const productionTargets = [
     ...new Set(
       kernel.outcomes.flatMap((outcome) =>
@@ -122,11 +127,13 @@ function shapeOf(kernel: PlotKernel): Shape {
     conditions,
     effects,
     productionTargets,
+    adaptiveContexts,
     branchCount,
     shapeKey: [
       roles.join(','),
       conditions.join(','),
       productionTargets.join(','),
+      adaptiveContexts.join(','),
       effects.join(','),
       `branches:${branchCount}`,
     ].join('|'),
@@ -145,6 +152,7 @@ const reviews: KernelReview[] = KERNEL_LIBRARY.map((kernel) => {
     conditions: shape.conditions,
     roles: shape.roles,
     productionTargets: shape.productionTargets,
+    adaptiveContexts: shape.adaptiveContexts,
     outcomes: shape.branchCount,
     shapeKey: shape.shapeKey,
     sampleOutcome: kernel.outcomes[0]?.text.slice(0, 160) ?? '',
@@ -240,6 +248,7 @@ function printPack(file: string): void {
     console.log(`conditions: ${shape.conditions.join(', ') || 'none'}`);
     console.log(`effects: ${shape.effects.join(', ')}`);
     console.log(`production: ${shape.productionTargets.join(', ') || 'none'}`);
+    console.log(`adaptive: ${shape.adaptiveContexts.join(', ') || 'none'}`);
     console.log(`shape cluster: ${cluster.length} kernel(s) in current library`);
     for (const member of cluster.filter((candidate) => candidate.id !== kernel.id).slice(0, 4)) {
       console.log(`  nearest shape: ${member.id} (${member.pack})`);

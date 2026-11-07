@@ -2059,7 +2059,57 @@
       ],
       "baseRate": 0.12,
       "weight": 3,
-      "cooldownYears": 8
+      "cooldownYears": 8,
+      "adaptiveContexts": [
+        {
+          "id": "known-affair",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "known-affair",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.9,
+          "checkBonus": -2,
+          "tags": [
+            "scandal",
+            "love"
+          ]
+        },
+        {
+          "id": "famous-bride",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "fame",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.6,
+          "checkBonus": 1,
+          "tags": [
+            "reputation",
+            "public"
+          ]
+        },
+        {
+          "id": "raising-child",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "raising-child",
+              "owner": "household"
+            }
+          ],
+          "weightMultiplier": 1.5,
+          "checkBonus": -1,
+          "tags": [
+            "family",
+            "child"
+          ]
+        }
+      ]
     },
     {
       "id": "ld18-divorce.bench",

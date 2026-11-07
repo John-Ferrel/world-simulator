@@ -1,5 +1,5 @@
 import type { StatePack } from '../state/registry.js';
-import type { EventEffect, SceneCondition } from '../domain.js';
+import type { AdaptiveContext, EventEffect, SceneCondition } from '../domain.js';
 import type { PlotKernel } from '../composition/types.js';
 import { createCompositionSource } from '../composition/composer.js';
 import type { WorldState } from '../domain.js';
@@ -167,6 +167,44 @@ function checkConditions(
   }
 }
 
+function checkAdaptiveContexts(
+  contexts: AdaptiveContext[] | undefined,
+  path: string,
+  stateIds: Set<string>,
+  errors: string[],
+): void {
+  const ids = new Set<string>();
+  for (const [index, context] of (contexts ?? []).entries()) {
+    const contextPath = `${path}[${index}]`;
+    if (!context.id) errors.push(`${contextPath}: missing id`);
+    if (context.id && ids.has(context.id)) errors.push(`${contextPath}: duplicate id ${context.id}`);
+    if (context.id) ids.add(context.id);
+    if (!Array.isArray(context.conditions) || context.conditions.length === 0) {
+      errors.push(`${contextPath}: conditions must be a non-empty array`);
+    } else {
+      checkConditions(context.conditions, `${contextPath}.conditions`, stateIds, errors);
+    }
+    if (context.weightMultiplier !== undefined) {
+      if (
+        !Number.isFinite(context.weightMultiplier) ||
+        context.weightMultiplier < 0.25 ||
+        context.weightMultiplier > 4
+      ) {
+        errors.push(`${contextPath}: weightMultiplier must be 0.25..4`);
+      }
+    }
+    if (context.checkBonus !== undefined) {
+      if (
+        !Number.isFinite(context.checkBonus) ||
+        context.checkBonus < -10 ||
+        context.checkBonus > 10
+      ) {
+        errors.push(`${contextPath}: checkBonus must be -10..10`);
+      }
+    }
+  }
+}
+
 function checkKernel(
   kernel: PlotKernel,
   path: string,
@@ -181,6 +219,15 @@ function checkKernel(
     errors.push(`${path}: no subject role`);
   if ((kernel.outcomes?.length ?? 0) < 2) warnings.push(`${path}: fewer than 2 outcomes`);
   checkConditions(kernel.conditions, `${path}.conditions`, stateIds, errors);
+  checkAdaptiveContexts(kernel.adaptiveContexts, `${path}.adaptiveContexts`, stateIds, errors);
+  for (const [variantIndex, variant] of (kernel.variants ?? []).entries()) {
+    checkAdaptiveContexts(
+      variant.adaptiveContexts,
+      `${path}.variants[${variantIndex}].adaptiveContexts`,
+      stateIds,
+      errors,
+    );
+  }
   const roleKeys = new Set(kernel.roles.map((role) => role.key));
   for (const [outcomeIndex, outcome] of kernel.outcomes.entries()) {
     const outcomePath = `${path}/${outcome.id ?? outcomeIndex}`;

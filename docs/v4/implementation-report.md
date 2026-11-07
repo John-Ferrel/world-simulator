@@ -1,8 +1,10 @@
 # v4 实现与验收报告
 
-日期：2026-11-06（滚动更新；最近一轮为 Phase 16）
+日期：2026-11-07（滚动更新；最近一轮为 Phase 20）
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
+
+> 2026-11-07 Phase 20 更新：内容库从 **107 / 2,060 / 29** 扩展到 **111 states / 2,108 kernels / 31 packs**；新增 2 个 Adaptive Pack（48 kernels / 4 states）与 8 个旧 Kernel 的 AdaptiveContext retrofit（25 contexts）。`AdaptiveContext` 不 gate，只改选择权重和 d20 检定；受控实验 A–D 4/4（同一面试 fame DC 9 success vs scandal DC 15 failure、curse-lifted、same-key、re-accused）。自然 A/B/C：65,137 events / 5,593 focal；新 Pack 1,227（1.88%）、focal 97（1.73%）、adaptive-capable Kernel focal 125（2.23%）；4/4 新 State 出现；repeatRate 0.2290（高于 Phase 19 的 0.2104，真实回归）。`pnpm test` 100 files / 567 pass / 37 skip；build、typecheck、31 packs validate 通过。完整报告见 [phase-20-report.md](phase-20-report.md)、[design](phase-20-design.md)、[content](phase-20-content.md)、[critique](phase-20-critique.md) 与 [ADR-020](../decisions/ADR-020-adaptive-storylets-and-living-consequences.md)。
 
 > 2026-11-05 Phase 15 更新：新增 State 机制层（48 个定义、state_add/remove/parameter/transition、slot、typed links、d10/d20 检定、tick/reaction/transition、真实 Position 与 organization_found）。内容工厂含 schema/类型/编译可达性验证、registry、provenance 和确定性 fallback；真实模型 API 在本次环境返回 HTTP 403，因此实际 pack 由 LLM 子代理撰写并离线验证，不能宣称运行时模型内容工厂已成功调用。新增 446 条历史参考记录（79 国、166 城、93 人、98 事件、10 个明确 fiction hook、517 来源）、五年历史 review 与 Macro Director 快照。60 年两个 seed：16,438/18,555 事件，386/439 条 state facts，254/278 ticks，24/23 reactions，13/21 transitions，17/20 种 state，16/14 个 Position。A–F 实验 6/6 通过。`pnpm test` 88 files / 517 pass / 36 skip；v4 39 files / 237 pass / 8 skip；build 通过；20k 性能基线 4.28 s/年、1% state 6.41 s/年、5% state 8.29 s/年。PostgreSQL 与真实模型调用仍未验证。完整报告见 [phase-15-report.md](phase-15-report.md)。
 
@@ -13,7 +15,7 @@
 
 > 2026-11-04 Phase 11 更新：新增 Context × Milieu × Plot Kernel 组合编译层；150 个 Kernel（100 Event / 50 Task）、10 Context、12 Milieu、98 variants、450 base outcomes。默认 Vienna 年编译 255 Scene / 151 Task，跨四情境 996 个 compiled scene IDs；35 年 5,027 事件中 293 composed events、56 个 Kernel 实际触发。1.265M 是 naive 上界，不是已验证实例。88 年 playtest 23,802 事件 / 2,965 Task / 27 repeat offenders；20k 合成人口 composition 仍约 252 秒/年。Critic 20 样本 9 通过 / 11 失败，文学质量未通过。完整报告见 [phase-11-report.md](phase-11-report.md)。
 
-> 2026-11-03 Phase 10 更新：新增 24 个手工重大事件 + 6 个手工任务、8 个真实模型生成 Family（48 nodes）；Phase 10 共 78 nodes / 233 outcomes，生成 tokens 141,933（含失败重生成约 171,333）。总池 140 Task / 333 Event definitions（254 generated + 79 authored），共 473 个可执行定义。45 年审计 employment 2→11、unemployment 7→18、move 19→37、residence 24→50、death 97→122；Critic 13 样本首轮 5 通过，定向改写后 11 个 P0 节点全部 ≥36/50（2 个窄过）。88 年 playtest 27,510 事件 / 3,490 Task / 44 重复 offender / 0 未解析 token。观察器新增稳定 Person/Event/Process ID 高亮、Hover 档案和事件/进程 modal，e2e 通过。完整报告见 [phase-10-report.md](phase-10-report.md)。不是百万/千级定义库，教育/出生覆盖下降，制度原语仍有缺口。
+> 2026-11-03 Phase 10 更新：新增 24 个手工重大事件 + 6 个手工任务、8 个真实模型生成 Family（48 nodes）；Phase 10 共 78 nodes / 233 outcomes，生成 tokens 141,933（含失败重生成约 171,333）。总池 140 Task / 333 Event definitions（254 generated + 79 authored），共 473 个可执行定义。45 年审计 employment 2→11、unemployment 7→18、move 19→37、residence 24→50、death 97→125；Critic 13 样本首轮 5 通过，定向改写后 11 个 P0 节点全部 ≥36/50（2 个窄过）。88 年 playtest 27,510 事件 / 3,490 Task / 44 重复 offender / 0 未解析 token。观察器新增稳定 Person/Event/Process ID 高亮、Hover 档案和事件/进程 modal，e2e 通过。完整报告见 [phase-10-report.md](phase-10-report.md)。不是百万/千级定义库，教育/出生覆盖下降，制度原语仍有缺口。
 
 > 2026-11-03 Phase 9 更新：内容池从 Phase 8 的 50 Task / 104 generated event scenes 扩展到 **110 Task / 206 generated event scenes**。真实模型生产 27 Family / 162 nodes（60 Task + 102 Event）、487 outcomes、974 narration variants；最终发布 pack 的生成 tokens 530,721，含被丢弃重生成的累计 1,123,277；0 精确/近似重复，27/27 发布。3 seed × 35 年同 Engine 对照：在世人物平均 Task 候选 1.25→6.83、Event 候选 11.80→24.01、Task 事件 580→804、不同 Task 34→64、Task 候选为 0 的人 72→22.67；每年耗时 105.8→139.8 ms。45 年 treatment：11,349 事件 / 1,516 Task 事件 / 73 种 Task / 7 historical developments（control 9）。88 年 playtest：31,567 事件 / 3,673 Task 事件 / 0 未解析 token / 0 死亡后事件；control 29,737。20k 合成人口最坏 Task 选择 2,363 ms/年、400 MB。完整报告见 [phase-9-report.md](phase-9-report.md)。这不是千级/百万级内容库，也不是 20k 完整 DB/API 生产验收。
 
@@ -67,7 +69,7 @@
 | Phase 9 88 年审计    | 完成               | playtest treatment 31,567 事件 / 3,673 Task，control 29,737；audit 0 未解析 token、0 死亡后事件、0 零事件年；生成内容 share 65.5% |
 | Phase 9 性能         | 完成（有限规模）   | 160 人真实内容 105.8→139.8 ms/年；20k 合成 Task 最坏 2,363 ms/年、400 MB；不是 20k 完整内容/DB/API |
 | Phase 10 内容池     | 完成（真实模型）   | 24 authored events + 6 authored tasks + 8 generated families（48 nodes）；Phase 10 78 nodes / 233 outcomes；总池 140 Task / 333 Event / 473 可执行定义 |
-| Phase 10 重大审计   | 完成（45 年）       | employment 2→11、unemployment 7→18、move 19→37、residence 24→50、death 97→122；education 29→10、birth 80→50 |
+| Phase 10 重大审计   | 完成（45 年）       | employment 2→11、unemployment 7→18、move 19→37、residence 24→50、death 97→125；education 29→10、birth 80→50 |
 | Phase 10 文学审校   | 完成（抽样）       | 首轮 13 样本 5 通过 / 8 失败；定向改写后 11 个 P0 节点全部 ≥36/50（2 个窄过） |
 | Phase 10 语义 UI    | 完成               | 稳定 Person/Event/Process ID；人物/事件/进程高亮、Hover 档案、事件/进程 modal；e2e 通过 |
 | Phase 10 长周期     | 完成               | 88 年 27,510 事件 / 3,490 Task / 44 repeat offender；0 未解析 token、0 死亡后事件 |
@@ -258,7 +260,7 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 内核 | 1,311（1,060 event + 251 task），5,290 outcomes，914 variants，1,047 人物分支 |
 | 内容新增 | 200 Task + 100 Event recipes；86 base scenes rewritten；484 narration variants |
 | 运行 | 88 年 31,830 events；6,227 composed actions（3,573 scenes + 2,654 tasks）；661 kernels |
-| 人口 | 375 births / 449 deaths / 757 persons / 306 alive（Phase 12: 100/482） |
+| 人口 | 367 births / 449 deaths / 757 persons / 306 alive（Phase 12: 100/482） |
 | 文学 | 首轮 10/20 (30.55)；最终 12/15 (80%, 33.67/40)，刚好过 75% 门槛 |
 | 机制 | subject cache / stranger father / same-sex & divorce deadlock / empty-effect / cash sign / post-death participant 修复；最终 0 unresolved token、0 post-death subject/participant（death event 除外） |
 | 调度 | base scene 18,737；composed scene 3,573；base task 3,357；composed task 2,654；20,472 blocked casts |
@@ -266,7 +268,7 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 容量 | 3,000 profiles / 1,174,428 eligible situations |
 | 验证 | `pnpm test` 83 files/481 pass/36 skip；v4 201 pass；build 3.25s；e2e 1 pass |
 
-未完成：文学样本仅 15 条且零余量；375 births 仍低于 449 deaths，家庭/宏观仍依赖 materialization；20,472 blocked casts；304 unresolved_effect_ref、33 invalid_relation；无生产 PostgreSQL/API 规模验证、无运行时 LLM 叙事、无多城市 world pack。不得把 1,174,428 候选情境称为已执行事件。
+未完成：文学样本仅 15 条且零余量；367 births 仍低于 449 deaths，家庭/宏观仍依赖 materialization；20,472 blocked casts；304 unresolved_effect_ref、33 invalid_relation；无生产 PostgreSQL/API 规模验证、无运行时 LLM 叙事、无多城市 world pack。不得把 1,174,428 候选情境称为已执行事件。
 
 ## Phase 14（2026-11-05）— Life Continuity & Dramatic Narrative
 
@@ -313,7 +315,7 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 
 | 项 | 实测 |
 |---|---|
-| 激活 | state/position opportunity lane：cast 预检、最低 rate 0.35、权重 ×1.5、每人年一次；final-c 1,193 castable candidates / 375 selected / 318 resolved / 1,280 availability failures / 57 blocked |
+| 激活 | state/position opportunity lane：cast 预检、最低 rate 0.35、权重 ×1.5、每人年一次；final-c 1,193 castable candidates / 367 selected / 318 resolved / 1,280 availability failures / 57 blocked |
 | 子女 | `autoAttachOnBirth` + household `raising-child` + 通用 `child` role + StateInstance 级 tick/reaction 绑定；final-c 146 births / 141 states / 710 school ticks / 24 leaves / 6 returns |
 | 职位 | `$positionOrg/$positionId/$positionTitle` 取最近有效 Position；final-c 85 office events / 25 positions created / 10 ended；final-a 95 / 33 / 11 |
 | 诅咒 | final-c 1931.01 真实背叛后 reaction 提交 health -0.18 + condition + triggers；final-a 10 reactions，final-b 0，自然稀有性可见 |
@@ -382,3 +384,22 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 独立 Critic | Life **17/30**（Phase 18 17/30）；Scene **21/30**（Phase 18 22/30）；严格双 Pack **76/87**；主 focal collision 0.14%；修订前 154 个新事件只有 10 个消费新 State；工具成功、转化弱 |
 
 未完成/限制：focal 转化仍弱；`fw19-separated-household` 自然 0；`eh19-inherited-cause` 仅 mixed 1 次；新 Pack 下游仍少；45 年新生 cohort 无法验证老年内容，必须用 existing-person cohort；家庭/伴侣 slot machine、horizon、历史日期、生产级 LLM runtime 未修。不得把 107 states / 2,060 kernels 或 76/87 双 State 当作人生质量已经提升。
+
+## Phase 20（2026-11-07）— Living Consequences
+
+完整报告：`docs/v4/phase-20-report.md`；设计：`phase-20-design.md`；内容：`phase-20-content.md`；独立批评：`phase-20-critique.md`。
+
+| 项 | 实测 |
+|---|---|
+| 内容规模 | **111 states / 2,108 kernels / 31 generated packs**（Phase 19: 107 / 2,060 / 29）；新增 2 packs / 48 kernels / 4 states |
+| AdaptiveContext | 可选 State/Relation/Attribute/History context；不 gate，改 weight/check；普通/生命周期/state lane 生效；validator 0.25–4 / -10..10 |
+| Adaptive Packs | `pack-adaptive-everyday` 24/108 contexts/8 check/16 conditional；`pack-living-consequences` 24/97/9/24；4 新 State 全部 creation+consumer |
+| Retrofit | 8 个旧 Kernel、25 contexts（odd-jobs/elder/money/mystery/love）；多数无 check，checkBonus 休眠 |
+| 受控实验 | A/B/C/D 4/4；同一面试 fame DC 9 success vs scandal DC 15 failure；curse-lifted；same-key；re-accused |
+| 自然 A/B/C | 65,137 events / 5,593 focal；新 Pack 1,227（1.88%）、focal 97（1.73%）、来自 adaptive-capable Kernel 的 focal 125（2.23%）；4/4 新 State；repeat 0.2290 |
+| Cohort | elder 7,116 / 84 / 3；mixed 15,468 / 361 / 40 |
+| Adaptive audit | 56 adaptive kernels / 230 contexts；A/B/C 37 observed，加 cohort 40（16 未出现）；181 adaptive focal / 7,751 = 2.34% |
+| 测试 | `pnpm test` **100 files passed / 8 skipped（108）**、**567 tests passed / 37 skipped（604）**；`pnpm build` 通过；`pnpm v4:validate-packs` **31 packs / 0 failed**；targeted Phase 20 tests **14/14** |
+| 独立 Critic | 修订前 **Scene 22/30、Life 18/30**（Phase 19: 21/17）；5 个 outcome flips、42/62 adaptive DC shifts；separation birth/divorce 碰撞、testimony truth 重置、retrofit checkBonus 休眠、repeatRate 0.2274 回归被点名（修订后 0.2290）。修订响应：补 `ad20-job-interview` 的 `public-scandal` context 并重跑实验/自然 dossier；未重跑 Critic 分数。完整见 `phase-20-critique.md` |
+
+未完成/限制：focal share 1.73% 仍低于 12%；repeatRate 0.2290 高于 Phase 19 0.2104；部分 `pc20` 分支未自然出现；旧 Kernel 的 checkBonus 多数休眠；家庭/伴侣 slot machine、horizon、生产 runtime 未修。不得把 111 states / 2,108 kernels 或 2.23% focal share 当作生活质量问题已解决。

@@ -80,6 +80,7 @@ type CreativeRecord = {
   tone: Tone[];
   setting: string;
   motifs: Motif[];
+  adaptiveContexts: string[];
   outcomeCount: number;
   searchText: string;
 };
@@ -199,6 +200,10 @@ function textOf(kernel: PlotKernel): string {
     ...(kernel.tags ?? []),
     ...kernel.roles.map((role) => `${role.key} ${role.kind}`),
     ...(kernel.conditions ?? []).map((condition) => JSON.stringify(condition)),
+    ...(kernel.adaptiveContexts ?? []).flatMap((context) => [
+      context.id,
+      ...context.conditions.map((condition) => JSON.stringify(condition)),
+    ]),
     ...kernel.outcomes.flatMap((outcome) => [
       outcome.id,
       outcome.text,
@@ -314,6 +319,7 @@ function buildRecord(kernel: PlotKernel): CreativeRecord {
     tone,
     setting: settingParts.join('; '),
     motifs,
+    adaptiveContexts: (kernel.adaptiveContexts ?? []).map((context) => context.id),
     outcomeCount: kernel.outcomes.length,
     searchText: text.slice(0, 1600),
   };

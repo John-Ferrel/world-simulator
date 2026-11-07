@@ -884,6 +884,23 @@ export type SceneCondition =
     };
 
 /**
+ * Phase 20 adaptive storylet context. These conditions are optional: they do
+ * not gate the scene. When they match, they change selection weight and/or the
+ * d20 check. Conditional outcomes use ordinary SceneOutcome.conditions.
+ */
+export type AdaptiveContext = {
+  id: string;
+  /** All conditions must match for this context to contribute. */
+  conditions: SceneCondition[];
+  /** Multiplicative selection weight; clamped by the validator. */
+  weightMultiplier?: number;
+  /** Added to the d20 modifier; positive makes the check easier. */
+  checkBonus?: number;
+  /** Editorial tags for catalog/index/review. */
+  tags?: string[];
+};
+
+/**
  * A deterministic d20 check that selects an authored outcome. It is not a
  * second resolution system: success/failure still resolve to ordinary
  * SceneOutcome objects with typed effects.
@@ -1005,6 +1022,12 @@ export type SceneDefinition = {
   weight?: number;
   /** Narration variants keyed by outcome id. */
   narration?: NarrationVariant[];
+  /**
+   * Optional Phase 20 contexts. They never gate eligibility; matching contexts
+   * modify selection weight and d20 checks. Conditional outcomes still use
+   * ordinary SceneOutcome.conditions.
+   */
+  adaptiveContexts?: AdaptiveContext[];
   /** Fact tags this event subscribes to (injury, death, unemployment, ...). */
   triggerTags?: string[];
   /** Optional ability check that selects among the authored outcomes. */

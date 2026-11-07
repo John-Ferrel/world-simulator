@@ -357,6 +357,14 @@ function compileKernel(
     ] as SceneDefinition['subjectProvenance'],
     cooldownYears: kernel.cooldownYears ?? 2,
     weight: kernel.weight ?? 1,
+    ...(kernel.adaptiveContexts || variant?.adaptiveContexts
+      ? {
+          adaptiveContexts: [
+            ...(kernel.adaptiveContexts ?? []),
+            ...(variant?.adaptiveContexts ?? []),
+          ],
+        }
+      : {}),
     ...(kernel.historicalBasis ? { historicalBasis: kernel.historicalBasis } : {}),
     ...(kernel.sourceIds ? { sourceIds: kernel.sourceIds } : {}),
   };

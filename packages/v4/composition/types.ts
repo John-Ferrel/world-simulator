@@ -1,4 +1,5 @@
 import type {
+  AdaptiveContext,
   EventEffect,
   PersonAttributeKey,
   Place,
@@ -160,6 +161,8 @@ export type KernelVariant = {
   roles?: RoleRequirement[];
   /** If provided, replaces the kernel's base outcomes. */
   outcomes?: KernelOutcome[];
+  /** Optional adaptive contexts added by this variant. */
+  adaptiveContexts?: AdaptiveContext[];
   rateMultiplier?: number;
 };
 
@@ -177,6 +180,11 @@ export type PlotKernel = {
   /** Milieu ids/tags this kernel can inhabit; empty means any milieu. */
   milieus?: string[];
   conditions?: SceneCondition[];
+  /**
+   * Phase 20 optional contexts. They do not gate the kernel; matching contexts
+   * modify selection weight/check and can be referenced by outcome conditions.
+   */
+  adaptiveContexts?: AdaptiveContext[];
   roles: RoleRequirement[];
   /** Optional deterministic check that branches among authored outcomes. */
   check?: import('../domain.js').SceneCheckSpec;

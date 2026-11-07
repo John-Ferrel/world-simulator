@@ -254,6 +254,24 @@ pnpm v4:phase19-summary
 
 这是工具与节奏改进成功、focal 转化仍弱的结果：新 Pack 能进入世界，但 45 年新生 focal 里仍然稀有；不能把 87 kernels 当作人生已经改变。完整证据见 [report](docs/v4/phase-19-report.md)、[design](docs/v4/phase-19-design.md)、[content collisions](docs/v4/phase-19-content-collisions.md)、[critique](docs/v4/phase-19-critique.md) 与 [ADR 019](docs/decisions/ADR-019-cross-pack-collisions-and-life-continuity.md)。
 
+## Phase 20 有后果的人生
+
+Phase 20 把内容库从 **107 / 2,060 / 29** 扩展到 **111 states / 2,108 kernels / 31 packs**，新增 2 个 Adaptive Pack（48 kernels / 4 states）和 8 个旧 Kernel 的 AdaptiveContext retrofit。
+
+核心机制是 `AdaptiveContext`：一个主 eligibility 提供事件机会，其他 State / Relation / Attribute / History 作为可选情境改变权重、检定和 conditional outcome，而不是硬性 gate。普通求职、房东、学校会议、市场日、葬礼、贷款、演讲等事件，会因 fame、scandal、curse、wealth、debt、blacklisted、relationship history 产生不同结果。
+
+```bash
+pnpm v4:phase20-adaptive-audit
+pnpm v4:phase20-experiments
+pnpm v4:phase20-lives 45 phase20-a,phase20-b,phase20-c
+pnpm v4:phase20-lives 30 phase20-elder --existing=person-theresia-huber,person-hedwig-stein,person-anna-moser,person-hermann-kral,person-maria-kral --existing-only
+pnpm v4:phase20-summary
+```
+
+自然 A/B/C：65,137 events；新 Pack 1,227 事件（1.88% 世界）、97 个 focal 事件（1.73%）、125 个来自带 `adaptiveContexts` Kernel 的 focal 事件（2.23%）；4/4 新 State 出现；repeatRate 0.2290。Elder 84/3，mixed 361/40。Phase 19 的 focal share 是 0.14%，Phase 20 有显著提升，但仍低于 12%；repeatRate 上升是真实回归，不能隐藏。
+
+受控实验 A–D 4/4：同一面试因 fame/scandal 产生不同 DC 和 outcome；诅咒进入普通愿望；分居家庭重新开门；政治嫌疑翻案/再次指控。独立 Critic（修订前）给 **Scene 22/30、Life 18/30**（Phase 19: 21/17），并指出多数 adaptive context 只改赔率、separation 仍有 birth/divorce 碰撞、testimony truth 会被重置、旧 Kernel checkBonus 休眠、repeatRate 0.2274 回归（修订后 0.2290）。修订补了 `ad20-job-interview` 的 public-scandal context 并重跑实验/自然 dossier；Critic 分数不冒充修订后评分。完整证据见 [report](docs/v4/phase-20-report.md)、[design](docs/v4/phase-20-design.md)、[content](docs/v4/phase-20-content.md)、[critique](docs/v4/phase-20-critique.md) 与 [ADR 020](docs/decisions/ADR-020-adaptive-storylets-and-living-consequences.md)。
+
 ## 已知限制与边界
 
 - **内容范围**：静态运行时 183 个事件场景（含 104 个生成场景、519 条生成叙事变体）和 50 个主动 Task（144 outcomes/288 narrations）；另有运行时 content pack 机制，发布后动态加载，仍只是维也纳切片，不是完整 1900 地球人生。离婚、再婚、同性关系、继承和住房容量已有第一版机制，但缺少玩家选择、完整法律程序、再婚/继承分配策略和大规模内容覆盖。

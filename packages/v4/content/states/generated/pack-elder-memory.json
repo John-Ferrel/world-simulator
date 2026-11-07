@@ -2047,7 +2047,58 @@
       ],
       "baseRate": 0.06,
       "weight": 3,
-      "cooldownYears": 10
+      "cooldownYears": 10,
+      "adaptiveContexts": [
+        {
+          "id": "estate-household",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "family-estate",
+              "owner": "household"
+            }
+          ],
+          "weightMultiplier": 1.5,
+          "checkBonus": 1,
+          "tags": [
+            "family",
+            "property"
+          ]
+        },
+        {
+          "id": "chronic-illness",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "chronic-illness",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.6,
+          "checkBonus": -2,
+          "tags": [
+            "health",
+            "body"
+          ]
+        },
+        {
+          "id": "fame-history",
+          "conditions": [
+            {
+              "kind": "history",
+              "tag": "fame",
+              "minCount": 1,
+              "withinYears": 30
+            }
+          ],
+          "weightMultiplier": 1.7,
+          "checkBonus": 1,
+          "tags": [
+            "reputation",
+            "memory"
+          ]
+        }
+      ]
     },
     {
       "id": "em18-late-bloom.last-apprentice",
@@ -4549,7 +4600,57 @@
       ],
       "baseRate": 0.07,
       "weight": 3,
-      "cooldownYears": 10
+      "cooldownYears": 10,
+      "adaptiveContexts": [
+        {
+          "id": "grieving-grandparent",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "grief",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.7,
+          "checkBonus": -2,
+          "tags": [
+            "grief",
+            "memory"
+          ]
+        },
+        {
+          "id": "famous-grandparent",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "fame",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.5,
+          "checkBonus": 1,
+          "tags": [
+            "reputation",
+            "archive"
+          ]
+        },
+        {
+          "id": "raising-child",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "raising-child",
+              "owner": "household"
+            }
+          ],
+          "weightMultiplier": 1.6,
+          "checkBonus": 2,
+          "tags": [
+            "family",
+            "child"
+          ]
+        }
+      ]
     },
     {
       "id": "em18-family-archive.sibling-claim",

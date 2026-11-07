@@ -50,6 +50,7 @@ import {
   type WorldState,
 } from './domain.js';
 import { parseComposedAction } from './composition/replay.js';
+import { adaptiveContextTotals } from './composition/adaptive.js';
 import {
   advanceDevelopmentLifecycle,
   eventPoolMultiplier,
@@ -3074,10 +3075,15 @@ function selectOutcome(
   );
 
   if (definition.check) {
+    const adaptive = adaptiveTotalsFor(context, definition, subject, date);
+    const effectiveCheck =
+      adaptive.checkBonus === 0
+        ? definition.check
+        : { ...definition.check, dc: definition.check.dc - adaptive.checkBonus };
     const result = resolveCheck(
       context.world,
       subject,
-      definition.check,
+      effectiveCheck,
       context.stateIndex,
       seededRng(context.world.seed, 'check', definition.id, subject.id, date.year, date.month),
       (tag) => countHistoryTag(context.world, subject.id, tag, date),
@@ -4894,6 +4900,17 @@ function sceneEligiblePrepared(
   return true;
 }
 
+function adaptiveTotalsFor(
+  context: EngineContext,
+  definition: SceneDefinition,
+  subject: Person,
+  date: WorldDate,
+) {
+  return adaptiveContextTotals(definition.adaptiveContexts, (conditions) =>
+    conditionsPass(context.world, subject, conditions, date),
+  );
+}
+
 function ratePasses(
   context: EngineContext,
   entry: IndexedScene,
@@ -4934,9 +4951,10 @@ function pickOrdinaryCandidate(
   if (entries.length === 0) return undefined;
   const rng = seededRng(context.world.seed, 'ordinary-draw', subject.id, date.year, ordinal);
   const attempts = Math.min(8, Math.max(4, Math.ceil(entries.length / 48)));
+  const eligible: { definition: SceneDefinition; weight: number }[] = [];
   for (let i = 0; i < attempts; i += 1) {
     const entry = drawWeighted(sampler, rng);
-    if (!entry) return undefined;
+    if (!entry) break;
     const definition = entry.definition;
     const source = definitionSource(definition);
     const scheduling = context.diagnostics.scheduling;
@@ -4948,9 +4966,18 @@ function pickOrdinaryCandidate(
     if (scheduling) scheduling.ordinary.ratePass[source] += 1;
     if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
     if (scheduling) scheduling.ordinary.preparedPass[source] += 1;
-    return { definition, weight: Math.max(0, definition.weight ?? 1) };
+    eligible.push({
+      definition,
+      weight:
+        Math.max(0, definition.weight ?? 1) *
+        adaptiveTotalsFor(context, definition, subject, date).weightMultiplier,
+    });
   }
-  return undefined;
+  if (eligible.length === 0) return undefined;
+  return weightedPick(
+    eligible,
+    seededRng(context.world.seed, 'ordinary-adaptive', subject.id, date.year, ordinal),
+  );
 }
 
 function chooseEncounterSource(
@@ -5072,7 +5099,9 @@ function runEventYear(
         if (!ratePasses(context, entry, subject, date, 2, personSeed)) continue;
         lifecycleCandidates.push({
           definition,
-          weight: Math.max(0, definition.weight ?? 1),
+          weight:
+            Math.max(0, definition.weight ?? 1) *
+            adaptiveTotalsFor(context, definition, subject, date).weightMultiplier,
         });
       }
       const chosen = weightedPick(
@@ -5186,7 +5215,12 @@ function runEventYear(
         }
         stateCandidates.push({
           definition,
-          weight: Math.max(0, definition.weight ?? 1) * 1.5 * crossStateWeight * crossPackWeight,
+          weight:
+            Math.max(0, definition.weight ?? 1) *
+            1.5 *
+            crossStateWeight *
+            crossPackWeight *
+            adaptiveTotalsFor(context, definition, subject, date).weightMultiplier,
           cast,
           crossStateCount,
           crossPackCount,
@@ -5305,7 +5339,12 @@ function runEventYear(
           if (context.diagnostics.scheduling) {
             context.diagnostics.scheduling.ordinary.ratePass[definitionSource(definition)] += 1;
           }
-          candidates.push({ definition, weight: Math.max(0, definition.weight ?? 1) });
+          candidates.push({
+            definition,
+            weight:
+              Math.max(0, definition.weight ?? 1) *
+              adaptiveTotalsFor(context, definition, subject, date).weightMultiplier,
+          });
         }
         chosen = weightedPick(
           candidates,
@@ -5342,7 +5381,12 @@ function runEventYear(
               if (!indexedSceneFits(context.world, entry, subject, date)) continue;
               if (!sceneEligiblePrepared(context, entry, subject, date)) continue;
               if (!ratePasses(context, entry, subject, date, 1, personSeed)) continue;
-              candidates.push({ definition, weight: Math.max(0, definition.weight ?? 1) });
+              candidates.push({
+                definition,
+                weight:
+                  Math.max(0, definition.weight ?? 1) *
+                  adaptiveTotalsFor(context, definition, subject, date).weightMultiplier,
+              });
             }
             chosen = weightedPick(
               candidates,

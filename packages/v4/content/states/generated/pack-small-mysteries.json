@@ -1428,6 +1428,56 @@
             }
           ]
         }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "under-investigation",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "under-investigation",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.8,
+          "checkBonus": -3,
+          "tags": [
+            "legal",
+            "suspicion"
+          ]
+        },
+        {
+          "id": "office-patronage",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "office-patronage",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.5,
+          "checkBonus": 1,
+          "tags": [
+            "power",
+            "patronage"
+          ]
+        },
+        {
+          "id": "famous-employer",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "fame",
+              "owner": "person"
+            }
+          ],
+          "weightMultiplier": 1.6,
+          "checkBonus": -1,
+          "tags": [
+            "reputation",
+            "public"
+          ]
+        }
       ]
     },
     {
