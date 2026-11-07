@@ -12,7 +12,7 @@ import {
 import { ALL_STATES } from '../packages/v4/content/states/index.js';
 import { validateStateLibrary } from '../packages/v4/state/types.js';
 import { compileWish, applyWishState } from '../packages/v4/wish-compiler.js';
-import { indexStateDefinitions, stateSceneWeightMultiplier } from '../packages/v4/state/runtime.js';
+import { indexStateDefinitions, stateSceneWeightMultiplier, touchStateRevision } from '../packages/v4/state/runtime.js';
 
 function traits(): Person['traits'] {
   return {
@@ -609,6 +609,75 @@ describe('Phase 15 state mechanism', () => {
       year2.events.some((event) => event.action.startsWith('test-state-opportunity/')),
     ).toBe(true);
     expect(year2.world.persons['person:anna']!.life?.flags).toContain('state_opportunity_taken');
+    assertWorldV4(year2.world);
+  });
+
+  it('counts a multi-state scene in the state opportunity lane', () => {
+    const world = fixture();
+    const enrol = stateScene('test-enrol-multi', {
+      type: 'state_add',
+      ownerType: 'person',
+      ownerId: '$subject',
+      stateId: 'university-student',
+      parameters: { progress: 20, scholarship: false },
+      reason: 'university',
+    });
+    const firstYear = advanceV4Year(world, [enrol], {
+      states: ALL_STATES,
+      eventRuntime: false,
+      economy: { enabled: false },
+      statisticalModel: false,
+      materializePopulation: false,
+    }).world;
+    firstYear.states ??= {};
+    firstYear.states['state:test:multi:known-affair'] = {
+      id: 'state:test:multi:known-affair',
+      definitionId: 'known-affair',
+      version: 1,
+      ownerType: 'person',
+      ownerId: 'person:anna',
+      since: { ...firstYear.date },
+      parameters: { notoriety: 50, grief: 0, exposure: 70, discretion: 20, remarried: false, origin: 'exposed' },
+      sourceEventId: 'evt:test:multi',
+      active: true,
+      tickCount: 0,
+    };
+    touchStateRevision(firstYear);
+    const multi: SceneDefinition = {
+      id: 'test-multi-state-opportunity',
+      version: 1,
+      packId: 'phase15-test',
+      title: 'A multi-state chance',
+      stage: 'adulthood',
+      ageWindow: { min: 18, max: 45 },
+      roles: [{ key: 'subject', kind: 'subject' }],
+      conditions: [
+        { kind: 'hasState', stateId: 'university-student' },
+        { kind: 'hasState', stateId: 'known-affair' },
+      ],
+      outcomes: [
+        {
+          id: 'taken',
+          weight: 1,
+          immediateText: '{subject}把学生证和一段不能公开的关系同时带进了同一间办公室。',
+          effects: [
+            { type: 'flag', personId: '$subject', flag: 'multi_state_taken', add: true, reason: 'two standing states collided' },
+          ],
+        },
+      ],
+      tags: ['education', 'scandal'],
+      rate: 1,
+      cooldownYears: 1,
+    };
+    const year2 = advanceV4Year(firstYear, [multi], {
+      states: ALL_STATES,
+      eventRuntime: true,
+      economy: { enabled: false },
+      statisticalModel: false,
+      materializePopulation: false,
+    });
+    expect(year2.diagnostics.scheduling?.stateOpportunity.crossStateCandidates).toBeGreaterThan(0);
+    expect(year2.diagnostics.scheduling?.stateOpportunity.crossPackCandidates).toBeGreaterThan(0);
     assertWorldV4(year2.world);
   });
 

@@ -362,3 +362,23 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 独立 Critic | Life **17/30**（Phase 17 16/30）；scene sample **22/30**；最强场景 8 个，结构性重复 3 组；focal 层面仅 113/232 Kernel 到达；未执行 odd-jobs/elder/mystery 的下一轮修订 |
 
 未完成/限制：focal share 8.37% 未达 12%；repeatRate ~0.220 高于 Phase 17 的 0.1965；47 个修订前 Kernel 零触发；`em18-family-archive` 仍稀有；新 State 的 focal 分布不均（2–19 个事件）；Creative Index 是 lexical，不是 semantic embedding；未做 runtime LLM 叙事、生产 DB/公网部署。不得把 99 states/1,973 kernels 或 8.37% focal share 称为生活质量问题已解决。
+
+## Phase 19（2026-11-07）— Stories in Collision
+
+完整报告：`docs/v4/phase-19-report.md`；设计：`phase-19-design.md`；碰撞内容：`phase-19-content-collisions.md`；独立批评：`phase-19-critique.md`；ADR：`ADR-019-cross-pack-collisions-and-life-continuity.md`。
+
+| 项 | 实测 |
+|---|---|
+| 内容规模 | **107 states / 2,060 kernels / 29 generated packs**（Phase 18: 99 / 1,973 / 25）；新增 **4 packs / 87 kernels / 8 states** |
+| Collision Packs | power-love 22、family-war 20、luck-craft 22、elder-history 23；全部 validate；76/87 双 Pack Kernel；family-war 第一稿 84 intra-pack pairs → 第二稿 0 个 ≥0.20 |
+| Cross-Pack Map | 107 states / 2,060 kernels / 3,710 open pairs / 152 covered；`--state` / `--pair` / `--gaps`；输出 `cross-pack-opportunities.json/md` |
+| Co-occurrence | 最终 5 dossier；230 pairs / 219 open / 11 covered；top open `ml18-sudden-fortune + raising-child` 148、`eh19-late-testimony + em18-late-bloom` 13 |
+| Story Editor v2 | 2,060 kernels / 2,029 shapes / 27 shape clusters；state-core 召回 `bc18-ghost` 5 核；production cluster 召回 `oj18` entry 10 核 |
+| 节奏 | odd-jobs entry `notHasState` + cooldown 6 + 24 月 tick + 2 变体；主 A/B/C add 87/95/70，top tick 5/4/4/3（Phase 18 537 / 70+52）；cross-state/cross-pack weight 只在 state lane |
+| 自然 A/B/C | 57,514 events / 4,190 focal；新 Pack 78 事件（0.14%）、6 focal（0.14%）；repeat 0.2104；新 State 4/8（加 cohort 6/8） |
+| Cohort | elder 6,286 events、`eh19-late-testimony` 18 add / 1 focal；mixed 13,966 events、`eh19-late-testimony` 28 add、`eh19-inherited-cause` 1 add / 5 focal |
+| 受控实验 | 4/4 allPassed；power/family/luck/elder 多 State 场景执行 |
+| 测试 | `pnpm test` **97 files passed / 8 skipped（105 files）；553 pass / 37 skip**；首轮发现并修复 `eh19-bridge` 悬空 `$official`/`$sibling` relation；typecheck/build 通过；29 packs validate |
+| 独立 Critic | Life **17/30**（Phase 18 17/30）；Scene **21/30**（Phase 18 22/30）；严格双 Pack **76/87**；主 focal collision 0.14%；修订前 154 个新事件只有 10 个消费新 State；工具成功、转化弱 |
+
+未完成/限制：focal 转化仍弱；`fw19-separated-household` 自然 0；`eh19-inherited-cause` 仅 mixed 1 次；新 Pack 下游仍少；45 年新生 cohort 无法验证老年内容，必须用 existing-person cohort；家庭/伴侣 slot machine、horizon、历史日期、生产级 LLM runtime 未修。不得把 107 states / 2,060 kernels 或 76/87 双 State 当作人生质量已经提升。

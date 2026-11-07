@@ -1,0 +1,6281 @@
+{
+  "id": "pack-collision-power-love",
+  "version": 1,
+  "title": "权力与私情：保护网、公开盟友与两难丑闻",
+  "description": "把爱情放进政治权力、丑闻与犯罪压力里：一段私情可能被小圈子保护，也可能被推成公开联盟。保护网会收费，盟友会变成负债；当事人既可能借丑闻赢得支持，也可能在一次切割中永远失去爱人。",
+  "author": "phase19-content-author/power-love",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-07",
+  "sourceBriefId": "phase19-collision-power-love",
+  "rationale": "Phase 19 要求内容真正需要两个以上领域的 State 才能成立。这个包不新增平行政治系统：protected-scandal 记录保护网络的曝光/保护/杠杆/热度，public-ally 记录公开盟友的可见度/忠诚/代价；所有效果仍走既有 typed vocabulary，creation kernels 通常同时消费恋爱/秘密 State 与权力/丑闻 State；两条 bridge kernel 例外地只要求 public-scandal 或 fame，让自然人生先进入保护网/公开盟友，再由后续跨 State kernel 加深碰撞。",
+  "states": [
+    {
+      "id": "pl19-protected-scandal",
+      "version": 1,
+      "packId": "pack-collision-power-love",
+      "title": "被小圈子护住的私情",
+      "description": "一段私密关系已经被一小圈人知道，他们替它挡门、传话、改口供，也各自记账。保护不是免费的：它降低曝光，却把当事人交到少数知情者手里，让杠杆和热度一起生长。",
+      "owner": "person",
+      "slot": "protected_scandal",
+      "conflict": "replace",
+      "tags": [
+        "love",
+        "secret",
+        "scandal",
+        "power",
+        "protection",
+        "network",
+        "protected_scandal"
+      ],
+      "parameters": {
+        "exposure": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "protection": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "leverage": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "publicHeat": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "links": {
+        "lover": "person",
+        "protector": "person"
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "durationMonths": {
+        "min": 6,
+        "max": 72
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "scandal",
+            "power",
+            "secret",
+            "politics",
+            "media",
+            "protection",
+            "patronage"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "secret",
+            "discretion"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "the-network-meets",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "cunning",
+            "dc": 12,
+            "successOutcomeIds": [
+              "network-holds"
+            ],
+            "failureOutcomeIds": [
+              "someone-wants-a-favor"
+            ],
+            "criticalFailureOutcomeIds": [
+              "a-member-sells-a-piece"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "network-holds",
+              "result": "success",
+              "weight": 3,
+              "text": "{subject}又在后间见了那几个人。谁也没有提名字，只把下个月的班次、钥匙和该打的电话分了一遍；出门时，{subject}发现自己的围巾被人重新叠过，像一件被妥善保管的证物。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-protected-scandal",
+                  "key": "exposure",
+                  "delta": -5,
+                  "reason": "the circle kept its story straight"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-protected-scandal",
+                  "key": "protection",
+                  "delta": 4,
+                  "reason": "the network held"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-protected-scandal",
+                  "key": "publicHeat",
+                  "delta": -2,
+                  "reason": "the story cooled"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "a private arrangement survived another season"
+                }
+              ]
+            },
+            {
+              "id": "someone-wants-a-favor",
+              "result": "failure",
+              "weight": 1,
+              "text": "有人替{subject}挡了一次采访，随后在走廊里提起自己儿子的学徒期满。{subject}知道这不是闲聊；当天晚上，那张写着名字的纸条被压在糖罐下面，像一枚没有付清的硬币。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-protected-scandal",
+                  "key": "leverage",
+                  "delta": 12,
+                  "reason": "a protector named a price"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-protected-scandal",
+                  "key": "protection",
+                  "delta": -4,
+                  "reason": "the circle became a ledger"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-protected-scandal",
+                  "key": "exposure",
+                  "delta": 5,
+                  "reason": "one more person knows the shape of it"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "a favor was not a kindness"
+                }
+              ]
+            },
+            {
+              "id": "a-member-sells-a-piece",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "照片没有登报，却出现在一封没有署名的信里。{subject}认出拍照的角度：只有站在后楼梯第二级的人才拍得到。第二天，那个位置换了一把新锁，钥匙却少了一把。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-protected-scandal",
+                  "key": "exposure",
+                  "delta": 18,
+                  "reason": "a member sold a piece of the story"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-protected-scandal",
+                  "key": "publicHeat",
+                  "delta": 10,
+                  "reason": "the story reached the wrong desk"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-protected-scandal",
+                  "key": "protection",
+                  "delta": -10,
+                  "reason": "the circle could not close"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.04,
+                  "reason": "a private photograph circulated"
+                },
+                {
+                  "type": "knowledge",
+                  "holderId": "$subject",
+                  "proposition": "后楼梯第二级是唯一能拍到那张照片的位置，而钥匙少了一把。",
+                  "confidence": 0.85,
+                  "sourceKind": "witnessed",
+                  "visibility": "private",
+                  "trueInWorld": true,
+                  "reason": "a fact was learned"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "heat-becomes-public",
+          "to": "known-affair",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "pl19-protected-scandal",
+              "parameter": "publicHeat",
+              "min": 85
+            },
+            {
+              "kind": "notHasState",
+              "stateId": "known-affair"
+            }
+          ],
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the protected story became a public affair"
+            }
+          ],
+          "reason": "the public heat outran the protection"
+        },
+        {
+          "id": "network-collapses",
+          "to": "public-scandal",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "pl19-protected-scandal",
+              "parameter": "protection",
+              "max": 10
+            },
+            {
+              "kind": "hasState",
+              "stateId": "pl19-protected-scandal",
+              "parameter": "exposure",
+              "min": 60
+            },
+            {
+              "kind": "notHasState",
+              "stateId": "public-scandal"
+            }
+          ],
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the protection network collapsed in public"
+            }
+          ],
+          "reason": "the people who knew stopped protecting"
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-rival-lets-slip",
+          "onTags": [
+            "betrayal"
+          ],
+          "chance": 0.55,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 10,
+              "reason": "a betrayal loosened the circle"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 8,
+              "reason": "the betrayer now knows more"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 4,
+              "reason": "the story moved outward"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "someone inside the circle talked"
+            }
+          ],
+          "text": "那个替{subject}保守秘密的人，在另一个场合把话说漏了半句。没有人当场追问，但第二天，{subject}发现后间的门没有关严。",
+          "cooldownMonths": 12
+        },
+        {
+          "id": "a-public-question",
+          "onTags": [
+            "public_humiliation",
+            "scandal"
+          ],
+          "chance": 0.5,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 12,
+              "reason": "a public question raised the heat"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -6,
+              "reason": "the circle looked smaller in daylight"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a question was asked in public"
+            }
+          ],
+          "text": "有人在一场公开活动里问起{subject}的“私人安排”，语气客气，问题却像一根针。{subject}笑着答了别的事，回家后才发现手心全是汗。",
+          "cooldownMonths": 18
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "protected_scandal_active",
+          "add": true,
+          "reason": "a protection network formed"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "protected_scandal_active",
+          "add": false,
+          "reason": "the protection ended"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase19-content-author/power-love",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase19-collision-power-love"
+        ],
+        "rationale": "A secret shared with protectors is not the same secret. Exposure, protection, leverage and public heat make the network itself a source of plot."
+      }
+    },
+    {
+      "id": "pl19-public-ally",
+      "version": 1,
+      "packId": "pack-collision-power-love",
+      "title": "站在聚光灯里的盟友",
+      "description": "伴侣或朋友被推到公开的政治位置上，替当事人证明体面、争取选票或挡住问题。可见度带来资源，也把私人忠诚改写成公共账目；盟友可能成为资产，也可能成为负债。",
+      "owner": "person",
+      "slot": "public_ally",
+      "conflict": "replace",
+      "tags": [
+        "love",
+        "politics",
+        "alliance",
+        "public",
+        "power",
+        "liability",
+        "public_ally"
+      ],
+      "parameters": {
+        "visibility": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "loyalty": {
+          "type": "number",
+          "default": 60,
+          "min": 0,
+          "max": 100
+        },
+        "cost": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "links": {
+        "ally": "person"
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 18,
+          "max": 80
+        }
+      ],
+      "durationMonths": {
+        "min": 6,
+        "max": 60
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "politics",
+            "public",
+            "media",
+            "alliance",
+            "ally",
+            "love",
+            "scandal"
+          ],
+          "multiplier": 1.45
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "politics",
+            "public"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "the-joint-appearance",
+          "everyMonths": 6,
+          "check": {
+            "attribute": "empathy",
+            "dc": 12,
+            "successOutcomeIds": [
+              "the-crowd-warms"
+            ],
+            "failureOutcomeIds": [
+              "a-question-too-far"
+            ],
+            "criticalFailureOutcomeIds": [
+              "the-ally-speaks-alone"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "the-crowd-warms",
+              "result": "success",
+              "weight": 3,
+              "text": "两个人一起出现在集市口。{subject}讲预算，盟友讲谁家的屋顶漏了；散场时，一个卖苹果的老妇人塞给盟友一只苹果，说“你比报纸上看着像人”。{subject}把这句话记了很久。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-public-ally",
+                  "key": "loyalty",
+                  "delta": 4,
+                  "reason": "the joint appearance worked"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-public-ally",
+                  "key": "visibility",
+                  "delta": 3,
+                  "reason": "more people knew the pair"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-public-ally",
+                  "key": "cost",
+                  "delta": -2,
+                  "reason": "the alliance felt cheaper than expected"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "the crowd accepted the alliance"
+                }
+              ]
+            },
+            {
+              "id": "a-question-too-far",
+              "result": "failure",
+              "weight": 1,
+              "text": "有人问盟友，晚上回家时会不会替{subject}数钱。盟友笑着挡了回去，{subject}却看见对方之后整场都没有再碰话筒；回程的马车上，两个人第一次为一句没有说完的话争吵。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-public-ally",
+                  "key": "cost",
+                  "delta": 8,
+                  "reason": "a hostile question stuck"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-public-ally",
+                  "key": "loyalty",
+                  "delta": -5,
+                  "reason": "the alliance was embarrassed in public"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "the joint appearance turned awkward"
+                }
+              ]
+            },
+            {
+              "id": "the-ally-speaks-alone",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "盟友在台上被追问，顺口说了一句“我从来不参与那些决定”。台下安静了一瞬，随后有人笑。{subject}站在侧幕后面，第一次意识到，公开的忠诚也会有自己的边界。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-public-ally",
+                  "key": "cost",
+                  "delta": 12,
+                  "reason": "the ally drew a public boundary"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-public-ally",
+                  "key": "loyalty",
+                  "delta": -10,
+                  "reason": "the alliance looked one-sided"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "pl19-public-ally",
+                  "key": "visibility",
+                  "delta": 6,
+                  "reason": "the remark travelled"
+                },
+                {
+                  "type": "knowledge",
+                  "holderId": "$subject",
+                  "proposition": "盟友在公开场合说“我从来不参与那些决定”。",
+                  "confidence": 0.9,
+                  "sourceKind": "witnessed",
+                  "visibility": "private",
+                  "trueInWorld": true,
+                  "reason": "a fact was learned"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "the-ally-becomes-the-story",
+          "to": "public-scandal",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "pl19-public-ally",
+              "parameter": "cost",
+              "min": 85
+            },
+            {
+              "kind": "hasState",
+              "stateId": "pl19-public-ally",
+              "parameter": "loyalty",
+              "max": 25
+            },
+            {
+              "kind": "notHasState",
+              "stateId": "public-scandal"
+            }
+          ],
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the ally became the scandal"
+            }
+          ],
+          "reason": "the ally cost more than the alliance could carry"
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-scandal-splashes",
+          "onTags": [
+            "scandal",
+            "public_humiliation"
+          ],
+          "chance": 0.6,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "cost",
+              "delta": 10,
+              "reason": "a scandal splashed onto the ally"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "loyalty",
+              "delta": -5,
+              "reason": "the ally was asked to answer for it"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "visibility",
+              "delta": 4,
+              "reason": "more people watched the pair"
+            }
+          ],
+          "text": "另一桩丑闻在报纸上炸开时，{subject}的名字被顺带写进了同一段。盟友在电话里沉默了很久，最后只问：“这次需要我站在哪一边？”",
+          "cooldownMonths": 12
+        },
+        {
+          "id": "a-private-thanks",
+          "onTags": [
+            "mutual_aid",
+            "friendship"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "loyalty",
+              "delta": 6,
+              "reason": "a private kindness was remembered"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "cost",
+              "delta": -3,
+              "reason": "the alliance was paid in something other than money"
+            }
+          ],
+          "text": "盟友替{subject}办了一件没有记者在场的小事：去医院看了一个人，或者把一封信送到该送的地方。{subject}后来才知道，那件事比任何一场集会都更花时间。",
+          "cooldownMonths": 18
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "public_ally_active",
+          "add": true,
+          "reason": "a private relationship became public alliance"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "public_ally_active",
+          "add": false,
+          "reason": "the public alliance ended"
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase19-content-author/power-love",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase19-collision-power-love"
+        ],
+        "rationale": "A public ally is a distinct mechanism from fame or scandal: visibility, loyalty and cost can move independently, and the ally can become either protection or liability."
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "pl19-scandal.protection-offer",
+      "title": "包厢里的第三把椅子",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "love",
+        "scandal",
+        "protection",
+        "patronage",
+        "power",
+        "secret"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "known-affair",
+          "parameter": "notoriety",
+          "min": 20
+        },
+        {
+          "kind": "hasState",
+          "stateId": "office-patronage"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "pl19-protected-scandal"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "patron",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        },
+        {
+          "key": "spouse",
+          "kind": "partner",
+          "required": false,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.11,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "accepted-the-chair",
+          "weight": 0.45,
+          "text": "歌剧院包厢的第三把椅子一直空着。{patron}把门帘放下一半，说这间包厢的侍者、楼下的门房和一位记账的修女都拿{patron}的薪水，也都知道什么时候不该抬头。{subject}把{lover}的手套收进袖口，第一次觉得被人看见也可以是一种被安排好的安全。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "parameters": {
+                "exposure": 40,
+                "protection": 65,
+                "leverage": 20,
+                "publicHeat": 10
+              },
+              "links": {
+                "lover": "$lover",
+                "protector": "$patron"
+              },
+              "reason": "a patron put a small network around the affair"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "the patron offered a box and a silence"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "accepted_protection",
+              "add": true,
+              "reason": "accepted a protection network"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "包厢的侍者、门房和记账修女都拿那位资助人的薪水。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "refused-the-chair",
+          "weight": 0.3,
+          "text": "{subject}把那张写着包厢号码的纸推回去，说私事不需要被人保管。{patron}笑了笑，把纸收回口袋，第二天起不再替{subject}挡报社的电话。{lover}问后不后悔，{subject}说至少门是自己关上的。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "notoriety",
+              "delta": 8,
+              "reason": "the affair stayed unprotected"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": -0.12,
+              "reason": "the patron was refused"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the refusal looked like dignity"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_protection",
+              "add": true,
+              "reason": "refused to be managed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "从第二天起，报社的电话不再被转去别处。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "protection-with-a-mortgage",
+          "weight": 0.25,
+          "text": "{patron}答应得很快，快到{subject}听见钢笔在纸上划了两下。包厢照旧，报社的电话照旧被转去别处；三个月后，{patron}的侄子在市政厅拿到一份不用上班的差事，账单寄到了{subject}名下。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "parameters": {
+                "exposure": 35,
+                "protection": 55,
+                "leverage": 45,
+                "publicHeat": 15
+              },
+              "links": {
+                "lover": "$lover",
+                "protector": "$patron"
+              },
+              "reason": "protection came with a mortgage"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "delta": 15,
+              "reason": "the patron's nephew was placed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "a favor with a price"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "包厢和报社电话都不是免费的，账单记在侄子名下。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.siege-hiding",
+      "title": "调查员上楼时，窗帘没有拉开",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "love",
+        "secret",
+        "investigation",
+        "office",
+        "protection",
+        "siege"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "forbidden-attachment",
+          "parameter": "exposure",
+          "min": 25
+        },
+        {
+          "kind": "hasState",
+          "stateId": "office-under-siege"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "pl19-protected-scandal"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "investigator",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-clerk-lies",
+          "weight": 0.4,
+          "text": "调查员在楼下等了二十分钟，{clerk}说{subject}整个下午都在档案室核对税册。{lover}从后楼梯离开时，鞋跟在大理石上敲了三下；{subject}数着那三下，把桌上的两张借阅单叠在一起，叠得很齐。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "parameters": {
+                "exposure": 25,
+                "protection": 60,
+                "leverage": 25,
+                "publicHeat": 15
+              },
+              "links": {
+                "lover": "$lover",
+                "protector": "$clerk"
+              },
+              "reason": "a clerk lied to an investigator"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "the clerk covered the afternoon"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "调查员在楼下等了二十分钟，那位文书说我在档案室。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-letters-burn",
+          "weight": 0.3,
+          "text": "{subject}把{lover}的信一封封放进炉子，火苗舔到第三封时，{subject}又把它抽出来，只烧掉落款。第二天，{clerk}把一只空饼干盒放在{subject}桌上，说以后别用办公室的信封；盒盖上还留着黄油的味道。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "reason": "the letters were burned"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "parameters": {
+                "exposure": 15,
+                "protection": 40,
+                "leverage": 10,
+                "publicHeat": 5
+              },
+              "links": {
+                "lover": "$lover",
+                "protector": "$clerk"
+              },
+              "reason": "the paper trail was destroyed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": -0.12,
+              "reason": "the letters were burned without asking"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "办公室的信封不能再用来寄私人信件。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-door-opens",
+          "weight": 0.3,
+          "text": "调查员还没上楼，{subject}先去了调查员的办公室，把{lover}的名字、自己的名字和那间公寓的租约一起放在桌上。{clerk}在门外听见钢笔停了很久；当天下午，{subject}的职位被停职审查，{lover}第一次从正门走进来。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "reason": "the affair was declared before the investigation"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "parameters": {
+                "notoriety": 50,
+                "exposure": 85,
+                "discretion": 10,
+                "grief": 0
+              },
+              "links": {
+                "lover": "$lover"
+              },
+              "reason": "the relationship was placed on the record"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": 8,
+              "reason": "the honesty impressed part of the office"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "exposure",
+              "delta": 5,
+              "reason": "the investigation widened"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": 0.12,
+              "reason": "the lover was not left in the stairwell"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a career was suspended to name a relationship"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.friends-circle",
+      "title": "七个人的晚餐，第八把空椅",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "love",
+        "friendship",
+        "protection",
+        "scandal",
+        "circle",
+        "impossible"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ld18-impossible-attachment",
+          "parameter": "pressure",
+          "min": 20
+        },
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "pl19-protected-scandal"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "friend",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "host",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 22,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "the-circle-holds",
+          "weight": 0.45,
+          "text": "七个人在长桌上吃饭，第八把椅子空着，桌上却摆了一副餐具。{friend}说这是给“今晚不能来的人”留的；没人追问。{subject}把汤喝完，发现每个人都在替{beloved}挡酒、挡话、挡窗外的视线，像一圈不太熟练的卫兵。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "parameters": {
+                "exposure": 30,
+                "protection": 70,
+                "leverage": 15,
+                "publicHeat": 20
+              },
+              "links": {
+                "lover": "$beloved",
+                "protector": "$friend"
+              },
+              "reason": "a circle of friends closed around the couple"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "the friend kept the eighth chair"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "circle_holds",
+              "add": true,
+              "reason": "friends formed a protection circle"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "第八把椅子是留给不能公开出现的人的。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "one-setting-too-many",
+          "weight": 0.3,
+          "text": "第八把椅子在甜点前被人拉开了。来的是{friend}的姐夫，他说只是顺路，坐下后却一直问{beloved}为什么不去登记。{friend}把酒瓶碰倒，桌布上洇出一片深色；{subject}知道，这圈人里已经有一个人的嘴不再属于自己。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "parameters": {
+                "exposure": 50,
+                "protection": 45,
+                "leverage": 30,
+                "publicHeat": 35
+              },
+              "links": {
+                "lover": "$beloved",
+                "protector": "$friend"
+              },
+              "reason": "the circle was breached by a relative"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$friend",
+              "kind": "friend",
+              "trust": -0.1,
+              "reason": "the friend's brother-in-law asked too much"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那位朋友的姐夫在饭桌上问起登记的事。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the circle had a hole in it"
+            }
+          ]
+        },
+        {
+          "id": "the-circle-asks-for-a-break",
+          "weight": 0.25,
+          "text": "{friend}把话说得很轻：大家愿意继续掩护，但{subject}得先让{beloved}搬出去住一阵，等风头过去。{subject}看见{beloved}在桌下把餐巾叠成一条细绳，没有抬头；那顿饭吃完，谁也没有先站起来。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "parameters": {
+                "exposure": 35,
+                "protection": 55,
+                "leverage": 45,
+                "publicHeat": 25
+              },
+              "links": {
+                "lover": "$beloved",
+                "protector": "$friend"
+              },
+              "reason": "the circle offered protection on conditions"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ld18-impossible-attachment",
+              "key": "pressure",
+              "delta": 10,
+              "reason": "the circle demanded a separation"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": -0.08,
+              "reason": "a separation was proposed at the table"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "circle_conditions",
+              "add": true,
+              "reason": "protection came with a condition"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-ally.publicist-couple",
+      "title": "公关顾问建议你们一起出现",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "love",
+        "fame",
+        "publicity",
+        "scandal",
+        "ally",
+        "media"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "parameter": "level",
+          "min": 0.2
+        },
+        {
+          "kind": "hasState",
+          "stateId": "known-affair",
+          "parameter": "notoriety",
+          "min": 20
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "pl19-public-ally"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "publicist",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "editor",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-photograph-that-helped",
+          "weight": 0.4,
+          "text": "{publicist}把两个人安排在慈善舞会的台阶上，记者只拍了一张：{subject}替{lover}扶正被风吹歪的帽子。第二天，报纸写“在丑闻里仍然体面”，裁缝店收到三份新订单，{subject}第一次发现，承认一半也能换来一点体面。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 65,
+                "loyalty": 60,
+                "cost": 15
+              },
+              "links": {
+                "ally": "$lover"
+              },
+              "reason": "the couple was photographed as a public pair"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the photograph made the affair look dignified"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "notoriety",
+              "delta": 5,
+              "reason": "the affair became a public story"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "慈善舞会台阶上的那张照片登上了报纸。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-photograph-that-sold-papers",
+          "weight": 0.35,
+          "text": "照片登出来时，{publicist}把标题念了一遍，笑得像刚谈成一笔生意。{subject}的旧事被写成“战时爱情”，{lover}在报摊前站了很久，最后买下最后一份；同一天，{subject}收到一叠邀请函，也收到一封没有署名的骂信。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 80,
+                "loyalty": 45,
+                "cost": 35
+              },
+              "links": {
+                "ally": "$lover"
+              },
+              "reason": "publicity turned the affair into a product"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 55,
+                "legitimacy": 10,
+                "absurdity": 65,
+                "invitations": 3,
+                "boredom": 10,
+                "officialStory": "丑闻里的浪漫英雄"
+              },
+              "reason": "the press invented a ridiculous heroic version"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the story sold newspapers"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$publicist",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "the publicist sold more than agreed"
+            }
+          ]
+        },
+        {
+          "id": "refused-the-camera",
+          "weight": 0.25,
+          "text": "{subject}把{publicist}的相机按在桌上，说这段关系不卖给任何人。{publicist}收回名片，临走前提醒{subject}，明天另一家报纸会写得更难听；{lover}在门口等着，手里没有花，只有一把刚修好的伞。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "notoriety",
+              "delta": -5,
+              "reason": "the affair was kept out of the publicity machine"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the refusal looked principled"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$publicist",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "reason": "the publicist was turned away"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_publicity",
+              "add": true,
+              "reason": "refused to sell the relationship"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "另一家报纸准备写更难听的版本。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-ally.platform-invitation",
+      "title": "台上留了一个位置",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "love",
+        "politics",
+        "public",
+        "desire",
+        "platform",
+        "ally"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "ld18-public-desire",
+          "parameter": "spectacle",
+          "min": 20
+        },
+        {
+          "kind": "hasState",
+          "stateId": "forbidden-attachment",
+          "parameter": "exposure",
+          "min": 20
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "pl19-public-ally"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "organizer",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "stood-together",
+          "weight": 0.45,
+          "text": "{organizer}在台上留了一个位置，说是给“支持者”的。{subject}走上去时，{beloved}没有躲在幕布后，而是站到灯下，替{subject}把话筒调低了一寸。台下有人吹口哨，也有人鼓掌；{subject}听见自己的声音第一次没有发抖。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 70,
+                "loyalty": 65,
+                "cost": 20
+              },
+              "links": {
+                "ally": "$beloved"
+              },
+              "reason": "the beloved stood publicly beside the subject"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ld18-public-desire",
+              "key": "defiance",
+              "delta": 8,
+              "reason": "the public appearance was defiant"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "the beloved chose the light"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the pair looked composed on stage"
+            }
+          ]
+        },
+        {
+          "id": "one-step-behind",
+          "weight": 0.3,
+          "text": "{beloved}在台侧站了整场，只在掌声最响时往前半步。{organizer}把两个人的名字印在同一张海报上，却把{beloved}的名字排得很小；散场后，{subject}在后台找到那张海报，发现{beloved}已经把自己的那一角撕掉了。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 45,
+                "loyalty": 50,
+                "cost": 10
+              },
+              "links": {
+                "ally": "$beloved"
+              },
+              "reason": "the beloved was placed at the edge of the stage"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "forbidden-attachment",
+              "key": "exposure",
+              "delta": 10,
+              "reason": "the beloved was seen at the event"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": -0.05,
+              "reason": "the billing was too small"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "海报上那位伴侣的名字被排得很小，那一角后来被撕掉了。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-wrong-name-on-the-banner",
+          "weight": 0.25,
+          "text": "横幅上的名字印错了：{organizer}把{beloved}写成了{subject}的“秘书”。台下有人笑，{subject}没有纠正，因为纠正会把另一个名字也带上台。{beloved}在散场后说，原来站在灯下和站在名字旁边不是一回事。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 60,
+                "loyalty": 35,
+                "cost": 30
+              },
+              "links": {
+                "ally": "$beloved"
+              },
+              "reason": "the pair was publicised under a wrong label"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ld18-public-desire",
+              "key": "rumorHeat",
+              "delta": 10,
+              "reason": "the wrong label fed the rumour"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the banner made the pair look careless"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": -0.1,
+              "reason": "the wrong name was not corrected"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "横幅把那位伴侣写成了“秘书”。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-ally.patronage-appointment",
+      "title": "编制表上的第二个名字",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 70
+      },
+      "tags": [
+        "office",
+        "patronage",
+        "appointment",
+        "love",
+        "ally",
+        "position"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "office-patronage",
+          "parameter": "favorDebt",
+          "min": 10
+        },
+        {
+          "kind": "hasState",
+          "stateId": "secret-lover"
+        },
+        {
+          "kind": "position"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "pl19-public-ally"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "ally",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 65
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "rival",
+          "kind": "official",
+          "required": false,
+          "minAge": 26,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "a-real-post",
+          "weight": 0.4,
+          "text": "{subject}在编制表的空行上写下{ally}的名字，又在旁边注了“临时”。{clerk}提醒说这个位置要经过预算委员会，{subject}说先让人来上班，手续以后再补；第二天，{ally}坐在走廊尽头的新桌子后面，把记者名单和选民来信分成了两摞。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "position",
+              "title": "公共联络员",
+              "holderId": "$ally",
+              "wage": 2,
+              "authority": [
+                "整理记者名单",
+                "安排公开活动"
+              ],
+              "reason": "a real post was created for the ally",
+              "organizationId": "$positionOrg"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$ally",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "the ally joined the office"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "the new post was paid from the office budget"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 55,
+                "loyalty": 70,
+                "cost": 10
+              },
+              "links": {
+                "ally": "$ally"
+              },
+              "reason": "the appointment made the relationship visible"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "friend",
+              "trust": 0.12,
+              "reason": "the ally was given a desk"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "appointed_lover",
+              "add": true,
+              "reason": "appointed the ally to a real post"
+            }
+          ]
+        },
+        {
+          "id": "a-made-up-title",
+          "weight": 0.3,
+          "text": "人事处没有空编，{subject}就让{ally}以“顾问”的名义每周来三次，工资从办公费里出。{clerk}把那张没有编号的任命书夹进文件夹，说这种纸最容易被审计员翻出来；{ally}倒是很喜欢名片上那个头衔，逢人就递。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "position",
+              "title": "顾问",
+              "holderId": "$ally",
+              "wage": 1,
+              "authority": [
+                "陪同出访"
+              ],
+              "reason": "an invented post was funded from office money",
+              "organizationId": "$positionOrg"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$ally",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "the ally was added to the office roster"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -1,
+              "reason": "the invented post cost the office"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 65,
+                "loyalty": 55,
+                "cost": 25
+              },
+              "links": {
+                "ally": "$ally"
+              },
+              "reason": "the invented title became a public role"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the invented post looked irregular"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那张任命书没有编号，夹在普通文件夹里。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "refused-by-personnel",
+          "weight": 0.2,
+          "text": "人事处把{ally}的名字退回来，理由是“亲属回避”。{subject}没有争，只在晚饭时把那张表铺在桌上，说再等一年；{ally}把汤匙放下，说一年之后自己可能已经不想坐那张桌子了。第二天，{ally}接受了一家报社的职位。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 35,
+                "loyalty": 45,
+                "cost": 20
+              },
+              "links": {
+                "ally": "$ally"
+              },
+              "reason": "the failed appointment still made the pair public"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "friend",
+              "trust": -0.1,
+              "reason": "the promised post did not materialise"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "exposure",
+              "delta": 5,
+              "reason": "personnel noticed the attempted appointment"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the appointment was refused"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "人事处用“亲属回避”退回了那张任命表。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-post-was-already-promised",
+          "weight": 0.1,
+          "text": "那个位置早就许给了{clerk}的外甥。{subject}把{ally}的名字写上去时，{clerk}没有抬头，只说“您确定？”任命书发下去的当天，外甥的母亲在走廊里拦住{subject}，手里攥着一封没有拆的信；{ally}的桌子被安排在离{subject}最远的那一头。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "position",
+              "title": "公共联络员",
+              "holderId": "$ally",
+              "wage": 2,
+              "authority": [
+                "接待来访"
+              ],
+              "reason": "the post was taken from a promised candidate",
+              "organizationId": "$positionOrg"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$ally",
+              "organizationId": "$positionOrg",
+              "add": true,
+              "reason": "the ally was placed in the office"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "the post was paid from the office budget"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 50,
+                "loyalty": 40,
+                "cost": 30
+              },
+              "links": {
+                "ally": "$ally"
+              },
+              "reason": "the contested appointment became public"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$clerk",
+              "kind": "colleague",
+              "trust": -0.1,
+              "reason": "a promised post was taken"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那个位置原本许给了那位文书的外甥。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.rival-contract",
+      "title": "合同上的沉默条款",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "scandal",
+        "blackmail",
+        "contract",
+        "rival",
+        "power",
+        "protection"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-protected-scandal",
+          "parameter": "exposure",
+          "min": 25
+        },
+        {
+          "kind": "hasState",
+          "stateId": "jealous-rival",
+          "parameter": "leverage",
+          "min": 15
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "rival",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "clerk",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.1,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-contract-is-signed",
+          "weight": 0.4,
+          "text": "{rival}把合同摊在桌上，条款里夹着一句“乙方不得就私人事务接受采访”。{subject}签了字，{rival}的公司拿到了市政厅的冬季煤炭订单；{lover}后来问那笔订单有多大，{subject}说够烧一个冬天，也够让一个人闭嘴一个冬天。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 15,
+              "reason": "the rival got a contract"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -10,
+              "reason": "the rival now had a hold"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 5,
+              "reason": "the contract created a paper trail"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "legal fees for the contract"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "the contract bought silence"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "contract_silence",
+              "add": true,
+              "reason": "bought silence with a contract"
+            }
+          ]
+        },
+        {
+          "id": "the-name-only",
+          "weight": 0.3,
+          "text": "{subject}只答应在下一份委员会名单上给{rival}留一个名字，不给合同。{rival}收下那张纸，第二天却把它拍照寄给了报社；照片没有登出来，但{subject}的名字开始出现在另一个版本的名单里。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "acquaintance",
+              "trust": -0.08,
+              "reason": "the rival wanted more than a name"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 10,
+              "reason": "the list was photographed"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 5,
+              "reason": "the list circulated"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a private list looked like a deal"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "委员会名单的照片被寄到了报社。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-rival-wants-more",
+          "weight": 0.3,
+          "text": "第一个要求是一份合同，第二个要求是一个职位，第三个要求{subject}把{lover}介绍给{rival}的生意伙伴。{subject}在第三次见面时才明白，{rival}要的不是钱，是一根能一直拉着的线；而线的另一头已经系在{subject}的家里。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 25,
+              "reason": "the rival kept escalating"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -15,
+              "reason": "the network could not satisfy the rival"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 10,
+              "reason": "the demands became visible"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "reason": "the pressure spilled into public view"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the affair became a public scandal"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "the rival wanted a permanent line"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.partner-access",
+      "title": "伴侣替你约了不该约的人",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "scandal",
+        "patronage",
+        "access",
+        "love",
+        "politics",
+        "protection"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-protected-scandal",
+          "parameter": "protection",
+          "min": 20
+        },
+        {
+          "kind": "hasState",
+          "stateId": "office-patronage",
+          "parameter": "favorDebt",
+          "min": 10
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "spouse",
+          "kind": "partner",
+          "required": false,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-meeting-works",
+          "weight": 0.4,
+          "text": "{lover}没有告诉{subject}，直接去找了{official}，把一份被压了半年的许可申请放在桌上。三天后，许可批了下来，{official}在电话里说“下不为例”；{subject}听着，忽然分不清这算{lover}替自己办成了事，还是替自己欠下了一笔新债。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "delta": 10,
+              "reason": "the lover called in a favor"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "appointees",
+              "delta": 1,
+              "reason": "a small appointment followed the permit"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 5,
+              "reason": "the lover learned how the office works"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": 5,
+              "reason": "the favor strengthened the network"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": 0.08,
+              "reason": "the lover got the permit"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lover_used_access",
+              "add": true,
+              "reason": "the lover used political access"
+            }
+          ]
+        },
+        {
+          "id": "the-meeting-is-a-bribe",
+          "weight": 0.3,
+          "text": "许可是批了，但{official}的侄子随后送来一只信封，说是“材料费”。{lover}把信封收在米缸后面，晚上才告诉{subject}；{subject}数了数，正好是那张许可申请上写的数字，一分不多，一分不少。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 5,
+              "reason": "an envelope left after the permit"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 12,
+              "reason": "the envelope created a new risk"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 8,
+              "reason": "more people handled the permit"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the permit smelled of money"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": -0.05,
+              "reason": "the envelope was hidden in the rice jar"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "信封里的钱正好等于许可申请上写的数字。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-lover-is-barred",
+          "weight": 0.3,
+          "text": "{official}把{lover}挡在门外，说办公室不是会客室。{lover}在走廊里等了两个钟头，最后把那份申请撕成两半，一半留在门房，一半带回家。{subject}晚上看见桌上的纸片，才知道自己欠的不是人情，是一次没有被告知的冒险。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": -0.12,
+              "reason": "the lover was humiliated at the office"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -8,
+              "reason": "the office refused to help"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 8,
+              "reason": "the lover now knew the weak point"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "loyalty",
+              "delta": -5,
+              "reason": "the official resented the approach"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "办公室的门房留着半张被撕掉的许可申请。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.confession",
+      "title": "在头版付印前，他自己先说了",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "scandal",
+        "confession",
+        "family",
+        "press",
+        "protection",
+        "irreversible"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-protected-scandal",
+          "parameter": "publicHeat",
+          "min": 20
+        },
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "spouse",
+          "kind": "partner",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "reporter",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "the-family-is-spared",
+          "weight": 0.4,
+          "text": "头版付印前，{subject}把声明送到了报社：关系是真的，利用职位是假的，所有责任由自己承担。{spouse}在厨房听完广播，把火关小，说至少孩子明天不用从别人嘴里听见这件事；{subject}看见桌上那碗汤已经凉了，还是喝完了。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "reason": "the confession ended the protection arrangement"
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "reason": "the confession replaced the scandal with a named affair"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "parameters": {
+                "notoriety": 70,
+                "exposure": 90,
+                "discretion": 5,
+                "grief": 10
+              },
+              "links": {
+                "lover": "$lover"
+              },
+              "reason": "the relationship was publicly named"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": 0.15,
+              "reason": "the spouse was spared the worst of the reveal"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the confession cost the office"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "confession_before_print",
+              "add": true,
+              "reason": "confessed before the newspaper did"
+            }
+          ]
+        },
+        {
+          "id": "the-family-hears-it-from-the-paper",
+          "weight": 0.3,
+          "text": "声明晚了一步。报纸先登了{lover}的住址，又登了{spouse}常去买菜的市场。{spouse}把报纸折好放在餐桌上，只问了一句“还有多少事是我不知道的”；{subject}答不上来，孩子在自己的房间里把收音机开得很大。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "reason": "the protection failed before the confession"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": -0.2,
+              "reason": "the spouse learned it from the newspaper"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "the family was exposed in the press"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "parameters": {
+                "notoriety": 75,
+                "exposure": 95,
+                "discretion": 0,
+                "grief": 15
+              },
+              "links": {
+                "lover": "$lover"
+              },
+              "reason": "the affair was named by the press"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "报纸先登了住址和市场，声明晚了一步。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the family heard it from strangers"
+            }
+          ]
+        },
+        {
+          "id": "the-confession-is-drowned",
+          "weight": 0.3,
+          "text": "{subject}的声明登在第七版，同一版还有一则更大的新闻：邻国的铁路断了。没有人追问{subject}的事，{spouse}却把那份报纸留了下来，夹在食谱里；{subject}知道，这件事没有过去，只是暂时没有读者。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 15,
+              "reason": "the confession was buried by bigger news"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 10,
+              "reason": "the statement left a paper trail"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -10,
+              "reason": "the network could not control the statement"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": -0.05,
+              "reason": "the spouse kept the newspaper"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "confession_ignored",
+              "add": true,
+              "reason": "the confession was ignored by the public"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那份声明登在第七版，同一版还有铁路中断的新闻。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.wrong-lover",
+      "title": "报纸认错了人",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "scandal",
+        "press",
+        "mistaken_identity",
+        "fame",
+        "love",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "known-affair",
+          "parameter": "notoriety",
+          "min": 25
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "parameter": "level",
+          "min": 0.2
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "wrong_person",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 75
+        },
+        {
+          "key": "reporter",
+          "kind": "official",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "let-the-error-stand",
+          "weight": 0.4,
+          "text": "报纸把{wrong_person}写成了{subject}的情人。{wrong_person}起初很生气，三天后却开始收到花和采访邀请；{subject}没有更正，因为更正会把{lover}的名字也带出来。{wrong_person}在街上遇见{subject}时，只说了一句“下次记得付我稿费”。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$wrong_person",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 50,
+                "legitimacy": 10,
+                "absurdity": 70,
+                "invitations": 4,
+                "boredom": 10,
+                "officialStory": "被认错的恋人"
+              },
+              "reason": "the wrong person became absurdly famous"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "notoriety",
+              "delta": 5,
+              "reason": "the error kept the affair in the papers"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$wrong_person",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "the wrong person played along"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the mistake made the affair look almost comic"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "报纸把那个被认错的人写成了情人，真正的名字没有被印出来。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "correct-it-publicly",
+          "weight": 0.3,
+          "text": "{subject}在报社门口站了半个钟头，最后走进编辑部，要求更正。更正启事只有三行，登在第二天的第二版；{wrong_person}的名字被拿掉了，{lover}的名字却留在了记者的笔记本里。回家路上，{subject}买了一份报纸，没有打开。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the correction drew attention to the real affair"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "notoriety",
+              "delta": 10,
+              "reason": "the correction pointed at the real lover"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$wrong_person",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "the wrong person was cleared"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": -0.05,
+              "reason": "the real name moved closer to print"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "记者的笔记本里留着真正的那位的名字。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-wrong-person-plays-along",
+          "weight": 0.3,
+          "text": "{wrong_person}主动给报社打电话，说自己确实是{subject}的“多年好友”，还编了一段在火车站告别的细节。报纸卖得更好，{subject}却收到{lover}的纸条：如果你需要一个人替你站在前面，至少先告诉我。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$wrong_person",
+              "stateId": "bc18-ridiculous-fame",
+              "parameters": {
+                "notoriety": 60,
+                "legitimacy": 5,
+                "absurdity": 80,
+                "invitations": 5,
+                "boredom": 15,
+                "officialStory": "火车站告别的多年好友"
+              },
+              "reason": "the wrong person invented a public story"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "paid the wrong person to keep the story consistent"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "notoriety",
+              "delta": 8,
+              "reason": "the invented story kept the affair alive"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": -0.1,
+              "reason": "the lover was not warned"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the invented story was entertaining"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那篇火车站告别的细节是那个被认错的人编的。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.anti-elite",
+      "title": "越被骂，票越多",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "scandal",
+        "politics",
+        "populism",
+        "support",
+        "office",
+        "irony"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "known-affair",
+          "parameter": "notoriety",
+          "min": 30
+        },
+        {
+          "kind": "hasState",
+          "stateId": "office-under-siege",
+          "parameter": "support",
+          "max": 70
+        },
+        {
+          "kind": "position"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "party_man",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "treasurer",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "spouse",
+          "kind": "partner",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-crowd-likes-it",
+          "weight": 0.4,
+          "text": "照片登出来的那个星期，{subject}在工人区得到的掌声比在俱乐部里多。有人拍着桌子说，至少这个人没有假装自己清白；{party_man}原本准备切割，临时把演讲稿里的“道德”两个字删掉了。{subject}站在台上，第一次觉得丑闻也可以是一种通行证。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": 15,
+              "reason": "the scandal increased anti-elite support"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "exposure",
+              "delta": -5,
+              "reason": "the crowd cared less about the allegation"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the scandal made the subject popular in the workers' district"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "notoriety",
+              "delta": 5,
+              "reason": "the affair became a political identity"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "scandal_support",
+              "add": true,
+              "reason": "the scandal raised support"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "演讲稿里的“道德”两个字被临时删掉了。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-party-uses-it",
+          "weight": 0.35,
+          "text": "{party_man}把{subject}的丑闻写进了募款信：一个被旧精英围攻的人，仍然替工人争预算。捐款从郊区寄来，{treasurer}在账本上添了三笔；{subject}看着那些不认识的名字，想起报纸上被写成“道德败坏”的自己。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": 3,
+              "reason": "donations came in after the scandal"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": 10,
+              "reason": "the party turned the scandal into a cause"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the party profited from the scandal"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$party_man",
+              "kind": "colleague",
+              "trust": 0.08,
+              "reason": "the party used the affair"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "募款信里写着“被旧精英围攻的人”。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-support-is-conditional",
+          "weight": 0.25,
+          "text": "支持是真的，条件是{subject}的伴侣不能出现在下一场集会上。{party_man}说这话时没有恶意，像在安排座位；{subject}回到家，看见{spouse}已经把外套挂好，问{spouse}今晚要不要一起出门。{subject}说不用了，声音比平时轻。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-under-siege",
+              "key": "support",
+              "delta": 8,
+              "reason": "support came with a condition"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": -0.12,
+              "reason": "the spouse was excluded from the campaign"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "grief",
+              "delta": 5,
+              "reason": "the affair cost the spouse public dignity"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the crowd supported the subject"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "support_conditions",
+              "add": true,
+              "reason": "support required a family exclusion"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "下一场集会的座位表上没有配偶。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.resignation",
+      "title": "辞职信上的第二个签名",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 70
+      },
+      "tags": [
+        "resignation",
+        "office",
+        "influence",
+        "scandal",
+        "position",
+        "politics"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-protected-scandal",
+          "parameter": "publicHeat",
+          "min": 20
+        },
+        {
+          "kind": "position"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "successor",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "reporter",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "resigned-into-influence",
+          "weight": 0.4,
+          "text": "{subject}把辞职信交上去，没有等批准就开始收拾书架。三个月后，{successor}在预算会上发现，最难说服的几位议员仍然先给{subject}打电话；{lover}在咖啡馆里听见别人称{subject}“那位不在办公室的人”，笑出了声。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "position",
+              "holderId": "$subject",
+              "reason": "resigned from the formal post",
+              "organizationId": "$positionOrg",
+              "remove": true
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 60,
+                "loyalty": 65,
+                "cost": 10
+              },
+              "links": {
+                "ally": "$lover"
+              },
+              "reason": "informal influence became a public alliance"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": 10,
+              "reason": "the resignation calmed the network"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": -5,
+              "reason": "the office no longer amplified the story"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the resignation looked dignified"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "informal_influence",
+              "add": true,
+              "reason": "kept influence after leaving office"
+            }
+          ]
+        },
+        {
+          "id": "kept-the-office",
+          "weight": 0.3,
+          "text": "{subject}没有辞职，只在内部听证上把责任推给一份已经销毁的备忘录。职位保住了，{successor}被调去管仓库；{subject}回到办公室，发现桌上的电话线被换过，听筒里有一种陌生的杂音。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 10,
+              "reason": "the cover-up raised the heat"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -5,
+              "reason": "the network saw the cost"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$successor",
+              "kind": "colleague",
+              "trust": -0.1,
+              "reason": "the successor was moved to the warehouse"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the cover-up was noticed"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_office_by_cover",
+              "add": true,
+              "reason": "kept office by blaming a destroyed memo"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "电话线被换过，听筒里有陌生的杂音。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "resigned-and-was-forgotten",
+          "weight": 0.3,
+          "text": "辞职信批得很快。{subject}的办公室在两周内换了三次用途，最后成了储藏室；{lover}也在这段时间搬走了，没有留下新地址。{subject}在街角看见一张旧竞选海报，自己的脸被雨泡得只剩一半。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "position",
+              "holderId": "$subject",
+              "reason": "resigned and was quickly replaced",
+              "organizationId": "$positionOrg",
+              "remove": true
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -20,
+              "reason": "the network abandoned a former officeholder"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": -10,
+              "reason": "there was no office left to trade"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 10,
+              "reason": "the story followed the resignation"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": -0.15,
+              "reason": "the lover left without an address"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the resignation ended in obscurity"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "办公室成了复印间，旧海报上的脸被雨泡掉了一半。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.organization-cut",
+      "title": "组织要你切割",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 70
+      },
+      "tags": [
+        "organization",
+        "scandal",
+        "loyalty",
+        "bargaining",
+        "office",
+        "position"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-protected-scandal",
+          "parameter": "leverage",
+          "min": 20
+        },
+        {
+          "kind": "hasState",
+          "stateId": "office-patronage",
+          "parameter": "loyalty",
+          "min": 20
+        },
+        {
+          "kind": "position"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "party_man",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "treasurer",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "cut-the-lover",
+          "weight": 0.4,
+          "text": "{party_man}把一份拟好的声明放在{subject}面前：从今天起，{subject}与{lover}没有任何私人往来，{lover}也不会再出现在任何官方场合。{subject}签了字；{lover}在门外听见钢笔落纸的声音，转身走了。三个月后，{subject}在报纸上看见{lover}离开这座城市，连告别都没有。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "reason": "the organization forced a public cut"
+            },
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "reason": "the organization forced the separation"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$party_man",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "the subject complied with the organization"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "loyalty",
+              "delta": 8,
+              "reason": "the organization rewarded the cut"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "delta": -10,
+              "reason": "the old favor was settled"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the organization praised the discipline"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cut_the_lover",
+              "add": true,
+              "reason": "cut the lover to keep the organization"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "声明签完后的第三个月，那个人离开了这座城市。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "cut-the-organization",
+          "weight": 0.3,
+          "text": "{subject}在会议上把声明推回去，说组织可以拿走办公室、预算和提名，但不能替{subject}决定谁可以爱。{party_man}没有拍桌子，只把会议记录合上；月底，办公室的取暖煤少了一半，{subject}的提名也被挪到了最后一页。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "favorDebt",
+              "delta": 20,
+              "reason": "the organization demanded repayment"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "office-patronage",
+              "key": "loyalty",
+              "delta": -15,
+              "reason": "the subject defied the organization"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 10,
+              "reason": "the refusal gave the network a new story"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -3,
+              "reason": "the office budget was cut"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$party_man",
+              "kind": "colleague",
+              "trust": -0.1,
+              "reason": "the organization was defied"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the refusal cost the organization's favor"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "chose_lover_over_party",
+              "add": true,
+              "reason": "chose the lover over the organization"
+            }
+          ]
+        },
+        {
+          "id": "kept-both-and-paid",
+          "weight": 0.3,
+          "text": "{subject}没有签声明，也没有退让；{subject}让{treasurer}把一笔“咨询费”转进组织的账户，又替{party_man}的选区争取到一笔修路款。{lover}问这算不算把两个人都卖了，{subject}说算，但卖价至少由自己定。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "a consulting fee paid to the organization"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 15,
+              "reason": "the payment created a new obligation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": 5,
+              "reason": "the organization was bought off for now"
+            },
+            {
+              "type": "organization_funds",
+              "organizationId": "$positionOrg",
+              "amount": -2,
+              "reason": "the road fund was redirected"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$party_man",
+              "kind": "colleague",
+              "trust": 0.05,
+              "reason": "the organization was paid"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": -0.08,
+              "reason": "the lover was part of the bargain"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "咨询费和修路款是同一天批下来的。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.child-rumor",
+      "title": "孩子从学校带回一个词",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 60
+      },
+      "tags": [
+        "family",
+        "child",
+        "school",
+        "rumor",
+        "scandal",
+        "protection"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-protected-scandal",
+          "parameter": "exposure",
+          "min": 15
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household",
+          "parameter": "childConfidence",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 60
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 16
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": false,
+          "minAge": 24,
+          "maxAge": 65
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "the-child-defends",
+          "weight": 0.4,
+          "text": "{child}从学校回来，说班上的男孩管{subject}叫“报纸上的那个人”。{child}没有哭，只说“那是我家的人”，然后把书包放好，去帮{subject}摆碗筷。{subject}站在厨房门口，听见{child}把碗摆得比平时响。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.12,
+              "reason": "the child defended the family"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 5,
+              "reason": "the child repeated the rumour"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 5,
+              "reason": "the schoolyard knew the story"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_defended",
+              "add": true,
+              "reason": "the child defended the family"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "学校里的男孩管家长叫“报纸上的那个人”。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-child-asks",
+          "weight": 0.3,
+          "text": "{child}问“保护费”是什么意思，因为同学说{subject}收了钱才替人办事。{subject}说是别人乱讲，{child}点点头，又问那为什么家里的电话总在晚上响。{subject}没有回答，只把{child}的作业本翻到最后一页，签上名字。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": -0.05,
+              "reason": "the child asked a question without an answer"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 8,
+              "reason": "the child brought the story home"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "delta": -6,
+              "reason": "the child heard the rumour at school"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子从同学那里听来“保护费”这个词。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a question that could not be answered"
+            }
+          ]
+        },
+        {
+          "id": "the-school-calls",
+          "weight": 0.3,
+          "text": "学校请{subject}去一趟，说{child}在操场上和三个男孩打了一架，因为其中一个说{subject}的情人上了报纸。{subject}在校长室看见{child}的膝盖破了，校服上有一块洗不掉的墨水；回家路上，{child}一直没有松开{subject}的手。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 12,
+              "reason": "the fight made the rumour public"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -8,
+              "reason": "the school could not contain it"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "delta": -10,
+              "reason": "the child fought over the rumour"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the school incident was noticed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "trust": 0.05,
+              "reason": "the child held on after the fight"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子因为那句“情人上了报纸”和三个男孩打了一架。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.alibi",
+      "title": "那一夜，配偶替你作了证",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "marriage",
+        "alibi",
+        "scandal",
+        "protection",
+        "family",
+        "betrayal"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-protected-scandal",
+          "parameter": "exposure",
+          "min": 20
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "partner",
+          "sameHousehold": true
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "spouse",
+          "kind": "partner",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "investigator",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "the-alibi-holds",
+          "weight": 0.4,
+          "text": "那晚{subject}其实和{lover}在一起，但{spouse}对调查员说，{subject}整晚都在家，还替{spouse}修好了厨房的水龙头。调查员走后，{spouse}把扳手放回工具箱，说“我不是替你，我是替孩子”；{subject}看见{spouse}的手在抖。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": 12,
+              "reason": "the spouse provided an alibi"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": -8,
+              "reason": "the alibi closed the question"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": 0.1,
+              "reason": "the spouse lied for the household"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "spouse_alibi",
+              "add": true,
+              "reason": "the spouse provided a false alibi"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "调查员接受了“整晚在家修水龙头”的说法。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-alibi-breaks",
+          "weight": 0.3,
+          "text": "调查员第二次上门时，{spouse}没有再说修水龙头的事，只把{subject}的外套从衣架上取下来，放在门口。{subject}知道那件外套的口袋里还有一张剧院票根，日期正好是那晚；{spouse}没有翻口袋，只是把门开着。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 15,
+              "reason": "the spouse withdrew the alibi"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 10,
+              "reason": "the investigation reopened"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -10,
+              "reason": "the household stopped covering"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": -0.2,
+              "reason": "the spouse stopped lying"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the alibi fell apart"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "外套口袋里的剧院票根日期正是那晚。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-alibi-has-a-price",
+          "weight": 0.3,
+          "text": "{spouse}愿意作证，但要在分居协议上多写一条：房子归{spouse}，{subject}保留探视权。{subject}签了字，{spouse}在调查员面前把时间说得很清楚，连钟点都编好了。{subject}忽然明白，这不是帮忙，是一次结账。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "the alibi was paid for in a separation agreement"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": -0.05,
+              "reason": "the alibi was transactional"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": 8,
+              "reason": "the alibi held for now"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 10,
+              "reason": "the spouse now had a written claim"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "alibi_price",
+              "add": true,
+              "reason": "paid for the alibi with the house"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "分居协议上多写了一条：房子归配偶。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.trade",
+      "title": "两桩丑闻在茶桌上交换",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "scandal",
+        "exchange",
+        "secret",
+        "rival",
+        "debt",
+        "politics"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-protected-scandal",
+          "parameter": "leverage",
+          "min": 15
+        },
+        {
+          "kind": "hasState",
+          "stateId": "ds17-kept-secret",
+          "parameter": "weight",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "rival",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "confidant",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "the-trade-holds",
+          "weight": 0.4,
+          "text": "{subject}把{rival}的那桩旧事压在茶杯下面，{rival}把{subject}的这段私情从报社撤了回来。两个人都没有说“成交”，只各自把茶喝完；出门时，{rival}替{subject}拉了门，动作客气得像在送一位真正的朋友。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": 8,
+              "reason": "the rival withdrew the story"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": -5,
+              "reason": "the exchange reduced exposure"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "protection",
+              "delta": 10,
+              "reason": "the subject agreed to keep the rival's secret"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "exposure",
+              "delta": -5,
+              "reason": "both secrets were shelved"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "acquaintance",
+              "trust": 0.08,
+              "reason": "the exchange was honoured"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mutual_silence",
+              "add": true,
+              "reason": "two scandals were traded"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "两桩旧事在同一张茶桌上被压了下去。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-other-secret-is-worse",
+          "weight": 0.3,
+          "text": "{rival}带来的秘密比{subject}的更大：一桩涉及孩子的旧案，一份被改过的出生证明。{subject}听完，发现自己手里那张牌已经不值钱；{rival}把茶杯放下，说“现在轮到您欠我了”。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 15,
+              "reason": "the rival's secret changed the balance"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 10,
+              "reason": "the subject was drawn into a larger secret"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "exposure",
+              "delta": 15,
+              "reason": "the larger secret pressed on the old one"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "the exchange became a debt"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the subject was seen with the rival"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "对方手里有一份被改过的出生证明。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-trade-becomes-a-chain",
+          "weight": 0.3,
+          "text": "两个人约好互不揭发，但{rival}要求{subject}替另一个朋友再压一件事。第三件事又牵出第四件；{subject}在笔记本上画了一张关系图，发现自己已经站在一张网的中间，而网的每一根线都通向不同的家庭。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 20,
+              "reason": "the exchange became a chain of obligations"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -5,
+              "reason": "the network grew beyond control"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "weight",
+              "delta": 10,
+              "reason": "the kept secret became heavier"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ds17-kept-secret",
+              "key": "protection",
+              "delta": -5,
+              "reason": "the old secret was now collateral"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "acquaintance",
+              "trust": -0.05,
+              "reason": "the chain kept growing"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "scandal_chain",
+              "add": true,
+              "reason": "one exchange led to another"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "笔记本上的关系图已经连到第四个家庭。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.corrupt-network",
+      "title": "保护网开始算账",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "crime",
+        "protection",
+        "racket",
+        "scandal",
+        "corruption",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-protected-scandal",
+          "parameter": "protection",
+          "min": 20
+        },
+        {
+          "kind": "hasState",
+          "stateId": "cj17-protection-racket",
+          "parameter": "clients",
+          "min": 1
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 70
+        },
+        {
+          "key": "collector",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "lover",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "protector",
+          "kind": "official",
+          "required": false,
+          "minAge": 26,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "the-racket-covers-it",
+          "weight": 0.4,
+          "text": "{collector}把一只铁皮盒放在{subject}的桌上，说东街这个月的钱收齐了，问要不要从里面拿一笔去堵报社的门。{subject}说不用，只让{collector}把后巷那两个巡夜的换成熟人；盒子留在桌角，硬币一枚也没有少。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "obligation",
+              "delta": 10,
+              "reason": "the racket took on the protection"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "exposure",
+              "delta": 5,
+              "reason": "the affair entered the racket's books"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": 10,
+              "reason": "the racket covered the story"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 10,
+              "reason": "the racket now had a claim"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the monthly fee was waived"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$collector",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "the racket offered a discount"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "racket_cover",
+              "add": true,
+              "reason": "the racket covered the affair"
+            }
+          ]
+        },
+        {
+          "id": "the-racket-wants-the-lover",
+          "weight": 0.3,
+          "text": "{collector}说，既然{lover}在市政厅有熟人，不如让{lover}替东街的铺子跑一趟执照。{subject}说{lover}不碰这些事，{collector}笑了笑，说“那您就得自己跑，或者让报纸跑”。第二天，{lover}在门口收到一束没有署名的花。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 25,
+              "reason": "the racket wanted the lover's access"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -10,
+              "reason": "the racket made the affair a bargaining chip"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$lover",
+              "kind": "friend",
+              "trust": -0.15,
+              "reason": "the lover was dragged into the racket"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "clients",
+              "delta": 2,
+              "reason": "the racket recruited new clients"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "东街的铺子需要一张市政厅执照。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the protection became a threat"
+            }
+          ]
+        },
+        {
+          "id": "the-racket-is-the-leak",
+          "weight": 0.3,
+          "text": "调查员拿到的第一张照片，是从{collector}的铁皮盒里流出去的。{subject}去找{collector}，后者正在擦一只杯子，说“保护网也要吃饭”；{subject}看见墙上挂着一排新锁，每一把都标着不同街区的名字。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 20,
+              "reason": "the racket sold the photograph"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "publicHeat",
+              "delta": 15,
+              "reason": "the leak reached the investigation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -20,
+              "reason": "the protectors were the leak"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "cj17-protection-racket",
+              "key": "exposure",
+              "delta": 15,
+              "reason": "the racket was exposed to the investigation"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the protection network was corrupt"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$collector",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "reason": "the collector sold the photograph"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "第一张照片是从收费人的铁皮盒里流出去的。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-scandal.refuses-hidden",
+      "title": "这次不走后门",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "love",
+        "public",
+        "refusal",
+        "scandal",
+        "protection",
+        "irreversible"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-protected-scandal",
+          "parameter": "protection",
+          "min": 15
+        },
+        {
+          "kind": "hasState",
+          "stateId": "ld18-impossible-attachment",
+          "parameter": "pressure",
+          "min": 20
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "beloved",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "protector",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "sister",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 7,
+      "outcomes": [
+        {
+          "id": "walked-out-the-front-door",
+          "weight": 0.4,
+          "text": "{beloved}没有走后门，也没有戴面纱；在剧院散场时挽住{subject}的胳膊，从正门走到街上。第二天，报纸登了照片，{subject}的办公室收到三封要求解释的信；{beloved}说，至少这次没有人替自己决定自己站在哪里。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "reason": "the beloved refused to be hidden"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "public-scandal",
+              "reason": "the couple walked out together"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ld18-impossible-attachment",
+              "key": "pressure",
+              "delta": -10,
+              "reason": "the beloved chose openness"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ld18-impossible-attachment",
+              "key": "discretion",
+              "delta": -15,
+              "reason": "the relationship became visible"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": 0.2,
+              "reason": "the beloved chose the front door"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the public appearance caused a scandal"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "walked_out_front",
+              "add": true,
+              "reason": "walked out of the front door together"
+            }
+          ]
+        },
+        {
+          "id": "one-more-year",
+          "weight": 0.3,
+          "text": "{beloved}在门口停了一会儿，最后还是转身从后楼梯上去。{subject}替{beloved}拿着外套，听见楼上有人开窗；{beloved}说再等一年，等孩子毕业，等风头过去。{subject}点头，把外套叠好，发现口袋里有一张已经过期的车票。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "exposure",
+              "delta": 8,
+              "reason": "the beloved almost refused the back stairs"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": 5,
+              "reason": "the couple stayed inside the arrangement"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ld18-impossible-attachment",
+              "key": "pressure",
+              "delta": 10,
+              "reason": "the delay pressed on the relationship"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ld18-impossible-attachment",
+              "key": "grief",
+              "delta": 5,
+              "reason": "another year of hiding"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": -0.12,
+              "reason": "the beloved agreed to wait again"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "外套口袋里有一张已经过期的车票。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-protector-had-loved",
+          "weight": 0.3,
+          "text": "那个一直替两个人安排后门、假名字和备用钥匙的{protector}，在最后一次见面时说，做这些不是因为正义，是因为也爱过{beloved}。{subject}没有发火，只把钥匙串放在桌上；{beloved}站在两个人中间，第一次没有伸手去接。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "leverage",
+              "delta": 20,
+              "reason": "the protector's motive became a new lever"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "key": "protection",
+              "delta": -10,
+              "reason": "the protector's judgment was compromised"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "ld18-impossible-attachment",
+              "key": "pressure",
+              "delta": 15,
+              "reason": "the triangle increased the pressure"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$beloved",
+              "kind": "friend",
+              "trust": -0.08,
+              "reason": "the protector's confession changed the room"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$protector",
+              "kind": "acquaintance",
+              "trust": -0.15,
+              "reason": "the protector confessed an old love"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "保护者做这些不是因为正义，而是因为也爱过那个人。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-ally.liability",
+      "title": "盟友的名字开始出现在对手的传单上",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "ally",
+        "scandal",
+        "liability",
+        "politics",
+        "loyalty",
+        "cost"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-public-ally",
+          "parameter": "cost",
+          "min": 15
+        },
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "ally",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "opponent",
+          "kind": "official",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 75
+        },
+        {
+          "key": "editor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "defended-the-ally",
+          "weight": 0.4,
+          "text": "{opponent}的传单把{ally}写成“靠裙带吃饭的人”。{subject}在下一场集会上没有切割，反而把{ally}这些年替选区做的事一件件念出来；台下有人开始鼓掌，{ally}站在台侧，手里的讲稿被捏出了褶。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "loyalty",
+              "delta": 10,
+              "reason": "the ally was defended in public"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "cost",
+              "delta": 15,
+              "reason": "the defence cost the campaign"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "visibility",
+              "delta": 5,
+              "reason": "the pair was watched more closely"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the defence drew criticism"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "friend",
+              "trust": 0.12,
+              "reason": "the ally was not abandoned"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "defended_ally",
+              "add": true,
+              "reason": "defended the public ally"
+            }
+          ]
+        },
+        {
+          "id": "dropped-the-ally",
+          "weight": 0.3,
+          "text": "{subject}在记者会上说，{ally}只是“一位普通朋友”，所有合作都已经结束。{ally}没有到场，第二天托人送来一只纸箱，里面是这些年替{subject}保存的剪报和一把办公室钥匙；{subject}把钥匙收进抽屉，剪报扔了。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "loyalty",
+              "delta": -20,
+              "reason": "the ally was dropped in public"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "cost",
+              "delta": -5,
+              "reason": "the campaign cut the liability"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "visibility",
+              "delta": -10,
+              "reason": "the pair stopped appearing together"
+            },
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "friend",
+              "reason": "the ally was publicly dropped"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the campaign looked disciplined"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "dropped_ally",
+              "add": true,
+              "reason": "dropped the public ally"
+            }
+          ]
+        },
+        {
+          "id": "the-ally-defends-you",
+          "weight": 0.3,
+          "text": "{ally}先开了口：所有账目都是自己经手，{subject}不知情。记者会后，{subject}在走廊里问为什么，{ally}说“因为你上次没有让我一个人站着”。两个人握了手，手心里都是汗；第二天的报纸把这段写成了“忠诚的代价”。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "loyalty",
+              "delta": 5,
+              "reason": "the ally took the blame"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "cost",
+              "delta": 10,
+              "reason": "the ally's defence cost the campaign"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "friend",
+              "trust": 0.08,
+              "reason": "the ally defended the subject"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the loyalty impressed some voters"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "visibility",
+              "delta": 8,
+              "reason": "the story was printed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "盟友在记者会上说所有账目都是自己经手。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-ally.quiet-affair",
+      "title": "没有见报的那一桌",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "love",
+        "ally",
+        "quiet",
+        "family",
+        "press",
+        "warm"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "pl19-public-ally",
+          "parameter": "loyalty",
+          "min": 30
+        },
+        {
+          "kind": "hasState",
+          "stateId": "known-affair",
+          "parameter": "notoriety",
+          "max": 80
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "ally",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "spouse",
+          "kind": "partner",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "reporter",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 22,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.09,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-story-dies",
+          "weight": 0.4,
+          "text": "没有记者，也没有新照片。{subject}、{ally}和{spouse}在一张桌上吃饭，{spouse}把盐递给{ally}，问要不要再来一点汤。{ally}说好；{subject}忽然发现，这段关系终于不再是一条新闻，而只是三个人都同意继续过下去的日子。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "visibility",
+              "delta": -10,
+              "reason": "the pair stopped being a story"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "loyalty",
+              "delta": 10,
+              "reason": "the quiet dinner held the alliance"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "cost",
+              "delta": -8,
+              "reason": "the quiet arrangement lowered the cost"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "notoriety",
+              "delta": -5,
+              "reason": "the affair lost its news value"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "discretion",
+              "delta": 5,
+              "reason": "the household found a quiet arrangement"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "friend",
+              "trust": 0.12,
+              "reason": "the ally stayed for the quiet dinner"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": 0.08,
+              "reason": "the spouse set the table"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "the_story_died",
+              "add": true,
+              "reason": "the affair stopped being public news"
+            }
+          ]
+        },
+        {
+          "id": "the-ally-wants-a-photograph",
+          "weight": 0.3,
+          "text": "{ally}提议在下次集会上一起出现，说这样对两个人都有好处。{subject}看着{ally}把领带重新系好，忽然想起最初那个不肯拍照的人；{ally}走后，{subject}把邀请函压在书下面，没有回信。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "visibility",
+              "delta": 15,
+              "reason": "the ally wanted another public appearance"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "cost",
+              "delta": 10,
+              "reason": "the request created a new obligation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "notoriety",
+              "delta": 8,
+              "reason": "the affair was pulled back into publicity"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "friend",
+              "trust": -0.05,
+              "reason": "the ally wanted another photograph"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the pair still looked newsworthy"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "邀请函被压在书下面，没有回信。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-spouse-sets-the-table",
+          "weight": 0.3,
+          "text": "{spouse}主动请{ally}来家里吃饭，说“既然是公开的，就别在街上躲”。{ally}带了一瓶酒，{spouse}做了{subject}最爱吃的菜；三个人吃到一半，{spouse}忽然说，以后别让孩子在报上看见你们的名字。{subject}点头，{ally}也点头。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$spouse",
+              "kind": "partner",
+              "trust": 0.1,
+              "reason": "the spouse invited the ally home"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "cost",
+              "delta": 8,
+              "reason": "the household arrangement had a price"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "key": "loyalty",
+              "delta": 5,
+              "reason": "the ally accepted the household terms"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "known-affair",
+              "key": "grief",
+              "delta": -5,
+              "reason": "the affair was given a civil shape"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "table_agreement",
+              "add": true,
+              "reason": "the spouse set terms at the table"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "三个人同意不让孩子在报纸上看见这件事。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-bridge.public-rumor",
+      "title": "报纸卖完以后，后间才开灯",
+      "domain": "social",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "scandal",
+        "protection",
+        "network",
+        "press",
+        "media",
+        "rumor",
+        "bridge"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "pl19-protected-scandal"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": false,
+          "minAge": 26,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.8,
+      "weight": 20,
+      "cooldownYears": 1,
+      "outcomes": [
+        {
+          "id": "the-back-room-opens",
+          "weight": 0.4,
+          "text": "报纸卖完的第二天，{neighbor}把{subject}领进洗衣房后面的小间。桌上已经坐着门房、一位排字工和两个不肯说名字的人；他们没有问绯闻是真是假，只问{subject}以后还打不打算出门。{subject}说打算，{neighbor}就把一盏灯往桌中间推了推。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "parameters": {
+                "exposure": 55,
+                "protection": 55,
+                "leverage": 15,
+                "publicHeat": 45
+              },
+              "links": {
+                "protector": "$neighbor"
+              },
+              "reason": "a neighbourhood network formed around the public scandal"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "the neighbour opened the back room"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the public scandal made the name notorious"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rumor_network",
+              "add": true,
+              "reason": "a small protection network formed"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "洗衣房后间的人没有问绯闻真假，只问当事人还出不出门。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "a-room-with-a-list",
+          "weight": 0.35,
+          "text": "一位官员在散场后拦住{subject}，说可以借一间会议室，每周二晚上用，条件是名单由他过目。{subject}看见他手里还攥着当天的报纸，头版折得很整齐；那间会议室后来真的开了灯，只是门口多了一把没人坐的椅子。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "parameters": {
+                "exposure": 45,
+                "protection": 65,
+                "leverage": 35,
+                "publicHeat": 40
+              },
+              "links": {
+                "protector": "$neighbor"
+              },
+              "reason": "an official lent a room and asked for the list"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.05,
+              "reason": "the neighbour kept the list"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "official_room",
+              "add": true,
+              "reason": "a borrowed room became the network's address"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "会议室每周二晚上开灯，名单要先给一位官员过目。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-list-writes-itself",
+          "weight": 0.25,
+          "text": "{subject}在报纸上看见自己的名字和一张旧照片，报纸像一盏关不掉的灯。{neighbor}提议找几个人替{subject}挡电话、挡记者、挡亲戚；{subject}说不用，第二天却发现{neighbor}已经把名单写好了，最上面一行是{subject}自己。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-protected-scandal",
+              "parameters": {
+                "exposure": 60,
+                "protection": 40,
+                "leverage": 10,
+                "publicHeat": 55
+              },
+              "links": {
+                "protector": "$neighbor"
+              },
+              "reason": "the scandal made a protection list write itself"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "friend",
+              "trust": 0.08,
+              "reason": "the neighbour wrote the list anyway"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the list made the scandal look organised"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "list_written_itself",
+              "add": true,
+              "reason": "the protection list named the subject first"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "名单最上面一行是当事人的名字。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pl19-bridge.first-ally",
+      "title": "第一个愿意站到灯下的人",
+      "domain": "politics",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 70
+      },
+      "tags": [
+        "fame",
+        "ally",
+        "public",
+        "politics",
+        "scandal",
+        "media",
+        "bridge"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fame"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "pl19-public-ally"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 70
+        },
+        {
+          "key": "ally",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 70
+        },
+        {
+          "key": "patron",
+          "kind": "official",
+          "required": false,
+          "minAge": 26,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.8,
+      "weight": 20,
+      "cooldownYears": 1,
+      "outcomes": [
+        {
+          "id": "the-ally-speaks-first",
+          "weight": 0.4,
+          "text": "集会开始前，{subject}的助手们还在争论谁该先上台。{ally}把外套脱下来搭在椅背上，说“我先去”，然后走到麦克风前，把{subject}这些年替选区做的事讲了三件。台下有人开始鼓掌；{subject}站在侧幕后面，第一次觉得丑闻不一定只能一个人扛。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 55,
+                "loyalty": 70,
+                "cost": 15
+              },
+              "links": {
+                "ally": "$ally"
+              },
+              "reason": "the ally spoke first at the rally"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "friend",
+              "trust": 0.12,
+              "reason": "the ally took the microphone first"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the ally's speech steadied the room"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "first_public_ally",
+              "add": true,
+              "reason": "the first public ally stepped forward"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "盟友在集会上先上台，讲了三件选区旧事。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-patron-adds-a-name",
+          "weight": 0.35,
+          "text": "一位资助人把{ally}的名字写进下一场筹款会的节目单，排在{subject}前面。{ally}没有拒绝，只在彩排时问了一句“稿子是谁写的”；资助人说是宣传班子写的，{ally}就把稿子折起来，换成了自己的话。那天晚上，捐款比预期少，但{ally}在门口站了很久，和每个离开的人握手。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 65,
+                "loyalty": 55,
+                "cost": 25
+              },
+              "links": {
+                "ally": "$ally"
+              },
+              "reason": "a patron put the ally on the programme"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "key": "level",
+              "delta": 0.03,
+              "reason": "the programme raised the subject public profile"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "friend",
+              "trust": 0.08,
+              "reason": "the ally rewrote the office speech"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the ally stayed at the door to shake hands"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "patron_public_ally",
+              "add": true,
+              "reason": "a patron made the ally public"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "筹款会的稿子是宣传班子写的，盟友把它换成了自己的话。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        },
+        {
+          "id": "the-photograph-at-the-door",
+          "weight": 0.25,
+          "text": "{ally}拒绝上台，说不想替任何人做招牌。散场时，一个记者在门口拍下{ally}替{subject}整理领口的样子；第二天，照片登在第二版，配文是“新的盟友”。{ally}看着报纸，把那一版折成四折，塞进{subject}的抽屉。",
+          "significance": 0.72,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "pl19-public-ally",
+              "parameters": {
+                "visibility": 35,
+                "loyalty": 45,
+                "cost": 20
+              },
+              "links": {
+                "ally": "$ally"
+              },
+              "reason": "a photograph made the ally public without consent"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$ally",
+              "kind": "friend",
+              "trust": -0.05,
+              "reason": "the ally did not choose the photograph"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the photograph made the alliance look natural"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "accidental_public_ally",
+              "add": true,
+              "reason": "the ally became public by photograph"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "第二版照片的配文是“新的盟友”。",
+              "confidence": 0.85,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "a fact was learned"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "era": "1912–1955",
+  "themes": [
+    "love",
+    "power",
+    "scandal",
+    "patronage",
+    "protection",
+    "loyalty",
+    "blackmail",
+    "publicity"
+  ],
+  "tone": [
+    "political",
+    "romantic",
+    "scandalous",
+    "dark",
+    "comic"
+  ],
+  "scope": [
+    "person",
+    "organization"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "public shaming",
+    "blackmail",
+    "corruption",
+    "forced separation",
+    "family exposure"
+  ]
+}

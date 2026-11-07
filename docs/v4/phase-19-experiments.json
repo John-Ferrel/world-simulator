@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-07T08:06:24.563Z",
+  "note": "Controlled mechanism checks only. Natural occurrence is measured separately.",
+  "packs": [
+    "pl19-",
+    "fw19-",
+    "lc19-",
+    "eh19-"
+  ],
+  "results": [
+    {
+      "id": "power-love",
+      "title": "Romance × political power",
+      "seededStates": [
+        "pl19-protected-scandal",
+        "jealous-rival"
+      ],
+      "years": 12,
+      "events": 62,
+      "packEvents": 1,
+      "newStateAdds": [],
+      "crossStateCandidates": 0,
+      "crossStateResolved": 0,
+      "sampleEvents": [
+        {
+          "action": "pl19-scandal.rival-contract::ctx-vienna-1912::milieu-tenement/the-name-only",
+          "subjectId": "person:exp:klara-pol",
+          "participants": [
+            "person:exp:klara-pol",
+            "person:exp:beamter-c",
+            "person:exp:nachbar-b",
+            "person-friedrich-hofer"
+          ]
+        }
+      ],
+      "stateOpportunity": {
+        "candidates": 0,
+        "selected": 0,
+        "resolved": 0,
+        "missingRole": 0,
+        "noOutcome": 0,
+        "blocked": 0,
+        "crossStateCandidates": 0,
+        "crossStateResolved": 0,
+        "crossPackCandidates": 0,
+        "crossPackResolved": 0
+      },
+      "blockedReasons": {},
+      "checks": [
+        {
+          "name": "collision_pack_event",
+          "pass": true,
+          "detail": "pl19-scandal.rival-contract::ctx-vienna-1912::milieu-tenement/the-name-only"
+        },
+        {
+          "name": "subject_participated",
+          "pass": true,
+          "detail": "pl19-scandal.rival-contract::ctx-vienna-1912::milieu-tenement/the-name-only"
+        },
+        {
+          "name": "multi_state_event_executed",
+          "pass": true,
+          "detail": "pl19-scandal.rival-contract::ctx-vienna-1912::milieu-tenement/the-name-only"
+        },
+        {
+          "name": "state_or_relationship_changed",
+          "pass": true,
+          "detail": "newStateAdds=none"
+        }
+      ]
+    },
+    {
+      "id": "family-war",
+      "title": "Family × war / occupation",
+      "seededStates": [
+        "raising-child",
+        "occupied-city-regime"
+      ],
+      "years": 12,
+      "events": 59,
+      "packEvents": 3,
+      "newStateAdds": [
+        "fw19-separated-household"
+      ],
+      "crossStateCandidates": 2,
+      "crossStateResolved": 2,
+      "sampleEvents": [
+        {
+          "action": "fw19-split.evacuation-list::ctx-vienna-1912::milieu-tenement/eldest-goes",
+          "subjectId": "person:exp:rosa-krieg",
+          "participants": [
+            "person:exp:rosa-krieg",
+            "person:exp:mina-krieg",
+            "person:exp:toni-krieg",
+            "person-friedrich-hofer",
+            "person-hermann-kral"
+          ]
+        },
+        {
+          "action": "fw19-split.ration-ranking::ctx-vienna-1912::milieu-tenement/children-first",
+          "subjectId": "person:exp:rosa-krieg",
+          "participants": [
+            "person:exp:rosa-krieg",
+            "person:exp:mina-krieg",
+            "person-gustav-berg",
+            "person-emil-weiss"
+          ]
+        },
+        {
+          "action": "fw19-split.orphan-marking::ctx-vienna-1912::milieu-tenement/kept-off-list",
+          "subjectId": "person:exp:mina-krieg",
+          "participants": [
+            "person:exp:mina-krieg",
+            "person-grete-stein"
+          ]
+        }
+      ],
+      "stateOpportunity": {
+        "candidates": 2,
+        "selected": 2,
+        "resolved": 2,
+        "missingRole": 2,
+        "noOutcome": 0,
+        "blocked": 0,
+        "crossStateCandidates": 2,
+        "crossStateResolved": 2,
+        "crossPackCandidates": 2,
+        "crossPackResolved": 2
+      },
+      "blockedReasons": {
+        "missing_role": 1
+      },
+      "checks": [
+        {
+          "name": "collision_pack_event",
+          "pass": true,
+          "detail": "fw19-split.evacuation-list::ctx-vienna-1912::milieu-tenement/eldest-goes, fw19-split.ration-ranking::ctx-vienna-1912::milieu-tenement/children-first, fw19-split.orphan-marking::ctx-vienna-1912::milieu-tenement/kept-off-list"
+        },
+        {
+          "name": "subject_participated",
+          "pass": true,
+          "detail": "fw19-split.evacuation-list::ctx-vienna-1912::milieu-tenement/eldest-goes, fw19-split.ration-ranking::ctx-vienna-1912::milieu-tenement/children-first"
+        },
+        {
+          "name": "multi_state_event_executed",
+          "pass": true,
+          "detail": "fw19-split.evacuation-list::ctx-vienna-1912::milieu-tenement/eldest-goes, fw19-split.ration-ranking::ctx-vienna-1912::milieu-tenement/children-first, fw19-split.orphan-marking::ctx-vienna-1912::milieu-tenement/kept-off-list"
+        },
+        {
+          "name": "state_or_relationship_changed",
+          "pass": true,
+          "detail": "newStateAdds=fw19-separated-household"
+        }
+      ]
+    },
+    {
+      "id": "luck-craft",
+      "title": "Craft × borrowed luck",
+      "seededStates": [
+        "oj18-odd-apprenticeship",
+        "df18-borrowed-luck"
+      ],
+      "years": 12,
+      "events": 48,
+      "packEvents": 2,
+      "newStateAdds": [
+        "lc19-borrowed-reputation"
+      ],
+      "crossStateCandidates": 2,
+      "crossStateResolved": 1,
+      "sampleEvents": [
+        {
+          "action": "lc19-apprentice.masterpiece::ctx-vienna-1912::milieu-tenement/the-master-takes-the-door",
+          "subjectId": "person:exp:josef-gl-ck",
+          "participants": [
+            "person:exp:josef-gl-ck",
+            "person:exp:meister-weiss",
+            "person-friedrich-hofer"
+          ]
+        },
+        {
+          "action": "lc19-reputation.public-proof::ctx-vienna-1912::milieu-tenement/the-master-refuses-the-test",
+          "subjectId": "person:exp:josef-gl-ck",
+          "participants": [
+            "person:exp:josef-gl-ck",
+            "person-emil-weiss",
+            "person-friedrich-hofer"
+          ]
+        }
+      ],
+      "stateOpportunity": {
+        "candidates": 3,
+        "selected": 2,
+        "resolved": 2,
+        "missingRole": 0,
+        "noOutcome": 0,
+        "blocked": 0,
+        "crossStateCandidates": 2,
+        "crossStateResolved": 1,
+        "crossPackCandidates": 2,
+        "crossPackResolved": 1
+      },
+      "blockedReasons": {},
+      "checks": [
+        {
+          "name": "collision_pack_event",
+          "pass": true,
+          "detail": "lc19-apprentice.masterpiece::ctx-vienna-1912::milieu-tenement/the-master-takes-the-door, lc19-reputation.public-proof::ctx-vienna-1912::milieu-tenement/the-master-refuses-the-test"
+        },
+        {
+          "name": "subject_participated",
+          "pass": true,
+          "detail": "lc19-apprentice.masterpiece::ctx-vienna-1912::milieu-tenement/the-master-takes-the-door, lc19-reputation.public-proof::ctx-vienna-1912::milieu-tenement/the-master-refuses-the-test"
+        },
+        {
+          "name": "multi_state_event_executed",
+          "pass": true,
+          "detail": "lc19-apprentice.masterpiece::ctx-vienna-1912::milieu-tenement/the-master-takes-the-door"
+        },
+        {
+          "name": "state_or_relationship_changed",
+          "pass": true,
+          "detail": "newStateAdds=lc19-borrowed-reputation"
+        }
+      ]
+    },
+    {
+      "id": "elder-history",
+      "title": "Old age × historical testimony",
+      "seededStates": [
+        "em18-family-archive",
+        "hs18-street-witness",
+        "political-suspect"
+      ],
+      "years": 12,
+      "events": 85,
+      "packEvents": 2,
+      "newStateAdds": [
+        "eh19-late-testimony"
+      ],
+      "crossStateCandidates": 1,
+      "crossStateResolved": 1,
+      "sampleEvents": [
+        {
+          "action": "eh19-testimony.photo-face::ctx-vienna-1912::milieu-tenement/name-the-face",
+          "subjectId": "person:exp:theresia-zeugin",
+          "participants": [
+            "person:exp:theresia-zeugin",
+            "person:exp:beamter-winter",
+            "person:exp:kind-zeugin"
+          ]
+        },
+        {
+          "action": "eh19-testimony.quiet-box::ctx-vienna-1912::milieu-tenement/let-the-child-decide",
+          "subjectId": "person:exp:theresia-zeugin",
+          "participants": [
+            "person:exp:theresia-zeugin",
+            "person:exp:kind-zeugin",
+            "person:exp:beamter-winter"
+          ]
+        }
+      ],
+      "stateOpportunity": {
+        "candidates": 3,
+        "selected": 2,
+        "resolved": 1,
+        "missingRole": 0,
+        "noOutcome": 0,
+        "blocked": 1,
+        "crossStateCandidates": 1,
+        "crossStateResolved": 1,
+        "crossPackCandidates": 1,
+        "crossPackResolved": 1
+      },
+      "blockedReasons": {},
+      "checks": [
+        {
+          "name": "collision_pack_event",
+          "pass": true,
+          "detail": "eh19-testimony.photo-face::ctx-vienna-1912::milieu-tenement/name-the-face, eh19-testimony.quiet-box::ctx-vienna-1912::milieu-tenement/let-the-child-decide"
+        },
+        {
+          "name": "subject_participated",
+          "pass": true,
+          "detail": "eh19-testimony.photo-face::ctx-vienna-1912::milieu-tenement/name-the-face, eh19-testimony.quiet-box::ctx-vienna-1912::milieu-tenement/let-the-child-decide"
+        },
+        {
+          "name": "multi_state_event_executed",
+          "pass": true,
+          "detail": "eh19-testimony.photo-face::ctx-vienna-1912::milieu-tenement/name-the-face, eh19-testimony.quiet-box::ctx-vienna-1912::milieu-tenement/let-the-child-decide"
+        },
+        {
+          "name": "state_or_relationship_changed",
+          "pass": true,
+          "detail": "newStateAdds=eh19-late-testimony"
+        }
+      ]
+    }
+  ],
+  "allPassed": true
+}

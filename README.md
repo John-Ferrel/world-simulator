@@ -231,6 +231,29 @@ pnpm v4:phase18-coverage docs/v4/phase-15-phase18-a.json
 
 完整证据见 [report](docs/v4/phase-18-report.md)、[design](docs/v4/phase-18-content-design.md)、[diversity](docs/v4/phase-18-content-diversity.md)、[critique](docs/v4/phase-18-critique.md) 与 [ADR 018](docs/decisions/ADR-018-creative-index-and-content-production.md)。
 
+## Phase 19 故事碰撞
+
+Phase 19 把内容库从 **99 / 1,973 / 25** 扩展到 **107 states / 2,060 kernels / 29 packs**，新增 4 个 Collision Pack、87 个 Kernel、8 个 State，并建立 Cross-Pack Opportunity Map、Observed Co-occurrence 与 Story Shape v2 编辑工具。
+
+```bash
+pnpm v4:cross-pack-map
+pnpm v4:cross-pack-map -- --pair known-affair,office-patronage
+pnpm v4:cross-pack-map -- --state known-affair
+pnpm v4:phase19-cooccurrence
+pnpm v4:story-editor
+pnpm v4:story-editor -- --pack packages/v4/content/states/generated/pack-collision-power-love.json
+pnpm v4:phase19-experiments
+pnpm v4:phase19-lives 45 phase19-a,phase19-b,phase19-c
+pnpm v4:phase19-lives 30 phase19-elder --existing=person-theresia-huber,person-hedwig-stein,person-anna-moser,person-hermann-kral,person-maria-kral --existing-only
+pnpm v4:phase19-summary
+```
+
+四个 Pack：power-love（私情×权力/丑闻）、family-war（家庭×战争/占领）、luck-craft（手艺×借来的好运）、elder-history（老年记忆×历史遗产）。76/87 个 Kernel 同时消费两个不同 Pack 的 State；每个新 State 有 creation path + consumer。
+
+自然 A/B/C：57,514 events / 4,190 focal；新 Pack 78 事件（0.14% 世界）、6 个 focal 事件（0.14% focal）；repeatRate 0.2104。老年 cohort 6,286 events，`eh19-late-testimony` 18 次 add、1 个 focal；混合 cohort 13,966 events，`eh19-late-testimony` 28 次 add、`eh19-inherited-cause` 1 次 add、5 个 focal。Odd-jobs tick 文本从 Phase 18 的 70/52 降到主 seed 的 5/4/4/3。
+
+这是工具与节奏改进成功、focal 转化仍弱的结果：新 Pack 能进入世界，但 45 年新生 focal 里仍然稀有；不能把 87 kernels 当作人生已经改变。完整证据见 [report](docs/v4/phase-19-report.md)、[design](docs/v4/phase-19-design.md)、[content collisions](docs/v4/phase-19-content-collisions.md)、[critique](docs/v4/phase-19-critique.md) 与 [ADR 019](docs/decisions/ADR-019-cross-pack-collisions-and-life-continuity.md)。
+
 ## 已知限制与边界
 
 - **内容范围**：静态运行时 183 个事件场景（含 104 个生成场景、519 条生成叙事变体）和 50 个主动 Task（144 outcomes/288 narrations）；另有运行时 content pack 机制，发布后动态加载，仍只是维也纳切片，不是完整 1900 地球人生。离婚、再婚、同性关系、继承和住房容量已有第一版机制，但缺少玩家选择、完整法律程序、再婚/继承分配策略和大规模内容覆盖。

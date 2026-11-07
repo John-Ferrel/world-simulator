@@ -268,6 +268,12 @@ export type V4AdvanceDiagnostics = {
       missingRole: number;
       noOutcome: number;
       blocked: number;
+      /** Phase 19: candidates/selected scenes that require 2+ state/position conditions. */
+      crossStateCandidates: number;
+      crossStateResolved: number;
+      /** Phase 19: candidates/selected scenes whose state conditions span 2+ packs. */
+      crossPackCandidates: number;
+      crossPackResolved: number;
     };
     resolved: { base: number; composed: number };
     blocked: { base: number; composed: number };
@@ -837,6 +843,10 @@ export function advanceV4Year(
         missingRole: 0,
         noOutcome: 0,
         blocked: 0,
+        crossStateCandidates: 0,
+        crossStateResolved: 0,
+        crossPackCandidates: 0,
+        crossPackResolved: 0,
       },
     },
     warnings: [],
@@ -1159,6 +1169,10 @@ export function auditCandidatePools(
         missingRole: 0,
         noOutcome: 0,
         blocked: 0,
+        crossStateCandidates: 0,
+        crossStateResolved: 0,
+        crossPackCandidates: 0,
+        crossPackResolved: 0,
       },
     },
     warnings: [],
@@ -4844,15 +4858,21 @@ function sceneEligiblePrepared(
   date: WorldDate,
 ): boolean {
   const definition = entry.definition;
-  if (subject.died) return false;
-  if (definition.subjectIds !== undefined && !definition.subjectIds.includes(subject.id))
+  if (subject.died) {
     return false;
+  }
+  if (definition.subjectIds !== undefined && !definition.subjectIds.includes(subject.id)) {
+    return false;
+  }
   if (
     definition.subjectProvenance !== undefined &&
     !definition.subjectProvenance.includes(subject.provenance.kind)
-  )
+  ) {
     return false;
-  if (!subject.lifeContract?.compiledAt && entry.requiresCapabilityCompilation) return false;
+  }
+  if (!subject.lifeContract?.compiledAt && entry.requiresCapabilityCompilation) {
+    return false;
+  }
   if (
     entry.residualConditions !== undefined &&
     !conditionsPass(context.world, subject, entry.residualConditions, date)
@@ -5107,6 +5127,8 @@ function runEventYear(
         definition: SceneDefinition;
         weight: number;
         cast: CastResult;
+        crossStateCount: number;
+        crossPackCount: number;
       }[] = [];
       for (const entry of candidateSet.stateDriven) {
         const definition = entry.definition;
@@ -5127,10 +5149,47 @@ function runEventYear(
           }
           continue;
         }
+        // Phase 19: bounded cross-state affinity. A scene that genuinely
+        // needs two or more standing states/positions is rarer; give it a
+        // small weight bonus inside the existing state lane. This is not a
+        // second scheduler and does not change the one-state-scene-per-year cap.
+        const stateConditionKeys = new Set(
+          definition.conditions
+            .filter((condition) => condition.kind === 'hasState' || condition.kind === 'position')
+            .map((condition) =>
+              condition.kind === 'position'
+                ? `position:${condition.organizationId ?? 'any'}`
+                : `state:${condition.stateId ?? condition.tag ?? 'any'}`,
+            ),
+        );
+        const crossStateCount = stateConditionKeys.size;
+        const crossStateWeight = 1 + 0.2 * Math.min(3, Math.max(0, crossStateCount - 1));
+        const statePacks = new Set(
+          definition.conditions
+            .filter((condition) => condition.kind === 'hasState' && 'stateId' in condition)
+            .map((condition) => {
+              const stateId = 'stateId' in condition ? condition.stateId : undefined;
+              return stateId ? context.stateIndex.byId.get(stateId)?.packId : undefined;
+            })
+            .filter((packId): packId is string => Boolean(packId)),
+        );
+        if (definition.conditions.some((condition) => condition.kind === 'position')) {
+          statePacks.add('position');
+        }
+        const crossPackCount = statePacks.size;
+        const crossPackWeight = 1 + 0.5 * Math.min(2, Math.max(0, crossPackCount - 1));
+        if (crossStateCount >= 2 && context.diagnostics.scheduling) {
+          context.diagnostics.scheduling.stateOpportunity.crossStateCandidates += 1;
+        }
+        if (crossPackCount >= 2 && context.diagnostics.scheduling) {
+          context.diagnostics.scheduling.stateOpportunity.crossPackCandidates += 1;
+        }
         stateCandidates.push({
           definition,
-          weight: Math.max(0, definition.weight ?? 1) * 1.5,
+          weight: Math.max(0, definition.weight ?? 1) * 1.5 * crossStateWeight * crossPackWeight,
           cast,
+          crossStateCount,
+          crossPackCount,
         });
       }
       if (context.diagnostics.scheduling) {
@@ -5195,6 +5254,12 @@ function runEventYear(
         resolvedCounts.set(personId, (resolvedCounts.get(personId) ?? 0) + 1);
         if (context.diagnostics.scheduling) {
           context.diagnostics.scheduling.stateOpportunity.resolved += 1;
+          if (chosen.crossStateCount >= 2) {
+            context.diagnostics.scheduling.stateOpportunity.crossStateResolved += 1;
+          }
+          if (chosen.crossPackCount >= 2) {
+            context.diagnostics.scheduling.stateOpportunity.crossPackResolved += 1;
+          }
         }
         // One resolved state/position opportunity per person-year. Further
         // attempts are only for cast/effect failures, never for a second story.

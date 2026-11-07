@@ -1,0 +1,6069 @@
+{
+  "id": "pack-collision-luck-craft",
+  "version": 1,
+  "title": "借来的手：作坊、好运与不属于自己的名声",
+  "description": "当一门手艺遇上一笔说不清的好运，成功就不再只属于做活的人。这个包把学徒、师傅、主顾、教堂、展览和作坊门口的藤椅放在同一张账上：有人靠别人的手完成杰作，有人被供成吉祥物，有人想退还奖章，有人发现借来的运气会在开幕前第三夜到期。",
+  "author": "phase19-content-author/luck-craft",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-07",
+  "sourceBriefId": "phase19-collision-luck-craft",
+  "rationale": "Phase 18 已经有奇职学徒、借来的好运、走运的傻瓜、持证师傅、公众名声和神迹见证者，但这些状态大多各自运行。本包让手艺劳动与超自然运气/声誉互相污染：成功被归因于别人或神迹时，会留下可追踪的怀疑、债务、名声和证明；作坊把一个人当招牌时，会改变他的尊严、依赖、保护和欠债。所有新状态都由跨 Pack 条件创建，并在本包内有多个下游消费者。",
+  "themes": [
+    "craft",
+    "luck",
+    "reputation",
+    "attribution",
+    "workshop",
+    "superstition",
+    "vienna"
+  ],
+  "era": "Vienna, 1912-1955",
+  "tone": [
+    "absurd",
+    "comic",
+    "eerie",
+    "triumphant",
+    "dark"
+  ],
+  "scope": [
+    "adulthood",
+    "elderhood",
+    "urban craft",
+    "reputation"
+  ],
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "workplace exploitation",
+    "public humiliation",
+    "debt",
+    "religious pressure",
+    "superstition",
+    "coercion"
+  ],
+  "states": [
+    {
+      "id": "lc19-borrowed-reputation",
+      "version": 1,
+      "packId": "pack-collision-luck-craft",
+      "title": "借来的名声",
+      "description": "一个人的成功被旁人归因于运气、另一个人的手、神迹或一笔还没结清的恩情。名声是真的，证明却总慢一步；每一次被夸奖，都可能让债、怀疑和更大的期待一起长高。",
+      "owner": "person",
+      "slot": "attribution",
+      "conflict": "replace",
+      "tags": [
+        "reputation",
+        "craft",
+        "luck",
+        "attribution",
+        "suspicion",
+        "debt",
+        "miracle",
+        "work",
+        "superstition"
+      ],
+      "parameters": {
+        "suspicion": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "debt": {
+          "type": "number",
+          "default": 15,
+          "min": 0,
+          "max": 100
+        },
+        "fame": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        },
+        "proof": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 12,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "reputation",
+            "craft",
+            "work",
+            "rumor",
+            "miracle",
+            "luck",
+            "exhibition",
+            "workshop"
+          ],
+          "multiplier": 1.45
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "craft",
+            "reputation"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "borrowed_reputation",
+          "add": true,
+          "reason": "success began to be attributed to luck, another person, or a miracle"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "lc19_borrowed_reputation",
+          "add": true,
+          "reason": "the credit for a craft success became disputed"
+        },
+        {
+          "type": "knowledge",
+          "holderId": "$subject",
+          "proposition": "别人夸的那件作品，不完全是我一个人做的；这个说法已经开始替我走路。",
+          "confidence": 0.7,
+          "sourceKind": "inferred",
+          "visibility": "private",
+          "trueInWorld": true
+        }
+      ],
+      "onExit": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "borrowed_reputation",
+          "add": false,
+          "reason": "the borrowed reputation no longer frames the subject"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "lc19_borrowed_reputation",
+          "add": false,
+          "reason": "the borrowed reputation ended"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "credit-account",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "credit-hardens",
+              "weight": 3,
+              "text": "一年过去，{subject}的名字在作坊和咖啡馆里越叫越顺。主顾不再问工序，只问“是不是那件走运的作品”；{subject}点头的次数多了，连自己都开始用别人的说法解释自己的手。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-borrowed-reputation",
+                  "key": "suspicion",
+                  "delta": 5,
+                  "reason": "the attributed success was repeated more often than the proof"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-borrowed-reputation",
+                  "key": "fame",
+                  "delta": 4,
+                  "reason": "the story traveled through the workshop and cafes"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-borrowed-reputation",
+                  "key": "proof",
+                  "delta": 2,
+                  "reason": "a little evidence accumulated with time"
+                },
+                {
+                  "type": "reputation",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "the attributed success became more visible"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "the story no longer felt entirely like the subject's own"
+                }
+              ]
+            },
+            {
+              "id": "proof-surfaces",
+              "weight": 2,
+              "text": "一张旧草图从账本里滑出来，边角有{subject}自己的铅笔线。{subject}把它压在玻璃板下，没有立刻拿给任何人看；第二天，主顾照旧夸那件“神迹”，{subject}第一次没有跟着笑。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-borrowed-reputation",
+                  "key": "proof",
+                  "delta": 10,
+                  "reason": "an old drawing carried the subject's own hand"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-borrowed-reputation",
+                  "key": "suspicion",
+                  "delta": -5,
+                  "reason": "the evidence weakened the borrowed explanation"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-borrowed-reputation",
+                  "key": "debt",
+                  "delta": 3,
+                  "reason": "keeping the proof private still cost something"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "a private certainty survived the public story"
+                },
+                {
+                  "type": "knowledge",
+                  "holderId": "$subject",
+                  "proposition": "那张旧草图上的铅笔线是我自己的；我不需要永远借别人的解释。",
+                  "confidence": 0.8,
+                  "sourceKind": "document",
+                  "visibility": "private",
+                  "trueInWorld": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "credit-becomes-fame",
+          "to": "fame",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "lc19-borrowed-reputation",
+              "parameter": "fame",
+              "min": 70
+            },
+            {
+              "kind": "hasState",
+              "stateId": "lc19-borrowed-reputation",
+              "parameter": "proof",
+              "max": 35
+            }
+          ],
+          "chance": 0.35,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the borrowed success became public fame"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_credit_became_fame",
+              "add": true,
+              "reason": "the public credit hardened into fame"
+            }
+          ],
+          "reason": "the attributed success became a public name"
+        },
+        {
+          "id": "suspicion-becomes-scandal",
+          "to": "public-scandal",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "lc19-borrowed-reputation",
+              "parameter": "suspicion",
+              "min": 75
+            },
+            {
+              "kind": "hasState",
+              "stateId": "lc19-borrowed-reputation",
+              "parameter": "proof",
+              "max": 30
+            }
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the question of credit became a public scandal"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_borrowed_reputation_scandal",
+              "add": true,
+              "reason": "the borrowed reputation turned into a public accusation"
+            }
+          ],
+          "reason": "suspicion outgrew the available proof"
+        }
+      ],
+      "reactions": [
+        {
+          "id": "public-praise",
+          "onTags": [
+            "exhibition",
+            "public",
+            "review",
+            "craft"
+          ],
+          "chance": 0.45,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 4,
+              "reason": "public praise repeated the borrowed explanation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": 3,
+              "reason": "the praise made the name more visible"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 2,
+              "reason": "the praise added another obligation to the story"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the public explanation did not belong to the subject"
+            }
+          ],
+          "text": "展览的讲解员把{subject}的作品说成“运气与手艺的合谋”。围观的人笑了，{subject}也笑；只有{subject}知道，那句话把另一个人和一笔旧账一起挂在了墙上。",
+          "significance": 0.5,
+          "cooldownMonths": 12
+        },
+        {
+          "id": "proof-arrives",
+          "onTags": [
+            "proof",
+            "document",
+            "witness"
+          ],
+          "chance": 0.35,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": 8,
+              "reason": "a document or witness supported the subject's own account"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": -4,
+              "reason": "the evidence reduced suspicion"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": -2,
+              "reason": "the more ordinary explanation was less exciting"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "有人把一张收据、一枚旧印记或一段证词放到了我面前；证明自己并不难，难的是别人还想不想听那个故事。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "text": "有人把一张收据、一枚旧印记或一段证词放到{subject}面前。{subject}看了很久，发现证明自己并没有那么难；难的是证明完之后，别人还愿不愿意继续喜欢那个故事。",
+          "significance": 0.5,
+          "cooldownMonths": 18
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase19-content-author/luck-craft",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把“成功被归因于运气、他人或神迹”写成可追踪的怀疑、债务、名声和证明，而不是一次性的名声涨跌；它由奇职学徒/出师工匠/公众名声与借来的好运/走运的傻瓜碰撞产生。"
+      }
+    },
+    {
+      "id": "lc19-workshop-talisman",
+      "version": 1,
+      "packId": "pack-collision-luck-craft",
+      "title": "作坊的吉祥物",
+      "description": "一家作坊把一个人当成幸运物、门面或活招牌：让他坐在窗边、摸一摸新料、在开张前说一句吉利话。保护是真的，工钱也是真的；但一个人一旦成了招牌，就很难再只做一个手艺人。",
+      "owner": "person",
+      "slot": "talisman",
+      "conflict": "replace",
+      "tags": [
+        "workshop",
+        "craft",
+        "luck",
+        "talisman",
+        "reputation",
+        "dependence",
+        "exploitation",
+        "superstition",
+        "work"
+      ],
+      "parameters": {
+        "reliance": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "dignity": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "protection": {
+          "type": "number",
+          "default": 20,
+          "min": 0,
+          "max": 100
+        },
+        "debt": {
+          "type": "number",
+          "default": 10,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 12,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "workshop",
+            "craft",
+            "luck",
+            "reputation",
+            "rumor",
+            "commission",
+            "talisman"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "craft",
+            "workshop"
+          ],
+          "bonus": 1
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "workshop_talisman",
+          "add": true,
+          "reason": "the workshop began treating the subject as a lucky charm or public sign"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "lc19_workshop_talisman",
+          "add": true,
+          "reason": "the subject became part of the workshop's public face"
+        },
+        {
+          "type": "knowledge",
+          "holderId": "$subject",
+          "proposition": "作坊里的人开始把我的在场当成生意的一部分；我还没有决定这算保护还是价钱。",
+          "confidence": 0.7,
+          "sourceKind": "inferred",
+          "visibility": "private",
+          "trueInWorld": true
+        }
+      ],
+      "onExit": [
+        {
+          "type": "role",
+          "personId": "$subject",
+          "role": "workshop_talisman",
+          "add": false,
+          "reason": "the subject stopped being the workshop's talisman"
+        },
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "lc19_workshop_talisman",
+          "add": false,
+          "reason": "the talisman role ended"
+        }
+      ],
+      "ticks": [
+        {
+          "id": "talisman-year",
+          "everyMonths": 12,
+          "outcomes": [
+            {
+              "id": "the-workshop-leans",
+              "weight": 3,
+              "text": "一年过去，主顾进门先看{subject}坐的那把椅子，再谈木料和价钱。{subject}的工钱涨了一点，手上的活却少了；师傅说这叫“镇店”，{subject}听见自己像一件被擦得很亮的旧家具。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-workshop-talisman",
+                  "key": "reliance",
+                  "delta": 6,
+                  "reason": "the workshop relied more on the talisman's presence"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-workshop-talisman",
+                  "key": "dignity",
+                  "delta": -4,
+                  "reason": "the subject was treated more like a fixture than a craftsperson"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-workshop-talisman",
+                  "key": "debt",
+                  "delta": 3,
+                  "reason": "the workshop advanced a little more pay against future presence"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "a small raise for being the workshop's sign"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "the raise felt lighter than the work"
+                }
+              ]
+            },
+            {
+              "id": "a-bad-week",
+              "weight": 2,
+              "text": "连着三单退货，{subject}被请到门口站了一个下午。雨停后，生意真的回来了；师傅把一只红包塞进{subject}手里，说“你看，还是你管用”。{subject}摸着红包，觉得那钱比工钱轻。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-workshop-talisman",
+                  "key": "protection",
+                  "delta": -4,
+                  "reason": "the workshop's protection weakened after the bad week"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-workshop-talisman",
+                  "key": "reliance",
+                  "delta": 4,
+                  "reason": "the returning orders were credited to the talisman"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "lc19-workshop-talisman",
+                  "key": "dignity",
+                  "delta": -5,
+                  "reason": "standing at the door as a remedy cost dignity"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "a red envelope after the bad week"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "the money felt like payment for being a sign"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "id": "talisman-becomes-public-credit",
+          "to": "lc19-borrowed-reputation",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "lc19-workshop-talisman",
+              "parameter": "reliance",
+              "min": 70
+            },
+            {
+              "kind": "hasState",
+              "stateId": "lc19-workshop-talisman",
+              "parameter": "dignity",
+              "max": 35
+            },
+            {
+              "kind": "hasState",
+              "stateId": "lc19-workshop-talisman",
+              "parameter": "protection",
+              "min": 40
+            }
+          ],
+          "chance": 0.3,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the workshop's talisman became publicly credited for its success"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_talisman_became_credit",
+              "add": true,
+              "reason": "the talisman role turned into a disputed public reputation"
+            }
+          ],
+          "reason": "the workshop's dependence turned the talisman into a public explanation for success"
+        },
+        {
+          "id": "talisman-becomes-fame",
+          "to": "fame",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "lc19-workshop-talisman",
+              "parameter": "reliance",
+              "min": 80
+            },
+            {
+              "kind": "hasState",
+              "stateId": "lc19-workshop-talisman",
+              "parameter": "protection",
+              "min": 50
+            }
+          ],
+          "chance": 0.25,
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the workshop's sign became a public name"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_talisman_became_fame",
+              "add": true,
+              "reason": "the workshop talisman crossed into public fame"
+            }
+          ],
+          "reason": "the workshop's public sign became famous beyond the workshop"
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-piece-fails",
+          "onTags": [
+            "failure",
+            "accident",
+            "workshop"
+          ],
+          "chance": 0.4,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": 5,
+              "reason": "the workshop leaned harder on the talisman after a failure"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": -3,
+              "reason": "the failure weakened the promised protection"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": -3,
+              "reason": "the subject was made responsible for the atmosphere"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "debt",
+              "delta": 2,
+              "reason": "the workshop counted the failure as a debt against the talisman"
+            }
+          ],
+          "text": "一件活做坏了，主顾却先看{subject}的脸色。师傅说“今天不吉利”，把坏件推到墙角；没有人问那道榫是谁开的，所有人都在等{subject}说一句没事。",
+          "significance": 0.5,
+          "cooldownMonths": 12
+        },
+        {
+          "id": "a-piece-sells",
+          "onTags": [
+            "sale",
+            "commission",
+            "public"
+          ],
+          "chance": 0.35,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": 4,
+              "reason": "a sale strengthened the belief in the talisman"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": 3,
+              "reason": "the workshop protected its profitable sign"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "debt",
+              "delta": 1,
+              "reason": "the sale added another obligation to stay"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a share of the sale credited to the talisman"
+            }
+          ],
+          "text": "主顾买下那件活，临走前特意和{subject}握了手，说沾一点好运。{subject}把手缩回围裙里，发现掌心全是木屑；那件活的榫头其实不是{subject}做的。",
+          "significance": 0.45,
+          "cooldownMonths": 18
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase19-content-author/luck-craft",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把作坊对一个人的“幸运物/招牌”依赖写成有依赖、尊严、保护和欠债的持续状态；它由奇职学徒与持证师傅/借来的好运碰撞产生，并能继续变成借来的名声或公众名声。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "lc19-apprentice.masterpiece",
+      "title": "师傅没做完的那扇门",
+      "domain": "craft",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 64
+      },
+      "tags": [
+        "craft",
+        "apprentice",
+        "masterpiece",
+        "luck",
+        "debt",
+        "reputation",
+        "comic",
+        "eerie"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "df18-borrowed-luck",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 64
+        },
+        {
+          "key": "master",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 76
+        },
+        {
+          "key": "patron",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 78
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 4,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "finished-under-the-master-s-name",
+          "weight": 0.4,
+          "text": "{master}病倒后，那扇雕到一半的橡木门在作坊里放了六周。{subject}夜里替它补完最后一圈葡萄叶，手稳得不像自己；{patron}来取货时，{master}在楼上咳嗽，说这是“借来的手气”。没有人问{subject}的名字，门却被抬进了市议会。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "parameters": {
+                "suspicion": 35,
+                "debt": 20,
+                "fame": 30,
+                "proof": 10
+              },
+              "durationMonths": 48,
+              "reason": "the apprentice's completed masterpiece was credited to the master's borrowed luck"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the finished door was carried into the city council"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.05,
+              "reason": "finished the master's unfinished carving"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": 0.05,
+              "respect": 0.1,
+              "reason": "the master let the apprentice finish the door"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "那扇市议会门上的葡萄叶是我补完的，但所有人只记得师傅的“借来的手气”。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_finished_masterwork",
+              "add": true,
+              "reason": "completed a masterpiece the master could not finish"
+            }
+          ]
+        },
+        {
+          "id": "the-master-takes-the-door",
+          "weight": 0.35,
+          "text": "{master}退烧后看见门上的葡萄叶，先摸了摸叶脉，随后把{subject}的凿子收进自己抽屉。{patron}问是谁动的手，{master}说“作坊的手”；{subject}站在刨花堆里，领到两克朗和一句“别到处讲”。那扇门后来挂在市政厅，铭牌上只有作坊的名字。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "parameters": {
+                "suspicion": 45,
+                "debt": 30,
+                "fame": 20,
+                "proof": 5
+              },
+              "durationMonths": 48,
+              "reason": "the master claimed the apprentice's work as the workshop's"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "two kroner and a warning to stay quiet"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": -0.1,
+              "obligation": 0.1,
+              "reason": "the master took the credit and kept the tools"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the work was displayed without the subject's name"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "市政厅那扇门的铭牌上只有作坊的名字，师傅把我的凿子锁进了他的抽屉。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_master_took_credit",
+              "add": true,
+              "reason": "the master took credit for the apprentice's work"
+            }
+          ]
+        },
+        {
+          "id": "the-pencil-line-betrays",
+          "weight": 0.25,
+          "text": "{patron}俯身看门框内侧，发现一条只有学徒才会画的铅笔线，旁边还有{subject}的习惯性小勾。{master}沉默了很久，说“让他自己讲”。{subject}第一次当着主顾的面讲完整个工序，讲到最后一刀时，{patron}把尾款直接塞进了{subject}的围裙口袋。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "parameters": {
+                "suspicion": 15,
+                "debt": 10,
+                "fame": 35,
+                "proof": 35
+              },
+              "durationMonths": 60,
+              "reason": "the patron recognized the apprentice's hand and paid the apprentice directly"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the patron recognized the apprentice's authorship"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "respect": 0.15,
+              "reason": "the patron heard the full account of the work"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": -0.05,
+              "respect": -0.05,
+              "reason": "the master hesitated before letting the apprentice speak"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "explained the entire carving process to a patron"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "门框内侧的铅笔线和小勾是我的；主顾看懂了，师傅也没有再拦。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_patron_saw_the_hand",
+              "add": true,
+              "reason": "a patron recognized the apprentice's authorship"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-journeyman.lucky-hands",
+      "title": "出师那天的好手气",
+      "domain": "craft",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 62
+      },
+      "tags": [
+        "craft",
+        "journeyman",
+        "exam",
+        "luck",
+        "suspicion",
+        "reputation",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "journeyman",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "af17-lucky-idiot",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 62
+        },
+        {
+          "key": "master",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 76
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 58
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-test-piece-sings",
+          "weight": 0.4,
+          "text": "出师考试那天，{subject}借了{master}的旧刨子，刨出的榫肩像被尺子量过。{master}把刨子翻过来看了半天，说“这手气不像是练出来的”；{rival}在门口笑了一声。成绩单上写着合格，作坊里却开始传另一个版本。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "parameters": {
+                "suspicion": 30,
+                "debt": 10,
+                "fame": 25,
+                "proof": 15
+              },
+              "durationMonths": 48,
+              "reason": "the journeyman test piece was credited to the master's borrowed plane and good luck"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "passed the journeyman test with a striking piece"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "passed the journeyman test"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": 0.05,
+              "respect": 0.1,
+              "reason": "the master lent the old plane and watched the test"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "出师考试的榫肩是我刨的，可师傅说那手气不像练出来的。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-master-wants-the-plane-back",
+          "weight": 0.35,
+          "text": "{master}没有收回刨子，只让{subject}每天收工后替它上油。{subject}照做了三周，{master}才说，刨底已经磨薄，换个人用就会咬料。{subject}把这句话听成夸奖，也听成一道绳子。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 15,
+              "reason": "the borrowed plane became a lasting obligation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 10,
+              "reason": "the master hinted the tool, not the hand, made the difference"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": 5,
+              "reason": "the workshop began to explain the result as luck"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": 0.1,
+              "obligation": 0.1,
+              "reason": "the master kept the apprentice close to the old plane"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "bought oil and a new cloth for the plane"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "师傅说那把刨子的底已经磨薄，换个人用就会咬料；他让我每天替它上油。",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "rival-calls-it-borrowed",
+          "weight": 0.25,
+          "text": "{rival}在酒馆里说，{subject}的榫肩是“借来的”，连刨子都不是自己的。话传到{master}耳朵里，{master}只问了一句“你信吗”。{subject}说信一半；另一半，{subject}自己也说不清。",
+          "significance": 0.7,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 15,
+              "reason": "the rival spread the story that the test piece was borrowed"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": -5,
+              "reason": "the rumor made the subject's own account less convincing"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the rumor reached the workshop"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.15,
+              "reason": "the rival called the test piece borrowed"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the subject could only half deny the rumor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-fame.borrowed-credit",
+      "title": "报纸把功劳给了别人",
+      "domain": "reputation",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 66
+      },
+      "tags": [
+        "fame",
+        "newspaper",
+        "credit",
+        "luck",
+        "debt",
+        "reputation",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "df18-borrowed-luck",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 66
+        },
+        {
+          "key": "patron",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 78
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-review-names-the-lender",
+          "weight": 0.4,
+          "text": "文化版把那件得奖的柜子写成“某位不愿具名的资助人监制”，配图里却只有{subject}的手。{patron}把报纸折好，说名字不重要；{subject}看着自己手上的木刺，第一次觉得“不重要”三个字也有价钱。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "parameters": {
+                "suspicion": 40,
+                "debt": 25,
+                "fame": 45,
+                "proof": 10
+              },
+              "durationMonths": 48,
+              "reason": "the newspaper credited the subject's award-winning work to an anonymous patron"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the award and the newspaper story increased visibility"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "the patron accepted the newspaper's framing"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.05,
+              "reason": "the rival repeated the newspaper's version"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "报纸把得奖柜子的功劳写成了一位不愿具名的资助人，配图里却只有我的手。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-lender-asks-for-the-billing",
+          "weight": 0.35,
+          "text": "资助人把合同推过来，要求在展签上把自己的名字放在{subject}前面，字号大两号。{subject}算了算违约金，又算了算下个月的房租，签了。开幕那天，{subject}站在自己的作品旁边，像一个被雇来看管它的人。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 10,
+              "reason": "the contract gave the patron top billing"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": 5,
+              "reason": "the exhibition kept the work in public view"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 5,
+              "reason": "the shared billing made the authorship less clear"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "paid part of the penalty for changing the original agreement"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "obligation": 0.15,
+              "reason": "the patron's name went ahead of the subject's"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the subject stood beside the work like a guard"
+            }
+          ]
+        },
+        {
+          "id": "the-work-outlives-the-story",
+          "weight": 0.25,
+          "text": "记者追问那双手到底是谁的，{subject}只说“是我做的”。资助人当场沉下脸，第二天撤走了剩下的尾款；可三个月后，另一个主顾找上门，说他要买的是{subject}的手，不是谁的故事。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": 20,
+              "reason": "the subject publicly claimed the work"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": -5,
+              "reason": "the public claim reduced the borrowed explanation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": 5,
+              "reason": "the new patron sought the subject's hand"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the work outlived the patron's story"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "the patron withdrew the remaining payment"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "the public claim strengthened the subject's craft identity"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-workshop.mascot",
+      "title": "门口那把幸运椅子",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 60
+      },
+      "tags": [
+        "workshop",
+        "apprentice",
+        "talisman",
+        "luck",
+        "reputation",
+        "absurd",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "wc17-master-craftsperson",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "master",
+          "kind": "employer",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 78,
+          "organizationKind": "household_firm"
+        },
+        {
+          "key": "patron",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 78
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 4,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "a-chair-by-the-window",
+          "weight": 0.4,
+          "text": "{master}把一把旧藤椅搬到门口，让{subject}每天午后坐在那里磨小料。{subject}明明已经考出师傅证，却在这家作坊重新学一门夜活；第一个月，主顾只是多看两眼；第三个月，有人进门先摸椅背，再谈价钱。{master}说这叫“镇店”，{subject}说这叫“坐着”。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "organization_found",
+              "organization": {
+                "id": "lc19-workshop:$subject-$eventId",
+                "name": "门口挂着幸运牌的作坊",
+                "kind": "household_firm",
+                "treasury": 0,
+                "authorityRules": [
+                  "学徒午后坐在门口",
+                  "主顾进门先摸椅背",
+                  "不许问运气从哪里来"
+                ]
+              },
+              "reason": "the workshop formalized its lucky-chair practice"
+            },
+            {
+              "type": "position",
+              "organizationId": "lc19-workshop:$subject-$eventId",
+              "title": "吉祥物",
+              "holderId": "$subject",
+              "wage": 1,
+              "authority": [
+                "坐门口",
+                "迎客",
+                "让主顾摸一摸袖子"
+              ],
+              "reason": "the workshop made the apprentice its public lucky charm"
+            },
+            {
+              "type": "organization_membership",
+              "personId": "$subject",
+              "organizationId": "lc19-workshop:$subject-$eventId",
+              "add": true,
+              "reason": "joined the workshop as its lucky sign"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "parameters": {
+                "reliance": 40,
+                "dignity": 55,
+                "protection": 20,
+                "debt": 10
+              },
+              "durationMonths": 36,
+              "reason": "the workshop began treating the apprentice as a lucky charm"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a small wage for sitting by the workshop door"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "customers began to recognize the apprentice at the door"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "师傅把旧藤椅搬到门口，让我每天午后坐在那里；主顾进门先摸椅背，再谈价钱。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-master-calls-it-a-joke",
+          "weight": 0.35,
+          "text": "{master}对主顾说，{subject}只是学徒，不是护身符。可他说这话时，手一直搭在{subject}的椅背上；主顾笑着点头，临走还是往{subject}手里塞了一枚铜币。{subject}把铜币压在磨刀石下，没花。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "parameters": {
+                "reliance": 25,
+                "dignity": 60,
+                "protection": 10,
+                "debt": 5
+              },
+              "durationMonths": 24,
+              "reason": "the workshop denied but still used the apprentice as a lucky sign"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": 0.05,
+              "reason": "the master half-protected the apprentice from the rumor"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a copper coin from a customer"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the master's denial was small but real"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_lucky_chair_denied",
+              "add": true,
+              "reason": "the master called the lucky chair a joke"
+            }
+          ]
+        },
+        {
+          "id": "the-apprentice-refuses-the-chair",
+          "weight": 0.25,
+          "text": "{subject}把藤椅搬回库房，说自己是来学手艺的，不是来看门的。{master}没有发火，只把下个月的料单减了一半；那天下午，{subject}在冷掉的胶锅前站了很久，第一次明白拒绝也要交学费。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "parameters": {
+                "reliance": 15,
+                "dignity": 70,
+                "protection": 5,
+                "debt": 20
+              },
+              "durationMonths": 18,
+              "reason": "the apprentice refused the lucky chair but remained tied to the workshop"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": -0.1,
+              "obligation": 0.1,
+              "reason": "the master cut the material order after the refusal"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "refusing the chair cost work and material"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_refused_lucky_chair",
+              "add": true,
+              "reason": "refused to be the workshop's lucky chair"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-fame.talisman-contract",
+      "title": "名人的护身符合同",
+      "domain": "reputation",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 66
+      },
+      "tags": [
+        "fame",
+        "contract",
+        "talisman",
+        "luck",
+        "workshop",
+        "absurd",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "af17-lucky-idiot",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 66
+        },
+        {
+          "key": "impresario",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 72
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "sign-the-charm-clause",
+          "weight": 0.4,
+          "text": "合同第三页写着：{subject}每周须在作坊窗边坐满两个下午，让主顾“沾一沾运气”。{impresario}说这只是待客，{subject}看见酬劳后面跟着三个零，还是签了。第一周，窗外的队伍排到面包房门口。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "parameters": {
+                "reliance": 45,
+                "dignity": 40,
+                "protection": 25,
+                "debt": 15
+              },
+              "durationMonths": 48,
+              "reason": "the celebrity signed a contract to sit in the workshop window as a lucky charm"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "advance payment for the charm clause"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the public appearances increased visibility"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$impresario",
+              "kind": "employer",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "the impresario signed the subject to the workshop"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "合同要求我每周在作坊窗边坐两个下午，让主顾沾一沾运气。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "read-the-small-print",
+          "weight": 0.35,
+          "text": "{subject}把合同带回家，在煤气灯下读到第十条：若{subject}拒绝出席，须赔偿全部宣传费用。{rival}在旁边说，这不是护身符，是租约。{subject}把纸折成四折，塞进镜框背后，整夜没睡好。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "parameters": {
+                "reliance": 30,
+                "dignity": 55,
+                "protection": 15,
+                "debt": 25
+              },
+              "durationMonths": 48,
+              "reason": "the contract's penalty clause made the talisman role a debt"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$impresario",
+              "kind": "employer",
+              "trust": -0.1,
+              "obligation": 0.15,
+              "reason": "the small print revealed a costly exit clause"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": 0.05,
+              "reason": "the rival read the contract honestly"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "合同第十条规定，如果我拒绝出席，就要赔偿全部宣传费用。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the contract felt like a lease on the subject's presence"
+            }
+          ]
+        },
+        {
+          "id": "the-crowd-comes-anyway",
+          "weight": 0.25,
+          "text": "{subject}没有签合同，可人群还是找来了。有人在作坊门口等{subject}摸一摸新做的椅子，有人只要看一眼{subject}今天穿的外套。{impresario}在街对面数人头，{subject}从后门出去，发现后门也站着三个人。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "parameters": {
+                "reliance": 35,
+                "dignity": 50,
+                "protection": 10,
+                "debt": 5
+              },
+              "durationMonths": 36,
+              "reason": "the crowd treated the subject as a lucky charm without a contract"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fame",
+              "key": "level",
+              "delta": 0.02,
+              "reason": "the crowd increased public recognition"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "small payments from people asking for a touch of luck"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the attention was absurd but not entirely unwelcome"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-reputation.public-proof",
+      "title": "公开比试的第三块木头",
+      "domain": "craft",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 66
+      },
+      "tags": [
+        "reputation",
+        "craft",
+        "public_test",
+        "suspicion",
+        "proof",
+        "rival",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc19-borrowed-reputation",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 66
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 60
+        },
+        {
+          "key": "patron",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 78
+        }
+      ],
+      "baseRate": 0.15,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-grain-betrays-the-hand",
+          "weight": 0.4,
+          "text": "公开比试用的是同一批橡木，第三块却藏着一道暗裂。{subject}下刀时听见木头轻轻响了一声，临时改了榫路；{patron}凑近看见接缝，问这是谁教的。{subject}说是自己想的，{rival}在人群里没有吭声。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": 25,
+              "reason": "the public test proved the subject could adapt the joint"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": -15,
+              "reason": "the public demonstration weakened the cheating rumor"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": 5,
+              "reason": "the audience saw the improvisation"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the public test improved the subject's standing"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.05,
+              "fear": 0.05,
+              "reason": "the rival saw the subject recover from the hidden crack"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "第三块木头里有一道暗裂，我临时改了榫路，主顾看懂了。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "public",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-rival-brings-a-ringer",
+          "weight": 0.35,
+          "text": "轮到{subject}时，木料已经被换成了湿的。刨花卷不起来，榫头一敲就裂；{patron}皱起眉，{rival}在台下说“看吧”。{subject}没有争辩，只把裂开的木头带回家，放在窗台上晾了三个月。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 15,
+              "reason": "the public failure looked like proof of cheating"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": -10,
+              "reason": "the failed test weakened the subject's evidence"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "the rival substituted wet wood"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the public failure was not the subject's fault"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_public_test_sabotaged",
+              "add": true,
+              "reason": "the public test used sabotaged wood"
+            }
+          ]
+        },
+        {
+          "id": "the-master-refuses-the-test",
+          "weight": 0.25,
+          "text": "{subject}的师傅把比试通知压在茶壶下面，说“赢了是运气，输了是笑话”。{patron}派人来催，师傅把门关上，自己坐进{subject}的椅子。{subject}站在门后，听见师傅对来人说：这孩子的手艺，不用给外人看。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 10,
+              "reason": "refusing the public test looked like hiding something"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 5,
+              "reason": "the master spent influence to keep the test closed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "the patron was turned away from the workshop"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "colleague",
+              "trust": 0.1,
+              "reason": "the master protected the subject from the public test"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_public_test_refused",
+              "add": true,
+              "reason": "the master refused the public test on the subject's behalf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-master.exploit-luck",
+      "title": "师傅借走了我的影子",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 60
+      },
+      "tags": [
+        "apprentice",
+        "master",
+        "exploitation",
+        "luck",
+        "competition",
+        "comic",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "af17-lucky-idiot",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "master",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 76
+        },
+        {
+          "key": "patron",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 78
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-competition-entry",
+          "weight": 0.4,
+          "text": "市里的手艺比赛要交一件匿名作品，{master}把{subject}做了一半的灯罩拿去，署了作坊的名。{subject}在展厅看见自己的榫眼，{master}在旁边说“这也是你的”。奖状挂在作坊墙上，{subject}的名字没有出现，工钱却多了两克朗。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "parameters": {
+                "suspicion": 30,
+                "debt": 20,
+                "fame": 25,
+                "proof": 10
+              },
+              "durationMonths": 48,
+              "reason": "the master entered the apprentice's work under the workshop's name"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "extra wages after the workshop won the competition"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "the master shared a little of the competition reward"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the workshop's win increased the apprentice's visibility"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "展厅里那个灯罩的榫眼是我开的，奖状上却只有作坊的名字。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-master-sells-the-luck",
+          "weight": 0.35,
+          "text": "{master}开始带{subject}去主顾家吃饭，说“带上他，事情顺”。{subject}坐在桌边，替{master}递烟、倒酒、摸一摸新料；回家路上，{master}把当天的赏钱分给{subject}三成，说这是“运气的份子”。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 15,
+              "reason": "the master turned the apprentice's luck into a social obligation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 10,
+              "reason": "the patrons began to see the apprentice as the master's charm"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "a share of the master's dinner fees"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": 0.05,
+              "obligation": 0.15,
+              "reason": "the master kept taking the apprentice to patrons"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the subject was paid for presence rather than craft"
+            }
+          ]
+        },
+        {
+          "id": "the-master-loses-the-competition",
+          "weight": 0.25,
+          "text": "比赛结果出来，作坊的灯罩只得了一个提名。{master}在酒馆里说，是{subject}最后那道榫拖了后腿；{subject}没有反驳，只把剩下的刨花扫进袋子。第二天，{master}又让{subject}坐回门口，好像什么都没发生。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 15,
+              "reason": "the master blamed the apprentice for the loss"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 10,
+              "reason": "the failed competition added another obligation to the workshop"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": -0.15,
+              "reason": "the master blamed the apprentice in public"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": 10,
+              "reason": "the workshop began to doubt the lucky streak"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the master's blame was public"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-reputation.promotion",
+      "title": "升职通知压在账本下面",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 66
+      },
+      "tags": [
+        "reputation",
+        "promotion",
+        "position",
+        "workshop",
+        "suspicion",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc19-borrowed-reputation",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 66
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 78,
+          "organizationKind": "household_firm"
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "accept-the-foreman-post",
+          "weight": 0.4,
+          "text": "晋升通知压在账本下面，{employer}说{subject}的名字现在能镇住主顾，让{subject}管三个学徒。{subject}搬进靠窗的小桌，第一件事就是把自己的旧工具锁进柜子；{rival}在门口说，工头的位置离刨子最远。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "position",
+              "organizationId": "$employerOrg",
+              "title": "工头",
+              "holderId": "$subject",
+              "wage": 4,
+              "authority": [
+                "排班",
+                "验收",
+                "管料"
+              ],
+              "reason": "promoted to foreman because the subject's name reassured patrons"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 10,
+              "reason": "the promotion added obligations to the workshop"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 5,
+              "reason": "the promotion looked like a reward for reputation rather than craft"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the promotion made the subject more visible in the workshop"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "foreman's wage advance"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.1,
+              "reason": "the employer trusted the subject with a foreman's post"
+            }
+          ]
+        },
+        {
+          "id": "decline-and-keep-the-bench",
+          "weight": 0.35,
+          "text": "{subject}把通知推回去，说想再在案子上做两年。{employer}看了{subject}很久，问是不是嫌钱少；{subject}说不是，是怕以后只会看别人做。第二天，{subject}的料单少了一页，{rival}却第一次把刨子递过来。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": 10,
+              "reason": "the subject chose the workbench over the reputation-based promotion"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": -5,
+              "reason": "the refusal made the subject's craft motive clearer"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.1,
+              "reason": "the employer was disappointed by the refusal"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "colleague",
+              "trust": 0.1,
+              "respect": 0.1,
+              "reason": "the rival respected the refusal"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "the material order was cut after the refusal"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the workbench still belonged to the subject"
+            }
+          ]
+        },
+        {
+          "id": "the-post-is-a-window",
+          "weight": 0.25,
+          "text": "{employer}把{subject}安排到前厅，说工头的活可以慢慢学，先让主顾看见{subject}的脸。{subject}每天擦同一张桌子，回答同一句“最近运气不错”；月底，{subject}发现自己已经三周没有碰过凿子。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "position",
+              "organizationId": "$employerOrg",
+              "title": "门面师傅",
+              "holderId": "$subject",
+              "wage": 3,
+              "authority": [
+                "接待主顾",
+                "展示样品"
+              ],
+              "reason": "the employer made the subject the public face of the workshop"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 8,
+              "reason": "the front-room post made the subject's craft less visible"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 5,
+              "reason": "the public post added obligations to the workshop"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": 5,
+              "reason": "patrons saw the subject's face more often"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the front-room post increased recognition"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the subject had not touched a chisel in weeks"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-miracle.sign",
+      "title": "教堂把工牌挂上了墙",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 66
+      },
+      "tags": [
+        "miracle",
+        "religion",
+        "talisman",
+        "workshop",
+        "reputation",
+        "eerie",
+        "absurd"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "fm17-miracle-witness",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "lc19-workshop-talisman",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 66
+        },
+        {
+          "key": "priest",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 78
+        },
+        {
+          "key": "master",
+          "kind": "employer",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 78,
+          "organizationKind": "household_firm"
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-badge-on-the-wall",
+          "weight": 0.4,
+          "text": "堂区把{subject}的工牌装进小木框，挂在圣像旁边，说这是“劳动与恩典的见证”。{priest}请{subject}在弥撒后站一会儿，让信徒看看那双做过奇迹的手；{master}在门口数着新来的主顾，笑得像在数念珠。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": 15,
+              "reason": "the parish framed the subject's workshop badge as a sign"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": 10,
+              "reason": "the workshop leaned on the religious attention"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": -5,
+              "reason": "the subject became an exhibit beside the icons"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the parish display increased public attention"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$priest",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "the priest treated the subject as a living witness"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "attention",
+              "delta": 10,
+              "reason": "the parish display renewed attention on the old miracle"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "堂区把我的工牌挂在圣像旁边，说这是劳动与恩典的见证。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "public",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-miracle-is-a-misprint",
+          "weight": 0.35,
+          "text": "{priest}后来发现，工牌上的日期印错了，所谓“神迹”只是那天作坊提前开门。{subject}以为会被赶走，{priest}却把木框取下来，说“那就挂你的名字”。{subject}看着空墙，第一次觉得被看见也可以是一件轻的事。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": 10,
+              "reason": "the priest removed the false miracle frame and named the subject"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": -10,
+              "reason": "the parish withdrew its miraculous protection"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": -5,
+              "reason": "the workshop lost the religious explanation"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the miracle story was corrected"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "certainty",
+              "delta": -10,
+              "reason": "the old miracle was explained by a misprint"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "attention",
+              "delta": -5,
+              "reason": "the parish display came down"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "being seen as a person felt lighter than being a sign"
+            }
+          ]
+        },
+        {
+          "id": "the-queue-outside-the-workshop",
+          "weight": 0.25,
+          "text": "朝圣的人从教堂排到作坊门口，{master}临时把刨花装进纸袋，写上“祝福过的木屑”，一袋卖两赫勒。{subject}坐在窗边，手被陌生人握得发麻；晚上数钱时，{master}说这是{subject}带来的恩典，{subject}说自己只是坐在这里。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": 15,
+              "reason": "the workshop profited from the pilgrim queue"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "debt",
+              "delta": 10,
+              "reason": "the workshop counted the pilgrimage as the subject's debt"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": -10,
+              "reason": "the subject was handled like a relic"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "a share of the blessed-shavings sales"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "attention",
+              "delta": 15,
+              "reason": "the pilgrim queue renewed public attention"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "obligation",
+              "delta": 10,
+              "reason": "the pilgrims expected the subject to bless them"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_blessed_shavings",
+              "add": true,
+              "reason": "the workshop sold blessed shavings during the pilgrimage"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-luck.exhibition-due",
+      "title": "展览开幕前的第三夜",
+      "domain": "luck",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 66
+      },
+      "tags": [
+        "luck",
+        "debt",
+        "exhibition",
+        "creditor",
+        "reputation",
+        "dark",
+        "absurd"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc19-borrowed-reputation",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "df18-borrowed-luck",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 66
+        },
+        {
+          "key": "creditor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 78
+        },
+        {
+          "key": "curator",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 78
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "pay-at-the-door",
+          "weight": 0.4,
+          "text": "展览开幕前第三夜，{creditor}拿着旧账本站在展厅门口，说{subject}的好运该结账了。{subject}把刚领的酬劳数了三遍，少一克朗；{curator}在旁边看着，最后{subject}把母亲留下的银顶针也押上，才让{creditor}侧身进门。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": -20,
+              "reason": "paid part of the debt at the exhibition door"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 5,
+              "reason": "the creditor's arrival was seen by the curator"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "paid the creditor and pledged a silver thimble"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$creditor",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "reason": "the creditor accepted a partial payment"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the scene at the exhibition door was noticed"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the debt was reduced before the opening"
+            }
+          ]
+        },
+        {
+          "id": "hang-the-debt-on-the-wall",
+          "weight": 0.35,
+          "text": "{subject}把账本拆开，和那件得奖的作品挂在一起，展签写着“材料：借来的运气，未结清”。{curator}起初要撤，开幕后却站在那页账前不肯走；{creditor}在人群里看完，第一次没有提钱，只问能不能把利息也展出来。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": 15,
+              "reason": "the debt ledger became part of the exhibited work"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": 15,
+              "reason": "the exhibition turned the debt into public art"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 5,
+              "reason": "the work made the borrowed luck more visible"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 5,
+              "reason": "the creditor asked to exhibit the interest too"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the debt-ledger installation drew public attention"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我把账本和作品挂在一起，展签写着：材料是借来的运气，未结清。",
+              "confidence": 0.95,
+              "sourceKind": "witnessed",
+              "visibility": "public",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_debt_installation",
+              "add": true,
+              "reason": "exhibited the debt ledger as part of the work"
+            }
+          ]
+        },
+        {
+          "id": "the-creditor-takes-the-prize",
+          "weight": 0.25,
+          "text": "评委宣布奖项时，{creditor}从后排站起来，说那件作品的木料是他赊的，按旧约该归他。{curator}翻合同，{subject}翻口袋，最后奖状被{creditor}卷走，和账本一起夹在腋下。展厅的灯还亮着，{subject}的作品被留在墙上，像一个没有名字的抵押品。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": -10,
+              "reason": "the creditor took the prize as payment"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": -15,
+              "reason": "the prize certificate was taken away"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 15,
+              "reason": "the creditor's public claim made the authorship look borrowed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$creditor",
+              "kind": "acquaintance",
+              "fear": 0.1,
+              "reason": "the creditor took the prize in public"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the work remained on the wall without its award"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the public seizure damaged the subject's standing"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-talisman.never-leave",
+      "title": "学徒想走的那天",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 60
+      },
+      "tags": [
+        "talisman",
+        "apprentice",
+        "workshop",
+        "escape",
+        "coercion",
+        "position",
+        "dark",
+        "triumphant"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc19-workshop-talisman",
+          "owner": "person"
+        },
+        {
+          "kind": "position",
+          "titleIncludes": "吉祥物"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "master",
+          "kind": "employer",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 78,
+          "organizationKind": "household_firm"
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 58
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 4,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-contract-adds-a-year",
+          "weight": 0.4,
+          "text": "{subject}把辞工的话说出口，{master}没有骂，只从抽屉里拿出旧合同，指着最后一页：若在“镇店期”离开，须赔一年工钱。{subject}看着那行小字，想起自己从没读过最后一页；{master}把茶推过来，说“再坐一年”。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "debt",
+              "delta": 15,
+              "reason": "the contract added a year of penalty for leaving"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": 10,
+              "reason": "the workshop tightened its claim on the subject"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": -5,
+              "reason": "the contract made the subject feel like property"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": -0.05,
+              "obligation": 0.15,
+              "reason": "the master enforced the hidden clause"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a small advance to keep the subject at the door"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "学徒契约最后一页写着：镇店期离开，须赔一年工钱。",
+              "confidence": 0.95,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-workshop-hides-the-tools",
+          "weight": 0.35,
+          "text": "{subject}收拾工具箱时，发现最顺手的刨子和那把旧角尺都不见了。{master}说库房进了水，工具先收起来；{rival}在门口低着头，鞋边露出角尺的黄铜头。{subject}没有拆穿，只把自己的围裙叠好，放回椅背上。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": 10,
+              "reason": "the workshop kept the subject dependent by hiding the tools"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": -10,
+              "reason": "the subject could not leave without the tools"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": 5,
+              "reason": "the workshop framed the hidden tools as protection"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": -0.1,
+              "reason": "the master lied about the missing tools"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the subject's own tools were used as a leash"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_tools_hidden",
+              "add": true,
+              "reason": "the workshop hid the subject's tools"
+            }
+          ]
+        },
+        {
+          "id": "the-door-is-left-open",
+          "weight": 0.25,
+          "text": "天没亮，{subject}把藤椅搬到雨里，让门开着。{master}追到街口，没有喊，只问“你靠什么吃饭”；{subject}举起自己的凿子，说靠这个。三个月后，{subject}在另一条街租下半间铺面，门口没有椅子，只有一张工作台。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "reason": "the subject left the workshop and stopped being its talisman"
+            },
+            {
+              "type": "position",
+              "title": "吉祥物",
+              "holderId": "$subject",
+              "remove": true,
+              "reason": "the subject abandoned the lucky-chair post"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": -0.2,
+              "reason": "the subject left the workshop before dawn"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "leaving the workshop damaged the old reference"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the subject chose the tools over the chair"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "paid for the first month in a new half-shop"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "set up an independent workbench"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_left_the_lucky_chair",
+              "add": true,
+              "reason": "left the workshop rather than remain a talisman"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-talisman.bad-luck",
+      "title": "打碎的那只碗",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 60
+      },
+      "tags": [
+        "talisman",
+        "witchcraft",
+        "bad_luck",
+        "workshop",
+        "eerie",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc19-workshop-talisman",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "suspected-witchcraft",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "master",
+          "kind": "employer",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 78,
+          "organizationKind": "household_firm"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 72
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-broken-bowl-is-a-sign",
+          "weight": 0.4,
+          "text": "{subject}打碎了供在门口的那只蓝碗，主顾们都说要出事。{master}却把碎片扫进红布，说{subject}替作坊挡了灾；第二天，一单退掉的活真的回来了。{neighbor}在门口听见，悄悄把自家的一只碗也摔了。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": 15,
+              "reason": "the broken bowl was reinterpreted as the subject taking the workshop's bad luck"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": 10,
+              "reason": "the workshop relied more on the subject after the return order"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": -5,
+              "reason": "the subject was made into a scapegoat that absorbed misfortune"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the story of the broken bowl spread"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "key": "evidence",
+              "delta": -5,
+              "reason": "the broken bowl gave the workshop a benign explanation"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": 0.05,
+              "reason": "the master defended the subject's accident"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "师傅说那只碎碗替我挡了灾；第二天，退掉的活真的回来了。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-master-wants-a-confession",
+          "weight": 0.35,
+          "text": "{master}把{subject}叫到后间，说只要承认自己“带了不干净的东西”，作坊就能把退货推给运气。{subject}看着桌上的碎碗，问“那我呢”；{master}说“你还是吉祥物”。{subject}第一次发现，吉祥物和替罪羊用的是同一条红布。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": -15,
+              "reason": "the master asked the subject to confess to carrying bad luck"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "debt",
+              "delta": 10,
+              "reason": "the confession would indebt the subject further to the workshop"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "key": "danger",
+              "delta": 10,
+              "reason": "the master's request strengthened the witchcraft suspicion"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "key": "evidence",
+              "delta": 5,
+              "reason": "the broken bowl became evidence in the workshop's story"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": -0.15,
+              "reason": "the master tried to turn the subject into a scapegoat"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "the talisman and the scapegoat shared the same red cloth"
+            }
+          ]
+        },
+        {
+          "id": "the-neighbor-takes-the-shards",
+          "weight": 0.25,
+          "text": "{neighbor}来讨一片碎碗，说家里的孩子夜哭，想压在枕头底下。{subject}挑了一片没有釉的，用布包好；{neighbor}走后，{subject}把剩下的碎片埋进后院，上面种了一棵薄荷。那年夏天，薄荷长得很凶。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": 5,
+              "reason": "the neighbor's request gave the broken bowl a protective meaning"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "debt",
+              "delta": 5,
+              "reason": "the subject gave away part of the workshop's charm"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "reason": "the neighbor took a shard for a sick child"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "suspected-witchcraft",
+              "key": "evidence",
+              "delta": -3,
+              "reason": "the shard became a neighborhood charm rather than evidence"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "邻居讨走一片碎碗给孩子压枕头，我把剩下的埋在后院，种了一棵薄荷。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the broken bowl became something small and useful"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-reputation.sabotage",
+      "title": "被改坏的那道榫",
+      "domain": "craft",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 66
+      },
+      "tags": [
+        "craft",
+        "sabotage",
+        "luck",
+        "rival",
+        "master",
+        "comic",
+        "triumphant"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "wc17-master-craftsperson",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "af17-lucky-idiot",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 66
+        },
+        {
+          "key": "rival",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 60
+        },
+        {
+          "key": "patron",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 78
+        }
+      ],
+      "baseRate": 0.14,
+      "weight": 4,
+      "cooldownYears": 4,
+      "outcomes": [
+        {
+          "id": "the-sabotage-improves-the-fit",
+          "weight": 0.4,
+          "text": "{rival}趁夜把{subject}标好的榫线削斜了半寸，想让柜门装不上。第二天，{subject}试着把柜门反过来扣，斜榫正好咬住一块结疤；{patron}看了半天，说这比原图聪明。{rival}站在旁边，手里的凿子忘了放下。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": 8,
+              "reason": "the sabotage accidentally improved the piece"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-master-craftsperson",
+              "key": "standards",
+              "delta": 5,
+              "reason": "the master accepted the accidental improvement"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-master-craftsperson",
+              "key": "backlog",
+              "delta": -1,
+              "reason": "the improved cabinet was accepted quickly"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the patron praised the accidental improvement"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.05,
+              "fear": 0.1,
+              "reason": "the sabotage made the subject look even more fortunate"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the patron paid a bonus for the improved cabinet"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "被削斜的榫线反而咬住了结疤；主顾说这比原图聪明。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-patron-sees-the-file-marks",
+          "weight": 0.35,
+          "text": "{patron}在榫肩上看见一排不属于{subject}的锉痕，问是谁动的。{subject}没有立刻回答，{rival}先说是料行送错了。{patron}把柜门合上，说“我只买能做对的人”；那天下午，{rival}被调去搬木料。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": -5,
+              "reason": "the patron's trust reduced suspicion about the lucky result"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-master-craftsperson",
+              "key": "standards",
+              "delta": 3,
+              "reason": "the patron recognized the subject's standards"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": 0.1,
+              "respect": 0.15,
+              "reason": "the patron chose the subject's work over the rival's story"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "rival",
+              "trust": -0.2,
+              "reason": "the rival's sabotage was exposed"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the patron defended the subject's work"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "主顾在榫肩上看见不属于我的锉痕，最后把活留给了我。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            }
+          ]
+        },
+        {
+          "id": "the-rival-confesses",
+          "weight": 0.25,
+          "text": "{rival}在收工后留下来，承认自己改了线，因为主顾原本答应把活交给他。{subject}听完，把那只柜门的图样递过去，说“那你来收尾”。{rival}愣了很久，第二天真的来了，手上带着自己的凿子。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$rival",
+              "kind": "colleague",
+              "trust": 0.1,
+              "obligation": 0.1,
+              "reason": "the rival confessed and was given the finishing work"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "af17-lucky-idiot",
+              "key": "suspicion",
+              "delta": 3,
+              "reason": "the confession made the lucky result less suspicious"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "wc17-master-craftsperson",
+              "key": "debt",
+              "delta": 2,
+              "reason": "the subject took on the risk of the rival's finishing work"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the rival's confession made the workshop less lonely"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "paid for the extra material used in the finishing work"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_rival_confessed",
+              "add": true,
+              "reason": "the rival confessed to the sabotage"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-reputation.refuse",
+      "title": "把奖章退回去",
+      "domain": "reputation",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 66
+      },
+      "tags": [
+        "reputation",
+        "fame",
+        "medal",
+        "refusal",
+        "press",
+        "triumphant",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc19-borrowed-reputation",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 66
+        },
+        {
+          "key": "patron",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 78
+        },
+        {
+          "key": "journalist",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 62
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "return-the-medal",
+          "weight": 0.4,
+          "text": "{subject}把市里发的奖章放回{patron}桌上，说那件作品有一半是别人做的。{patron}没有接，只问“你确定要在这个年纪说实话”。{subject}点头；第二天，文化版登了一小段“获奖者退还奖章”，比获奖消息短，却被人剪下来贴在作坊门口。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": -20,
+              "reason": "the subject returned the medal"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": 10,
+              "reason": "the refusal clarified the subject's own account"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": -5,
+              "reason": "the public refusal reduced suspicion of cheating"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the medal was returned"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "trust": -0.1,
+              "reason": "the patron disliked the public refusal"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the subject chose honesty over the medal"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_returned_medal",
+              "add": true,
+              "reason": "returned a medal for borrowed credit"
+            }
+          ]
+        },
+        {
+          "id": "keep-the-medal-and-the-story",
+          "weight": 0.35,
+          "text": "{subject}把奖章别在围裙里面，照常去领下一笔酬劳。{patron}在酒会上介绍{subject}是“从作坊里长出来的天才”；{journalist}问那双手到底做了哪几道工序，{subject}笑着把话题拐到木料上。回家后，{subject}把奖章翻过来，看见背面刻着别人的名字。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": 10,
+              "reason": "the subject kept the medal and the public story"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 10,
+              "reason": "the subject avoided explaining the work"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 5,
+              "reason": "keeping the medal added another obligation to the story"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "the next payment arrived with the medal still pinned"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the medal's back carried another name"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the public story continued"
+            }
+          ]
+        },
+        {
+          "id": "the-press-turns-the-return-into-a-story",
+          "weight": 0.25,
+          "text": "{journalist}没有写“退还”，而是写“一个工匠把名字从奖章上取下来，放回作品里”。{patron}气得取消了下一单，读者却把信寄到作坊，问{subject}接不接修家具的活。{subject}把奖章收进抽屉，第一次觉得拒绝也能带来生意。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": 15,
+              "reason": "the press turned the refusal into a larger story"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": 5,
+              "reason": "the story emphasized the subject's own work"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the refusal attracted new patrons"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$journalist",
+              "kind": "friend",
+              "trust": 0.1,
+              "reason": "the journalist wrote the refusal as a craft story"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "记者没有写退还，而是写我把名字从奖章上取下来，放回作品里。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "public",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_refusal_became_story",
+              "add": true,
+              "reason": "the press turned the medal refusal into a craft story"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-talisman.quiet-craftsman",
+      "title": "只想安静磨凿子的人",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 66
+      },
+      "tags": [
+        "talisman",
+        "quiet",
+        "craft",
+        "failed_apprentice",
+        "workshop",
+        "warm",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc19-workshop-talisman",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "failed-apprentice",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 66
+        },
+        {
+          "key": "master",
+          "kind": "employer",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 78,
+          "organizationKind": "household_firm"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 72
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-back-room-bench",
+          "weight": 0.4,
+          "text": "{subject}把藤椅搬进后间，换了一张矮凳，每天只磨凿子和修旧锁。主顾来了，{master}说“他不在”；{subject}听见了，没有出来。月底工钱少了一克朗，{subject}却第一次把一套凿子磨到能照见自己的脸。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": -10,
+              "reason": "the subject withdrew from the workshop's public front"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": 10,
+              "reason": "the back-room bench restored the subject's craft dignity"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": -5,
+              "reason": "the workshop offered less protection away from the front"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "sharpened a full set of chisels in the back room"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "lost a kroner of front-room pay"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the quiet bench felt like the subject's own"
+            }
+          ]
+        },
+        {
+          "id": "the-workshop-parades-him-again",
+          "weight": 0.35,
+          "text": "一位老主顾点名要见“那个总在门口的学徒”。{master}把{subject}从后间叫出来，替他拍掉肩上的木屑，说“你看，他还在这里”。{subject}站着让主顾握了手，回到后间时，发现矮凳被搬走了，藤椅又放回了门口。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": 10,
+              "reason": "the workshop brought the subject back to the front for a patron"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": -10,
+              "reason": "the subject was paraded as the workshop's sign again"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a small payment for appearing before the old patron"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": -0.05,
+              "obligation": 0.1,
+              "reason": "the master moved the subject back to the lucky chair"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the back-room bench was taken away"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the old patron remembered the subject"
+            }
+          ]
+        },
+        {
+          "id": "the-neighbor-asks-for-lessons",
+          "weight": 0.25,
+          "text": "{neighbor}带着孩子来敲门，说想学磨凿子，不要工钱，只要一张矮凳。{subject}犹豫了两天，把后间的窗户打开；孩子第一次磨出的刃口歪得厉害，{subject}却把它收进工具箱，说“留着，以后你就知道什么叫直”。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": 5,
+              "reason": "teaching a child restored the subject's sense of craft"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": -5,
+              "reason": "the subject's attention moved away from the workshop's front"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.15,
+              "reason": "the neighbor trusted the subject with a child's first lesson"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "teaching sharpening clarified the subject's own technique"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the child's crooked blade was worth keeping"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the neighbor brought bread and coffee for the lessons"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-apprentice.master-old-debt",
+      "title": "师傅旧账上的一个名字",
+      "domain": "luck",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 60
+      },
+      "tags": [
+        "apprentice",
+        "debt",
+        "luck",
+        "master",
+        "creditor",
+        "eerie",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "df18-borrowed-luck",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60
+        },
+        {
+          "key": "creditor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 78
+        },
+        {
+          "key": "master",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 76
+        }
+      ],
+      "baseRate": 0.13,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-debt-is-transferred",
+          "weight": 0.4,
+          "text": "{creditor}在作坊门口拦住{subject}，说{master}当年借的好运已经转到{subject}名下。{subject}问凭什么，{creditor}把一本旧账翻到最后一页，上面有{master}的签名和{subject}的出生年份。{master}在屋里听见，没有出来。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 25,
+              "reason": "the master's old luck debt was transferred to the apprentice"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 10,
+              "reason": "the old ledger made the apprentice's success look borrowed"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": -0.1,
+              "reason": "the master stayed inside while the creditor confronted the apprentice"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧账最后一页有师傅的签名和我的出生年份；他说那笔好运已经转到我名下。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_master_debt_transferred",
+              "add": true,
+              "reason": "the master's old luck debt was transferred"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the apprentice inherited a debt without being asked"
+            }
+          ]
+        },
+        {
+          "id": "the-creditor-wants-the-apprentice",
+          "weight": 0.35,
+          "text": "{creditor}不要钱，要{subject}每周去他的仓库干两个夜班，说“手脚勤快的人，运气才站得住”。{subject}去了第一夜，发现仓库里堆的全是作坊退回来的旧料；第二夜，{creditor}开始教{subject}怎么在账本上认人名。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 20,
+              "reason": "the creditor demanded night work instead of cash"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": 5,
+              "reason": "the night work made the apprentice known at the warehouse"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "carfare and lost evenings at the workshop"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$creditor",
+              "kind": "acquaintance",
+              "obligation": 0.15,
+              "reason": "the creditor put the apprentice to work in the warehouse"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "债主要我每周去仓库干两个夜班；仓库里堆的全是作坊退回来的旧料。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "debt work",
+              "add": true,
+              "reason": "began working nights to pay the inherited debt"
+            }
+          ]
+        },
+        {
+          "id": "the-master-pays-in-tools",
+          "weight": 0.25,
+          "text": "{master}从床底拖出一只旧木箱，里面是跟了他三十年的刨子、凿子和一把黄铜角尺。{creditor}挑了半天，只拿走那把角尺，说剩下的抵一半。{master}把箱子推到{subject}脚边，说“现在它们是你的了，别再替我借东西”。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": -10,
+              "reason": "the master paid part of the old debt with tools"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": 10,
+              "reason": "the master acknowledged the apprentice's own work"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "colleague",
+              "trust": 0.15,
+              "obligation": 0.1,
+              "reason": "the master gave the apprentice his old tools"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "inherited a master's old tools"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "paid the creditor for the remaining half of the debt"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the tools made the apprentice's own hands feel more real"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-reputation.miracle-audit",
+      "title": "神迹审查员来了",
+      "domain": "faith",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 22,
+        "max": 66
+      },
+      "tags": [
+        "reputation",
+        "miracle",
+        "audit",
+        "proof",
+        "religion",
+        "eerie",
+        "comic"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc19-borrowed-reputation",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fm17-miracle-witness",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 66
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 32,
+          "maxAge": 78
+        },
+        {
+          "key": "priest",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 78
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-audit-finds-a-seam",
+          "weight": 0.4,
+          "text": "审查员把{subject}的作品翻过来，在背板里找到一道补过的裂缝，问这是不是“神迹”留下的。{subject}说那是自己第一年做坏的；审查员把裂缝记进报告，临走前却说，肯把坏处留在里面的人，比神迹少见。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": 20,
+              "reason": "the audit found the subject's own repair"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": -10,
+              "reason": "the repair explained the piece without a miracle"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the miracle story lost some shine"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "respect": 0.1,
+              "reason": "the auditor respected the honest repair"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "审查员在背板里找到我第一年补过的裂缝，说肯把坏处留在里面的人比神迹少见。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "the old mistake became evidence of craft"
+            }
+          ]
+        },
+        {
+          "id": "the-audit-declares-it-a-sign",
+          "weight": 0.35,
+          "text": "审查员在报告里写：无法解释，但值得保留。堂区把这句话印成小册子，{subject}的名字和“无法解释”并排出现；主顾们开始把旧家具送来，说只要{subject}摸一摸，裂缝就会自己合上。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": 15,
+              "reason": "the audit report became a parish pamphlet"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 5,
+              "reason": "the unexplained report increased suspicion"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 10,
+              "reason": "the new patrons expected miracles"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the parish pamphlet spread the story"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "attention",
+              "delta": 10,
+              "reason": "the audit renewed attention on the miracle"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "obligation",
+              "delta": 10,
+              "reason": "the pamphlet made the subject responsible for a sign"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "fees from patrons bringing old furniture"
+            }
+          ]
+        },
+        {
+          "id": "the-priest-offers-silence",
+          "weight": 0.25,
+          "text": "{priest}把审查报告压在圣像下面，说只要{subject}答应替堂区做一扇不收费的侧门，报告就可以“还在路上”。{subject}看着那叠纸，想起自己欠的债，也想起那扇门要用的木料；最后，{subject}问了一句“门框也算吗”。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 15,
+              "reason": "the priest's silence became a workshop debt"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": -5,
+              "reason": "the report stayed hidden"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$priest",
+              "kind": "friend",
+              "trust": 0.05,
+              "obligation": 0.15,
+              "reason": "the priest offered to keep the audit report quiet"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fm17-miracle-witness",
+              "key": "obligation",
+              "delta": 5,
+              "reason": "the parish added another obligation"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "the subject bargained over a report"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "神父把审查报告压在圣像下面，只要我替堂区做一扇不收费的侧门。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-talisman.blacklist",
+      "title": "黑名单上的吉祥物",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 20,
+        "max": 66
+      },
+      "tags": [
+        "talisman",
+        "blacklist",
+        "politics",
+        "workshop",
+        "coercion",
+        "dark",
+        "absurd"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc19-workshop-talisman",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "blacklisted",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 66
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 32,
+          "maxAge": 78,
+          "organizationKind": "household_firm"
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 32,
+          "maxAge": 78
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 5,
+      "outcomes": [
+        {
+          "id": "the-workshop-keeps-him-hidden",
+          "weight": 0.4,
+          "text": "{subject}的名字上了雇主的黑名单，作坊却把{subject}的椅子搬到后间，只让老主顾从侧门进来。{employer}说这不是藏，是“保护”；{subject}每天听见前厅的陌生声音，觉得自己像一件不能见光的镇店之物。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": 10,
+              "reason": "the workshop hid the subject from the blacklist"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": -5,
+              "reason": "being hidden made the subject feel like contraband"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "debt",
+              "delta": 10,
+              "reason": "the workshop's protection became another debt"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "wages continued through the side door"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "blacklisted",
+              "key": "severity",
+              "delta": 0.05,
+              "reason": "the blacklist tightened while the subject stayed hidden"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the subject heard strangers in the front room"
+            }
+          ]
+        },
+        {
+          "id": "the-official-offers-a-way-out",
+          "weight": 0.35,
+          "text": "{official}带来一份表格，说只要{subject}愿意在竞选集会上站在台上，让报纸拍一张“劳动者与新政”的照片，黑名单就可以划掉。{subject}看着表格上的空签名，问“站多久”；{official}说“站到他们拍完”。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": 15,
+              "reason": "the official made the subject a public political sign"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "debt",
+              "delta": 15,
+              "reason": "the political appearance created a new obligation"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": 10,
+              "reason": "the official offered protection from the blacklist"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "blacklisted",
+              "key": "severity",
+              "delta": -0.2,
+              "reason": "the official offered to lift the blacklist"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the political appearance increased visibility"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "obligation": 0.1,
+              "reason": "the official arranged a public appearance"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_political_charm",
+              "add": true,
+              "reason": "the subject was offered as a political lucky sign"
+            }
+          ]
+        },
+        {
+          "id": "the-workshop-drops-him",
+          "weight": 0.25,
+          "text": "黑名单传到第三家作坊时，{employer}把{subject}的藤椅搬进库房，说作坊不能为了一个吉祥物丢掉整季订单。{subject}收拾工具时，前厅的主顾正在问“那个总在门口的人呢”；没有人回答，门铃响了一声。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "reason": "the workshop dropped the subject after the blacklist spread"
+            },
+            {
+              "type": "unemployment",
+              "personId": "$subject",
+              "reason": "the workshop ended the subject's position"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "blacklisted",
+              "key": "severity",
+              "delta": 0.1,
+              "reason": "the workshop's dismissal strengthened the blacklist"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "the workshop abandoned the subject"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "lost wages and moved tools"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.2,
+              "reason": "the employer dropped the subject to save orders"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-elder.last-commission",
+      "title": "八十岁那年的最后一件订货",
+      "domain": "craft",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 78,
+        "max": 82
+      },
+      "tags": [
+        "elderhood",
+        "craft",
+        "reputation",
+        "master",
+        "legacy",
+        "triumphant",
+        "warm"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc19-borrowed-reputation",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "wc17-master-craftsperson",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 78,
+          "maxAge": 82
+        },
+        {
+          "key": "patron",
+          "kind": "official",
+          "required": true,
+          "minAge": 35,
+          "maxAge": 78
+        },
+        {
+          "key": "apprentice",
+          "kind": "worker",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 34
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 4,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-old-hands-finish-it",
+          "weight": 0.4,
+          "text": "八十岁那年，{subject}接了一张小桌的订单，没有用任何“借来的”说法。{subject}让{apprentice}扶住木料，自己一凿一凿地开榫；交货那天，{patron}摸了摸桌底，说这里有一道旧补痕。{subject}说那是自己年轻时留下的，现在终于不用藏了。",
+          "significance": 0.9,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "proof",
+              "delta": 20,
+              "reason": "the old master finished a piece with his own hands"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": -10,
+              "reason": "the finished piece made the old skill visible"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": -5,
+              "reason": "the patron paid in full without invoking the old story"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the last commission was accepted on its craft"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "finished a small table at eighty"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$apprentice",
+              "kind": "colleague",
+              "trust": 0.1,
+              "respect": 0.1,
+              "reason": "the apprentice helped hold the wood"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the old repair no longer had to be hidden"
+            }
+          ]
+        },
+        {
+          "id": "the-patron-wants-the-miracle-again",
+          "weight": 0.35,
+          "text": "{patron}不要新样式，只要{subject}再做一件“当年那种带神迹的柜子”。{subject}说自己已经忘了怎么做，{patron}把定金推过来，说“你只要坐在那里，让木头自己长”。{subject}收下钱，夜里把手放在木料上，什么也没有发生。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "fame",
+              "delta": 10,
+              "reason": "the patron wanted the old miracle story repeated"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "debt",
+              "delta": 10,
+              "reason": "the patron paid a deposit for a miracle"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "key": "suspicion",
+              "delta": 10,
+              "reason": "the subject accepted a commission he could not explain"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "deposit for the miracle cabinet"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "nothing happened when the old hands touched the wood"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$patron",
+              "kind": "acquaintance",
+              "obligation": 0.1,
+              "reason": "the patron expected another miracle"
+            }
+          ]
+        },
+        {
+          "id": "the-apprentice-finishes-it",
+          "weight": 0.25,
+          "text": "{subject}把最后一块料交给{apprentice}，说自己手抖，开不了榫。{apprentice}做完后，{subject}在作品底下刻了两个人的名字，把“神迹”那一段从展签上划掉。{patron}问为什么，{subject}说：这次终于是我们做的。",
+          "significance": 0.95,
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "reason": "the old master gave the credit to the apprentice and ended the borrowed reputation"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$apprentice",
+              "kind": "colleague",
+              "trust": 0.2,
+              "respect": 0.15,
+              "reason": "the master and apprentice signed the work together"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the honest collaboration was respected"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "the master taught the last joint rather than doing it"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "the work finally belonged to both hands"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_credit_passed_on",
+              "add": true,
+              "reason": "the old master passed the credit to the apprentice"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-elder.workshop-mascot",
+      "title": "老吉祥物还在门口",
+      "domain": "work",
+      "kind": "event",
+      "stage": "elderhood",
+      "ageWindow": {
+        "min": 60,
+        "max": 82
+      },
+      "tags": [
+        "elderhood",
+        "talisman",
+        "workshop",
+        "apprentice",
+        "legacy",
+        "warm",
+        "absurd"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "lc19-workshop-talisman",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 60,
+          "maxAge": 82
+        },
+        {
+          "key": "master",
+          "kind": "employer",
+          "required": true,
+          "minAge": 38,
+          "maxAge": 78,
+          "organizationKind": "household_firm"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.12,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "the-chair-is-still-warm",
+          "weight": 0.4,
+          "text": "作坊换了新招牌，门口的藤椅却没有换。{subject}每天午后还是坐在那里，替年轻学徒看料、认木纹；主顾进门先摸椅背，再问“老先生今天在不在”。{subject}听见“老先生”三个字，才想起自己在这把椅子上已经坐了很多年。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": 10,
+              "reason": "the workshop still relied on the old talisman"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": -5,
+              "reason": "the old craftsman was still treated as a chair fixture"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": 10,
+              "reason": "the workshop kept the old subject comfortable"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a small pension for sitting at the door"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": 0.05,
+              "reason": "the master kept the old chair"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the old title still fit too well"
+            }
+          ]
+        },
+        {
+          "id": "the-master-retires-and-leaves-the-chair",
+          "weight": 0.35,
+          "text": "{master}退休那天，把门口的藤椅搬进库房，给{subject}换了一张靠窗的工作台。{subject}摸着台面上的旧刀痕，发现其中一道是自己四十年前留下的；新主顾进来时，{master}在门口说：这位不是吉祥物，是看料的师傅。",
+          "significance": 0.95,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": 15,
+              "reason": "the retiring master gave the subject a real workbench"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "reliance",
+              "delta": -10,
+              "reason": "the workshop no longer needed the subject as a sign"
+            },
+            {
+              "type": "position",
+              "organizationId": "$employerOrg",
+              "title": "看料师傅",
+              "holderId": "$subject",
+              "wage": 2,
+              "authority": [
+                "认木纹",
+                "验收旧料"
+              ],
+              "reason": "the retiring master gave the subject a real post at the workbench"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$master",
+              "kind": "employer",
+              "trust": 0.1,
+              "respect": 0.1,
+              "reason": "the master introduced the subject as a material expert"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.02,
+              "reason": "returned to judging wood at a real bench"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "bought new glasses for reading grain"
+            }
+          ]
+        },
+        {
+          "id": "the-neighborhood-children-treat-him-as-a-charm",
+          "weight": 0.25,
+          "text": "街上的孩子放学经过作坊，总要摸一摸{subject}的袖子，说这样考试会过。{subject}起初赶他们走，后来每天把袖子卷高一点；{neighbor}看见了，说这条街终于有了自己的护身符。{subject}想说不是，嘴里却只冒出一句“别摸脏了”。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "protection",
+              "delta": 10,
+              "reason": "the neighborhood children treated the subject as a charm"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "key": "dignity",
+              "delta": -10,
+              "reason": "the old craftsman was reduced to a lucky sleeve"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the neighborhood story spread"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the subject could not refuse the children"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "trust": 0.05,
+              "reason": "the neighbor named the subject the street's charm"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "parents left small coins for the lucky sleeve"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-bridge.public-credit",
+      "title": "钟楼上的那只手",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 64
+      },
+      "tags": [
+        "odd_job",
+        "night",
+        "clock",
+        "fame",
+        "public_credit",
+        "newspaper",
+        "reputation",
+        "comic",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fame",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 64
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 78,
+          "organizationKind": "household_firm"
+        }
+      ],
+      "baseRate": 0.18,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "the-photograph-keeps-the-foreman",
+          "weight": 0.4,
+          "text": "市政厅钟楼停了三周，{subject}值夜时听见齿轮卡住，自己拆开擒纵轮，用一把修锁的锉刀磨平了毛刺。揭幕那天，报纸照片里却是{employer}把手搭在钟摆上，说明写着“作坊师傅亲自校准”。{subject}站在人群后排，听见有人夸那只手稳。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "parameters": {
+                "suspicion": 35,
+                "debt": 20,
+                "fame": 40,
+                "proof": 10
+              },
+              "durationMonths": 48,
+              "reason": "the newspaper credited the employer for the night apprentice's clock repair"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the public clock brought the workshop into the newspapers"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.04,
+              "reason": "repaired the municipal clock escapement at night"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "the employer used the apprentice's work in the photograph"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "钟楼是我值夜时修好的，报纸照片里却是老板的手搭在钟摆上。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_bridge_public_credit",
+              "add": true,
+              "reason": "public credit for the clock repair went partly to the employer"
+            }
+          ]
+        },
+        {
+          "id": "the-clock-keeps-its-own-time",
+          "weight": 0.35,
+          "text": "钟修好了，却每天快七分钟。城里老人说这是老钟自己的脾气，报纸把它写成“工匠与机器的默契”。{employer}在采访里说{subject}只是“夜里看门的”，真正的功劳是“几代人的经验”；{subject}看着钟楼，想起自己磨过的那只锈轮。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "parameters": {
+                "suspicion": 25,
+                "debt": 10,
+                "fame": 30,
+                "proof": 25
+              },
+              "durationMonths": 48,
+              "reason": "the clock's odd timekeeping was credited to tradition rather than the night apprentice"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the clock story made the workshop locally famous"
+            },
+            {
+              "type": "skill",
+              "personId": "$subject",
+              "skill": "craft",
+              "amount": 0.03,
+              "reason": "learned how the old clock kept time"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.05,
+              "reason": "the employer called the apprentice a night watchman in the interview"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "钟每天快七分钟，老板说这是几代人的经验，不是我磨的那只轮子。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the apprentice's repair was folded into a workshop legend"
+            }
+          ]
+        },
+        {
+          "id": "the-name-in-the-brass-plate",
+          "weight": 0.25,
+          "text": "{subject}只要求在钟楼底座加一块小铜牌，写明“夜班看守修好了钟”。{employer}答应了，牌子做好却把作坊名放在第一行，{subject}的名字缩在下面，像一行迟到的注脚。揭幕时，{employer}把{subject}推到牌子前拍照，说“这样也算有名字了”。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-borrowed-reputation",
+              "parameters": {
+                "suspicion": 15,
+                "debt": 15,
+                "fame": 35,
+                "proof": 30
+              },
+              "durationMonths": 60,
+              "reason": "the brass plate gave the night apprentice a small, subordinate public credit"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "the brass plate made the apprentice's name visible"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "a small fee for the clock repair"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.05,
+              "obligation": 0.1,
+              "reason": "the employer put the workshop name first on the plate"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "铜牌上我的名字缩在作坊名下面，像一行迟到的注脚。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "shared",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_bridge_brass_plate",
+              "add": true,
+              "reason": "accepted a subordinate public credit on the clock plate"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the public credit was smaller than the work"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lc19-bridge.workshop-sign",
+      "title": "橱窗里的那张脸",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 18,
+        "max": 64
+      },
+      "tags": [
+        "odd_job",
+        "workshop",
+        "public_scandal",
+        "talisman",
+        "public_sign",
+        "reputation",
+        "absurd",
+        "dark"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "hasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "public-scandal",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 64
+        },
+        {
+          "key": "employer",
+          "kind": "employer",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 78,
+          "organizationKind": "household_firm"
+        }
+      ],
+      "baseRate": 0.17,
+      "weight": 4,
+      "cooldownYears": 3,
+      "outcomes": [
+        {
+          "id": "the-face-in-the-window",
+          "weight": 0.4,
+          "text": "{subject}刚因为一桩退货丑闻上了报纸，{employer}把{subject}的椅子搬到临街橱窗，说只要这张脸还坐在里面，主顾就知道店没有关门。{subject}隔着玻璃看见行人停下、指指点点；{employer}在门外数人头，像在数还愿意进门的人。",
+          "significance": 0.8,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "parameters": {
+                "reliance": 40,
+                "dignity": 55,
+                "protection": 20,
+                "debt": 10
+              },
+              "durationMonths": 36,
+              "reason": "the workshop put the apprentice in its window as a public sign after a scandal"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a small fee for sitting in the shop window"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the window made the apprentice visible to passers-by"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": 0.05,
+              "reason": "the employer gave the apprentice a window seat"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我因为退货丑闻上了报纸后，老板把我搬到临街橱窗里，说只要这张脸还在，店就没有关门。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "public",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_bridge_window_face",
+              "add": true,
+              "reason": "became the workshop's public face after a scandal"
+            }
+          ]
+        },
+        {
+          "id": "the-apprentice-refuses-the-window",
+          "weight": 0.35,
+          "text": "{subject}说学徒不是橱窗里的样品，拒绝坐进去。{employer}没有争，只把{subject}的旧围裙挂在玻璃后面，又在招牌下添了一行“本店还有人在干活”。第二天，主顾开始问那个“还在干活的人”什么时候回来；{subject}在后间听见自己的围裙被陌生人叫成招牌。",
+          "significance": 0.75,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "parameters": {
+                "reliance": 25,
+                "dignity": 65,
+                "protection": 10,
+                "debt": 15
+              },
+              "durationMonths": 24,
+              "reason": "the workshop used the apprentice's apron as a public sign after the refusal"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$employer",
+              "kind": "employer",
+              "trust": -0.05,
+              "obligation": 0.1,
+              "reason": "the employer kept the apprentice's apron in the window"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我拒绝坐进橱窗，老板却把我的旧围裙挂在玻璃后面，还添了“本店还有人在干活”。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "public",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "the refusal did not remove the apprentice from the window"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_bridge_refused_window",
+              "add": true,
+              "reason": "refused the window seat but remained the workshop's public sign"
+            }
+          ]
+        },
+        {
+          "id": "the-scandal-needs-a-lucky-face",
+          "weight": 0.25,
+          "text": "调查员来店里问话那天，{employer}让{subject}坐在橱窗里补一件旧外套，说“让外头看看，我们还有人在干活”。{subject}的针脚被路人当成“替全店挡灾”的证据；第二天，有人送来一件破衣服，指名要{subject}补，说这样能把霉运缝回去。",
+          "significance": 0.85,
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "lc19-workshop-talisman",
+              "parameters": {
+                "reliance": 45,
+                "dignity": 35,
+                "protection": 25,
+                "debt": 20
+              },
+              "durationMonths": 48,
+              "reason": "the workshop displayed the apprentice as a lucky face during the scandal inquiry"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "payments for mending clothes that were said to carry bad luck away"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "the scandal made the apprentice's window work locally famous"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "调查员来问话那天，老板让我坐在橱窗里补旧外套；路人说我的针脚能替全店挡灾。",
+              "confidence": 0.9,
+              "sourceKind": "witnessed",
+              "visibility": "public",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "lc19_bridge_scandal_charm",
+              "add": true,
+              "reason": "became a lucky face during the workshop scandal"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "the apprentice's hands were treated as a remedy for the scandal"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -244,3 +244,18 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - **独立 Critic**：Life 17/30（Phase 17 16/30）、Scene 22/30；结构重复三组（官僚幽灵/奇职秘密测试/横财抽成）；focal 层面仅 113/232 Kernel 到达。
 - **未达标**：focal share 8.37% < 12%；repeatRate 0.220 > 0.1965 + 0.01；47 个 Kernel 零触发；archive 仍稀有。不能声称生活质量问题已解决。
 - 交付：`docs/v4/phase-18-content-design.md`、`phase-18-content-diversity.md`、`phase-18-report.md`、`phase-18-critique.md`、`docs/decisions/ADR-018-creative-index-and-content-production.md`。
+
+## Phase 19 执行状态（2026-11-07）
+
+- **目标**：Content Collision Phase；不重写 Engine，不增加平行 Director；让已有 State/关系/历史环境互相消费。
+- **Cross-Pack Map**：`scripts/v4-cross-pack-map.ts`；107 states / 2,060 kernels / 3,710 open pairs / 152 covered pairs；支持 `--state` / `--pair` / `--gaps`；输出 `docs/v4/cross-pack-opportunities.json/md`。
+- **Co-occurrence**：`scripts/v4-phase19-cooccurrence.ts` 读取最终 A/B/C/elder/mixed dossier；输出 `phase-19-cooccurrence.json/md`；top open pair 包括 `ml18-sudden-fortune + raising-child` 148 次、`eh19-late-testimony + em18-late-bloom` 13 次。
+- **Story Shape v2**：`scripts/v4-story-editor.ts` 输出 role topology + state skeleton + production targets + effect skeleton；state-core / production clusters；召回 `bc18-ghost` 5 核与 `oj18` entry 10 核；`phase-19` 87 kernels / 2,060 total / 2,029 shapes。
+- **内容规模**：99 / 1,973 / 25 → **107 states / 2,060 kernels / 29 packs**；4 个 Collision Pack、87 Kernel、8 State；76/87 双 Pack Kernel。
+- **新 Pack**：power-love（22）、family-war（20）、luck-craft（22）、elder-history（23）；全部 validate；family-war 第一稿 84 intra-pack top pairs → 第二稿 0 个 ≥0.20。
+- **节奏**：odd-jobs entry `notHasState` + cooldown 6 + 24 个月 tick + 2 个变体；主 A/B/C state add 87/95/70，top tick 5/4/4/3（Phase 18 537/70+52）。Cross-state/cross-pack weight 只加在 state lane，1.2–1.6×；A 167/47、B 145/39、C 143/45 candidates/resolved。
+- **Cohort**：`--existing` / `--existing-only`；elder 5 人 30 年，`eh19-late-testimony` 18 add、1 focal；mixed 35 年，`eh19-late-testimony` 28 add、`eh19-inherited-cause` 1 add、5 focal。
+- **自然 A/B/C**：57,514 events / 4,190 focal；新 Pack 78 事件（0.14% 世界）、6 focal（0.14%）；repeat 0.2104；新 State 4/8（加 cohort 6/8）。Bridge 前 16/12/5 事件、focal 0/0/3；bridge 后 pre-weight 25/20/24、focal 3/0/5；最终 29/14/35、focal 2/1/3。
+- **受控实验**：4/4 allPassed（power/family/luck/elder 多 State 场景执行）。
+- **未完成/限制**：focal 转化仍弱；`fw19-separated-household`、`eh19-inherited-cause` 自然 0；新 Pack 下游仍少；家庭/伴侣 slot machine、horizon、生产级 runtime 未修。
+- 交付：`docs/v4/phase-19-design.md`、`phase-19-content-collisions.md`、`phase-19-playtests.json`、`phase-19-critique.md`、`phase-19-report.md`、`docs/decisions/ADR-019-cross-pack-collisions-and-life-continuity.md`。

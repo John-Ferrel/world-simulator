@@ -105,6 +105,15 @@ type Run = {
 const args = process.argv.slice(2);
 const years = Number(args[0] ?? 50);
 const seeds = (args[1] ?? 'phase15-a,phase15-b').split(',');
+// Phase 19: use already-seeded persons as focal lives, so elder/teen/child
+// cohorts are not fabricated as newborn player characters. This is an
+// observation selector only; it does not change world physics or ownership.
+const existingFocals = (args.find((arg) => arg.startsWith('--existing=')) ?? '')
+  .slice('--existing='.length)
+  .split(',')
+  .map((id) => id.trim())
+  .filter(Boolean);
+const existingOnly = args.includes('--existing-only');
 
 function seedState(
   world: WorldState,
@@ -132,10 +141,14 @@ function seedState(
   touchStateRevision(world);
 }
 
-function createFocals(world: WorldState): { world: WorldState; focalIds: Record<string, string> } {
+function createFocals(
+  world: WorldState,
+  existingIds: string[] = [],
+  onlyExisting = false,
+): { world: WorldState; focalIds: Record<string, string> } {
   let current = world;
   const focalIds: Record<string, string> = {};
-  for (const focal of FOCALS) {
+  for (const focal of onlyExisting ? [] : FOCALS) {
     const result = createV4Birth(
       current,
       {
@@ -152,6 +165,14 @@ function createFocals(world: WorldState): { world: WorldState; focalIds: Record<
     focalIds[focal.name] = result.childId;
     if (focal.stateId) seedState(current, result.childId, focal.stateId, result.event.id);
   }
+  for (const id of existingIds) {
+    const person = current.persons[id];
+    if (!person) {
+      console.error(`[phase19] existing focal not found: ${id}`);
+      continue;
+    }
+    focalIds[`existing-${person.name}`] = id;
+  }
   return { world: current, focalIds };
 }
 
@@ -159,7 +180,7 @@ function runSeed(seed: string): Run {
   let world = applyViennaHistoricalWorld(structuredClone(VIENNA_1912_SEED));
   world.seed = seed;
   world.date = { year: 1912, month: 1 };
-  const created = createFocals(world);
+  const created = createFocals(world, existingFocals, existingOnly);
   world = created.world;
   const events: EventFact[] = [];
   const diagnostics: Run['diagnostics'] = [];
@@ -687,18 +708,33 @@ for (const seed of seeds) {
           'missingRole',
           'noOutcome',
           'blocked',
+          'crossStateCandidates',
+          'crossStateResolved',
+          'crossPackCandidates',
+          'crossPackResolved',
         ] as const) {
           total[key] += counters[key];
         }
         return total;
       },
-      { candidates: 0, selected: 0, resolved: 0, missingRole: 0, noOutcome: 0, blocked: 0 },
+      {
+        candidates: 0,
+        selected: 0,
+        resolved: 0,
+        missingRole: 0,
+        noOutcome: 0,
+        blocked: 0,
+        crossStateCandidates: 0,
+        crossStateResolved: 0,
+        crossPackCandidates: 0,
+        crossPackResolved: 0,
+      },
     ),
     stateCounts,
     activation: activationDiagnostics(run),
     contentSamples: run.events
       .filter((event) =>
-        ['lc17-', 'ds17-', 'cj17-', 'mb17-', 'fm17-', 'fa17-', 'af17-', 'wc17-', 'r15-education.'].some(
+        ['lc17-', 'ds17-', 'cj17-', 'mb17-', 'fm17-', 'fa17-', 'af17-', 'wc17-', 'pl19-', 'fw19-', 'lc19-', 'eh19-', 'r15-education.'].some(
           (prefix) => event.action.startsWith(prefix),
         ),
       )

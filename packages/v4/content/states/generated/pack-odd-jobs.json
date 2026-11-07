@@ -143,7 +143,7 @@
       "ticks": [
         {
           "id": "strange-year",
-          "everyMonths": 12,
+          "everyMonths": 24,
           "check": {
             "attribute": "cunning",
             "dc": 11
@@ -152,8 +152,8 @@
             {
               "id": "trusted-with-the-keys",
               "result": "success",
-              "weight": 3,
-              "text": "一年过去，{subject}已经能闭着眼说出哪块地板会响、哪盏煤气灯该在几点关。师傅把备用钥匙交下来，没有解释为什么第三把钥匙磨得最亮；{subject}也没有问，只在巡查簿最后一页画了一个小小的记号。",
+              "weight": 2,
+              "text": "两年过去，{subject}已经能闭着眼说出哪块地板会响、哪盏煤气灯该在几点关。师傅把备用钥匙交下来，没有解释为什么第三把钥匙磨得最亮；{subject}也没有问，只在巡查簿最后一页画了一个小小的记号。",
               "effects": [
                 {
                   "type": "state_parameter",
@@ -161,7 +161,7 @@
                   "ownerId": "$subject",
                   "stateId": "oj18-odd-apprenticeship",
                   "key": "trust",
-                  "delta": 5,
+                  "delta": 10,
                   "reason": "a year of reliable night work"
                 },
                 {
@@ -170,7 +170,7 @@
                   "ownerId": "$subject",
                   "stateId": "oj18-odd-apprenticeship",
                   "key": "strangeKnowledge",
-                  "delta": 5,
+                  "delta": 10,
                   "reason": "learned the building's night habits"
                 },
                 {
@@ -179,20 +179,20 @@
                   "ownerId": "$subject",
                   "stateId": "oj18-odd-apprenticeship",
                   "key": "nightsWorked",
-                  "delta": 12,
+                  "delta": 24,
                   "reason": "another year of night shifts"
                 },
                 {
                   "type": "cash",
                   "householdId": "$household",
-                  "amount": 1,
+                  "amount": 2,
                   "reason": "night-shift wages"
                 },
                 {
                   "type": "skill",
                   "personId": "$subject",
                   "skill": "craft",
-                  "amount": 0.02,
+                  "amount": 0.04,
                   "reason": "practical knowledge of locks and lamps"
                 }
               ]
@@ -209,7 +209,7 @@
                   "ownerId": "$subject",
                   "stateId": "oj18-odd-apprenticeship",
                   "key": "trust",
-                  "delta": -8,
+                  "delta": -16,
                   "reason": "the night log was questioned"
                 },
                 {
@@ -218,13 +218,100 @@
                   "ownerId": "$subject",
                   "stateId": "oj18-odd-apprenticeship",
                   "key": "reliability",
-                  "delta": -5,
+                  "delta": -10,
                   "reason": "a complaint stuck to the record"
                 },
                 {
                   "type": "mood",
                   "personId": "$subject",
-                  "amount": -0.03,
+                  "amount": -0.05,
+                  "reason": "a night of suspicion"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "odd_job_scare",
+                  "add": true,
+                  "reason": "was blamed for a night noise"
+                }
+              ]
+            },
+            {
+              "id": "learned-the-building",
+              "result": "success",
+              "weight": 1,
+              "text": "又过了一个冬天，{subject}能从楼梯的响声判断是谁在值夜，也能从煤气灯的颜色判断哪一段管道该修。师傅把巡查路线改了三次，最后仍然照{subject}画的那张走；两个人都没有提这件事。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-odd-apprenticeship",
+                  "key": "trust",
+                  "delta": 10,
+                  "reason": "a year of reliable night work"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-odd-apprenticeship",
+                  "key": "strangeKnowledge",
+                  "delta": 10,
+                  "reason": "learned the building's night habits"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-odd-apprenticeship",
+                  "key": "nightsWorked",
+                  "delta": 24,
+                  "reason": "another year of night shifts"
+                },
+                {
+                  "type": "cash",
+                  "householdId": "$household",
+                  "amount": 2,
+                  "reason": "night-shift wages"
+                },
+                {
+                  "type": "skill",
+                  "personId": "$subject",
+                  "skill": "craft",
+                  "amount": 0.04,
+                  "reason": "practical knowledge of locks and lamps"
+                }
+              ]
+            },
+            {
+              "id": "the-logbook-mislaid",
+              "result": "failure",
+              "weight": 1,
+              "text": "巡查簿在换班时不见了，第二天却出现在煤筐底下，最后几页被水泡得发皱。管事的说签字不能算数，扣了{subject}半个月的夜班钱；{subject}没有争，只在新的簿子第一页把日期写得很大。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-odd-apprenticeship",
+                  "key": "trust",
+                  "delta": -16,
+                  "reason": "the night log was questioned"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "oj18-odd-apprenticeship",
+                  "key": "reliability",
+                  "delta": -10,
+                  "reason": "a complaint stuck to the record"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.05,
                   "reason": "a night of suspicion"
                 },
                 {
@@ -650,6 +737,16 @@
         {
           "kind": "employment",
           "employed": true
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
         }
       ],
       "roles": [
@@ -670,7 +767,7 @@
       ],
       "baseRate": 0.18,
       "weight": 4,
-      "cooldownYears": 4,
+      "cooldownYears": 6,
       "outcomes": [
         {
           "id": "theatre-keys",
@@ -1181,6 +1278,16 @@
         {
           "kind": "employment",
           "employed": true
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
         }
       ],
       "roles": [
@@ -1201,7 +1308,7 @@
       ],
       "baseRate": 0.13,
       "weight": 3,
-      "cooldownYears": 5,
+      "cooldownYears": 6,
       "outcomes": [
         {
           "id": "double-shift-holds",
@@ -1450,7 +1557,7 @@
       ],
       "baseRate": 0.17,
       "weight": 4,
-      "cooldownYears": 4,
+      "cooldownYears": 6,
       "outcomes": [
         {
           "id": "cut-the-reel",
@@ -1666,6 +1773,18 @@
               "trueInWorld": true
             }
           ]
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
         }
       ]
     },
@@ -2219,7 +2338,7 @@
       ],
       "baseRate": 0.16,
       "weight": 4,
-      "cooldownYears": 4,
+      "cooldownYears": 6,
       "outcomes": [
         {
           "id": "broken-tooth",
@@ -2455,6 +2574,18 @@
               "trueInWorld": true
             }
           ]
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
         }
       ]
     },
@@ -2773,7 +2904,7 @@
       ],
       "baseRate": 0.17,
       "weight": 4,
-      "cooldownYears": 3,
+      "cooldownYears": 6,
       "outcomes": [
         {
           "id": "coop-keys",
@@ -2961,6 +3092,18 @@
               "trueInWorld": true
             }
           ]
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
         }
       ]
     },
@@ -3247,7 +3390,7 @@
       ],
       "baseRate": 0.16,
       "weight": 4,
-      "cooldownYears": 4,
+      "cooldownYears": 6,
       "outcomes": [
         {
           "id": "coffin-coop",
@@ -3473,6 +3616,18 @@
               "trueInWorld": true
             }
           ]
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
         }
       ]
     },
@@ -3985,6 +4140,16 @@
           "kind": "hasState",
           "stateId": "apprenticeship-contract",
           "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
         }
       ],
       "roles": [
@@ -4012,7 +4177,7 @@
       ],
       "baseRate": 0.15,
       "weight": 3,
-      "cooldownYears": 4,
+      "cooldownYears": 6,
       "outcomes": [
         {
           "id": "nose-returns",
@@ -4452,6 +4617,16 @@
           "kind": "hasState",
           "stateId": "journeyman",
           "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
         }
       ],
       "roles": [
@@ -4472,7 +4647,7 @@
       ],
       "baseRate": 0.15,
       "weight": 3,
-      "cooldownYears": 4,
+      "cooldownYears": 6,
       "outcomes": [
         {
           "id": "cold-joint",
@@ -4953,6 +5128,16 @@
           "kind": "hasState",
           "stateId": "chronic-illness",
           "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
         }
       ],
       "roles": [
@@ -4987,7 +5172,7 @@
       ],
       "baseRate": 0.13,
       "weight": 3,
-      "cooldownYears": 4,
+      "cooldownYears": 6,
       "outcomes": [
         {
           "id": "fever-ward",
@@ -5505,7 +5690,7 @@
       ],
       "baseRate": 0.16,
       "weight": 4,
-      "cooldownYears": 3,
+      "cooldownYears": 6,
       "outcomes": [
         {
           "id": "hand-crank",
@@ -5712,6 +5897,18 @@
               "trueInWorld": true
             }
           ]
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
         }
       ]
     },
@@ -5975,6 +6172,16 @@
           "kind": "hasState",
           "stateId": "blacklisted",
           "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-odd-apprenticeship",
+          "owner": "person"
+        },
+        {
+          "kind": "notHasState",
+          "stateId": "oj18-workplace-legend",
+          "owner": "person"
         }
       ],
       "roles": [
@@ -6002,7 +6209,7 @@
       ],
       "baseRate": 0.14,
       "weight": 3,
-      "cooldownYears": 4,
+      "cooldownYears": 6,
       "outcomes": [
         {
           "id": "street-corner-portraits",

@@ -1,0 +1,6639 @@
+{
+  "id": "pack-collision-family-war",
+  "version": 1,
+  "title": "家庭与战争：拆开的家、寄养的孩子与归来的人",
+  "description": "战争、占领和迁移不只制造伤亡，也重新分配家庭。这个包把“家被拆开”和“孩子被安置到陌生人家”做成持续状态：谁先被送走、谁的名字留在配给表上、谁在战后回来发现床已经有人睡、两个家庭如何争夺同一个孩子。二十个场景让家庭状态与占领、丧亲、迁移、家产、空巢、目击和清洗相互碰撞。",
+  "author": "phase19-content-author/family-war",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-07",
+  "sourceBriefId": "phase19-collision-family-war",
+  "rationale": "现有的家庭内容擅长写抚养、遗属和继承，战争内容擅长写前线、配给和占领，但两者很少同时出现在同一个决定里。这个包新增两个状态：一个记录被距离、失踪和依赖者压着的家庭，一个记录被安置到陌生家庭的孩子。每个新状态都有多条创建路径和多个下游消费者；至少八个场景同时读取来自不同 Pack 的两个状态，避免把战争只当背景，也避免把孩子只当道具。",
+  "themes": [
+    "family",
+    "war",
+    "occupation",
+    "migration",
+    "evacuation",
+    "foster care",
+    "custody",
+    "return",
+    "rationing",
+    "grief"
+  ],
+  "era": "1912-1955",
+  "tone": [
+    "historical",
+    "family",
+    "dark",
+    "warm",
+    "comic"
+  ],
+  "scope": "二十个独立场景，覆盖成年、童年与青春期；不新增运行时机制，不写任意代码、SQL 或 URL。",
+  "rarity": "uncommon",
+  "contentWarnings": [
+    "战争分离",
+    "儿童寄养",
+    "监护权争夺",
+    "丧亲",
+    "配给与饥饿",
+    "政治清洗",
+    "家庭秘密",
+    "不可逆的家庭分离"
+  ],
+  "states": [
+    {
+      "id": "fw19-separated-household",
+      "version": 1,
+      "packId": "pack-collision-family-war",
+      "title": "被战争拆开的家",
+      "description": "一个家庭被疏散、征兵、占领、边境或死亡分开。距离、失踪人数、留下的依赖者和剩下的希望各自变化；配给、信件、归来与监护决定都要读取这个状态，而不是把分离当成一句背景。",
+      "owner": "household",
+      "slot": "household_split",
+      "conflict": "replace",
+      "tags": [
+        "family",
+        "war",
+        "separation",
+        "evacuation",
+        "missing",
+        "occupation",
+        "migration",
+        "household"
+      ],
+      "parameters": {
+        "distance": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "missing": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "dependents": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "hope": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 6,
+        "max": 120
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "family",
+            "war",
+            "separation",
+            "migration",
+            "grief",
+            "letters",
+            "ration"
+          ],
+          "multiplier": 1.55
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "leisure",
+            "courtship",
+            "travel"
+          ],
+          "multiplier": 0.7
+        }
+      ],
+      "ticks": [
+        {
+          "id": "letters-and-lists",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "willpower",
+            "dc": 11,
+            "successOutcomeIds": [
+              "word-arrives"
+            ],
+            "failureOutcomeIds": [
+              "silence"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "word-arrives",
+              "result": "success",
+              "weight": 2,
+              "text": "{subject}又在门口等邮差。这次来的不是信，是一张从难民名单上抄下来的地址，字迹被雨泡开了一半；{subject}把纸贴在窗上晾干，认出其中一个姓，手才开始发抖。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-separated-household",
+                  "key": "hope",
+                  "reason": "a name appeared on a refugee list",
+                  "delta": 8
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-separated-household",
+                  "key": "missing",
+                  "reason": "one name can be accounted for",
+                  "delta": -6
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "这件事改变了家里的气氛"
+                }
+              ]
+            },
+            {
+              "id": "silence",
+              "result": "failure",
+              "weight": 1,
+              "text": "{subject}把上个月写好的信又读了一遍，最后没有寄。邮局说往东边的线路还没有通；{subject}把信放回饼干盒，盒子里已经有三封没有地址的回信。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-separated-household",
+                  "key": "hope",
+                  "reason": "the post still does not go east",
+                  "delta": -6
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-separated-household",
+                  "key": "missing",
+                  "reason": "no answer arrived",
+                  "delta": 5
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "这件事改变了家里的气氛"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ration-reckoning",
+          "everyMonths": 18,
+          "outcomes": [
+            {
+              "id": "rank-the-bread",
+              "weight": 1,
+              "text": "{subject}把配给证摊在桌上，先写能干活的人，再写孩子，最后写自己。写到自己的名字时，{subject}停了一下，还是把那一栏划掉了。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-separated-household",
+                  "key": "dependents",
+                  "reason": "the household ranked its members for rationing",
+                  "delta": 5
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-separated-household",
+                  "key": "hope",
+                  "reason": "the ranking was accepted as normal",
+                  "delta": -3
+                },
+                {
+                  "type": "food",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "the household kept one extra ration"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "这件事改变了家里的气氛"
+                }
+              ]
+            },
+            {
+              "id": "share-thin",
+              "weight": 1,
+              "text": "{subject}把一锅汤分成同样薄的几碗，连最小的孩子也没有多一勺。夜里有人饿醒，{subject}假装睡着；第二天早上，锅底结了一层更薄的盐霜。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-separated-household",
+                  "key": "dependents",
+                  "reason": "the household shared equally",
+                  "delta": 2
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-separated-household",
+                  "key": "hope",
+                  "reason": "no one was ranked above another",
+                  "delta": 2
+                },
+                {
+                  "type": "health",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "thin soup for another month"
+                },
+                {
+                  "type": "food",
+                  "householdId": "$household",
+                  "amount": 1,
+                  "reason": "the household stretched the ration"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "这件事改变了家里的气氛"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "armistice-list",
+          "onTags": [
+            "armistice",
+            "liberation",
+            "peace"
+          ],
+          "chance": 0.6,
+          "text": "停战的消息传到街上时，{subject}没有去广场。{subject}把家里所有能写字的地方都找出来，抄下同一个名字，准备第二天去问；那天夜里，整条街都在念名单。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "the armistice made return seem possible",
+              "delta": 20
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "the first lists began to circulate",
+              "delta": -10
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "这件事改变了家里的气氛"
+            }
+          ],
+          "significance": 0.7,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        },
+        {
+          "id": "death-in-the-household",
+          "onTags": [
+            "death"
+          ],
+          "chance": 0.5,
+          "text": "家里又少了一个人。{subject}把死者留下的碗收进柜子，第二天又拿出来摆上；{subject}知道这样没有用，但没有别的办法让桌子看起来还像从前。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "a death added another absence",
+              "delta": 15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "the household lost another member",
+              "delta": -15
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "这件事改变了家里的气氛"
+            }
+          ],
+          "significance": 0.65,
+          "cooldownMonths": 36,
+          "maxPerYear": 1
+        },
+        {
+          "id": "letter-returns",
+          "onTags": [
+            "letter",
+            "mail"
+          ],
+          "chance": 0.25,
+          "text": "一封盖着外地邮戳的信终于到了。{subject}没有立刻拆，先把信封放在灯下看了一遍；邮票贴歪了，像寄信的人也在赶时间。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "a letter arrived from the separated member",
+              "delta": 8
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "这件事改变了家里的气氛"
+            }
+          ],
+          "significance": 0.45,
+          "cooldownMonths": 12,
+          "maxPerYear": 2
+        }
+      ],
+      "transitions": [
+        {
+          "id": "household-empties",
+          "to": "lc17-empty-nest",
+          "chance": 0.2,
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "fw19-separated-household",
+              "owner": "household",
+              "parameter": "dependents",
+              "max": 15
+            }
+          ],
+          "reason": "the dependents have grown or left; the split household has become an empty nest"
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "fw19-separated-household",
+          "owner": "household",
+          "parameter": "missing",
+          "max": 0
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "family_split_active",
+          "add": true,
+          "reason": "记录这一决定"
+        }
+      ],
+      "onExit": [
+        {
+          "type": "flag",
+          "personId": "$subject",
+          "flag": "family_split_active",
+          "add": false,
+          "reason": "记录这一决定"
+        }
+      ],
+      "historicalBasis": "疏散、征兵、占领区边界和失踪登记在二十世纪上半叶的欧洲城市中反复出现；本状态不绑定任何真实城市、日期或政权。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase19-content-author/family-war",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase19-collision-family-war"
+        ],
+        "rationale": "让家庭的分离成为可查询、可累积、可归来的状态，而不是一次性的战报或背景。"
+      }
+    },
+    {
+      "id": "fw19-war-ward",
+      "version": 1,
+      "packId": "pack-collision-family-war",
+      "title": "战时寄养的孩子",
+      "description": "一个孩子或少年被安置到陌生家庭。安全、忠诚、对原来家庭的了解和回去的压力彼此拉扯；学校、语言、宗教、邻居和战后名单都会改变这个状态，孩子也可能在两个家庭之间被反复认领。",
+      "owner": "person",
+      "slot": "ward",
+      "conflict": "replace",
+      "tags": [
+        "family",
+        "war",
+        "child",
+        "foster",
+        "guardian",
+        "migration",
+        "loyalty",
+        "belonging"
+      ],
+      "parameters": {
+        "safety": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "loyalty": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        },
+        "originKnowledge": {
+          "type": "number",
+          "default": 60,
+          "min": 0,
+          "max": 100
+        },
+        "returnPressure": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "enterConditions": [
+        {
+          "kind": "age",
+          "min": 4,
+          "max": 17
+        }
+      ],
+      "durationMonths": {
+        "min": 12,
+        "max": 96
+      },
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "family",
+            "war",
+            "child",
+            "foster",
+            "school",
+            "loyalty",
+            "belonging"
+          ],
+          "multiplier": 1.5
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "courtship",
+            "leisure",
+            "travel"
+          ],
+          "multiplier": 0.7
+        }
+      ],
+      "ticks": [
+        {
+          "id": "new-name-at-school",
+          "everyMonths": 12,
+          "check": {
+            "attribute": "resilience",
+            "dc": 11,
+            "successOutcomeIds": [
+              "answers"
+            ],
+            "failureOutcomeIds": [
+              "stops-answering"
+            ]
+          },
+          "outcomes": [
+            {
+              "id": "answers",
+              "result": "success",
+              "weight": 2,
+              "text": "老师点到新名字时，{subject}答应得比上次快。放学后，{subject}在作业本背面写了一遍原来的姓，又用橡皮擦掉；纸没有破，但那一块比别处薄。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-war-ward",
+                  "key": "loyalty",
+                  "reason": "the child answered to the new name more easily",
+                  "delta": 6
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-war-ward",
+                  "key": "originKnowledge",
+                  "reason": "the old name is used less often",
+                  "delta": -4
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.02,
+                  "reason": "这件事改变了家里的气氛"
+                }
+              ]
+            },
+            {
+              "id": "stops-answering",
+              "result": "failure",
+              "weight": 1,
+              "text": "老师叫了三遍，{subject}都没有应。同学笑，{subject}把课本立起来挡住脸；回家路上，{subject}一直数着路边的门牌，数到原来家的号码时停住了。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-war-ward",
+                  "key": "safety",
+                  "reason": "school made the child feel exposed",
+                  "delta": -4
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-war-ward",
+                  "key": "originKnowledge",
+                  "reason": "the child held on to the old address",
+                  "delta": 5
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.03,
+                  "reason": "这件事改变了家里的气氛"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "return-letter",
+          "everyMonths": 18,
+          "outcomes": [
+            {
+              "id": "a-claim-arrives",
+              "weight": 1,
+              "text": "一封盖着官方章的信送到寄养家庭，说原家庭来问过孩子的下落。{subject}把信读了两遍，才想起自己已经很久没有用原来的姓签过名。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-war-ward",
+                  "key": "returnPressure",
+                  "reason": "the original family asked for the child",
+                  "delta": 10
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "这件事改变了家里的气氛"
+                }
+              ]
+            },
+            {
+              "id": "no-answer",
+              "weight": 1,
+              "text": "寄养家庭把信收进抽屉，没有告诉{subject}。{subject}在饭桌上看见养母把一张纸折得很小，塞进围裙口袋；那顿饭，谁也没有提邮差来过。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-war-ward",
+                  "key": "safety",
+                  "reason": "the foster family kept the letter quiet",
+                  "delta": 3
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "household",
+                  "ownerId": "$household",
+                  "stateId": "fw19-war-ward",
+                  "key": "returnPressure",
+                  "reason": "the child did not learn of the inquiry",
+                  "delta": -3
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "这件事改变了家里的气氛"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "peace-rumor",
+          "onTags": [
+            "armistice",
+            "liberation",
+            "peace"
+          ],
+          "chance": 0.7,
+          "text": "街上有人说停战以后会有儿童车来接人。{subject}把这句话听成了“明天”，一夜没有睡；第二天早上，站台上并没有车，只有卖报的人在喊别的消息。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-war-ward",
+              "key": "returnPressure",
+              "reason": "peace made return seem immediate",
+              "delta": 20
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "这件事改变了家里的气氛"
+            }
+          ],
+          "significance": 0.65,
+          "cooldownMonths": 18,
+          "maxPerYear": 1
+        },
+        {
+          "id": "guardian-death",
+          "onTags": [
+            "death"
+          ],
+          "chance": 0.25,
+          "text": "有人死了。{subject}站在灵堂门口，不知道该不该进去；最后{subject}进去点了一支蜡烛，又退出来，把门带上。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-war-ward",
+              "key": "safety",
+              "reason": "a death weakened the foster arrangement",
+              "delta": -10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-war-ward",
+              "key": "returnPressure",
+              "reason": "the child began to think about leaving",
+              "delta": 10
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "这件事改变了家里的气氛"
+            }
+          ],
+          "significance": 0.6,
+          "cooldownMonths": 24,
+          "maxPerYear": 1
+        }
+      ],
+      "exitWhen": [
+        {
+          "kind": "hasState",
+          "stateId": "fw19-war-ward",
+          "owner": "person",
+          "parameter": "safety",
+          "min": 90
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-war-ward",
+          "owner": "person",
+          "parameter": "returnPressure",
+          "max": 5
+        }
+      ],
+      "historicalBasis": "战时疏散、寄养、难民儿童安置和战后认领在两次世界大战及其余波中反复出现；本状态不绑定任何真实机构、城市或日期。",
+      "provenance": {
+        "kind": "generated",
+        "author": "phase19-content-author/family-war",
+        "model": "deepseek-v4.1-flash-subagent",
+        "sourceIds": [
+          "phase19-collision-family-war"
+        ],
+        "rationale": "让被安置的孩子拥有持续的安全、忠诚、出身知识和回归压力，而不是在场景结束时消失。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "fw19-split.evacuation-list",
+      "title": "先送走哪一个",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 55
+      },
+      "tags": [
+        "evacuation",
+        "railway",
+        "children",
+        "occupation",
+        "choice"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 55
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 14,
+          "sameHousehold": true
+        },
+        {
+          "key": "younger",
+          "kind": "child",
+          "required": true,
+          "minAge": 2,
+          "maxAge": 9,
+          "sameHousehold": true
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        }
+      ],
+      "baseRate": 0.08,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "eldest-goes",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "疏散名单只给{subject}家两个铺位。{subject}把较大的那只箱子给了{child}，又把{younger}的围巾塞进箱角；站台上的{worker}催第三遍，{child}回头时，{younger}正抓着{subject}的衣角，没有哭。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "reason": "add fw19-separated-household",
+              "parameters": {
+                "distance": 65,
+                "missing": 25,
+                "dependents": 70,
+                "hope": 40
+              }
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.05,
+              "affection": 0.08,
+              "obligation": 0.1
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.03
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "cash -1"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sent_eldest_first",
+              "add": true,
+              "reason": "flag sent_eldest_first"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "mood -0.06"
+            }
+          ]
+        },
+        {
+          "id": "youngest-goes",
+          "weight": 0.25,
+          "significance": 0.82,
+          "text": "{subject}把{younger}抱上马车，{child}留在月台上看着。{worker}说下一班也许还有位置，也许没有；{subject}把{child}的手攥得太紧，孩子后来在作文里写“家里的人那天没有回头”。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "reason": "add fw19-separated-household",
+              "parameters": {
+                "distance": 80,
+                "missing": 30,
+                "dependents": 65,
+                "hope": 30
+              }
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.12,
+              "affection": 0.02,
+              "obligation": 0.15
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "cash -1"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sent_youngest_first",
+              "add": true,
+              "reason": "flag sent_youngest_first"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "mood -0.08"
+            }
+          ]
+        },
+        {
+          "id": "neighbor-takes-younger",
+          "weight": 0.2,
+          "significance": 0.75,
+          "text": "隔壁的{neighbor}说可以把{younger}先带回乡下，等路通了再送回来。{subject}没有立刻答应，先去看了{neighbor}家的米缸；回来时，{child}已经把弟弟的小鞋摆在了门口。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "reason": "add fw19-separated-household",
+              "parameters": {
+                "distance": 25,
+                "missing": 10,
+                "dependents": 55,
+                "hope": 55
+              }
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.08,
+              "obligation": 0.1
+            },
+            {
+              "type": "relation",
+              "a": "$younger",
+              "b": "$neighbor",
+              "kind": "guardian",
+              "reason": "relation guardian",
+              "trust": 0.1
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "neighbor_took_younger",
+              "add": true,
+              "reason": "flag neighbor_took_younger"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "mood +0.01"
+            }
+          ]
+        },
+        {
+          "id": "refuse-the-list",
+          "weight": 0.2,
+          "significance": 0.78,
+          "text": "{subject}把两个名字都从疏散表上划掉。{worker}提醒说，留下的人要自己找地窖；那天夜里，{subject}把床挪到走廊，让两个孩子睡在离门最近的地方。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "place",
+              "ownerId": "$subjectPlace",
+              "stateId": "occupied-city-regime",
+              "key": "severity",
+              "reason": "severity +0.1",
+              "delta": 0.1
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "reason": "caregiverBurden +12",
+              "delta": 12
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "food -2"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_evacuation",
+              "add": true,
+              "reason": "flag refused_evacuation"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.05,
+              "affection": 0.05
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "mood -0.04"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.widow-crossing",
+      "title": "寡妇的过境纸",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 55
+      },
+      "tags": [
+        "border",
+        "passport",
+        "widow",
+        "children",
+        "migration"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "war-widow-with-children",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "mb17-newcomer",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 55
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 14,
+          "sameHousehold": true
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 10,
+      "outcomes": [
+        {
+          "id": "register-as-separated",
+          "weight": 0.4,
+          "significance": 0.82,
+          "text": "{official}把表格推过来，问丈夫是死了还是失踪。{subject}说“不知道”，对方就在“分居”一栏打了勾；{child}在长椅上睡着了，怀里还抱着从旧城带来的门牌。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "reason": "add fw19-separated-household",
+              "parameters": {
+                "distance": 90,
+                "missing": 55,
+                "dependents": 80,
+                "hope": 20
+              }
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "housingStrain",
+              "reason": "housingStrain +8",
+              "delta": 8
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "obligation": 0.1,
+              "fear": 0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "registered_as_separated",
+              "add": true,
+              "reason": "flag registered_as_separated"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "mood -0.07"
+            }
+          ]
+        },
+        {
+          "id": "keep-the-family-together",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "{subject}把表格折起来，说一家人还没有散。{official}没有争辩，只在居留纸上写了一行“待核”；回到住处，{subject}把四个人的名字重新数了一遍，发现少写了一个。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "reason": "add fw19-separated-household",
+              "parameters": {
+                "distance": 10,
+                "missing": 70,
+                "dependents": 90,
+                "hope": 15
+              }
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "pensionStatus",
+              "reason": "pensionStatus pending",
+              "value": "pending"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "居留纸上写着“待核”，丈夫的名字不在上面。",
+              "confidence": 0.7,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "mood -0.04"
+            }
+          ]
+        },
+        {
+          "id": "send-child-ahead",
+          "weight": 0.2,
+          "significance": 0.85,
+          "text": "{subject}让{child}先跟同乡的马车走，自己留下等丈夫的消息。{official}在通行证上少盖了一个章，马车还是出了城；{subject}追到桥头，只看见孩子的一只手套挂在车尾。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "reason": "add fw19-separated-household",
+              "parameters": {
+                "distance": 75,
+                "missing": 40,
+                "dependents": 85,
+                "hope": 25
+              }
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.08,
+              "affection": 0.1
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "cash -2"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sent_child_with_countryman",
+              "add": true,
+              "reason": "flag sent_child_with_countryman"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "mood -0.08"
+            }
+          ]
+        },
+        {
+          "id": "turn-back-at-the-border",
+          "weight": 0.1,
+          "significance": 0.7,
+          "text": "{official}说缺一张丈夫的死亡证明，{subject}的箱子被推到路边。{child}问是不是要回去，{subject}说先等等；这一等，就是一下午，直到关口换岗。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "housingStrain",
+              "reason": "housingStrain +10",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "language",
+              "reason": "language -2",
+              "delta": -2
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "cash -1"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "food -1"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "turned_back_at_border",
+              "add": true,
+              "reason": "flag turned_back_at_border"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "mood -0.05"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.grief-address",
+      "title": "遗属家的空椅子",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 60
+      },
+      "tags": [
+        "death",
+        "custody",
+        "child",
+        "household",
+        "grief"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "grief",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 60
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 15,
+          "sameHousehold": true
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "child-goes-to-aunt",
+          "weight": 0.35,
+          "significance": 0.82,
+          "text": "{sibling}从乡下赶来，说孩子跟着{subject}只会挨饿。{subject}把{child}的冬衣叠好，又拆开重叠了一遍；最后是{child}自己拎起箱子，问能不能把母亲的梳子留下。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "reason": "add fw19-separated-household",
+              "parameters": {
+                "distance": 45,
+                "missing": 15,
+                "dependents": 50,
+                "hope": 45
+              }
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "reason": "caregiverBurden -8",
+              "delta": -8
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "reason": "childConfidence -4",
+              "delta": -4
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.05,
+              "affection": 0.1,
+              "obligation": 0.1
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_sent_to_relative",
+              "add": true,
+              "reason": "flag child_sent_to_relative"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "mood -0.05"
+            }
+          ]
+        },
+        {
+          "id": "keep-child-keep-grief",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "{subject}没有让{child}走。夜里{subject}把亡人的衣服收进箱子，{child}却把箱子拖出来，说“这件留着”；两个人在灯下坐到很晚，谁也没有再提乡下的马车。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "reason": "add fw19-separated-household",
+              "parameters": {
+                "distance": 5,
+                "missing": 20,
+                "dependents": 60,
+                "hope": 30
+              }
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "grief",
+              "key": "years",
+              "reason": "years +1",
+              "delta": 1
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.08,
+              "affection": 0.1
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "food -1"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_child_after_death",
+              "add": true,
+              "reason": "flag kept_child_after_death"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "mood -0.01"
+            }
+          ]
+        },
+        {
+          "id": "share-the-child",
+          "weight": 0.2,
+          "significance": 0.78,
+          "text": "{subject}和{sibling}说好，孩子春天去乡下，冬天回城。{child}把两边的地址都写在一张纸上，折成四折；{subject}看见最上面那行写的是“家”，没有写是哪一边。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "reason": "add fw19-separated-household",
+              "parameters": {
+                "distance": 35,
+                "missing": 10,
+                "dependents": 55,
+                "hope": 50
+              }
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.05
+            },
+            {
+              "type": "relation",
+              "a": "$child",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.05
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "careDebt",
+              "reason": "careDebt +2",
+              "delta": 2
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shared_custody_after_death",
+              "add": true,
+              "reason": "flag shared_custody_after_death"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "mood +0.02"
+            }
+          ]
+        },
+        {
+          "id": "burn-the-letter",
+          "weight": 0.1,
+          "significance": 0.76,
+          "text": "{sibling}带来一封亡人没写完的信，说里面写了孩子该跟谁。{subject}没有拆，把信放进炉子；火苗起来时，{child}站在门口，什么也没问。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "grief",
+              "key": "years",
+              "reason": "years +1",
+              "delta": 1
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "reason": "childConfidence -6",
+              "delta": -6
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.1
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "burned_dead_spouse_letter",
+              "add": true,
+              "reason": "flag burned_dead_spouse_letter"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "mood -0.06"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.ration-ranking",
+      "title": "配给表上的次序",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 62
+      },
+      "tags": [
+        "ration",
+        "queue",
+        "household",
+        "occupation",
+        "hunger"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-separated-household",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 62
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 15,
+          "sameHousehold": true
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.07,
+      "weight": 3,
+      "cooldownYears": 6,
+      "outcomes": [
+        {
+          "id": "worker-first",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "配给表只够给一个人加一份肉。{subject}把那一份给了能去修路的{child}，自己喝汤；{worker}在窗口后面多舀了半勺，说“别让孩子看见”；{subject}听见“劳动力”三个字，忽然觉得很陌生。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "dependents",
+              "reason": "dependents +8",
+              "delta": 8
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope -4",
+              "delta": -4
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "health -0.02"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rationed_for_labor",
+              "add": true,
+              "reason": "flag rationed_for_labor"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "mood -0.03"
+            }
+          ]
+        },
+        {
+          "id": "children-first",
+          "weight": 0.35,
+          "significance": 0.8,
+          "text": "{subject}把肉切成两半，都拨到{child}碗里，自己用面包擦锅底。{official}看见了，没有说什么，只在下一栏把{subject}的名字划到了“轻体力”；那天夜里，{subject}饿得睡不着。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +5",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "dependents",
+              "reason": "dependents +5",
+              "delta": 5
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "health -0.03"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.08,
+              "affection": 0.08
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "rationed_for_child",
+              "add": true,
+              "reason": "flag rationed_for_child"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "mood +0.01"
+            }
+          ]
+        },
+        {
+          "id": "sell-the-extra-card",
+          "weight": 0.2,
+          "significance": 0.82,
+          "text": "{subject}把多出来的一张配给卡卖给了食堂的{worker}，换回半罐猪油。{official}来核对时，{subject}说卡丢了；{child}在里屋听见，把猪油罐往床底下推了推。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "cash +2"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope -5",
+              "delta": -5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing +2",
+              "delta": 2
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "reputation -0.04"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.05,
+              "fear": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sold_ration_card",
+              "add": true,
+              "reason": "flag sold_ration_card"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "mood -0.02"
+            }
+          ]
+        },
+        {
+          "id": "share-with-worker",
+          "weight": 0.15,
+          "significance": 0.76,
+          "text": "{subject}把那一份肉分了一半给同车间刚生产的{worker}。{official}说这样登记对不上，{subject}说那就把我的名字划掉；{child}在旁边点头，像是早就知道会这样。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +8",
+              "delta": 8
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "dependents",
+              "reason": "dependents +3",
+              "delta": 3
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "food -1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.12,
+              "obligation": 0.08
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "reputation +0.03"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shared_ration_with_worker",
+              "add": true,
+              "reason": "flag shared_ration_with_worker"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "mood +0.03"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.other-family-claim",
+      "title": "两个家长都拿着照片",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 12,
+        "max": 17
+      },
+      "tags": [
+        "custody",
+        "photographs",
+        "foster",
+        "claim",
+        "school"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-war-ward",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 17
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 10,
+      "outcomes": [
+        {
+          "id": "stay-with-stranger",
+          "weight": 0.3,
+          "significance": 0.86,
+          "text": "{parent}和{neighbor}各拿出一张照片，照片上的{subject}穿着不同的衣服。{official}问孩子想跟谁走；{subject}看了看{neighbor}手里的家门钥匙，说“我先回去把课桌收拾一下”。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "loyalty",
+              "reason": "loyalty +15",
+              "delta": 15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "returnPressure",
+              "reason": "returnPressure -10",
+              "delta": -10
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "guardian",
+              "reason": "relation guardian",
+              "trust": 0.1,
+              "affection": 0.08
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "chose_foster_family",
+              "add": true,
+              "reason": "flag chose_foster_family"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "mood +0.02"
+            }
+          ]
+        },
+        {
+          "id": "go-back-to-parent",
+          "weight": 0.35,
+          "significance": 0.88,
+          "text": "{subject}把{neighbor}家的钥匙放在桌上，跟{parent}走出门。{official}在后面喊“手续还没完”，{subject}没有回头；走到街角，才发现自己还穿着{neighbor}家孩子的鞋。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "returnPressure",
+              "reason": "returnPressure -20",
+              "delta": -20
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "originKnowledge",
+              "reason": "originKnowledge +5",
+              "delta": 5
+            },
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "reason": "remove fw19-war-ward"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.1,
+              "affection": 0.1
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "guardian",
+              "reason": "relation guardian",
+              "trust": -0.08
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "returned_to_original_family",
+              "add": true,
+              "reason": "flag returned_to_original_family"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "mood +0.01"
+            }
+          ]
+        },
+        {
+          "id": "clerk-decides",
+          "weight": 0.2,
+          "significance": 0.8,
+          "text": "{official}把两张照片并排放在桌上，说按登记簿，孩子归先报案的那一家。{neighbor}没有争，{parent}也没有笑；{subject}站在两个人中间，忽然想起自己已经很久没有用过原来的名字。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "safety",
+              "reason": "safety -10",
+              "delta": -10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "returnPressure",
+              "reason": "returnPressure +15",
+              "delta": 15
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "fear": 0.08
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "custody_decided_by_register",
+              "add": true,
+              "reason": "flag custody_decided_by_register"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "mood -0.05"
+            }
+          ]
+        },
+        {
+          "id": "both-families-share",
+          "weight": 0.15,
+          "significance": 0.78,
+          "text": "{parent}和{neighbor}在{subject}的学校门口吵到天黑，最后说好一人一个月。{subject}把两把钥匙串在同一根绳上；同学问哪一把是家，{subject}说“都算”。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "loyalty",
+              "reason": "loyalty +5",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "returnPressure",
+              "reason": "returnPressure -5",
+              "delta": -5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "originKnowledge",
+              "reason": "originKnowledge +5",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.05
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "guardian",
+              "reason": "relation guardian",
+              "trust": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "two_family_custody",
+              "add": true,
+              "reason": "flag two_family_custody"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "mood +0.03"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.small-kindness",
+      "title": "战后还回来的一只锅",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 30,
+        "max": 70
+      },
+      "tags": [
+        "postwar",
+        "kindness",
+        "pot",
+        "estate",
+        "return",
+        "warm"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-separated-household",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "family-estate",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 17
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 3,
+      "cooldownYears": 12,
+      "outcomes": [
+        {
+          "id": "pot-comes-back",
+          "weight": 0.4,
+          "significance": 0.82,
+          "text": "战后第三年，{neighbor}把一只借了七年的锅送回来，锅底补过两次。{subject}认出那是{child}小时候熬药的锅；{neighbor}说当年孩子在他们家喝过一碗汤，今天才敢来还。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +15",
+              "delta": 15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing -5",
+              "delta": -5
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.15,
+              "obligation": 0.08
+            },
+            {
+              "type": "relation",
+              "a": "$child",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.08
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "pot_returned_after_war",
+              "add": true,
+              "reason": "flag pot_returned_after_war"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "mood +0.06"
+            }
+          ]
+        },
+        {
+          "id": "letter-in-the-pot",
+          "weight": 0.25,
+          "significance": 0.88,
+          "text": "{neighbor}还锅时，锅底压着一封没有封口的信。信是{child}写的，只有三行：我还活着，我在河边，我记得家里的锅。{subject}把信读了四遍，才想起让{neighbor}进屋。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +20",
+              "delta": 20
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing -15",
+              "delta": -15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "distance",
+              "reason": "distance -10",
+              "delta": -10
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子还活着，在河边，记得家里的锅。",
+              "confidence": 0.9,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.12
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "letter_in_returned_pot",
+              "add": true,
+              "reason": "flag letter_in_returned_pot"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.08,
+              "reason": "mood +0.08"
+            }
+          ]
+        },
+        {
+          "id": "neighbor-asks-for-nothing",
+          "weight": 0.2,
+          "significance": 0.75,
+          "text": "{neighbor}什么也没要，只问{subject}家的李树还在不在。{subject}说去年冻死了，{neighbor}说没关系，春天可以嫁接；两个人站在院子里，把这件事说得很认真。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +8",
+              "delta": 8
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "distance",
+              "reason": "distance -3",
+              "delta": -3
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "upkeep",
+              "reason": "upkeep -3",
+              "delta": -3
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.1
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "neighbor_helped_estate",
+              "add": true,
+              "reason": "flag neighbor_helped_estate"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "mood +0.05"
+            }
+          ]
+        },
+        {
+          "id": "wrong-pot",
+          "weight": 0.15,
+          "significance": 0.72,
+          "text": "{neighbor}还回来的锅不是{subject}家的，锅底刻着另一个姓。{subject}说没关系，{neighbor}却坚持要去找；第二天，整条街都在传{subject}家丢了一口从来没丢过的锅。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +3",
+              "delta": 3
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing +2",
+              "delta": 2
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "reputation -0.02"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wrong_pot_returned",
+              "add": true,
+              "reason": "flag wrong_pot_returned"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "mood +0.04"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.family-secret",
+      "title": "家谱上被涂掉的那一行",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 30,
+        "max": 65
+      },
+      "tags": [
+        "purge",
+        "family_secret",
+        "factory",
+        "politics",
+        "denunciation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-separated-household",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "institution-purge",
+          "owner": "organization"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 65
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 3,
+      "cooldownYears": 10,
+      "outcomes": [
+        {
+          "id": "denounce-the-cousin",
+          "weight": 0.3,
+          "significance": 0.88,
+          "text": "{worker}把家谱摊在桌上，说厂里的清查名单要核对亲属，问{subject}为什么有一个从没提过的舅舅。{subject}说那个人早就断了来往；当天下午，{sibling}看见一辆车停在巷口，把那个名字带走了。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing +20",
+              "delta": 20
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope -15",
+              "delta": -15
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "reputation +0.05"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.08
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "家谱上被涂掉的那一行，被官方问起了。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "denounced_hidden_relative",
+              "add": true,
+              "reason": "flag denounced_hidden_relative"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "mood -0.08"
+            }
+          ]
+        },
+        {
+          "id": "hide-the-papers",
+          "weight": 0.3,
+          "significance": 0.82,
+          "text": "{subject}把家谱和旧照片一起塞进面粉桶，又把桶推到床底下。{worker}带着清查名单来搜时，{sibling}坐在桶上择菜，说这间屋只有面粉味；等人走了，两个人都没有站起来。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +5",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing +5",
+              "delta": 5
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "health -0.02"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.12,
+              "fear": 0.08
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hid_family_papers",
+              "add": true,
+              "reason": "flag hid_family_papers"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "mood -0.03"
+            }
+          ]
+        },
+        {
+          "id": "the-secret-is-a-forgery",
+          "weight": 0.25,
+          "significance": 0.76,
+          "text": "{worker}带着清查组查了三天，最后说那行被涂掉的名字不是舅舅，是{subject}祖父年轻时用过的艺名。{sibling}在门口笑出了声；{subject}把家谱重新挂回墙上，发现钉子还是歪的。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +8",
+              "delta": 8
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "reputation +0.03"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.05
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "家谱上被涂掉的名字只是祖父的艺名。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "family_secret_was_stage_name",
+              "add": true,
+              "reason": "flag family_secret_was_stage_name"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "mood +0.05"
+            }
+          ]
+        },
+        {
+          "id": "sibling-on-the-list",
+          "weight": 0.15,
+          "significance": 0.84,
+          "text": "{worker}念清查名单时，{subject}听见了{sibling}的姓。{sibling}没有否认，只说“你家的家谱上也有我”。那天夜里，{subject}把两家的门牌都擦了一遍，擦到手指发白。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing +10",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope -10",
+              "delta": -10
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.1,
+              "fear": 0.12
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sibling_on_purge_list",
+              "add": true,
+              "reason": "flag sibling_on_purge_list"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "mood -0.06"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.orphan-marking",
+      "title": "点名册上的孤儿栏",
+      "domain": "education",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 8,
+        "max": 13
+      },
+      "tags": [
+        "school",
+        "orphans",
+        "register",
+        "occupation",
+        "hunger",
+        "teacher"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 8,
+          "maxAge": 13
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 55
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "marked-orphan",
+          "weight": 0.3,
+          "significance": 0.84,
+          "text": "校长说孤儿名册能换来救济粮。{teacher}把{subject}的名字写在最后一栏，笔尖停了一下；{subject}看见自己的姓被墨水盖住，回家路上一直在抠手指。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "reason": "add fw19-war-ward",
+              "parameters": {
+                "safety": 40,
+                "loyalty": 20,
+                "originKnowledge": 70,
+                "returnPressure": 30
+              }
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "primary",
+              "reason": "education primary"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": -0.05,
+              "fear": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "marked_as_orphan",
+              "add": true,
+              "reason": "flag marked_as_orphan"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "mood -0.05"
+            }
+          ]
+        },
+        {
+          "id": "kept-off-list",
+          "weight": 0.3,
+          "significance": 0.78,
+          "text": "{teacher}把名册合上，说{subject}的爹只是失踪，不算孤儿。放学后，{teacher}从包里摸出半块面包塞给孩子；{subject}没有说谢谢，只把面包掰成两半。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "reason": "childConfidence +4",
+              "delta": 4
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.1
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_off_orphan_list",
+              "add": true,
+              "reason": "flag kept_off_orphan_list"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "mood +0.03"
+            }
+          ]
+        },
+        {
+          "id": "teacher-takes-child",
+          "weight": 0.25,
+          "significance": 0.86,
+          "text": "{teacher}把{subject}领回自己家，说先住到路通。老师的房间只有一张床，孩子睡床，老师睡桌子；夜里{subject}听见老师在黑暗里改作业，笔尖沙沙响。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "reason": "add fw19-war-ward",
+              "parameters": {
+                "safety": 65,
+                "loyalty": 30,
+                "originKnowledge": 60,
+                "returnPressure": 25
+              }
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "guardian",
+              "reason": "relation guardian",
+              "trust": 0.1,
+              "affection": 0.08
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "primary",
+              "reason": "education primary"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "teacher_took_child",
+              "add": true,
+              "reason": "flag teacher_took_child"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "mood +0.04"
+            }
+          ]
+        },
+        {
+          "id": "school-closes",
+          "weight": 0.15,
+          "significance": 0.8,
+          "text": "名册交上去的第二天，学校还是关了。{teacher}站在锁上的校门口，把{subject}的作业本从门缝里塞进去；{subject}隔着铁栏看见自己的名字和一群孤儿写在同一页上。",
+          "effects": [
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "none",
+              "reason": "education none"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "reputation -0.04"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "schoolProgress",
+              "reason": "schoolProgress -5",
+              "delta": -5
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "school_closed_after_list",
+              "add": true,
+              "reason": "flag school_closed_after_list"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "mood -0.06"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-ward.false-name",
+      "title": "表姐的姓",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 24,
+        "max": 50
+      },
+      "tags": [
+        "ration",
+        "false_name",
+        "school",
+        "migration",
+        "identity"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "mb17-newcomer",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 24,
+          "maxAge": 50
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 14,
+          "sameHousehold": true
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "register-false-name",
+          "weight": 0.35,
+          "significance": 0.84,
+          "text": "为了多领一份面包，{subject}给{child}报了表姐家的姓。办事的人只问了一句“父亲呢”，{subject}说在前线；回家的路上，{child}把新名字念了三遍，念得像别人的名字。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$child",
+              "stateId": "fw19-war-ward",
+              "reason": "add fw19-war-ward",
+              "parameters": {
+                "safety": 50,
+                "loyalty": 20,
+                "originKnowledge": 60,
+                "returnPressure": 35
+              }
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "primary",
+              "reason": "education primary"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我的新名字是表姐的姓，父亲在前线。",
+              "confidence": 0.7,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "registered_false_name",
+              "add": true,
+              "reason": "flag registered_false_name"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "mood -0.02"
+            }
+          ]
+        },
+        {
+          "id": "teacher-reads-name",
+          "weight": 0.3,
+          "significance": 0.82,
+          "text": "{teacher}点名时叫了那个借来的姓。{child}站起来，又坐下，说“那是我表姐的名字”；教室里有人笑。{subject}在窗外听见，手里的菜篮往下沉了一截。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$child",
+              "stateId": "fw19-war-ward",
+              "reason": "add fw19-war-ward",
+              "parameters": {
+                "safety": 45,
+                "loyalty": 15,
+                "originKnowledge": 55,
+                "returnPressure": 45
+              }
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "primary",
+              "reason": "education primary"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": -0.03
+            },
+            {
+              "type": "relation",
+              "a": "$child",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "fear": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "borrowed_name_read_aloud",
+              "add": true,
+              "reason": "flag borrowed_name_read_aloud"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "mood -0.04"
+            }
+          ]
+        },
+        {
+          "id": "confess-to-teacher",
+          "weight": 0.2,
+          "significance": 0.76,
+          "text": "{subject}在放学路上拦住{teacher}，把借名字的事说了。{teacher}没有告发，只让{subject}明天带户口纸来；第二天，{subject}在门口站了很久，最后把纸又带回了家。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "mb17-newcomer",
+              "key": "housingStrain",
+              "reason": "housingStrain +5",
+              "delta": 5
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "reputation -0.03"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.08
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "confessed_false_name",
+              "add": true,
+              "reason": "flag confessed_false_name"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "mood -0.01"
+            }
+          ]
+        },
+        {
+          "id": "name-sticks",
+          "weight": 0.15,
+          "significance": 0.86,
+          "text": "借来的名字跟着{child}进了下一学期的册子。{teacher}点名时，{child}答应得越来越顺；只有{subject}在家长栏签字时，还会先写错自己的姓，再划掉重写。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$child",
+              "stateId": "fw19-war-ward",
+              "reason": "add fw19-war-ward",
+              "parameters": {
+                "safety": 35,
+                "loyalty": 25,
+                "originKnowledge": 50,
+                "returnPressure": 50
+              }
+            },
+            {
+              "type": "education",
+              "personId": "$subject",
+              "status": "primary",
+              "reason": "education primary"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我在家长栏签字时，先写错自己的姓。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.08
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "borrowed_name_stuck",
+              "add": true,
+              "reason": "flag borrowed_name_stuck"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "mood -0.03"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-ward.deserter",
+      "title": "床底下的军装",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 6,
+        "max": 12
+      },
+      "tags": [
+        "desertion",
+        "hiding",
+        "uniform",
+        "occupation",
+        "danger",
+        "child"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 12
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 55
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 45
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "child-notices-uniform",
+          "weight": 0.35,
+          "significance": 0.84,
+          "text": "床底下露出一截灰绿色的袖子。{subject}以为是{parent}的旧外套，拖出来才看见铜扣；{parent}一把按住箱子，说“别出声”，手比孩子的还凉。",
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "床底下藏着一套军装，不是父亲的。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "reason": "childConfidence -5",
+              "delta": -5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "reason": "relation kin",
+              "fear": 0.08
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_found_uniform",
+              "add": true,
+              "reason": "flag child_found_uniform"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "mood -0.05"
+            }
+          ]
+        },
+        {
+          "id": "child-brings-food",
+          "weight": 0.25,
+          "significance": 0.8,
+          "text": "{subject}把晚饭剩下的半块面包塞进床底。{worker}没有伸手，只问孩子叫什么；{subject}说了，又立刻改口说“我不能说”。{worker}笑了一下，把面包掰成两半。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "food -1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.1
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "床底下的人没有穿军装，但他的手很冷。",
+              "confidence": 0.7,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_fed_deserter",
+              "add": true,
+              "reason": "flag child_fed_deserter"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "mood +0.02"
+            }
+          ]
+        },
+        {
+          "id": "child-tells-at-school",
+          "weight": 0.2,
+          "significance": 0.82,
+          "text": "{subject}在学校说漏了嘴，说家里多了一个不吃饭的叔叔。当天傍晚，{parent}被叫去问话，回来时脸色发白，什么也没说。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$parent",
+              "amount": -0.02,
+              "reason": "health -0.02"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "reason": "relation kin",
+              "fear": 0.1
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "careDebt",
+              "reason": "careDebt +3",
+              "delta": 3
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_talked_about_deserter",
+              "add": true,
+              "reason": "flag child_talked_about_deserter"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "mood -0.06"
+            }
+          ]
+        },
+        {
+          "id": "deserter-leaves",
+          "weight": 0.2,
+          "significance": 0.78,
+          "text": "搜查队来之前，{worker}从后窗走了。{subject}看见床底空了，只剩一枚铜扣；{parent}把铜扣扔进炉子，火苗变绿了一下。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.05
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "reason": "childConfidence -3",
+              "delta": -3
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "deserter_left_before_search",
+              "add": true,
+              "reason": "flag deserter_left_before_search"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "mood -0.03"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-ward.soldiers-letter",
+      "title": "阵亡通知之前的遗嘱",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 28,
+        "max": 60
+      },
+      "tags": [
+        "inheritance",
+        "letter",
+        "death",
+        "estate",
+        "war",
+        "forgery"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "war-widow-with-children",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "family-estate",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 60
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 15
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 3,
+      "cooldownYears": 10,
+      "outcomes": [
+        {
+          "id": "letter-names-heir",
+          "weight": 0.3,
+          "significance": 0.84,
+          "text": "邮差送来一封从战地医院寄出的信，信封上的字不是丈夫的。信里说，如果回不来，地归{child}；{sibling}把信读了两遍，问“这算遗嘱吗”，{subject}没有回答。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "heirNamed",
+              "reason": "heirNamed +1",
+              "value": true
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "cash +2"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "战地医院的信说，如果丈夫回不来，地归孩子。",
+              "confidence": 0.85,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "letter_named_child_heir",
+              "add": true,
+              "reason": "flag letter_named_child_heir"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "mood -0.01"
+            }
+          ]
+        },
+        {
+          "id": "sibling-claims-land",
+          "weight": 0.3,
+          "significance": 0.86,
+          "text": "{sibling}说那封信是代笔，不能算数；{subject}把信摊在桌上，指着最后一行的手印。两个人从中午坐到天黑，地契还在桌子中间，谁也没有伸手。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "contested",
+              "reason": "contested +1",
+              "value": true
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "debt",
+              "reason": "debt +5",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.1
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "信末有手印，但代笔人的名字被墨水涂掉了。",
+              "confidence": 0.7,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sibling_contested_letter",
+              "add": true,
+              "reason": "flag sibling_contested_letter"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "mood -0.05"
+            }
+          ]
+        },
+        {
+          "id": "wait-for-death-notice",
+          "weight": 0.25,
+          "significance": 0.78,
+          "text": "{subject}没有去土地登记处，说等阵亡通知来了再说。{sibling}骂她拖；{subject}把丈夫的军靴从柜子里拿出来，擦了一遍，又放回去。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "pensionStatus",
+              "reason": "pensionStatus pending",
+              "value": "pending"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "upkeep",
+              "reason": "upkeep +3",
+              "delta": 3
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "cash -1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "waited_for_death_notice",
+              "add": true,
+              "reason": "flag waited_for_death_notice"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "mood -0.03"
+            }
+          ]
+        },
+        {
+          "id": "child-asks-about-father",
+          "weight": 0.15,
+          "significance": 0.82,
+          "text": "{child}问那封信是不是说爹死了。{subject}说“还没有”，{child}说“那地为什么归我”；{subject}答不上来，只把信折好，放进孩子的课本里。",
+          "effects": [
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.05
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "孩子问，信是不是说爹死了。",
+              "confidence": 0.6,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "family-estate",
+              "key": "heirNamed",
+              "reason": "heirNamed +1",
+              "value": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_asked_about_letter",
+              "add": true,
+              "reason": "flag child_asked_about_letter"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "mood -0.02"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.rent-raise",
+      "title": "房租按人头算",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 12,
+        "max": 16
+      },
+      "tags": [
+        "rent",
+        "housing",
+        "negotiation",
+        "migration",
+        "child",
+        "household"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-separated-household",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "mb17-newcomer",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 16
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 12
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "child-negotiates",
+          "weight": 0.3,
+          "significance": 0.82,
+          "text": "房东说少了一个挣钱的人，下个月房租要涨。{subject}把父亲的失踪证明摊在桌上，说“这个人还在名单上”；{neighbor}看了很久，最后只加了一克朗。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "cash -1"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +5",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.05
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "房东看了失踪证明，最后只加了一克朗。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_negotiated_rent",
+              "add": true,
+              "reason": "flag child_negotiated_rent"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "mood +0.01"
+            }
+          ]
+        },
+        {
+          "id": "landlord-seizes",
+          "weight": 0.3,
+          "significance": 0.86,
+          "text": "{neighbor}带人把厨房的隔板拆了，说那半间也要算钱。{subject}抱着{sibling}站在楼道里，听见锤子一下一下敲在自家墙上；那天晚上，他们用箱子堵住了门。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "cash -2"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "food -1"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope -8",
+              "delta": -8
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "fear": 0.1
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "landlord_seized_partition",
+              "add": true,
+              "reason": "flag landlord_seized_partition"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "mood -0.07"
+            }
+          ]
+        },
+        {
+          "id": "sibling-hides-cash",
+          "weight": 0.2,
+          "significance": 0.76,
+          "text": "{sibling}把攒下的硬币藏在鞋垫底下，被{subject}发现时，已经攒够了一克朗。{subject}没有没收，只把硬币重新包好，塞回鞋里；第二天，房租单上少了一行。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "cash +1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.08,
+              "affection": 0.05
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +3",
+              "delta": 3
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sibling_hid_rent_money",
+              "add": true,
+              "reason": "flag sibling_hid_rent_money"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "mood +0.02"
+            }
+          ]
+        },
+        {
+          "id": "neighbor-relents",
+          "weight": 0.2,
+          "significance": 0.78,
+          "text": "{neighbor}看见门口并排摆着两双小鞋，忽然说这个月先不涨了。{subject}没有道谢，只把门口的鞋往墙边挪了挪；第二天，{neighbor}送来一袋土豆，说是自家地里挖的。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "cash -1"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.1
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +4",
+              "delta": 4
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "landlord_relented",
+              "add": true,
+              "reason": "flag landlord_relented"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "mood +0.03"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.borrowed-goat",
+      "title": "借来的山羊",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 55
+      },
+      "tags": [
+        "goat",
+        "courtyard",
+        "ration",
+        "sharing",
+        "comic",
+        "warm"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 55
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 70
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 14
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "goat-gives-milk",
+          "weight": 0.35,
+          "significance": 0.76,
+          "text": "隔壁的{neighbor}把山羊牵来，说只借三天。{child}蹲在门口挤奶，挤了半桶；{subject}把第一碗送给{neighbor}，第二碗留给{child}，自己舔了舔碗边。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "food +2"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "cash +1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.08
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "reason": "childConfidence +3",
+              "delta": 3
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "borrowed_goat_milked",
+              "add": true,
+              "reason": "flag borrowed_goat_milked"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "mood +0.05"
+            }
+          ]
+        },
+        {
+          "id": "goat-eats-ration-card",
+          "weight": 0.25,
+          "significance": 0.72,
+          "text": "山羊把桌上的配给卡嚼了。{subject}追出去时，只抢回半张；{neighbor}说“它不知道那是粮”，{child}却笑得直不起腰。那天晚上，全家用半张卡领了半份面包。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "food -1"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "cash -1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.05
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "careDebt",
+              "reason": "careDebt +2",
+              "delta": 2
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "goat_ate_ration_card",
+              "add": true,
+              "reason": "flag goat_ate_ration_card"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "mood +0.03"
+            }
+          ]
+        },
+        {
+          "id": "two-households-share",
+          "weight": 0.25,
+          "significance": 0.8,
+          "text": "{subject}和{neighbor}说好，山羊白天在两家院子轮流吃草，晚上归孩子挤奶。{child}在墙上画了一道线，写“羊的”；{neighbor}看了，又在旁边添了一句“草的”。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.1
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "caregiverBurden",
+              "reason": "caregiverBurden -3",
+              "delta": -3
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "goat_shared_between_households",
+              "add": true,
+              "reason": "flag goat_shared_between_households"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "mood +0.05"
+            }
+          ]
+        },
+        {
+          "id": "goat-returns-with-kid",
+          "weight": 0.15,
+          "significance": 0.78,
+          "text": "三天变成三个月，山羊还回来时，身后跟着一只小羊。{neighbor}说小羊归{child}，{subject}说不行，得两家分；最后小羊留在院子里，谁家的孩子都能摸。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "food +2"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "cash +2"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.12
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "raising-child",
+              "key": "childConfidence",
+              "reason": "childConfidence +5",
+              "delta": 5
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "goat_returned_with_kid",
+              "add": true,
+              "reason": "flag goat_returned_with_kid"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.06,
+              "reason": "mood +0.06"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-ward.sibling-stays",
+      "title": "妹妹的行李箱",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 12,
+        "max": 17
+      },
+      "tags": [
+        "siblings",
+        "foster",
+        "return",
+        "empty_nest",
+        "belonging"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-war-ward",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "lc17-empty-nest",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 17
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 10,
+          "maxAge": 16
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 50,
+          "maxAge": 75
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 3,
+      "cooldownYears": 10,
+      "outcomes": [
+        {
+          "id": "both-stay",
+          "weight": 0.3,
+          "significance": 0.82,
+          "text": "妹妹把箱子拖回床底，说不想再换学校。{subject}看着{neighbor}在厨房里多摆了一副碗筷，忽然觉得“回去”两个字变得很轻；那天夜里，两个人挤在一张床上，谁也没有提火车站。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "loyalty",
+              "reason": "loyalty +10",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "returnPressure",
+              "reason": "returnPressure -10",
+              "delta": -10
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.05
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "guardian",
+              "reason": "relation guardian",
+              "trust": 0.08
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "roomKept",
+              "reason": "roomKept +1",
+              "value": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "siblings_stayed_with_foster",
+              "add": true,
+              "reason": "flag siblings_stayed_with_foster"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "mood +0.04"
+            }
+          ]
+        },
+        {
+          "id": "subject-returns-alone",
+          "weight": 0.3,
+          "significance": 0.86,
+          "text": "{subject}一个人上了火车。妹妹站在{neighbor}家门口，没有挥手；{subject}把脸贴在车窗上，看见妹妹转身回去，脚步很快，像怕自己改主意。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "reason": "remove fw19-war-ward"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.1
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "quiet",
+              "reason": "quiet +5",
+              "delta": 5
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "subject_returned_alone",
+              "add": true,
+              "reason": "flag subject_returned_alone"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.06,
+              "reason": "mood -0.06"
+            }
+          ]
+        },
+        {
+          "id": "both-return",
+          "weight": 0.2,
+          "significance": 0.82,
+          "text": "{subject}把妹妹的箱子也拎上车。{neighbor}没有拦，只往箱子里塞了一包饼干；火车开动时，妹妹一直看着{neighbor}，直到站台变成一条线。",
+          "effects": [
+            {
+              "type": "state_remove",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "reason": "remove fw19-war-ward"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.08,
+              "affection": 0.05
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "quiet",
+              "reason": "quiet +10",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "roomKept",
+              "reason": "roomKept +0",
+              "value": false
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "siblings_returned_together",
+              "add": true,
+              "reason": "flag siblings_returned_together"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "mood +0.02"
+            }
+          ]
+        },
+        {
+          "id": "foster-keeps-both",
+          "weight": 0.2,
+          "significance": 0.8,
+          "text": "{neighbor}去车站把两张票退了，说“再住一年”。{subject}没有反对，妹妹却哭了；那天晚上，{neighbor}把空房间的灯全打开，说以后不许再关。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "safety",
+              "reason": "safety +5",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "loyalty",
+              "reason": "loyalty +5",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "roomKept",
+              "reason": "roomKept +1",
+              "value": true
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "lc17-empty-nest",
+              "key": "reorientation",
+              "reason": "reorientation +5",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "guardian",
+              "reason": "relation guardian",
+              "trust": 0.1
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "foster_kept_both",
+              "add": true,
+              "reason": "flag foster_kept_both"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "mood +0.04"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-ward.photo-recognition",
+      "title": "包鱼的旧报纸",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 12,
+        "max": 17
+      },
+      "tags": [
+        "newspaper",
+        "recognition",
+        "father",
+        "witness",
+        "foster",
+        "memory"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-war-ward",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "hs18-street-witness",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 17
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "teacher",
+          "kind": "teacher",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "neighbor-recognizes",
+          "weight": 0.3,
+          "significance": 0.84,
+          "text": "{neighbor}用旧报纸包鱼，忽然指着照片说“这个人我见过”。{subject}凑过去，看见一个穿军装的男人站在旧街的鞋铺门口；{neighbor}说那是孩子的爹，{subject}没有否认。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "originKnowledge",
+              "reason": "originKnowledge +10",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "returnPressure",
+              "reason": "returnPressure +10",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "retellings",
+              "reason": "retellings +1",
+              "delta": 1
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "旧报纸上的军装男人站在旧街鞋铺门口。",
+              "confidence": 0.7,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "neighbor_recognized_father",
+              "add": true,
+              "reason": "flag neighbor_recognized_father"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "mood +0.02"
+            }
+          ]
+        },
+        {
+          "id": "teacher-confirms",
+          "weight": 0.25,
+          "significance": 0.8,
+          "text": "{teacher}把报纸带到学校，说照片上的人是她战前的邻居。{subject}问“他叫什么”，{teacher}说了一个名字；{subject}重复了一遍，觉得那个名字像别人的鞋，穿着不合脚。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "originKnowledge",
+              "reason": "originKnowledge +5",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "safety",
+              "reason": "safety -5",
+              "delta": -5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "certainty",
+              "reason": "certainty +5",
+              "delta": 5
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "老师说出照片上那个人的名字。",
+              "confidence": 0.75,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$teacher",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "teacher_confirmed_father",
+              "add": true,
+              "reason": "flag teacher_confirmed_father"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "mood -0.01"
+            }
+          ]
+        },
+        {
+          "id": "child-denies",
+          "weight": 0.25,
+          "significance": 0.82,
+          "text": "{subject}说照片上的人不是爹，是另一个穿军装的。{neighbor}没有争，只把报纸翻过去；{subject}却把那张照片记了很久，连鱼腥味都记得。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "originKnowledge",
+              "reason": "originKnowledge -5",
+              "delta": -5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "loyalty",
+              "reason": "loyalty +5",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "quiet",
+              "reason": "quiet +1",
+              "value": true
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": -0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_denied_photograph",
+              "add": true,
+              "reason": "flag child_denied_photograph"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "mood -0.02"
+            }
+          ]
+        },
+        {
+          "id": "photo-is-someone-else",
+          "weight": 0.2,
+          "significance": 0.74,
+          "text": "后来才知道，照片上的人只是同名，战前在另一条街修鞋。{neighbor}说“这世上的鞋匠都长得差不多”；{subject}笑了，笑完又有点失望。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "originKnowledge",
+              "reason": "originKnowledge +3",
+              "delta": 3
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "hs18-street-witness",
+              "key": "certainty",
+              "reason": "certainty -10",
+              "delta": -10
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "照片上的人只是同名，在另一条街修鞋。",
+              "confidence": 0.8,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "photo_was_someone_else",
+              "add": true,
+              "reason": "flag photo_was_someone_else"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "mood +0.02"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.train-place",
+      "title": "站台边的价码",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 60
+      },
+      "tags": [
+        "evacuation",
+        "profiteering",
+        "train",
+        "corruption",
+        "choice",
+        "occupation"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-separated-household",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "occupied-city-regime",
+          "owner": "place"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 60
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 70
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 14
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 22,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "buy-the-place",
+          "weight": 0.3,
+          "significance": 0.84,
+          "text": "站台边有人卖位置，一张票顶三个月工钱。{neighbor}把票藏在帽子里，说“最后一班”；{subject}数了钱，又数了一遍，最后把{child}的围巾押给了他。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "cash -3"
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "distance",
+              "reason": "distance -10",
+              "delta": -10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +5",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": -0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "bought_train_place",
+              "add": true,
+              "reason": "flag bought_train_place"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "mood +0.01"
+            }
+          ]
+        },
+        {
+          "id": "expose-the-profiteer",
+          "weight": 0.3,
+          "significance": 0.86,
+          "text": "{subject}把{neighbor}卖票的事告诉了站台上的{worker}。{worker}没有立刻抓人，只把那张票收进袖口；当天下午，{neighbor}的帽子被扔在铁轨边，人不见了。",
+          "effects": [
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "reputation +0.05"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope -3",
+              "delta": -3
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": -0.2,
+              "fear": 0.1
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "exposed_ticket_profiteer",
+              "add": true,
+              "reason": "flag exposed_ticket_profiteer"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "mood -0.01"
+            }
+          ]
+        },
+        {
+          "id": "take-the-place-by-force",
+          "weight": 0.2,
+          "significance": 0.8,
+          "text": "{subject}抓住{neighbor}的领子，把票抢过来。{child}在后面喊“爹”，{subject}没有回头；上车后才发现，票上的名字是别人的，检票员正在走过来。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "cash -1"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "health -0.02"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "reputation -0.05"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "fear": 0.15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope -5",
+              "delta": -5
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "took_ticket_by_force",
+              "add": true,
+              "reason": "flag took_ticket_by_force"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "mood -0.04"
+            }
+          ]
+        },
+        {
+          "id": "let-another-family-buy",
+          "weight": 0.2,
+          "significance": 0.78,
+          "text": "{subject}把票让给了抱着婴儿的一家人。{neighbor}骂他傻；{worker}在检票口看了他一眼，什么也没说。那天夜里，{subject}带着{child}走回了城，路上买了一块黑面包。",
+          "effects": [
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope -5",
+              "delta": -5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "distance",
+              "reason": "distance +5",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.08
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "gave_up_train_place",
+              "add": true,
+              "reason": "flag gave_up_train_place"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "mood +0.01"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.returned-father",
+      "title": "孩子叫他爹",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 30,
+        "max": 60
+      },
+      "tags": [
+        "return",
+        "POW",
+        "fatherhood",
+        "meal",
+        "bed",
+        "name",
+        "grief"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-separated-household",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "grief",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 6,
+          "maxAge": 16
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 10,
+      "outcomes": [
+        {
+          "id": "child-calls-him-father",
+          "weight": 0.3,
+          "significance": 0.88,
+          "text": "战俘营回来的人站在门口，{child}却对着屋里的{sibling}叫了一声“爹”。{subject}把行李放在门边，看见桌上摆着三副碗筷，自己的那一副在最里面，碗沿缺了一角。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing +5",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope -5",
+              "delta": -5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.1
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.05
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "food -1"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_called_sibling_father",
+              "add": true,
+              "reason": "flag child_called_sibling_father"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "mood -0.07"
+            }
+          ]
+        },
+        {
+          "id": "share-the-table",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "{subject}在桌边坐下，把缺角的碗挪到自己面前。{sibling}起身去拿第四副碗筷，{child}看着两个人，忽然问“以后谁送我上学”；没有人立刻回答。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +8",
+              "delta": 8
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.05
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.03
+            },
+            {
+              "type": "food",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "food +1"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "shared_table_with_returned_father",
+              "add": true,
+              "reason": "flag shared_table_with_returned_father"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "mood +0.02"
+            }
+          ]
+        },
+        {
+          "id": "leave-the-house",
+          "weight": 0.2,
+          "significance": 0.84,
+          "text": "{subject}没有吃完那顿饭，把行李重新捆好。{child}追到门口，问“你是我爹吗”；{subject}说是，孩子却回头看了看{sibling}，像在等一个更可信的答案。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "distance",
+              "reason": "distance +10",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope -10",
+              "delta": -10
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "returned_father_left_again",
+              "add": true,
+              "reason": "flag returned_father_left_again"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "mood -0.08"
+            }
+          ]
+        },
+        {
+          "id": "child-chooses",
+          "weight": 0.2,
+          "significance": 0.8,
+          "text": "{child}把两只手分别放在{subject}和{sibling}手里，说“一人一半”。{subject}笑了，{sibling}也笑了；那天晚上，三个人挤在一张桌上吃饭，谁也没有提“爹”这个字。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing -5",
+              "delta": -5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +5",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.08,
+              "affection": 0.05
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_chose_both_fathers",
+              "add": true,
+              "reason": "flag child_chose_both_fathers"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "mood +0.04"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-ward.archive-name",
+      "title": "档案里的另一个名字",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 12,
+        "max": 17
+      },
+      "tags": [
+        "archive",
+        "identity",
+        "legal_name",
+        "foster",
+        "refusal",
+        "family"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-war-ward",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "em18-family-archive",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 12,
+          "maxAge": 17
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 3,
+      "cooldownYears": 10,
+      "outcomes": [
+        {
+          "id": "accept-legal-name",
+          "weight": 0.3,
+          "significance": 0.8,
+          "text": "{official}从牛皮纸袋里抽出一张出生登记，说{subject}的法定名字是这个。{parent}在旁边点头；{subject}把那张纸看了很久，最后说“那就用这个吧”，声音很轻。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "originKnowledge",
+              "reason": "originKnowledge +10",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "returnPressure",
+              "reason": "returnPressure +5",
+              "delta": 5
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "档案里的出生登记写着我的法定名字。",
+              "confidence": 0.9,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "reputation +0.02"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "accepted_legal_name",
+              "add": true,
+              "reason": "flag accepted_legal_name"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "mood +0.01"
+            }
+          ]
+        },
+        {
+          "id": "refuse-legal-name",
+          "weight": 0.3,
+          "significance": 0.86,
+          "text": "{subject}把出生登记推回去，说“我不叫这个”。{official}说法律上只有这个名字；{parent}想劝，孩子却把书包背起来，说“那我就不上学了”。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "loyalty",
+              "reason": "loyalty +10",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "originKnowledge",
+              "reason": "originKnowledge -5",
+              "delta": -5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.1
+            },
+            {
+              "type": "reputation",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "reputation -0.03"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "refused_legal_name",
+              "add": true,
+              "reason": "flag refused_legal_name"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "mood -0.05"
+            }
+          ]
+        },
+        {
+          "id": "archive-is-wrong",
+          "weight": 0.2,
+          "significance": 0.82,
+          "text": "{official}念到一半，发现出生登记上的母亲名字和{parent}对不上。{parent}说那是战前的旧档案；{subject}却把那张纸折好，放进口袋，说“这个错，我留着”。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "originKnowledge",
+              "reason": "originKnowledge +5",
+              "delta": 5
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "出生登记上的母亲名字和现在的母亲对不上。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$official",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": -0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_wrong_archive",
+              "add": true,
+              "reason": "flag kept_wrong_archive"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "mood -0.01"
+            }
+          ]
+        },
+        {
+          "id": "child-keeps-both-names",
+          "weight": 0.2,
+          "significance": 0.8,
+          "text": "{subject}在学校用法定名字，在家里用原来的名字。{official}说这样不行；{subject}说“那你们就写两个”；{parent}在门外听见，没有进去。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "originKnowledge",
+              "reason": "originKnowledge +5",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "loyalty",
+              "reason": "loyalty +5",
+              "delta": 5
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我在学校用法定名字，在家里用原来的名字。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_both_names",
+              "add": true,
+              "reason": "flag kept_both_names"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "mood +0.02"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-split.inlaws-claim",
+      "title": "夫家来的两个人",
+      "domain": "family",
+      "kind": "event",
+      "stage": "adulthood",
+      "ageWindow": {
+        "min": 26,
+        "max": 62
+      },
+      "tags": [
+        "in_laws",
+        "custody",
+        "widow",
+        "household",
+        "claim"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-separated-household",
+          "owner": "household"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "war-widow-with-children",
+          "owner": "person"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 26,
+          "maxAge": 62
+        },
+        {
+          "key": "child",
+          "kind": "child",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 15,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 70
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 65
+        }
+      ],
+      "baseRate": 0.05,
+      "weight": 3,
+      "cooldownYears": 10,
+      "outcomes": [
+        {
+          "id": "keep-the-children",
+          "weight": 0.3,
+          "significance": 0.84,
+          "text": "夫家的{neighbor}带着族谱来，说孩子该归本家。{subject}把族谱推回去，说“他们吃的是我挣的粮”；{official}在门口等着，最后只登记了“暂不迁移”。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope +5",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "dependents",
+              "reason": "dependents +5",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": -0.12
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.1,
+              "affection": 0.08
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "dependentCount",
+              "reason": "dependentCount +1",
+              "delta": 1
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "kept_children_from_inlaws",
+              "add": true,
+              "reason": "flag kept_children_from_inlaws"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "mood +0.02"
+            }
+          ]
+        },
+        {
+          "id": "send-one-child",
+          "weight": 0.3,
+          "significance": 0.9,
+          "text": "{subject}让{child}跟{neighbor}走，说那边至少有地。{child}把鞋脱下来，说“这双是娘买的”；{neighbor}蹲下替孩子穿好，手一直在抖。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "distance",
+              "reason": "distance +15",
+              "delta": 15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing +10",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "dependents",
+              "reason": "dependents -5",
+              "delta": -5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.1,
+              "affection": 0.05
+            },
+            {
+              "type": "relation_end",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "end kin"
+            },
+            {
+              "type": "relation",
+              "a": "$child",
+              "b": "$neighbor",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.08
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "dependentCount",
+              "reason": "dependentCount -1",
+              "delta": -1
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "grief",
+              "reason": "grief +5",
+              "delta": 5
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sent_child_to_inlaws",
+              "add": true,
+              "reason": "flag sent_child_to_inlaws"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "mood -0.08"
+            }
+          ]
+        },
+        {
+          "id": "share-the-children",
+          "weight": 0.25,
+          "significance": 0.82,
+          "text": "{subject}和{neighbor}说好，男孩留下，女孩去乡下。{official}把两个名字写在同一张纸上，又用尺子画了一道线；{child}问那条线是什么意思，{subject}说“是路”。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "distance",
+              "reason": "distance +10",
+              "delta": 10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing +5",
+              "delta": 5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "dependents",
+              "reason": "dependents -3",
+              "delta": -3
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.05
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$child",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.03
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "dependentCount",
+              "reason": "dependentCount -1",
+              "delta": -1
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "divided_children_with_inlaws",
+              "add": true,
+              "reason": "flag divided_children_with_inlaws"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "mood -0.04"
+            }
+          ]
+        },
+        {
+          "id": "inlaws-take-all",
+          "weight": 0.15,
+          "significance": 0.86,
+          "text": "{neighbor}拿出{subject}丈夫生前按过手印的纸，说孩子和抚恤金都归夫家。{official}看了很久，说这张纸没有日期；{neighbor}把纸折好，说“那就明天再来”。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "missing",
+              "reason": "missing +15",
+              "delta": 15
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "household",
+              "ownerId": "$household",
+              "stateId": "fw19-separated-household",
+              "key": "hope",
+              "reason": "hope -12",
+              "delta": -12
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "war-widow-with-children",
+              "key": "pensionStatus",
+              "reason": "pensionStatus contested",
+              "value": "contested"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$neighbor",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "fear": 0.1
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "inlaws_claimed_household",
+              "add": true,
+              "reason": "flag inlaws_claimed_household"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.07,
+              "reason": "mood -0.07"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fw19-ward.workbook-age",
+      "title": "工牌上的年龄",
+      "domain": "work",
+      "kind": "event",
+      "stage": "adolescence",
+      "ageWindow": {
+        "min": 14,
+        "max": 17
+      },
+      "tags": [
+        "factory",
+        "child_labor",
+        "age",
+        "false_papers",
+        "foster",
+        "work"
+      ],
+      "contexts": [
+        "vienna",
+        "urban",
+        "peace",
+        "reform",
+        "crisis",
+        "postwar"
+      ],
+      "conditions": [
+        {
+          "kind": "worldYear",
+          "min": 1912,
+          "max": 1955
+        },
+        {
+          "kind": "hasState",
+          "stateId": "fw19-war-ward",
+          "owner": "person"
+        },
+        {
+          "kind": "hasState",
+          "stateId": "raising-child",
+          "owner": "household"
+        }
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 14,
+          "maxAge": 17
+        },
+        {
+          "key": "worker",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 60
+        },
+        {
+          "key": "parent",
+          "kind": "parent",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 60
+        }
+      ],
+      "baseRate": 0.06,
+      "weight": 3,
+      "cooldownYears": 8,
+      "outcomes": [
+        {
+          "id": "foreman-covers",
+          "weight": 0.3,
+          "significance": 0.82,
+          "text": "工牌上写着十六岁，{subject}其实才十四。{worker}把工牌翻过来看了一眼，说“机器不认年龄”；第二天，{subject}的班次被排到了夜班，工钱多了一成。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "cash +1"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "safety",
+              "reason": "safety +5",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.08
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "工牌上写着十六岁，其实我才十四。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true,
+              "reason": "knowledge"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "foreman_covered_age",
+              "add": true,
+              "reason": "flag foreman_covered_age"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "mood +0.01"
+            }
+          ]
+        },
+        {
+          "id": "foreman-reports",
+          "weight": 0.25,
+          "significance": 0.86,
+          "text": "{worker}把工牌交到办公室，说这孩子不够岁数。{subject}被从车间领出来，{parent}在门口等着，手里还攥着刚领的半袋面粉；两个人一路没有说话。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "cash -1"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "safety",
+              "reason": "safety -10",
+              "delta": -10
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "returnPressure",
+              "reason": "returnPressure +10",
+              "delta": 10
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "fear": 0.08
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": -0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "foreman_reported_age",
+              "add": true,
+              "reason": "flag foreman_reported_age"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.05,
+              "reason": "mood -0.05"
+            }
+          ]
+        },
+        {
+          "id": "child-forges-age",
+          "weight": 0.25,
+          "significance": 0.8,
+          "text": "{subject}用铅笔把工牌上的“四”描成了“六”。{worker}看了一眼，没有拆穿，只把铅笔没收；那天下午，{subject}在厕所里又找到一截炭条，把年龄描得更黑。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "cash +1"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "originKnowledge",
+              "reason": "originKnowledge -5",
+              "delta": -5
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "loyalty",
+              "reason": "loyalty +5",
+              "delta": 5
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "child_forged_age",
+              "add": true,
+              "reason": "flag child_forged_age"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "mood +0.02"
+            }
+          ]
+        },
+        {
+          "id": "parent-intervenes",
+          "weight": 0.2,
+          "significance": 0.78,
+          "text": "{parent}来工厂找{worker}，说孩子只是想挣一张车票钱。{worker}没有答应，也没有叫警卫；三个人站在车间门口，机器的声音大得谁也听不清谁。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "fw19-war-ward",
+              "key": "safety",
+              "reason": "safety +3",
+              "delta": 3
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "cash -1"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$parent",
+              "kind": "kin",
+              "reason": "relation kin",
+              "trust": 0.05
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$worker",
+              "kind": "acquaintance",
+              "reason": "relation acquaintance",
+              "trust": 0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parent_intervened_at_factory",
+              "add": true,
+              "reason": "flag parent_intervened_at_factory"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "mood +0.01"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
