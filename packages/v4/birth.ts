@@ -187,9 +187,30 @@ export function createV4Birth(
     action: 'birth',
     causes: [],
     effects: [],
-    immediateText: `${child.name}在${place.name}出生。${
-      guardians.find((person) => person.sex === 'female')?.name ?? guardians[0]!.name
-    }在生产后抱着孩子；这间住处现在住了${living(family).length}口人。`,
+    immediateText: (() => {
+      const mother = guardians.find((person) => person.sex === 'female') ?? guardians[0]!;
+      const father = guardians.find((person) => person.id !== mother.id);
+      const siblings = living(family).filter(
+        (person) => person.id !== child.id && ageAt(person, draft.date) < 18,
+      );
+      const motherWork = mother.employment?.occupation;
+      const fatherWork = father?.employment?.occupation;
+      const crowded = living(family).length >= 7;
+      const poor = family.cash < 8 || family.debt > 0;
+      const comfortable = family.cash >= 40;
+      const details: string[] = [];
+      if (poor) details.push('接生婆走后，母亲把最后几枚硬币压进糖罐底下');
+      else if (comfortable) details.push('家里提前备好了摇篮和一小叠干净布片');
+      else details.push('母亲把旧床单撕成尿布，父亲在走廊里烧了一壶水');
+      if (motherWork) details.push(`母亲是${motherWork}，产后的手还带着工作留下的茧`);
+      if (fatherWork) details.push(`父亲是${fatherWork}，在门外来回走了很久`);
+      if (siblings.length > 0) details.push(`屋里已经有${siblings.length}个孩子，最大的那个被叫来看一眼新生的小家伙`);
+      if (crowded) details.push('这间屋子挤得转不开身，但今晚没有人被赶出去');
+      const detail = details.slice(0, 2).join('；');
+      return `${child.name}在${place.name}出生。${mother.name}在生产后抱着孩子，${
+        father ? `${father.name}站在旁边，` : ''
+      }${detail}。这间住处现在住了${living(family).length}口人。`;
+    })(),
     significance: 0.95,
     visibility: 'public',
     provenance: { kind: 'birth', sourceId: requestId },

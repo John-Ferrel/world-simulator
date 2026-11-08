@@ -1550,7 +1550,7 @@ describe('v4 annual engine', () => {
       eventRuntime: true,
       maxOrdinaryEventsPerPerson: 2,
     });
-    expect(first.world.historyMeta.scheduledEvents?.[0]?.source).toBe('fact');
+    expect(first.world.historyMeta.scheduledEvents?.some((event) => event.source === 'fact')).toBe(true);
     const second = advanceV4Year(first.world, [source, trigger], {
       economy: { enabled: false },
       eventRuntime: true,
@@ -1599,7 +1599,7 @@ describe('v4 annual engine', () => {
       maxOrdinaryEventsPerPerson: 2,
     });
     expect(first.world.persons['person:anna']!.health.vitality).toBeLessThan(before);
-    expect(first.world.persons['person:anna']!.life?.flags).toContain('birth_cost:1913');
+    expect(first.world.persons['person:anna']!.life?.flags).toContain('birth_cost:1912');
     const vitalityAfterFirst = first.world.persons['person:anna']!.health.vitality;
     const second = advanceV4Year(first.world, [school], {
       economy: { enabled: false },
@@ -1866,7 +1866,7 @@ describe('v4 annual engine', () => {
             (relation.a === 'person:maria' && relation.b === 'person:anna')),
       ),
     ).toBe(true);
-    expect(result.world.relations['rel:josef:maria']!.end).toMatchObject({ year: 1913 });
+    expect(result.world.relations['rel:josef:maria']!.end).toMatchObject({ year: 1912 });
   });
 
   it('does not let an injury-recovery scene schedule itself forever', () => {

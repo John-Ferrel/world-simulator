@@ -2,6 +2,7 @@ import '@fontsource/noto-sans-sc/400.css';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import PaperDoll, { CompactDollEditor } from './PaperDoll';
+import WorldMap from './WorldMap';
 import {
   historicalPhaseLabel,
   historicalRoleLabel,
@@ -1194,7 +1195,14 @@ function PersonPane({
         <p className="muted">还没有可观察的人物。</p>
       </aside>
     );
-  const household = detail?.household;
+  const household = detail?.household
+    ? {
+        ...detail.household,
+        members: detail.household.members.filter(
+          (member, index, list) => list.findIndex((other) => other.id === member.id) === index,
+        ),
+      }
+    : undefined;
   const historicalProcesses = detail?.historicalProcesses ?? [];
   const historicalContacts = detail?.historicalContacts ?? [];
   const age = displayAge(person, world.date);
@@ -1202,6 +1210,15 @@ function PersonPane({
     <aside className="pane person-pane">
       <div className="pane-label">人物</div>
       <div className={`portrait ${person.died ? 'dead' : ''}`}>
+        <div className="portrait-status">
+          {person.died
+            ? '已故'
+            : person.owner
+              ? '你的人物'
+              : person.historical
+                ? '历史人物'
+                : (person.occupation ?? '维也纳')}
+        </div>
         <PaperDoll person={{ ...person, age }} direction={2} motion />
         <div className="portrait-years">{lifeSpanText(person)}</div>
         {person.died && <div className="death-stamp">卒</div>}
@@ -1387,7 +1404,9 @@ function PersonPane({
         <section className="side-section historical-contacts">
           <h3>历史人物关系</h3>
           <div className="historical-contact-list">
-            {historicalContacts.map((contact) => (
+            {historicalContacts
+              .filter((contact, index, list) => list.findIndex((other) => other.id === contact.id) === index)
+              .map((contact) => (
               <button
                 key={contact.id}
                 type="button"
@@ -1484,6 +1503,18 @@ function LogPane({
     [events],
   );
   const [yearFilter, setYearFilter] = useState<number | null>(null);
+  const [newEventId, setNewEventId] = useState<string | null>(null);
+  const previousLatestEvent = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    const latest = events[0]?.id;
+    if (!latest) return;
+    const previous = previousLatestEvent.current;
+    previousLatestEvent.current = latest;
+    if (!previous || previous === latest) return;
+    setNewEventId(latest);
+    const timer = setTimeout(() => setNewEventId(null), 2200);
+    return () => clearTimeout(timer);
+  }, [events]);
   const [personHover, setPersonHover] = useState<PersonHover | null>(null);
   const [processHover, setProcessHover] = useState<ProcessHover | null>(null);
   const [personDetails, setPersonDetails] = useState<Record<string, PersonDetail>>({});
@@ -1587,6 +1618,7 @@ function LogPane({
           <div className="log-order">最新在上 · 向下读旧记录</div>
         </div>
       </div>
+      {newEventId && <div className="new-event-banner">新的经历已写入</div>}
       {years.length > 1 && (
         <div className="year-jumps" aria-label="按年份筛选日志">
           <button
@@ -1642,18 +1674,20 @@ function LogPane({
                     </small>
                   </div>
                 )}
-                <LogEntry
-                  event={event}
-                  selectedId={person.id}
-                  ownerIds={ownerIds}
-                  onSelectPerson={selectPerson}
-                  onPersonHover={showPerson}
-                  onPersonLeave={() => setPersonHover(null)}
-                  onProcessHover={showProcess}
-                  onProcessLeave={() => setProcessHover(null)}
-                  onOpenProcess={onOpenProcess}
-                  onOpenEvent={openEvent}
-                />
+                <div className={event.id === newEventId ? 'fresh-event-wrap' : undefined}>
+                  <LogEntry
+                    event={event}
+                    selectedId={person.id}
+                    ownerIds={ownerIds}
+                    onSelectPerson={selectPerson}
+                    onPersonHover={showPerson}
+                    onPersonLeave={() => setPersonHover(null)}
+                    onProcessHover={showProcess}
+                    onProcessLeave={() => setProcessHover(null)}
+                    onOpenProcess={onOpenProcess}
+                    onOpenEvent={openEvent}
+                  />
+                </div>
               </React.Fragment>
             );
           })}
@@ -2434,8 +2468,14 @@ function WorldPane({
   onSelect: (id: string) => void;
 }) {
   const [showAllChronicle, setShowAllChronicle] = useState(false);
+  const activeIsSettlement = activePlace === 'place-wien' || activePlace === 'place-klosterneuburg';
   const here = activePlace
-    ? world.people.filter((person) => !person.died && person.locationId === activePlace)
+    ? world.people.filter(
+        (person) =>
+          !person.died &&
+          (person.locationId === activePlace ||
+            (activeIsSettlement && person.locationId.startsWith(`${activePlace}-`))),
+      )
     : [];
   const visibleChronicle = world.chronicle
     .slice()
@@ -2451,9 +2491,9 @@ function WorldPane({
   const activeLegacy = (world.macro?.legacy ?? []).slice(0, 4);
   return (
     <aside className="pane world-pane">
-      <div className="pane-label">维也纳 · 世界</div>
+      <div className="pane-label">世界 · 维也纳</div>
       <div className="map-frame">
-        <ViennaMap
+        <WorldMap
           people={world.people}
           selectedId={selectedId}
           activePlace={activePlace}
@@ -2462,8 +2502,8 @@ function WorldPane({
         <div className="map-caption">
           {placeById[activePlace ?? '']?.name ??
             (world.peopleTotal !== undefined && world.peopleTotal > world.people.length
-              ? `已载入 ${world.people.length} / ${world.peopleTotal} 人 · 点击地点查看在场的人`
-              : '利奥波德城与内城 · 点击地点查看在场的人')}
+              ? `真实地理底图 · 已载入 ${world.people.length} / ${world.peopleTotal} 人`
+              : '真实地理底图 · 点击维也纳或克洛斯特新堡查看在场的人')}
         </div>
       </div>
       {activePlace && (

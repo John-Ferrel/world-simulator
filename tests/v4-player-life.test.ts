@@ -93,6 +93,34 @@ describe('player-born Vienna life', () => {
     assertWorldV4(world);
   });
 
+  it('never stamps an ordinary event after the world clock', () => {
+    const birth = createV4Birth(
+      structuredClone(VIENNA_1912_SEED),
+      {
+        name: 'Clock check',
+        sex: 'female',
+        health: 0.8,
+        wish: '我想看看时间会不会走到我前面。',
+        lifeMode: 'ordinary',
+        appearance: { skin: 1, hair: 0, clothes: 2 },
+      },
+      'clock-check',
+      'owner-clock-check',
+    );
+    let world: WorldState = birth.world;
+    const key = (date: { year: number; month: number }) => date.year * 12 + date.month;
+    for (let i = 0; i < 6; i++) {
+      const result = advanceV4Year(world, [...VIENNA_1912_SCENES, ...VIENNA_LIFE_SCENES], {
+        economy: { enabled: false },
+        maxScenesPerPerson: 2,
+      });
+      world = result.world;
+      for (const event of result.events) {
+        expect(key(event.date), event.action).toBeLessThanOrEqual(key(world.date));
+      }
+    }
+  });
+
   it('births into a living family with capacity instead of the first household', () => {
     const seed = structuredClone(VIENNA_1912_SEED);
     // Force the alphabetically first household out of the candidate pool; the

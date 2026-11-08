@@ -272,6 +272,20 @@ pnpm v4:phase20-summary
 
 受控实验 A–D 4/4：同一面试因 fame/scandal 产生不同 DC 和 outcome；诅咒进入普通愿望；分居家庭重新开门；政治嫌疑翻案/再次指控。独立 Critic（修订前）给 **Scene 22/30、Life 18/30**（Phase 19: 21/17），并指出多数 adaptive context 只改赔率、separation 仍有 birth/divorce 碰撞、testimony truth 会被重置、旧 Kernel checkBonus 休眠、repeatRate 0.2274 回归（修订后 0.2290）。修订补了 `ad20-job-interview` 的 public-scandal context 并重跑实验/自然 dossier；Critic 分数不冒充修订后评分。完整证据见 [report](docs/v4/phase-20-report.md)、[design](docs/v4/phase-20-design.md)、[content](docs/v4/phase-20-content.md)、[critique](docs/v4/phase-20-critique.md) 与 [ADR 020](docs/decisions/ADR-020-adaptive-storylets-and-living-consequences.md)。
 
+## Phase 21 让它成为游戏
+
+Phase 21 不增加 Engine 复杂度，而是先修玩家真正看到的东西：
+
+- **人物**：修复 `.portrait` 被 flex 压成 2px 的 bug；260px 肖像舞台、192×192 Canvas、裁掉透明边距的 LPC 分层纸娃娃、年龄缩放、职业配件、素材失败 fallback。
+- **世界地图**：右栏从维也纳示意图换成真实 `countries.geojson`（177 个国家/地区轮廓）；支持全球/欧洲/人物视角、滚轮缩放、拖动；维也纳与克洛斯特新堡可点击，人物位置有金色脉冲。
+- **出生与 0–5 岁**：出生文本加入父母、职业、家庭现金/债务、兄弟姐妹；新增 5 个通用早期人生场景并提高 infant feeding/fever rate。真实 Engine 7 年 cohort 产生 **16 条**儿童/家庭事件；浏览器 e2e 在 5 秒/年下 30 秒内看到第 3 条以上日志。
+- **戏剧内容**：`pack-dramatic-lives`，16 kernels、2 states（`p21-scandal-web` / `p21-fortune-reversal`）、71 adaptive contexts、16 check kernels、16 conditional-outcome kernels、224 compiled scenes；秘密继承人、勒索婚礼、决斗、假死、毒酒、遗嘱、旧敌、假认罪、公开羞辱等。
+- **规模**：**113 states / 2,124 kernels / 32 packs**。
+- **自然 A/B/C**：61,718 events / 5,123 focal；drama 203 世界事件（0.33%）、22 focal（0.43%）；两个新 State 都出现；10/16 drama Kernel 自然出现；repeatRate 0.2423（高于 Phase 20 0.2290 和 Phase 19 0.2104）。
+- **浏览器验收**：`tests/v4-browser/phase21.spec.ts` 通过（9.5s）；截图 `docs/v4/phase-21-browser-final.png`。
+
+独立 Critic（修订前）给 **Scene 24/30、Life 19/30**（Phase 20: 22/18），并抓到 1914-01 header vs 1914.09 日志的 chronology bug；修订已修 chronology 并重跑，分数不冒充修订后。完整见 `docs/v4/phase-21-critique.md`；完整证据见 [report](docs/v4/phase-21-report.md)、[experience audit](docs/v4/phase-21-experience-audit.md)、[visual design](docs/v4/phase-21-visual-design.md)、[dramatic content](docs/v4/phase-21-dramatic-content.md)、[playtest](docs/v4/phase-21-playtest.md)。
+
 ## 已知限制与边界
 
 - **内容范围**：静态运行时 183 个事件场景（含 104 个生成场景、519 条生成叙事变体）和 50 个主动 Task（144 outcomes/288 narrations）；另有运行时 content pack 机制，发布后动态加载，仍只是维也纳切片，不是完整 1900 地球人生。离婚、再婚、同性关系、继承和住房容量已有第一版机制，但缺少玩家选择、完整法律程序、再婚/继承分配策略和大规模内容覆盖。

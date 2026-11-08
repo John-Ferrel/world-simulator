@@ -975,7 +975,7 @@ export function advanceV4Year(
   reapVitalityZero(context, target);
   if (normalized.eventRuntime) {
     processScheduledEvents(context, [...definitions, ...context.tasks], target);
-    runEventYear(context, definitions, target, resolvedCounts);
+    runEventYear(context, definitions, target, resolvedCounts, from);
   } else {
     runScenes(context, definitions, target, resolvedCounts, false);
   }
@@ -3657,7 +3657,10 @@ function scheduleFactTriggers(context: EngineContext, event: EventFact, depth: n
     // injury facts (e.g. wound care worsening the wound). Without this guard it
     // schedules itself forever, and the log repeats the same recovery every year.
     if (definition.id === sourceSceneId || event.action.startsWith(`${definition.id}/`)) continue;
-    const due = { year: event.date.year + 1, month: 1 };
+    // Ordinary events are stamped in the elapsed year; the next eligible
+    // follow-up must still be at least one year after the target clock, or a
+    // scene can be scheduled for a birthday that has not happened yet.
+    const due = { year: Math.max(event.date.year + 1, context.target.year + 1), month: 1 };
     if (!sceneEligible(context, definition, subject, due)) continue;
     const id = `queue:fact:${event.id}:${definition.id}:${subject.id}`;
     if (queue.some((item) => item.id === id)) continue;
@@ -5001,6 +5004,7 @@ function runEventYear(
   definitions: SceneDefinition[],
   date: WorldDate,
   resolvedCounts: Map<Id, number>,
+  from: WorldDate,
 ): void {
   const index = indexScenesByStage(definitions);
   const candidateSetCache = new Map<string, CandidateSet>();
@@ -5432,17 +5436,20 @@ function runEventYear(
             'event-month',
             chosen.definition.id,
             subject.id,
-            date.year,
+            from.year,
           )() * 12,
         ) %
           12);
+      // Ordinary events belong to the year that just elapsed, not to a random
+      // future month of the target year. The world header may already show
+      // 1914-01 while the log is still filling 1913.
       resolveScene(
         context,
         chosen.definition,
         subject,
         cast.roles,
         selection,
-        { year: date.year, month: eventMonth },
+        addMonths(from, eventMonth - 1),
         0,
       );
       ordinary += 1;

@@ -25,6 +25,7 @@ import oddJobs from './pack-odd-jobs.json' with { type: 'json' };
 import historyStreet from './pack-history-street.json' with { type: 'json' };
 import adaptiveEveryday from './pack-adaptive-everyday.json' with { type: 'json' };
 import livingConsequences from './pack-living-consequences.json' with { type: 'json' };
+import dramaticLives from './pack-dramatic-lives.json' with { type: 'json' };
 import collisionPowerLove from './pack-collision-power-love.json' with { type: 'json' };
 import collisionFamilyWar from './pack-collision-family-war.json' with { type: 'json' };
 import collisionLuckCraft from './pack-collision-luck-craft.json' with { type: 'json' };
@@ -71,6 +72,7 @@ export const GENERATED_STATE_PACKS: StatePack[] = [
   collisionElderHistory,
   adaptiveEveryday,
   livingConsequences,
+  dramaticLives,
 ] as unknown as StatePack[];
 
 export const GENERATED_STATES: StateDefinition[] = GENERATED_STATE_PACKS.flatMap(

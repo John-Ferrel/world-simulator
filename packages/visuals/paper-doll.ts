@@ -72,6 +72,7 @@ export function appearanceLayers(
   p: Pick<Person, 'appearance' | 'occupation' | 'health' | 'death' | 'life'> & {
     age?: number;
     stress?: number;
+    roles?: string[];
   },
   direction = 2,
 ) {
@@ -181,6 +182,39 @@ export function appearanceLayers(
       const asset = dollAssets.find((v) => v.slot === slot && v.id === id);
       if (asset && fits(asset, clothingBody)) add(asset, color);
     }
+  }
+
+  // Automatic occupational / status dress. The player observes rather than
+  // managing equipment, so these layers are derived from the person's public
+  // role and age. Explicit doll choices always win.
+  const roles = p.roles ?? [];
+  const occupation = (p.occupation ?? '').toLowerCase();
+  const isChild = stage === 'child' || stage === 'teen';
+  const professional =
+    occupation.includes('arzt') ||
+    occupation.includes('doctor') ||
+    occupation.includes('beamter') ||
+    roles.includes('official');
+  const student =
+    roles.includes('student') || roles.includes('pupil') || roles.includes('scholar');
+  const soldier = roles.includes('soldier') || occupation.includes('soldat');
+  const artist =
+    roles.includes('artist') || occupation.includes('künstler') || occupation.includes('maler');
+  if (!isChild && !d.coat && (professional || soldier)) {
+    const coat = dollAssets.find((v) => v.slot === 'coat' && fits(v, clothingBody));
+    if (coat) add(coat, soldier ? '#4c5960' : '#343b36');
+  }
+  if (!isChild && !d.glasses && (professional || student)) {
+    const glasses = dollAssets.find((v) => v.slot === 'glasses' && v.id.includes('round'));
+    if (glasses) add(glasses);
+  }
+  if (!d.backpack && student) {
+    const backpack = dollAssets.find((v) => v.slot === 'backpack' && fits(v, clothingBody));
+    if (backpack) add(backpack, '#6e573f');
+  }
+  if (!isChild && !d.hat && artist) {
+    const hat = dollAssets.find((v) => v.slot === 'hat' && v.id.includes('bandana'));
+    if (hat) add(hat, '#8a5b46');
   }
   return layers.sort((a, b) => a.asset.z - b.asset.z);
 }

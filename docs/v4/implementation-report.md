@@ -1,8 +1,10 @@
 # v4 实现与验收报告
 
-日期：2026-11-07（滚动更新；最近一轮为 Phase 20）
+日期：2026-11-08（滚动更新；最近一轮为 Phase 21）
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
+
+> 2026-11-08 Phase 21 更新：把“能不能玩”作为验收目标。修复左侧肖像 flex 压缩成 2px 的消失 bug；260px 肖像舞台、192×192 Canvas、裁边 LPC 分层纸娃娃、年龄缩放与职业配件。右栏从维也纳示意图换成真实 `countries.geojson` 世界地图（177 轮廓、缩放/拖动、维也纳/克洛斯特新堡、人物脉冲）。出生文本加入父母/职业/家庭现金债务（兄弟姐妹/拥挤细节可能被截断）；新增 5 个通用早期人生场景，Engine 7 年 cohort 16 条儿童/家庭事件，浏览器 e2e 30 秒内看到第 3 条日志。注册 `pack-dramatic-lives`：16 kernels / 2 states / 71 adaptive contexts / 16 checks / 16 conditional / 224 scenes。规模 **113 states / 2,124 kernels / 32 packs**。自然 A/B/C：61,718 events / 5,123 focal；drama 203 world（0.33%）/ 22 focal（0.43%）；repeatRate 0.2423；两个新 State 出现。浏览器 `tests/v4-browser/phase21.spec.ts` 通过（9.5s）。完整报告见 [phase-21-report.md](phase-21-report.md)、[experience audit](phase-21-experience-audit.md)、[visual design](phase-21-visual-design.md)、[dramatic content](phase-21-dramatic-content.md)、[playtest](phase-21-playtest.md)、[critique](phase-21-critique.md)。
 
 > 2026-11-07 Phase 20 更新：内容库从 **107 / 2,060 / 29** 扩展到 **111 states / 2,108 kernels / 31 packs**；新增 2 个 Adaptive Pack（48 kernels / 4 states）与 8 个旧 Kernel 的 AdaptiveContext retrofit（25 contexts）。`AdaptiveContext` 不 gate，只改选择权重和 d20 检定；受控实验 A–D 4/4（同一面试 fame DC 9 success vs scandal DC 15 failure、curse-lifted、same-key、re-accused）。自然 A/B/C：65,137 events / 5,593 focal；新 Pack 1,227（1.88%）、focal 97（1.73%）、adaptive-capable Kernel focal 125（2.23%）；4/4 新 State 出现；repeatRate 0.2290（高于 Phase 19 的 0.2104，真实回归）。`pnpm test` 100 files / 567 pass / 37 skip；build、typecheck、31 packs validate 通过。完整报告见 [phase-20-report.md](phase-20-report.md)、[design](phase-20-design.md)、[content](phase-20-content.md)、[critique](phase-20-critique.md) 与 [ADR-020](../decisions/ADR-020-adaptive-storylets-and-living-consequences.md)。
 
@@ -403,3 +405,21 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 独立 Critic | 修订前 **Scene 22/30、Life 18/30**（Phase 19: 21/17）；5 个 outcome flips、42/62 adaptive DC shifts；separation birth/divorce 碰撞、testimony truth 重置、retrofit checkBonus 休眠、repeatRate 0.2274 回归被点名（修订后 0.2290）。修订响应：补 `ad20-job-interview` 的 `public-scandal` context 并重跑实验/自然 dossier；未重跑 Critic 分数。完整见 `phase-20-critique.md` |
 
 未完成/限制：focal share 1.73% 仍低于 12%；repeatRate 0.2290 高于 Phase 19 0.2104；部分 `pc20` 分支未自然出现；旧 Kernel 的 checkBonus 多数休眠；家庭/伴侣 slot machine、horizon、生产 runtime 未修。不得把 111 states / 2,108 kernels 或 2.23% focal share 当作生活质量问题已解决。
+
+## Phase 21（2026-11-08）— Make It a Game
+
+完整报告：`docs/v4/phase-21-report.md`；体验审计：`phase-21-experience-audit.md`；视觉：`phase-21-visual-design.md`；戏剧：`phase-21-dramatic-content.md`；试玩：`phase-21-playtest.md`；Critic：`phase-21-critique.md`。
+
+| 项 | 实测 |
+|---|---|
+| 人物 | 修复 `.portrait` 2px flex bug；260px 舞台 / 192×192 Canvas / 裁边 LPC 分层 / 年龄缩放 / 职业配件 / fallback |
+| 世界地图 | `WorldMap.tsx` + `countries.geojson` 177 轮廓；全球/欧洲/人物、缩放、拖动；维也纳/克洛斯特新堡可点击；人物脉冲 |
+| 出生/早期 | 家庭细节 birth text；5 个新 `vienna-life-*` 场景；feeding/fever rate 0.6/0.45；Engine 7 年 16 条儿童/家庭事件 |
+| 戏剧 | `pack-dramatic-lives` 16 kernels / 2 states / 71 contexts / 16 checks / 16 conditional / 224 scenes |
+| 规模 | **113 states / 2,124 kernels / 32 packs**；2,093 story shapes；45 high-similarity pairs |
+| 自然 A/B/C | 61,718 events / 5,123 focal；drama 203 world（0.33%）/ 22 focal（0.43%）；两个新 State；10/16 kernels 出现；repeat 0.2423 |
+| 浏览器 | `tests/v4-browser/phase21.spec.ts` 1 passed（9.5s）；肖像 260、Canvas 216、地图 177 paths、日志 4 条 |
+| 测试 | `pnpm test`、`tsc`、`build`、`v4:validate-packs` 结果见 phase-21-report |
+| 独立 Critic | 修订前 **Scene 24/30、Life 19/30**（Phase 20: 22/18）；肖像/地图真修好，但 LPC 不是 DoL 级；0–5 有 16 条事件但仍有 15–16 月空档；drama 22 focal/0.43%，elder-testimony 重复，secret-heir/false-confession 自然 0；抓到 1914-01 header vs 1914.09 日志的 chronology bug。修订已修 chronology 并加测试/重跑；分数不冒充修订后。完整见 `phase-21-critique.md` |
+
+未完成/限制：Drama focal 0.43% 仍低；`p21-elder-testimony` 重复；`p21-secret-heir`/`p21-false-confession` 自然 0；LPC 美术仍非 DoL 级；无逐年历史国界；历史进程/经济/组织不可视化；没有大规模用户留存数据。不得把 113/2,124/32 或 4 条早期日志当作“游戏已经好玩”的充分证明。

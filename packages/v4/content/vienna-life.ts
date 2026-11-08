@@ -41,6 +41,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
     stage: 'infancy',
     ageWindow: { min: 0, max: 1 },
     subjectProvenance: ['birth'],
+    rate: 0.6,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 0, maxAge: 1 },
       {
@@ -143,6 +144,7 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
     stage: 'infancy',
     ageWindow: { min: 0, max: 2 },
     subjectProvenance: ['birth'],
+    rate: 0.45,
     roles: [
       { key: 'subject', kind: 'subject', required: true, minAge: 0, maxAge: 2 },
       {
@@ -262,6 +264,323 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
     ],
     tags: ['infancy', 'illness', 'death', 'baseline_mortality'],
     sourceIds: ['source-wien-geschichte-saeuglingssterblichkeit'],
+    ...viennaBasis,
+  },
+  {
+    id: 'vienna-life-infant-first-smile',
+    version: 1,
+    packId: PACK,
+    title: '第一次笑出声',
+    stage: 'infancy',
+    ageWindow: { min: 0, max: 1 },
+    subjectProvenance: ['birth'],
+    oncePerPerson: true,
+    rate: 0.55,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 0, maxAge: 1 },
+      {
+        key: 'caregiver',
+        kind: 'parent',
+        required: true,
+        minAge: 16,
+        maxAge: 60,
+        sameHousehold: true,
+      },
+    ],
+    conditions: [
+      { kind: 'age', min: 0, max: 1 },
+      { kind: 'stage', in: ['infancy'] },
+      { kind: 'placeKind', in: ['home'] },
+      { kind: 'hasRelation', relationKind: 'kin', minTrust: 0.2 },
+    ],
+    outcomes: [
+      {
+        id: 'smile-at-the-lamp',
+        weight: 0.5,
+        immediateText:
+          '{caregiver}把{subject}抱到窗边，煤汽灯罩上有一圈晃动的光。孩子盯着看了很久，忽然笑出声，口水滴在{caregiver}的袖口上。屋里的人都停了一下，像是听见了什么了不起的消息。',
+        effects: [
+          { type: 'mood', personId: '$caregiver', amount: 0.04, reason: 'the baby laughed for the first time' },
+          { type: 'relation', a: '$caregiver', b: '$subject', kind: 'kin', affection: 0.05, reason: 'a first laugh' },
+          { type: 'health', personId: '$subject', amount: 0.01, reason: 'a good day' },
+        ],
+      },
+      {
+        id: 'colic-night',
+        weight: 0.3,
+        immediateText:
+          '夜里{subject}哭了很久，{caregiver}抱着孩子在屋里来回走，数着地板缝。天快亮时孩子终于打了个嗝，安静下来；{caregiver}坐在床沿，发现自己还保持着走路的姿势。',
+        effects: [
+          { type: 'mood', personId: '$caregiver', amount: -0.03, reason: 'a sleepless night with a colicky baby' },
+          { type: 'health', personId: '$caregiver', amount: -0.01, reason: 'lost sleep' },
+          { type: 'relation', a: '$caregiver', b: '$subject', kind: 'kin', obligation: 0.03, reason: 'carried the baby through the night' },
+        ],
+      },
+      {
+        id: 'neighbour-warning',
+        weight: 0.2,
+        immediateText:
+          '隔壁的女人探头进来，说孩子笑得太早，老人讲这不是好兆头。{caregiver}没有接话，只把{subject}往怀里拢了拢；孩子却伸手去抓那女人围裙上的扣子，抓得不肯松。',
+        effects: [
+          { type: 'mood', personId: '$caregiver', amount: -0.01, reason: 'a neighbour\'s superstition' },
+          { type: 'relation', a: '$caregiver', b: '$subject', kind: 'kin', affection: 0.02, reason: 'held the child closer' },
+          { type: 'flag', personId: '$subject', flag: 'early_smile_omen', add: true, reason: 'a neighbour called the early smile an omen' },
+        ],
+      },
+    ],
+    tags: ['infancy', 'family', 'first', 'warm'],
+    ...viennaBasis,
+  },
+  {
+    id: 'vienna-life-toddler-first-words',
+    version: 1,
+    packId: PACK,
+    title: '第一句像话的话',
+    stage: 'infancy',
+    ageWindow: { min: 1, max: 3 },
+    subjectProvenance: ['birth'],
+    oncePerPerson: true,
+    rate: 0.55,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 1, maxAge: 3 },
+      {
+        key: 'caregiver',
+        kind: 'parent',
+        required: true,
+        minAge: 16,
+        maxAge: 65,
+        sameHousehold: true,
+      },
+    ],
+    conditions: [
+      { kind: 'age', min: 1, max: 3 },
+      { kind: 'stage', in: ['infancy'] },
+      { kind: 'placeKind', in: ['home'] },
+    ],
+    outcomes: [
+      {
+        id: 'first-word-more',
+        weight: 0.35,
+        immediateText:
+          '{subject}把空碗推回{caregiver}面前，清清楚楚地说了一个字：“还要。”{caregiver}愣住，随后把锅底最后一点糊刮进碗里。孩子学会了用一句话让世界再转一圈。',
+        effects: [
+          { type: 'skill', personId: '$subject', skill: 'social', amount: 0.04, reason: 'learned to ask for more' },
+          { type: 'mood', personId: '$caregiver', amount: 0.03, reason: 'the first clear word' },
+          { type: 'relation', a: '$caregiver', b: '$subject', kind: 'kin', affection: 0.04, reason: 'the first clear word' },
+        ],
+      },
+      {
+        id: 'first-word-door',
+        weight: 0.35,
+        immediateText:
+          '门外有人上楼，{subject}忽然指着门说：“爸爸。”{caregiver}看了看空门口，没有纠正。那天晚上，孩子把家里每个人的名字都叫了一遍，叫错两个，却叫得很认真。',
+        effects: [
+          { type: 'skill', personId: '$subject', skill: 'social', amount: 0.03, reason: 'named the household' },
+          { type: 'mood', personId: '$caregiver', amount: 0.02, reason: 'a child learning names' },
+          { type: 'flag', personId: '$subject', flag: 'first_word_door', add: true, reason: 'the first word was aimed at the door' },
+        ],
+      },
+      {
+        id: 'first-word-nonsense',
+        weight: 0.3,
+        immediateText:
+          '{subject}说了一长串谁也听不懂的话，最后用力点头，像是在宣布一件已经决定的事。{caregiver}认真听完，也点了点头；孩子满意地爬走了，留下大人们互相看着，忍不住笑。',
+        effects: [
+          { type: 'mood', personId: '$caregiver', amount: 0.04, reason: 'a serious nonsense speech' },
+          { type: 'skill', personId: '$subject', skill: 'social', amount: 0.02, reason: 'practised talking' },
+        ],
+      },
+    ],
+    tags: ['infancy', 'family', 'first', 'comic'],
+    ...viennaBasis,
+  },
+  {
+    id: 'vienna-life-toddler-accident',
+    version: 1,
+    packId: PACK,
+    title: '楼梯口的一瞬间',
+    stage: 'infancy',
+    ageWindow: { min: 2, max: 4 },
+    subjectProvenance: ['birth'],
+    rate: 0.38,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 2, maxAge: 4 },
+      {
+        key: 'caregiver',
+        kind: 'parent',
+        required: true,
+        minAge: 16,
+        maxAge: 65,
+        sameHousehold: true,
+      },
+    ],
+    conditions: [
+      { kind: 'age', min: 2, max: 4 },
+      { kind: 'stage', in: ['infancy'] },
+    ],
+    outcomes: [
+      {
+        id: 'bruised-arm',
+        weight: 0.45,
+        immediateText:
+          '{subject}在楼梯口追一只滚下去的线轴，脚下一滑，胳膊先撞在铁扶手上。{caregiver}听见哭声跑出来，用冷水毛巾敷住那块青紫，嘴里说着“没事”，手却一直在抖。',
+        effects: [
+          { type: 'health', personId: '$subject', amount: -0.05, reason: 'fell at the stairwell' },
+          { type: 'condition', personId: '$subject', condition: 'bruised arm', add: true, reason: 'a fall on the stairs' },
+          { type: 'relation', a: '$caregiver', b: '$subject', kind: 'kin', affection: 0.03, reason: 'carried the child after a fall' },
+          { type: 'mood', personId: '$caregiver', amount: -0.03, reason: 'a child\'s fall' },
+        ],
+      },
+      {
+        id: 'scalded-hand',
+        weight: 0.25,
+        immediateText:
+          '厨房的锅盖没有盖严，{subject}伸手去够桌上的勺子，蒸汽先扑到手腕上。{caregiver}把孩子抱到水缸边，一瓢一瓢地浇冷水；孩子哭得打嗝，锅里的汤还在冒泡。',
+        effects: [
+          { type: 'health', personId: '$subject', amount: -0.08, reason: 'scalded hand' },
+          { type: 'condition', personId: '$subject', condition: 'scalded hand', add: true, reason: 'steam from a cooking pot' },
+          { type: 'cash', householdId: '$household', amount: -1, reason: 'bandages and ointment' },
+          { type: 'mood', personId: '$caregiver', amount: -0.05, reason: 'a preventable burn' },
+        ],
+      },
+      {
+        id: 'safe-in-the-doorway',
+        weight: 0.3,
+        immediateText:
+          '{caregiver}在最后一刻抓住了{subject}的后领。孩子悬在两级台阶之间，鞋底蹭着地，手里还攥着那只线轴。{caregiver}把孩子放回地上，蹲下来看了很久，才说：“再跑，我就把门关上。”',
+        effects: [
+          { type: 'relation', a: '$caregiver', b: '$subject', kind: 'kin', fear: 0.04, obligation: 0.03, reason: 'a narrow escape at the stairs' },
+          { type: 'mood', personId: '$caregiver', amount: -0.02, reason: 'fright at the stairwell' },
+          { type: 'skill', personId: '$subject', skill: 'social', amount: 0.01, reason: 'learned a boundary' },
+        ],
+      },
+    ],
+    tags: ['infancy', 'accident', 'family', 'danger'],
+    ...viennaBasis,
+  },
+  {
+    id: 'vienna-life-child-family-legend',
+    version: 1,
+    packId: PACK,
+    title: '家里的那个故事',
+    stage: 'childhood',
+    ageWindow: { min: 3, max: 5 },
+    subjectProvenance: ['birth'],
+    oncePerPerson: true,
+    rate: 0.5,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 3, maxAge: 5 },
+      {
+        key: 'caregiver',
+        kind: 'parent',
+        required: true,
+        minAge: 18,
+        maxAge: 70,
+        sameHousehold: true,
+      },
+    ],
+    conditions: [
+      { kind: 'age', min: 3, max: 5 },
+      { kind: 'stage', in: ['childhood'] },
+      { kind: 'placeKind', in: ['home'] },
+    ],
+    outcomes: [
+      {
+        id: 'lost-relative',
+        weight: 0.4,
+        immediateText:
+          '{caregiver}在收拾箱子时翻出一张没有署名的照片，说那是家里一个“去了很远地方”的人。{subject}问还回不回来，{caregiver}把照片翻过去，说先把名字记住，别在饭桌上问。',
+        effects: [
+          { type: 'knowledge', holderId: '$subject', proposition: '家里有一张没有署名的照片，照片上的人去了很远的地方。', confidence: 0.6, sourceKind: 'told', visibility: 'private', trueInWorld: true },
+          { type: 'flag', personId: '$subject', flag: 'family_legend_photo', add: true, reason: 'saw the unsigned photograph' },
+          { type: 'mood', personId: '$subject', amount: -0.01, reason: 'a story with a closed door' },
+        ],
+      },
+      {
+        id: 'stolen-inheritance',
+        weight: 0.3,
+        immediateText:
+          '{caregiver}说，家里本来有一件东西，后来被“更会说话的人”拿走了。{subject}问是什么，{caregiver}只说是一块表，表盖里刻着姓。孩子记住了“表盖里刻着姓”，却没有记住那个姓。',
+        effects: [
+          { type: 'knowledge', holderId: '$subject', proposition: '家里有一块表盖里刻着姓的表，被一个更会说话的人拿走了。', confidence: 0.55, sourceKind: 'told', visibility: 'private', trueInWorld: true },
+          { type: 'flag', personId: '$subject', flag: 'family_legend_watch', add: true, reason: 'heard about the stolen watch' },
+        ],
+      },
+      {
+        id: 'happy-legend',
+        weight: 0.3,
+        immediateText:
+          '{caregiver}讲起自己小时候在乡下追一只白鹅，追到河边，鹅没追到，倒捡回一篮鸭蛋。{subject}笑得从凳子上滑下来，{caregiver}也跟着笑，说这个家不是只有欠账和葬礼。',
+        effects: [
+          { type: 'mood', personId: '$subject', amount: 0.04, reason: 'a happy family story' },
+          { type: 'mood', personId: '$caregiver', amount: 0.02, reason: 'telling a happy story' },
+          { type: 'relation', a: '$caregiver', b: '$subject', kind: 'kin', affection: 0.04, reason: 'a shared family story' },
+        ],
+      },
+    ],
+    tags: ['childhood', 'family', 'secret', 'story'],
+    ...viennaBasis,
+  },
+  {
+    id: 'vienna-life-child-first-friend',
+    version: 1,
+    packId: PACK,
+    title: '楼道里的第一个朋友',
+    stage: 'childhood',
+    ageWindow: { min: 4, max: 6 },
+    subjectProvenance: ['birth'],
+    oncePerPerson: true,
+    rate: 0.5,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 4, maxAge: 6 },
+      {
+        key: 'friend',
+        kind: 'neighbor',
+        required: true,
+        minAge: 3,
+        maxAge: 8,
+      },
+    ],
+    conditions: [
+      { kind: 'age', min: 4, max: 6 },
+      { kind: 'stage', in: ['childhood'] },
+    ],
+    outcomes: [
+      {
+        id: 'shared-toy',
+        weight: 0.45,
+        immediateText:
+          '{friend}在楼道里滚一只铁环，{subject}站在门口看。{friend}把铁环推过来，说“你推一次，我推一次”。两个人从楼梯口推到院子里，铁环倒下的声音把午睡的大人吵醒了一排。',
+        effects: [
+          { type: 'relation', a: '$subject', b: '$friend', kind: 'friend', trust: 0.12, affection: 0.08, reason: 'played with a hoop in the stairwell' },
+          { type: 'skill', personId: '$subject', skill: 'social', amount: 0.05, reason: 'made a first friend' },
+          { type: 'mood', personId: '$subject', amount: 0.05, reason: 'a first friend' },
+        ],
+      },
+      {
+        id: 'stolen-marble',
+        weight: 0.3,
+        immediateText:
+          '{friend}把{subject}的玻璃弹珠藏进鞋里，被当场看见。{friend}说只是“替你拿着”，{subject}没有揭穿，也没有再拿出第二颗。两个人蹲在墙根，把一只蚂蚁看了很久，谁也没有先回家。',
+        effects: [
+          { type: 'relation', a: '$subject', b: '$friend', kind: 'friend', trust: 0.03, affection: 0.04, reason: 'a small theft and a silence' },
+          { type: 'skill', personId: '$subject', skill: 'social', amount: 0.02, reason: 'learned to keep a suspicion' },
+          { type: 'mood', personId: '$subject', amount: -0.01, reason: 'a friend took something' },
+        ],
+      },
+      {
+        id: 'imaginary-friend',
+        weight: 0.25,
+        immediateText:
+          '院子里没有别的孩子，{subject}给墙上的裂纹起了一个名字，每天吃饭时给它留一个位置。家里的人没有纠正，只在摆碗时多放一只空碗；{friend}从门口经过，问{subject}在等谁。',
+        effects: [
+          { type: 'skill', personId: '$subject', skill: 'social', amount: 0.03, reason: 'invented a companion' },
+          { type: 'flag', personId: '$subject', flag: 'imaginary_friend', add: true, reason: 'named a crack in the wall' },
+          { type: 'relation', a: '$subject', b: '$friend', kind: 'friend', trust: 0.06, affection: 0.03, reason: 'a neighbour noticed the imaginary friend' },
+        ],
+      },
+    ],
+    tags: ['childhood', 'friendship', 'family', 'comic'],
     ...viennaBasis,
   },
   {

@@ -1,6 +1,6 @@
 # Content Catalog
 
-Generated: 2026-11-07T13:11:58.407Z
+Generated: 2026-11-08T15:29:54.372Z
 
 This file is generated from the runtime content, not maintained by hand.
 
@@ -8,15 +8,15 @@ This file is generated from the runtime content, not maintained by hand.
 
 | Metric | Value |
 |---|---:|
-| states | 111 |
-| kernels | 2108 |
-| eventKernels | 1746 |
+| states | 113 |
+| kernels | 2124 |
+| eventKernels | 1762 |
 | taskKernels | 362 |
-| generatedPacks | 31 |
-| generatedStates | 75 |
-| generatedKernels | 503 |
-| adaptiveKernels | 56 |
-| adaptiveContexts | 230 |
+| generatedPacks | 32 |
+| generatedStates | 77 |
+| generatedKernels | 519 |
+| adaptiveKernels | 72 |
+| adaptiveContexts | 301 |
 
 ## Stage coverage
 
@@ -25,8 +25,8 @@ This file is generated from the runtime content, not maintained by hand.
 | infancy | 4 |
 | childhood | 84 |
 | adolescence | 171 |
-| adulthood | 1772 |
-| elderhood | 77 |
+| adulthood | 1787 |
+| elderhood | 78 |
 
 ## Least-covered domains
 
@@ -83,6 +83,7 @@ This file is generated from the runtime content, not maintained by hand.
 | `pack-collision-elder-history` | 2 | 23 | family, history, legal, media, memory, politics | adulthood, elderhood | em18-family-archive, em18-late-bloom, fame, family-estate, grief, hs18-street-witness, institution-purge, lc17-empty-nest |
 | `pack-adaptive-everyday` | 2 | 24 | bureaucracy, business, craft, economy, education, everyday, family, health, housing, legal, luck, media, neighborhood, politics, social, travel, work | adulthood | apprenticeship-contract, blacklisted, chronic-illness, cursed-by-wish, debt-bondage, df18-borrowed-luck, factory-employment, failed-apprentice |
 | `pack-living-consequences` | 2 | 24 | craft, curse, family, housing, legal, love, luck, media, politics, reputation, social, wish | adulthood, elderhood | chronic-illness, cursed-by-wish, debt-bondage, df18-borrowed-luck, eh19-late-testimony, em18-family-archive, failed-apprentice, fame |
+| `pack-dramatic-lives` | 2 | 16 | crime, culture, economy, family, legal, politics, social | adulthood, elderhood | blacklisted, cursed-by-wish, debt-bondage, detained, eh19-late-testimony, failed-apprentice, fame, family-estate |
 
 ## Adaptive storylets
 
@@ -95,6 +96,7 @@ This file is generated from the runtime content, not maintained by hand.
 | `pack-odd-jobs` | 3 | 10 |
 | `pack-adaptive-everyday` | 24 | 108 |
 | `pack-living-consequences` | 24 | 97 |
+| `pack-dramatic-lives` | 16 | 71 |
 
 ## Pack metadata
 
@@ -131,6 +133,7 @@ This file is generated from the runtime content, not maintained by hand.
 | `pack-collision-elder-history` | elderhood, memory, testimony, inherited_politics, archive, legacy, family_division, historical_evidence | historical, political, melancholy, eerie, warm | uncommon | 政治审讯与清洗, 战争与占领, 记忆衰退, 家庭分裂, 死亡与丧亲, 历史暴力, 档案销毁 |
 | `pack-adaptive-everyday` | everyday_life, public_attention, private_bargain, reputation, favor, debt, neighborhood, work, family, irony | everyday, warm, comic, dark, ironic | common | public shaming, debt and obligation, police questioning, class humiliation, family conflict, death and funerals, mild coercion |
 | `pack-living-consequences` | living_consequences, reconciliation, reversal, second_chance, testimony, separation, curse, luck, family_secret, legacy | melancholy, warm, tense, ironic, historical | uncommon | 分居与离婚, 公开指控与翻案, 政治审讯, 诅咒与迷信, 家庭秘密, 债务, 丧亲, 疾病 |
+| `pack-dramatic-lives` | betrayal, secret_heir, love_and_power, humiliation, revenge, absurd_inheritance, mistaken_identity, staged_death, blackmail_wedding, ruin_and_reversal, family_secret, false_confession, duel, returned_enemy, suspicious_death, public_spectacle | dramatic, dark, absurd, romantic, suspenseful, ironic | uncommon | violence and duels, death and suspicious death, betrayal, sexual scandal and infidelity, blackmail, substance use (alcohol), family conflict, public humiliation, political repression, false confession, coercive marriage, no explicit sexual content involving minors |
 
 ## Unconsumed states
 
@@ -173,7 +176,7 @@ This file is generated from the runtime content, not maintained by hand.
 | `apprenticeship-contract` | phase15-core-states | person | education, craft, apprentice, work | 7 | base, pack-adaptive-everyday, pack-life-course, pack-odd-jobs, pack-youth-fire | adolescence, adulthood |
 | `bc18-bureaucratic-ghost` | pack-black-comedy | person | bureaucracy, identity, paperwork, death, mistake | 6 | pack-black-comedy | adulthood |
 | `bc18-ridiculous-fame` | pack-black-comedy | person | fame, reputation, mistaken_identity, promotion, media | 18 | pack-black-comedy, pack-collision-power-love | adulthood |
-| `blacklisted` | phase15-core-states | person | work, stigma, politics, employment | 30 | base, pack-adaptive-everyday, pack-collision-luck-craft, pack-crime-justice, pack-fame-art, pack-history-fork, pack-odd-jobs, pack-work-craft | adulthood |
+| `blacklisted` | phase15-core-states | person | work, stigma, politics, employment | 33 | base, pack-adaptive-everyday, pack-collision-luck-craft, pack-crime-justice, pack-dramatic-lives, pack-fame-art, pack-history-fork, pack-odd-jobs, pack-work-craft | adulthood |
 | `chronic-illness` | phase15-core-states | person | health, illness, body | 17 | pack-adaptive-everyday, pack-dark-fantasy, pack-elder-memory, pack-faith-miracles, pack-infant-wonder, pack-life-course, pack-living-consequences, pack-odd-jobs, pack-small-mysteries | adulthood, elderhood |
 | `city-under-occupation` | phase15-core-states | place | war, occupation, place, violence | 0 | — | — |
 | `cj17-prison-term` | pack-crime-justice | person | crime, prison, confinement, legal, reentry | 3 | pack-crime-justice | adulthood |
@@ -181,32 +184,32 @@ This file is generated from the runtime content, not maintained by hand.
 | `cj17-wanted` | pack-crime-justice | person | crime, police, pursuit, wanted, risk | 7 | pack-crime-justice | adulthood |
 | `curse-bargain` | pack-curse-betrayal | person | curse, ritual, wish, bargain, debt | 6 | pack-absurd-fortune, pack-black-comedy, pack-curse-betrayal, pack-dark-fantasy | adulthood, elderhood |
 | `curse-mark` | pack-absurd-power | person | curse, superstition, family, transfer, fear | 1 | pack-absurd-power | adulthood |
-| `cursed-by-wish` | phase15-core-states | person | wish, curse, supernatural, revenge, special | 10 | base, pack-adaptive-everyday, pack-curse-betrayal, pack-dark-fantasy, pack-faith-miracles, pack-living-consequences | adulthood |
-| `debt-bondage` | phase15-core-states | person | debt, work, poverty, legal | 21 | pack-adaptive-everyday, pack-crime-justice, pack-living-consequences, pack-money-luck, pack-work-craft | adulthood |
-| `detained` | phase15-core-states | person | legal, prison, detention, absence | 31 | base, pack-crime-justice, pack-work-craft | adulthood |
+| `cursed-by-wish` | phase15-core-states | person | wish, curse, supernatural, revenge, special | 11 | base, pack-adaptive-everyday, pack-curse-betrayal, pack-dark-fantasy, pack-dramatic-lives, pack-faith-miracles, pack-living-consequences | adulthood |
+| `debt-bondage` | phase15-core-states | person | debt, work, poverty, legal | 27 | pack-adaptive-everyday, pack-crime-justice, pack-dramatic-lives, pack-living-consequences, pack-money-luck, pack-work-craft | adulthood |
+| `detained` | phase15-core-states | person | legal, prison, detention, absence | 33 | base, pack-crime-justice, pack-dramatic-lives, pack-work-craft | adulthood |
 | `df18-borrowed-luck` | pack-dark-fantasy | person | luck, debt, obligation, superstition, risk | 15 | pack-adaptive-everyday, pack-collision-luck-craft, pack-dark-fantasy, pack-living-consequences | adulthood, elderhood |
 | `df18-uncanny-mark` | pack-dark-fantasy | person | body, mark, omen, superstition, reputation | 9 | pack-dark-fantasy | adulthood, elderhood |
 | `ds17-double-life` | pack-desire-scandal | person | love, intimacy, secret, risk, identity | 4 | pack-desire-scandal | adulthood |
 | `ds17-kept-secret` | pack-desire-scandal | person | love, secret, shame, family, risk | 3 | pack-collision-power-love, pack-desire-scandal | adulthood |
 | `ds17-scorned-lover` | pack-desire-scandal | person | love, jealousy, rejection, grief, rivalry | 3 | pack-desire-scandal | adulthood |
 | `eh19-inherited-cause` | pack-collision-elder-history | household | household, inheritance, politics, legacy, organization | 11 | pack-collision-elder-history | adulthood, elderhood |
-| `eh19-late-testimony` | pack-collision-elder-history | person | elderhood, testimony, memory, history, politics | 14 | pack-collision-elder-history, pack-living-consequences | elderhood |
+| `eh19-late-testimony` | pack-collision-elder-history | person | elderhood, testimony, memory, history, politics | 15 | pack-collision-elder-history, pack-dramatic-lives, pack-living-consequences | elderhood |
 | `em18-family-archive` | pack-elder-memory | household | elderhood, family, archive, memory, inheritance | 21 | pack-collision-elder-history, pack-collision-family-war, pack-elder-memory, pack-living-consequences | adolescence, adulthood, elderhood |
 | `em18-late-bloom` | pack-elder-memory | person | elderhood, late_life, reinvention, love, work | 16 | pack-collision-elder-history, pack-elder-memory | elderhood |
 | `fa17-muse` | pack-fame-art | person | muse, art, desire, inspiration, dependence | 4 | pack-fame-art | adulthood |
 | `fa17-plagiarist` | pack-fame-art | person | art, plagiarism, secret, exposure, guilt | 3 | pack-fame-art | adulthood |
 | `fa17-starving-artist` | pack-fame-art | person | art, craft, poverty, recognition, work | 5 | pack-fame-art | adulthood, elderhood |
 | `factory-employment` | phase15-core-states | person | work, factory, employment, industrial | 14 | base, pack-adaptive-everyday, pack-crime-justice, pack-factory-education, pack-migration-belonging, pack-money-luck, pack-odd-jobs, pack-work-craft | adulthood |
-| `failed-apprentice` | phase15-core-states | person | craft, work, failure, stigma | 7 | base, pack-adaptive-everyday, pack-collision-luck-craft, pack-living-consequences, pack-work-craft, pack-youth-fire | adulthood |
-| `fame` | phase15-core-states | person | fame, reputation, media, status | 71 | base, pack-adaptive-everyday, pack-black-comedy, pack-collision-elder-history, pack-collision-luck-craft, pack-collision-power-love, pack-elder-memory, pack-fame-art, pack-history-street, pack-living-consequences, pack-love-desire, pack-odd-jobs, pack-small-mysteries | adulthood, elderhood |
-| `family-estate` | pack-family-continuity | household | family, estate, inheritance, property, rural | 17 | pack-collision-elder-history, pack-collision-family-war, pack-elder-memory, pack-family-continuity, pack-infant-wonder, pack-life-course, pack-money-luck, pack-small-mysteries | adulthood, childhood, elderhood |
+| `failed-apprentice` | phase15-core-states | person | craft, work, failure, stigma | 8 | base, pack-adaptive-everyday, pack-collision-luck-craft, pack-dramatic-lives, pack-living-consequences, pack-work-craft, pack-youth-fire | adulthood |
+| `fame` | phase15-core-states | person | fame, reputation, media, status | 81 | base, pack-adaptive-everyday, pack-black-comedy, pack-collision-elder-history, pack-collision-luck-craft, pack-collision-power-love, pack-dramatic-lives, pack-elder-memory, pack-fame-art, pack-history-street, pack-living-consequences, pack-love-desire, pack-odd-jobs, pack-small-mysteries | adulthood, elderhood |
+| `family-estate` | pack-family-continuity | household | family, estate, inheritance, property, rural | 20 | pack-collision-elder-history, pack-collision-family-war, pack-dramatic-lives, pack-elder-memory, pack-family-continuity, pack-infant-wonder, pack-life-course, pack-money-luck, pack-small-mysteries | adulthood, childhood, elderhood |
 | `fm17-cult-initiate` | pack-faith-miracles | person | faith, cult, belonging, obedience, doubt | 3 | pack-faith-miracles | adulthood |
 | `fm17-miracle-witness` | pack-faith-miracles | person | faith, miracle, vision, witness, religion | 5 | pack-collision-luck-craft, pack-faith-miracles | adulthood |
 | `fm17-saint-or-fraud` | pack-faith-miracles | person | faith, healing, saint, fraud, reputation | 2 | pack-faith-miracles | adulthood |
 | `forbidden-attachment` | pack-love-secrecy | person | love, intimacy, secret, courtship, secret_intimacy | 15 | base, pack-collision-power-love, pack-desire-scandal, pack-fame-art, pack-love-desire, pack-love-secrecy, pack-youth-fire | adulthood |
 | `fw19-separated-household` | pack-collision-family-war | household | family, war, separation, evacuation, missing | 13 | pack-collision-family-war, pack-living-consequences | adolescence, adulthood |
 | `fw19-war-ward` | pack-collision-family-war | person | family, war, child, foster, guardian | 7 | pack-collision-family-war | adolescence, adulthood, childhood |
-| `grief` | phase15-core-states | person | grief, death, family, mind | 150 | base, pack-adaptive-everyday, pack-collision-elder-history, pack-collision-family-war, pack-collision-power-love, pack-dark-fantasy, pack-desire-scandal, pack-elder-memory, pack-faith-miracles, pack-fame-art, pack-family-continuity, pack-history-street, pack-infant-wonder, pack-life-course, pack-living-consequences, pack-love-desire, pack-love-secrecy, pack-migration-belonging, pack-odd-jobs, pack-small-mysteries, pack-youth-fire | adolescence, adulthood, childhood, elderhood |
+| `grief` | phase15-core-states | person | grief, death, family, mind | 157 | base, pack-adaptive-everyday, pack-collision-elder-history, pack-collision-family-war, pack-collision-power-love, pack-dark-fantasy, pack-desire-scandal, pack-dramatic-lives, pack-elder-memory, pack-faith-miracles, pack-fame-art, pack-family-continuity, pack-history-street, pack-infant-wonder, pack-life-course, pack-living-consequences, pack-love-desire, pack-love-secrecy, pack-migration-belonging, pack-odd-jobs, pack-small-mysteries, pack-youth-fire | adolescence, adulthood, childhood, elderhood |
 | `hs18-blackout-rumor` | pack-history-street | place | rumor, blackout, fear, politics, street | 4 | pack-history-street | adulthood |
 | `hs18-street-witness` | pack-history-street | person | witness, memory, history, testimony, rumor | 11 | pack-collision-elder-history, pack-collision-family-war, pack-history-street | adolescence, adulthood, elderhood |
 | `institution-purge` | pack-history-fork | organization | purge, repression, organization, loyalty, surveillance | 9 | pack-collision-elder-history, pack-collision-family-war, pack-history-fork, pack-history-street | adulthood, elderhood |
@@ -214,7 +217,7 @@ This file is generated from the runtime content, not maintained by hand.
 | `iw18-imaginary-friend` | pack-infant-wonder | person | childhood, play, imaginary_friend, solitude, imagination | 6 | pack-infant-wonder | adulthood, childhood |
 | `jealous-rival` | pack-love-secrecy | person | love, jealousy, rival, risk, secret_intimacy | 4 | pack-collision-power-love, pack-desire-scandal, pack-love-desire, pack-love-secrecy | adulthood |
 | `journeyman` | phase15-core-states | person | craft, work, journeyman, skill | 18 | base, pack-adaptive-everyday, pack-collision-luck-craft, pack-odd-jobs, pack-work-craft | adolescence, adulthood |
-| `known-affair` | pack-love-secrecy | person | love, scandal, secret, public, secret_intimacy | 24 | pack-adaptive-everyday, pack-collision-power-love, pack-desire-scandal, pack-living-consequences, pack-love-desire, pack-love-secrecy | adulthood |
+| `known-affair` | pack-love-secrecy | person | love, scandal, secret, public, secret_intimacy | 28 | pack-adaptive-everyday, pack-collision-power-love, pack-desire-scandal, pack-dramatic-lives, pack-living-consequences, pack-love-desire, pack-love-secrecy | adulthood |
 | `lc17-caregiver` | pack-life-course | person | care, family, illness, elder, duty | 4 | pack-life-course | adulthood, elderhood |
 | `lc17-child-prodigy` | pack-life-course | person | childhood, promise, talent, pressure, family | 3 | pack-life-course | adolescence, childhood |
 | `lc17-empty-nest` | pack-life-course | household | family, home, empty_nest, aging, household | 8 | pack-collision-elder-history, pack-collision-family-war, pack-elder-memory, pack-life-course, pack-living-consequences | adolescence, adulthood, elderhood |
@@ -229,18 +232,20 @@ This file is generated from the runtime content, not maintained by hand.
 | `ml18-sudden-fortune` | pack-money-luck | household | money, windfall, sudden_fortune, household, luck | 19 | pack-money-luck | adulthood |
 | `night-school` | pack-factory-education | person | education, night_school, work | 10 | base, pack-factory-education | adolescence, adulthood |
 | `occupied-city-regime` | pack-history-fork | place | occupation, war, repression, curfew, requisition | 15 | pack-collision-elder-history, pack-collision-family-war, pack-history-fork, pack-history-street, pack-migration-belonging | adolescence, adulthood, childhood, elderhood |
-| `office-patronage` | pack-office-influence | person | office, patronage, politics, power, network | 26 | pack-absurd-fortune, pack-adaptive-everyday, pack-black-comedy, pack-collision-power-love, pack-desire-scandal, pack-elder-memory, pack-fame-art, pack-history-street, pack-living-consequences, pack-love-desire, pack-office-influence, pack-small-mysteries | adulthood, elderhood |
+| `office-patronage` | pack-office-influence | person | office, patronage, politics, power, network | 35 | pack-absurd-fortune, pack-adaptive-everyday, pack-black-comedy, pack-collision-power-love, pack-desire-scandal, pack-dramatic-lives, pack-elder-memory, pack-fame-art, pack-history-street, pack-living-consequences, pack-love-desire, pack-office-influence, pack-small-mysteries | adulthood, elderhood |
 | `office-under-siege` | pack-office-influence | person | office, scandal, pressure, politics, legal | 9 | pack-absurd-fortune, pack-collision-power-love, pack-money-luck, pack-odd-jobs, pack-office-influence | adulthood |
 | `oj18-odd-apprenticeship` | pack-odd-jobs | person | work, odd_job, apprenticeship, night, trust | 25 | pack-collision-luck-craft, pack-odd-jobs | adulthood |
 | `oj18-workplace-legend` | pack-odd-jobs | person | work, legend, odd_job, rumor, identity | 17 | pack-odd-jobs | adulthood |
+| `p21-fortune-reversal` | pack-dramatic-lives | person | fortune_reversal, fortune, reversal, inheritance, ruin | 10 | pack-dramatic-lives | adulthood, elderhood |
+| `p21-scandal-web` | pack-dramatic-lives | person | scandal_web, scandal, secret, blackmail, network | 16 | pack-dramatic-lives | adulthood, elderhood |
 | `pc20-public-reversal` | pack-living-consequences | person | public_reversal, exoneration, accusation, testimony, proof | 10 | pack-living-consequences | adulthood, elderhood |
 | `pc20-second-chance` | pack-living-consequences | person | second_chance, reconciliation, return, failure, trust | 17 | pack-living-consequences | adulthood, elderhood |
-| `pl19-protected-scandal` | pack-collision-power-love | person | love, secret, scandal, power, protection | 15 | pack-collision-power-love, pack-living-consequences | adulthood |
+| `pl19-protected-scandal` | pack-collision-power-love | person | love, secret, scandal, power, protection | 16 | pack-collision-power-love, pack-dramatic-lives, pack-living-consequences | adulthood |
 | `pl19-public-ally` | pack-collision-power-love | person | love, politics, alliance, public, power | 7 | pack-collision-power-love | adulthood |
-| `political-suspect` | phase15-core-states | person | politics, repression, legal, surveillance | 13 | base, pack-collision-elder-history, pack-history-street, pack-living-consequences, pack-youth-fire | adulthood, elderhood |
-| `public-scandal` | phase15-core-states | person | scandal, reputation, social | 54 | base, pack-absurd-fortune, pack-adaptive-everyday, pack-black-comedy, pack-collision-luck-craft, pack-collision-power-love, pack-dark-fantasy, pack-desire-scandal, pack-faith-miracles, pack-fame-art, pack-history-street, pack-living-consequences, pack-love-desire, pack-love-secrecy, pack-money-luck, pack-odd-jobs, pack-youth-fire | adolescence, adulthood |
+| `political-suspect` | phase15-core-states | person | politics, repression, legal, surveillance | 15 | base, pack-collision-elder-history, pack-dramatic-lives, pack-history-street, pack-living-consequences, pack-youth-fire | adulthood, elderhood |
+| `public-scandal` | phase15-core-states | person | scandal, reputation, social | 66 | base, pack-absurd-fortune, pack-adaptive-everyday, pack-black-comedy, pack-collision-luck-craft, pack-collision-power-love, pack-dark-fantasy, pack-desire-scandal, pack-dramatic-lives, pack-faith-miracles, pack-fame-art, pack-history-street, pack-living-consequences, pack-love-desire, pack-love-secrecy, pack-money-luck, pack-odd-jobs, pack-youth-fire | adolescence, adulthood |
 | `purge-ongoing` | phase15-core-states | organization | politics, repression, organization, purge | 1 | base | adulthood |
-| `raising-child` | pack-family-continuity | household | family, child, care, school, household | 39 | pack-adaptive-everyday, pack-collision-elder-history, pack-collision-family-war, pack-collision-power-love, pack-desire-scandal, pack-elder-memory, pack-family-continuity, pack-infant-wonder, pack-life-course, pack-living-consequences, pack-love-desire, pack-migration-belonging, pack-money-luck, pack-small-mysteries | adolescence, adulthood, childhood, elderhood |
+| `raising-child` | pack-family-continuity | household | family, child, care, school, household | 40 | pack-adaptive-everyday, pack-collision-elder-history, pack-collision-family-war, pack-collision-power-love, pack-desire-scandal, pack-dramatic-lives, pack-elder-memory, pack-family-continuity, pack-infant-wonder, pack-life-course, pack-living-consequences, pack-love-desire, pack-migration-belonging, pack-money-luck, pack-small-mysteries | adolescence, adulthood, childhood, elderhood |
 | `royal-chef` | phase15-core-states | person | work, court, power, kitchen | 1 | base | adulthood |
 | `royal-servant` | pack-absurd-power | person | court, kitchen, service, power, food | 2 | pack-absurd-power | adulthood |
 | `scholarship-holder` | pack-factory-education | person | education, scholarship, means_tested | 2 | pack-factory-education | adolescence, adulthood |
@@ -253,7 +258,7 @@ This file is generated from the runtime content, not maintained by hand.
 | `strike-wave` | phase15-core-states | organization | work, union, strike, politics | 6 | base, pack-work-craft, pack-youth-fire | adolescence, adulthood |
 | `suspected-witchcraft` | pack-curse-betrayal | person | witchcraft, rumor, religion, legal, reputation | 7 | pack-collision-luck-craft, pack-curse-betrayal, pack-dark-fantasy, pack-faith-miracles | adulthood |
 | `thesis-candidate` | pack-factory-education | person | education, university, thesis | 1 | pack-factory-education | adulthood |
-| `under-investigation` | phase15-core-states | person | legal, police, investigation, risk | 40 | base, pack-absurd-fortune, pack-adaptive-everyday, pack-black-comedy, pack-collision-elder-history, pack-crime-justice, pack-dark-fantasy, pack-desire-scandal, pack-faith-miracles, pack-history-street, pack-living-consequences, pack-migration-belonging, pack-money-luck, pack-odd-jobs, pack-small-mysteries, pack-work-craft | adulthood, elderhood |
+| `under-investigation` | phase15-core-states | person | legal, police, investigation, risk | 50 | base, pack-absurd-fortune, pack-adaptive-everyday, pack-black-comedy, pack-collision-elder-history, pack-crime-justice, pack-dark-fantasy, pack-desire-scandal, pack-dramatic-lives, pack-faith-miracles, pack-history-street, pack-living-consequences, pack-migration-belonging, pack-money-luck, pack-odd-jobs, pack-small-mysteries, pack-work-craft | adulthood, elderhood |
 | `university-dropout` | phase15-core-states | person | education, dropout, stigma | 5 | base, pack-factory-education | adulthood |
 | `university-graduate` | phase15-core-states | person | education, graduate, university | 2 | pack-factory-education, pack-life-course | adulthood |
 | `university-student` | phase15-core-states | person | education, student, university, youth | 9 | base, pack-adaptive-everyday, pack-factory-education, pack-youth-fire | adolescence, adulthood |

@@ -273,3 +273,18 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - **独立 Critic**：修订前 Scene **22/30**、Life **18/30**（Phase 19: 21/17）；5 个 outcome flips、42/62 adaptive DC shifts；separation birth/divorce 碰撞、testimony truth 重置、retrofit checkBonus 休眠、repeatRate 0.2274 回归（修订后 0.2290）。修订补 `ad20-job-interview` 的 `public-scandal` context 并重跑实验/自然 dossier；Critic 分数不冒充修订后评分。
 - **未完成/限制**：focal share 1.73% <12%；repeatRate 0.2290 > Phase19 0.2104；部分 pc20 分支未自然出现；旧 Kernel checkBonus 未激活；家庭/伴侣 slot machine、horizon、生产 runtime 未修。
 - 交付：`docs/v4/phase-20-design.md`、`phase-20-content.md`、`phase-20-playtests.json`、`phase-20-critique.md`、`phase-20-report.md`；ADR：`docs/decisions/ADR-020-adaptive-storylets-and-living-consequences.md`。
+
+## Phase 21 执行状态（2026-11-08）
+
+- **目标**：Make It a Game；先修真实玩家体验，再加视觉、地图、早期人生与戏剧内容；不重写 Engine。
+- **产品审计**：Playwright 真实浏览器；发现 `.portrait` 计算高度 2px（flex-shrink + overflow hidden），左侧人物消失；右栏硬编码 `ViennaMap`，未用真实地理；出生日志通用；玩家孩子 infant scenes rate 低；1 岁仍只有出生记录。
+- **视觉**：`.portrait` 260px 固定舞台；192×192 Canvas；LPC 图层离屏合成、裁透明边距、按年龄缩放；职业配件（医生/官员眼镜外衣、学生背包、艺术家头巾）；素材失败姓名首字 fallback。
+- **地图**：`apps/web/src/WorldMap.tsx` 使用 `countries.geojson` 177 个轮廓；等距圆柱；全球/欧洲/人物、缩放、拖动；维也纳/克洛斯特新堡可点击；人物金色脉冲。
+- **出生/早期人生**：`createV4Birth` 家庭细节文本；新增 5 个 `vienna-life-*` 早期场景；feeding/fever rate 0.6/0.45；Engine 7 年 cohort 16 条儿童/家庭事件。
+- **戏剧**：注册 `pack-dramatic-lives`：16 kernels / 2 states / 71 adaptive contexts / 16 checks / 16 conditional / 224 scenes；状态 `p21-scandal-web`、`p21-fortune-reversal`；统一 0.18 baseRate / 1.8 weight / 5 年 cooldown。
+- **规模**：113 states / 2,124 kernels / 32 packs；2,093 story shapes；45 high-similarity pairs。
+- **自然 A/B/C**：61,718 events / 5,123 focal；drama 203 world（0.33%）、22 focal（0.43%）；两个新 State 出现；10/16 drama kernels 自然出现；repeatRate 0.2423。
+- **浏览器验收**：`tests/v4-browser/phase21.spec.ts` 1 passed（9.5s）；肖像 260、Canvas 216、地图 177 paths、日志 4 条。
+- **独立 Critic**：修订前 Scene **24/30**、Life **19/30**（Phase 20: 22/18）；肖像/地图真修好但 LPC 非 DoL 级；0–5 有 16 条事件但仍有 15–16 月空档；drama 22 focal/0.43%、elder-testimony 重复、secret-heir/false-confession 自然 0；抓到 1914-01 header vs 1914.09 日志 chronology bug。修订已修 chronology 并加测试/重跑；分数不冒充修订后。
+- **未完成/限制**：Drama focal 0.43% 仍低；`p21-elder-testimony` 重复；`p21-secret-heir`/`p21-false-confession` 自然 0；LPC 美术仍非 DoL 级；无逐年历史国界；历史进程/经济/组织不可视化；没有大规模用户留存数据。
+- 交付：`docs/v4/phase-21-*.md`、`phase-21-playtests.json`、`pack-dramatic-lives.json`、`WorldMap.tsx`、早期场景与浏览器测试。

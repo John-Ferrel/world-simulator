@@ -82,34 +82,53 @@ export default function PaperDoll({
           })),
         );
         if (stop || !canvas.current) return;
+        // Compose the 64x64 LPC layers first, then crop transparent margins and
+        // draw the figure large in the portrait canvas. The old code drew a
+        // 64px figure into a 216px box, which made the character look tiny.
+        const composed = document.createElement('canvas');
+        composed.width = composed.height = 64;
+        const compose = composed.getContext('2d', { willReadFrequently: true })!;
+        compose.imageSmoothingEnabled = false;
+        for (const part of parts) {
+          if (part.scale === 1) compose.drawImage(part.img, 0, 0);
+          else {
+            compose.save();
+            compose.translate(32, 32);
+            compose.scale(part.scale, part.scale);
+            compose.drawImage(part.img, -32, -32);
+            compose.restore();
+          }
+        }
+        const pixels = compose.getImageData(0, 0, 64, 64).data;
+        let minX = 64, minY = 64, maxX = -1, maxY = -1;
+        for (let y = 0; y < 64; y++) {
+          for (let x = 0; x < 64; x++) {
+            if (!pixels[(y * 64 + x) * 4 + 3]) continue;
+            if (x < minX) minX = x;
+            if (y < minY) minY = y;
+            if (x > maxX) maxX = x;
+            if (y > maxY) maxY = y;
+          }
+        }
+        if (maxX < minX || maxY < minY) return;
+        const bw = maxX - minX + 1;
+        const bh = maxY - minY + 1;
+        const ageScale = person.age !== undefined && person.age < 3 ? 0.76 : person.age !== undefined && person.age < 13 ? 0.88 : 1;
+        const targetH = 184 * ageScale;
+        const scale = Math.min(targetH / bh, 176 / bw);
+        const dw = bw * scale;
+        const dh = bh * scale;
         const ctx = canvas.current.getContext('2d')!;
         ctx.imageSmoothingEnabled = false;
-        ctx.clearRect(0, 0, 64, 64);
-        ctx.save();
-        if (person.age !== undefined) {
-          const scale = person.age < 3 ? 0.72 : person.age < 13 ? 0.9 : 1;
-          if (scale !== 1) {
-            ctx.translate((64 - 64 * scale) / 2, 64 - 64 * scale);
-            ctx.scale(scale, scale);
-          }
-        }
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, 192, 192);
         if (person.death !== undefined) ctx.filter = 'grayscale(1) brightness(.65)';
-        for (const part of parts) {
-          if (part.scale === 1) ctx.drawImage(part.img, 0, 0);
-          else {
-            ctx.save();
-            ctx.translate(32, 32);
-            ctx.scale(part.scale, part.scale);
-            ctx.drawImage(part.img, -32, -32);
-            ctx.restore();
-          }
-        }
+        ctx.drawImage(composed, minX, minY, bw, bh, (192 - dw) / 2, 184 - dh, dw, dh);
         ctx.filter = 'none';
         if (person.health < 0.4) {
           ctx.fillStyle = '#9b675f';
-          ctx.fillRect(28, 27, 3, 1);
+          ctx.fillRect(94, 96, 4, 2);
         }
-        ctx.restore();
         frame++;
         if (walking) timer = setTimeout(render, 140);
       } catch {
@@ -123,14 +142,19 @@ export default function PaperDoll({
     };
   }, [person, direction, motion]);
   return (
-    <canvas
-      ref={canvas}
-      width="64"
-      height="64"
-      className={`paper-doll ${className}`}
-      role="img"
-      aria-label={`${person?.name ?? '人物'}的分层像素纸娃娃${failed ? '（素材加载失败）' : ''}`}
-    />
+    <div className={`doll-frame ${failed ? 'failed' : ''}`}>
+      <span className="doll-fallback" aria-hidden>
+        {person?.name?.slice(0, 1) ?? '?'}
+      </span>
+      <canvas
+        ref={canvas}
+        width="192"
+        height="192"
+        className={`paper-doll ${className}`}
+        role="img"
+        aria-label={`${person?.name ?? '人物'}的分层像素纸娃娃${failed ? '（素材加载失败，显示姓名首字）' : ''}`}
+      />
+    </div>
   );
 }
 export function CompactDollEditor({
