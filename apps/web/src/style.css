@@ -2265,3 +2265,27 @@ legend {
     background: transparent;
   }
 }
+
+/* ---------- Phase 22 original portrait ---------- */
+.portrait .original-portrait {
+  width: 210px;
+  height: 252px;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.5)) saturate(1.02);
+}
+.compact-doll-preview .original-portrait {
+  width: 92px;
+  height: 110px;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.45));
+}
+.original-portrait.dead {
+  filter: grayscale(0.8) brightness(0.7);
+}
+.original-portrait.sick {
+  filter: saturate(0.75) brightness(0.92);
+}
+.portrait .doll-frame,
+.portrait .paper-doll {
+  display: none;
+}

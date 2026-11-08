@@ -509,7 +509,13 @@ const FAMILY_SCENE_DEFINITIONS: SceneDefinition[] = [
       { kind: 'notHasRelation', relationKind: 'partner' },
       { kind: 'health', min: 0.2 },
     ],
-    outcomes: [
+        adaptiveContexts: [
+      { id: 'famous-courtship', conditions: [{ kind: 'hasState', stateId: 'fame', owner: 'person' }], weightMultiplier: 1.35, tags: ['fame'] },
+      { id: 'scandalous-courtship', conditions: [{ kind: 'hasState', stateId: 'public-scandal', owner: 'person' }], weightMultiplier: 1.5, tags: ['scandal'] },
+      { id: 'grieving-courtship', conditions: [{ kind: 'hasState', stateId: 'grief', owner: 'person' }], weightMultiplier: 1.25, tags: ['grief'] },
+      { id: 'debt-courtship', conditions: [{ kind: 'hasState', stateId: 'debt-bondage', owner: 'person' }], weightMultiplier: 1.2, tags: ['debt'] },
+    ],
+outcomes: [
       {
         id: 'ask-to-share-a-home',
         weight: 0.7,

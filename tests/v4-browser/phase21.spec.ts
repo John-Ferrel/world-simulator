@@ -22,8 +22,9 @@ test('Phase 21: visible portrait, real world map and an early-life event', async
 
   const portrait = await page.locator('.portrait').boundingBox();
   expect(portrait?.height ?? 0).toBeGreaterThan(220);
-  const canvas = await page.locator('.portrait canvas').boundingBox();
-  expect(canvas?.width ?? 0).toBeGreaterThan(150);
+  const portraitSvg = await page.locator('.portrait .original-portrait').boundingBox();
+  expect(portraitSvg?.width ?? 0).toBeGreaterThan(180);
+  expect(portraitSvg?.height ?? 0).toBeGreaterThan(220);
 
   await expect(page.locator('.world-map-svg')).toBeVisible();
   expect(await page.locator('.world-map-countries path').count()).toBeGreaterThan(100);

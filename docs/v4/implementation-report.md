@@ -1,8 +1,10 @@
 # v4 实现与验收报告
 
-日期：2026-11-08（滚动更新；最近一轮为 Phase 21）
+日期：2026-11-09（滚动更新；最近一轮为 Phase 22）
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
+
+> 2026-11-09 Phase 22 更新：Creative Overhaul。内容库 **117 states / 2,160 kernels / 34 packs**；新增 `pack-dramatic-overhaul`（20 kernels/2 states/100 adaptive/20 checks/20 conditional/280 scenes）与 `pack-early-life-drama`（16/2/49/8/16/224），3 个早期 base scenes、4 个 base retrofit，`high_drama` ×1.9 / `drama` ×1.4。自然 A/B/C：62,267 events / 4,104 focal；总 drama 144（3.51%），其中 early 119、adult 25（0.61%）；early-life 1,283 world（2.06%）；4/4 新 State；repeatRate 0.2613。原创 200×240 分层 SVG 半身像替换 LPC。浏览器 Phase22 test 9.4s。Critic 修订前 Scene 24/30、Life 20/30；Visual Critic 4.5/10、4/10。完整报告见 [phase-22-report.md](phase-22-report.md)、[creative direction](phase-22-creative-direction.md)、[dramatic content](phase-22-dramatic-content.md)、[visual design](phase-22-visual-design.md)、[playtests](phase-22-playtests.md)、[critique](phase-22-critique.md)。
 
 > 2026-11-08 Phase 21 更新：把“能不能玩”作为验收目标。修复左侧肖像 flex 压缩成 2px 的消失 bug；260px 肖像舞台、192×192 Canvas、裁边 LPC 分层纸娃娃、年龄缩放与职业配件。右栏从维也纳示意图换成真实 `countries.geojson` 世界地图（177 轮廓、缩放/拖动、维也纳/克洛斯特新堡、人物脉冲）。出生文本加入父母/职业/家庭现金债务（兄弟姐妹/拥挤细节可能被截断）；新增 5 个通用早期人生场景，Engine 7 年 cohort 16 条儿童/家庭事件，浏览器 e2e 30 秒内看到第 3 条日志。注册 `pack-dramatic-lives`：16 kernels / 2 states / 71 adaptive contexts / 16 checks / 16 conditional / 224 scenes。规模 **113 states / 2,124 kernels / 32 packs**。自然 A/B/C：61,718 events / 5,123 focal；drama 203 world（0.33%）/ 22 focal（0.43%）；repeatRate 0.2423；两个新 State 出现。浏览器 `tests/v4-browser/phase21.spec.ts` 通过（9.5s）。完整报告见 [phase-21-report.md](phase-21-report.md)、[experience audit](phase-21-experience-audit.md)、[visual design](phase-21-visual-design.md)、[dramatic content](phase-21-dramatic-content.md)、[playtest](phase-21-playtest.md)、[critique](phase-21-critique.md)。
 
@@ -359,7 +361,7 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 新 Pack | infant-wonder、youth-fire、elder-memory、odd-jobs、black-comedy、dark-fantasy、history-street、love-desire、small-mysteries、money-luck；全部 validator `ok:true` |
 | Creative Index | 1,973 records；中文 char n-gram + Latin word TF-IDF；`--query` / `--kernel` / `--gaps` / `--duplicates` / `--pack`；阈值 0.20；43 对 ≥0.20，0 个新 Kernel 与旧库跨库 ≥0.20 |
 | 阶段/语气 | infancy 2→4、childhood 63→82、adolescence 143→165、elderhood 21→53；stage effective number 1.66→1.81；tone effective number 7.25→8.28 |
-| 自然人生 A/B/C | 3×45 年，60,074 events / 5,067 focal events；新 Pack 9.65% 世界事件、**8.37% focal events**（Phase 17: 3.1%）；20/20 新 State 至少出现一次；185/232 新 Kernel 触发；repeatRate ~0.220 |
+| 自然人生 A/B/C | 3×45 年，60,074 events / 5,067 focal events；新 Pack 9.45% 世界事件、**8.37% focal events**（Phase 17: 3.1%）；20/20 新 State 至少出现一次；185/232 新 Kernel 触发；repeatRate ~0.220 |
 | 修订 | A/B 中 `em18-family-archive` 缺席；新增 `em18-setup.cellar-box`（45–70 岁，无外部 State）；D seed 20/20 State，archive 1 add / 9 ticks / 6 reactions |
 | 测试修复 | 全库测试发现重复标题 `楼梯间的第三个人` 和未解析的 `{link:beloved}` / `{link:other}`；已改名/替换并复测 |
 | 测试 | `pnpm test` **91 files passed / 8 skipped（99 files）；533 pass / 37 skip**；首轮 2 个内容缺陷（重复标题、未解析 link token）修复后通过；typecheck/build 通过；25 packs validate |
@@ -423,3 +425,22 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 独立 Critic | 修订前 **Scene 24/30、Life 19/30**（Phase 20: 22/18）；肖像/地图真修好，但 LPC 不是 DoL 级；0–5 有 16 条事件但仍有 15–16 月空档；drama 22 focal/0.43%，elder-testimony 重复，secret-heir/false-confession 自然 0；抓到 1914-01 header vs 1914.09 日志的 chronology bug。修订已修 chronology 并加测试/重跑；分数不冒充修订后。完整见 `phase-21-critique.md` |
 
 未完成/限制：Drama focal 0.43% 仍低；`p21-elder-testimony` 重复；`p21-secret-heir`/`p21-false-confession` 自然 0；LPC 美术仍非 DoL 级；无逐年历史国界；历史进程/经济/组织不可视化；没有大规模用户留存数据。不得把 113/2,124/32 或 4 条早期日志当作“游戏已经好玩”的充分证明。
+
+## Phase 22（2026-11-09）— Creative Overhaul
+
+完整报告：`docs/v4/phase-22-report.md`；创意方向：`phase-22-creative-direction.md`；戏剧：`phase-22-dramatic-content.md`；视觉：`phase-22-visual-design.md`；试玩：`phase-22-playtests.md`；Critic：`phase-22-critique.md`。
+
+| 项 | 实测 |
+|---|---|
+| 内容规模 | **117 states / 2,160 kernels / 34 packs**；新增 2 packs / 36 kernels / 4 states；3 early base scenes + 4 retrofit |
+| Dramatic Overhaul | 20 kernels / 2 states / 100 adaptive / 20 checks / 20 conditional / 280 scenes；5 comic / 5 romantic / 5 dark / 5 warm |
+| Early-Life Drama | 16 kernels / 2 states / 49 adaptive / 8 checks / 16 conditional / 224 scenes；0–7 岁，subjectProvenance birth |
+| Drama Density | `high_drama` ×1.9 / `drama` ×1.4；自然 62,267 events / 4,104 focal；总 drama 144（3.51%），early 119，adult 25（0.61%） |
+| 早期人生 | early pack 1,283 world（2.06%）；119 focal early；4/4 新 State；高频 `p22-child-matchmaker` 221、`p22-comic-mistaken-child` 244 |
+| 视觉 | 原创 200×240 分层 SVG 半身像；年龄/职业/状态/情绪/死亡；Visual Critic 4.5/10、4/10 |
+| 自然 A/B/C | repeatRate 0.2613；adult drama 仍低；4/4 State；`p22-strange-midwife-face`/`p22-banker-novel`/`p22-cursed-lottery` 自然 0 |
+| 浏览器 | Phase22 test 1 passed（9.4s）；截图 `phase-22-browser-final.png` |
+| 测试 | `pnpm test` **102 files / 576 pass / 37 skip（613）**；`build` 2.91s；`tsc` 通过；`v4:validate-packs` **34 packs / 0 failed**；Phase22 browser **1 passed（9.4s）**；targeted **14/14** |
+| 独立 Critic | 修订前 **Scene 24/30、Life 20/30**（Phase 21: 24/19）；3.51% 主要是 early-life、adult 0.61%、repeat 0.2613、role/POV/name bug、State 不可见、肖像同一张脸。完整见 `phase-22-critique.md` |
+
+未完成/限制：adult drama 0.61% 仍低；repeat 0.2613 高于 Phase 21；early 前重后轻；`p22-strange-midwife-face`/`p22-banker-novel`/`p22-cursed-lottery` 自然 0；全库 role/pronoun/name 未修；State 参数不可视；历史国界未做；没有玩家留存数据。不得把 117/2,160/34 或 3.51% total drama 当作“成年戏剧主纹理”已解决。

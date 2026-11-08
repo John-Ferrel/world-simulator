@@ -267,7 +267,10 @@ export function makeV4Api() {
       pressures: meta.pressures,
       places: index?.places ?? [],
       organizations: index?.organizations ?? [],
-      people: page.people.map((person) => publicPerson(meta.date, person, viewer?.id)),
+      people: await (async () => {
+        const tags = await activePersonStateTags(meta.id, page.people.map((person) => person.id));
+        return page.people.map((person) => publicPerson(meta.date, person, viewer?.id, undefined, tags.get(person.id) ?? []));
+      })(),
       peopleTotal: page.total,
       peopleAlive: page.alive,
       householdCount: index?.householdCount ?? 0,
@@ -278,7 +281,11 @@ export function makeV4Api() {
         projectEvent(event, lookups, meta.macro?.developments),
       ),
       chronicle: [...VIENNA_1912_CHRONICLE, ...VIENNA_POSTWAR_CHRONICLE]
-        .filter((entry) => entry.date.year <= meta.date.year)
+        .filter(
+          (entry) =>
+            entry.date.year < meta.date.year ||
+            (entry.date.year === meta.date.year && entry.date.month <= meta.date.month),
+        )
         .sort((a, b) => a.date.year - b.date.year || a.date.month - b.date.month),
       macro: meta.macro
         ? {
@@ -360,7 +367,13 @@ export function makeV4Api() {
       detail.relations.map((relation) => [relation.id, relation]),
     );
     return {
-      person: publicPerson(meta.date, detail.person, u?.id, detail.place?.name),
+      person: publicPerson(
+        meta.date,
+        detail.person,
+        u?.id,
+        detail.place?.name,
+        (await activePersonStateTags(meta.id, [detail.person.id])).get(detail.person.id) ?? [],
+      ),
       canReadLog: isOwner || !detail.person.ownerId,
       household: detail.household
         ? {
@@ -947,25 +960,57 @@ function projectEvent(
   };
 }
 
+async function activePersonStateTags(worldId: string, personIds: string[]): Promise<Map<string, string[]>> {
+  if (personIds.length === 0) return new Map();
+  const rows = await pool.query(
+    `SELECT owner_id, definition_id FROM v4_states
+     WHERE world_id=$1 AND owner_type='person' AND active=true AND owner_id = ANY($2::text[])`,
+    [worldId, personIds],
+  );
+  const map = new Map<string, string[]>();
+  for (const row of rows.rows as { owner_id: string; definition_id: string }[]) {
+    const list = map.get(row.owner_id) ?? [];
+    list.push(row.definition_id);
+    map.set(row.owner_id, list);
+  }
+  return map;
+}
+
 function publicPerson(
   date: WorldState['date'],
   person: V4PersonSummaryRecord,
   ownerId?: string,
   placeName?: string,
+  stateTags: string[] = [],
 ) {
   const employment = person.employment;
   // Dead people keep the age at which they died. The world clock must not turn
   // a 1927 death into a 129-year-old in 1980.
   const age = ageAtDeathOrNow(person, date);
+  const roleOccupation = person.roles.includes('writer')
+    ? '作家'
+    : person.roles.includes('physician')
+      ? '医生'
+      : person.roles.includes('dramatist')
+        ? '剧作家'
+        : person.roles.includes('official') || person.roles.includes('beamter')
+          ? '官员'
+          : person.roles.includes('artist')
+            ? '艺术家'
+            : undefined;
   const occupation =
     employment?.occupation ??
     (age < 6
       ? '幼儿'
-      : ['primary', 'secondary', 'apprenticeship', 'higher'].includes(person.education.status)
-        ? '学生'
-        : age >= 16
-          ? '无固定职业'
-          : '孩童');
+      : age >= 65
+        ? '退休者'
+        : roleOccupation ??
+          (age < 25 &&
+          ['primary', 'secondary', 'apprenticeship', 'higher'].includes(person.education.status)
+            ? '学生'
+            : age >= 16
+              ? '无固定职业'
+              : '孩童'));
   return {
     id: person.id,
     name: person.name,
@@ -991,6 +1036,9 @@ function publicPerson(
       ownerId !== undefined && person.ownerId === ownerId ? person.lifeContract : undefined,
     historical: person.historicalIdentity ?? undefined,
     agency: person.agency ?? undefined,
+    mood: person.life?.mood ?? 0,
+    flags: person.life?.flags ?? [],
+    stateTags,
     appearance: person.appearance ?? { skin: 1, hair: 0, clothes: 2, doll: { bodyType: 'female' } },
   };
 }

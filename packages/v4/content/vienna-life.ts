@@ -584,6 +584,180 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
     ...viennaBasis,
   },
   {
+    id: 'vienna-life-birth-letter-from-the-dead',
+    version: 1,
+    packId: PACK,
+    title: '一封不该再来的信',
+    stage: 'infancy',
+    ageWindow: { min: 0, max: 2 },
+    subjectProvenance: ['birth'],
+    oncePerPerson: true,
+    rate: 0.42,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 0, maxAge: 2 },
+      { key: 'caregiver', kind: 'parent', required: true, minAge: 18, maxAge: 70, sameHousehold: true },
+      { key: 'neighbor', kind: 'neighbor', required: true, minAge: 25, maxAge: 80 },
+    ],
+    conditions: [
+      { kind: 'age', min: 0, max: 2 },
+      { kind: 'stage', in: ['infancy'] },
+      { kind: 'placeKind', in: ['home'] },
+    ],
+    outcomes: [
+      {
+        id: 'the-letter-is-real',
+        weight: 0.45,
+        immediateText:
+          '邮差把一封边角磨白的信塞进门缝，收信人是一个已经死了三年的名字。{caregiver}把{subject}放在膝上，拆开信，里面只有一句：“孩子像不像他？”{neighbor}在门口探头，问是不是寄错了；{caregiver}把信折回去，说“没有寄错”。',
+        effects: [
+          { type: 'flag', personId: '$subject', flag: 'letter_from_dead_relative', add: true, reason: 'a letter arrived for a dead relative' },
+          { type: 'knowledge', holderId: '$caregiver', proposition: '一封写给死去亲人的信问：孩子像不像他。', confidence: 0.7, sourceKind: 'document', visibility: 'private', trueInWorld: true },
+          { type: 'mood', personId: '$caregiver', amount: -0.04, reason: 'a letter from the dead' },
+          { type: 'relation', a: '$caregiver', b: '$subject', kind: 'kin', affection: 0.04, obligation: 0.05, reason: 'held the child while reading the letter' },
+        ],
+      },
+      {
+        id: 'the-letter-is-a-bill',
+        weight: 0.3,
+        immediateText:
+          '信里没有问候，只有一张旧账单：棺材、墓地、一趟从边境回来的车费。{caregiver}把账单翻过来，背面用铅笔写着“别让孩子知道”。{subject}伸手去抓纸角，{caregiver}没有让。',
+        effects: [
+          { type: 'cash', householdId: '$household', amount: -4, reason: 'paid an old funeral debt' },
+          { type: 'flag', personId: '$subject', flag: 'family_debt_letter', add: true, reason: 'a letter carried an old funeral debt' },
+          { type: 'mood', personId: '$caregiver', amount: -0.03, reason: 'an old debt arrived with the baby' },
+        ],
+      },
+      {
+        id: 'the-neighbour-takes-it',
+        weight: 0.25,
+        immediateText:
+          '{neighbor}把信从门缝里抽走，说这封信已经转过三家，不该再往这里送。{caregiver}问上面写了什么；{neighbor}把信折成四折塞进自己口袋，说“都是旧账”。那天夜里，{caregiver}在厨房坐到很晚。',
+        effects: [
+          { type: 'flag', personId: '$subject', flag: 'neighbor_intercepted_letter', add: true, reason: 'a neighbour took the letter' },
+          { type: 'relation', a: '$caregiver', b: '$neighbor', kind: 'acquaintance', trust: -0.04, reason: 'the neighbour took a letter' },
+          { type: 'mood', personId: '$caregiver', amount: -0.02, reason: 'a letter taken by a neighbour' },
+        ],
+      },
+    ],
+    tags: ['infancy', 'family', 'secret', 'letter', 'drama'],
+    ...viennaBasis,
+  },
+  {
+    id: 'vienna-life-toddler-wrong-cradle',
+    version: 1,
+    packId: PACK,
+    title: '摇篮是不是换过了',
+    stage: 'infancy',
+    ageWindow: { min: 1, max: 3 },
+    subjectProvenance: ['birth'],
+    oncePerPerson: true,
+    rate: 0.38,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 1, maxAge: 3 },
+      { key: 'caregiver', kind: 'parent', required: true, minAge: 18, maxAge: 70, sameHousehold: true },
+      { key: 'neighbor', kind: 'neighbor', required: true, minAge: 25, maxAge: 80 },
+    ],
+    conditions: [
+      { kind: 'age', min: 1, max: 3 },
+      { kind: 'stage', in: ['infancy'] },
+      { kind: 'placeKind', in: ['home'] },
+    ],
+    outcomes: [
+      {
+        id: 'the-blanket-is-wrong',
+        weight: 0.4,
+        immediateText:
+          '{neighbor}盯着{subject}的摇篮看了很久，说这床蓝被子不是这家人的。{caregiver}把被子翻过来，角落绣着一个陌生的姓；{subject}却抓着被角不放，像是认得它。{neighbor}退后一步，说“我什么都没说”。',
+        effects: [
+          { type: 'flag', personId: '$subject', flag: 'wrong_cradle_blanket', add: true, reason: 'a neighbour recognised the blanket' },
+          { type: 'knowledge', holderId: '$caregiver', proposition: '摇篮里的蓝被子绣着一个陌生的姓。', confidence: 0.6, sourceKind: 'witnessed', visibility: 'private', trueInWorld: true },
+          { type: 'mood', personId: '$caregiver', amount: -0.03, reason: 'a stranger blanket in the cradle' },
+        ],
+      },
+      {
+        id: 'the-neighbour-is-mistaken',
+        weight: 0.35,
+        immediateText:
+          '{caregiver}把被子摊在桌上，指着上面的补丁说这是外婆的针脚。{neighbor}看了半天，承认自己认错了；{subject}在旁边把一只木勺敲得咚咚响，像在给这场争论判案。',
+        effects: [
+          { type: 'relation', a: '$caregiver', b: '$neighbor', kind: 'acquaintance', trust: 0.04, reason: 'a cradle mistake was cleared' },
+          { type: 'mood', personId: '$caregiver', amount: 0.02, reason: 'a neighbour was wrong about the blanket' },
+          { type: 'skill', personId: '$subject', skill: 'social', amount: 0.01, reason: 'banged a spoon during an argument' },
+        ],
+      },
+      {
+        id: 'the-swap-story-spreads',
+        weight: 0.25,
+        immediateText:
+          '三天后，整条楼道都在说这家的孩子“抱错了”。{caregiver}抱着{subject}去敲{neighbor}的门，{neighbor}不开，只在门里说“我也是听来的”。{subject}在母亲怀里睡着了，口水把她的领口洇出一小片深色。',
+        effects: [
+          { type: 'flag', personId: '$subject', flag: 'cradle_swap_rumour', add: true, reason: 'the stairwell began to talk about a swapped baby' },
+          { type: 'relation', a: '$caregiver', b: '$neighbor', kind: 'rival', trust: -0.1, reason: 'a rumour about a swapped baby' },
+          { type: 'mood', personId: '$caregiver', amount: -0.05, reason: 'a rumour followed the child' },
+        ],
+      },
+    ],
+    tags: ['infancy', 'family', 'rumour', 'identity', 'comic', 'drama'],
+    ...viennaBasis,
+  },
+  {
+    id: 'vienna-life-child-inherited-wish',
+    version: 1,
+    packId: PACK,
+    title: '孩子说了一句谁都没教过的话',
+    stage: 'childhood',
+    ageWindow: { min: 4, max: 7 },
+    subjectProvenance: ['birth'],
+    oncePerPerson: true,
+    rate: 0.42,
+    roles: [
+      { key: 'subject', kind: 'subject', required: true, minAge: 4, maxAge: 7 },
+      { key: 'caregiver', kind: 'parent', required: true, minAge: 18, maxAge: 75, sameHousehold: true },
+    ],
+    conditions: [
+      { kind: 'age', min: 4, max: 7 },
+      { kind: 'stage', in: ['childhood'] },
+      { kind: 'placeKind', in: ['home'] },
+    ],
+    outcomes: [
+      {
+        id: 'the-dead-grandmothers-wish',
+        weight: 0.45,
+        immediateText:
+          '{subject}在饭桌上忽然说：“等我长大了，要把那间屋子买回来。”{caregiver}的勺子停在半空，因为这句话是去世多年的外婆常说的，连“那间屋子”都指得一模一样。{subject}说完就低头喝汤，好像只是随口。',
+        effects: [
+          { type: 'flag', personId: '$subject', flag: 'inherited_wish_house', add: true, reason: 'the child repeated a dead grandmother wish' },
+          { type: 'knowledge', holderId: '$caregiver', proposition: '孩子说要把“那间屋子”买回来，和去世的外婆说过的一模一样。', confidence: 0.75, sourceKind: 'witnessed', visibility: 'private', trueInWorld: true },
+          { type: 'mood', personId: '$caregiver', amount: -0.01, reason: 'a dead relative spoke through a child' },
+        ],
+      },
+      {
+        id: 'the-child-wants-a-dog',
+        weight: 0.3,
+        immediateText:
+          '{subject}说那句话只是想要一只狗，而且要“会看门的、不咬人的、像外婆家那只一样”。{caregiver}松了一口气，又有点失落；那天下午，两个人用旧毛线给一只并不存在的狗量了脖围。',
+        effects: [
+          { type: 'mood', personId: '$subject', amount: 0.04, reason: 'a wish for a dog' },
+          { type: 'relation', a: '$caregiver', b: '$subject', kind: 'kin', affection: 0.04, reason: 'measured a collar for an imaginary dog' },
+          { type: 'skill', personId: '$subject', skill: 'social', amount: 0.02, reason: 'negotiated a dog' },
+        ],
+      },
+      {
+        id: 'the-caregiver-cries',
+        weight: 0.25,
+        immediateText:
+          '{caregiver}没有回答，起身去洗碗，水开得很大。{subject}跟到厨房，拽了拽衣角，说“你别哭，我不说了”。{caregiver}蹲下来，把孩子抱得很紧，说“你说，你继续说”。',
+        effects: [
+          { type: 'mood', personId: '$caregiver', amount: -0.05, reason: 'the child repeated a dead relative words' },
+          { type: 'relation', a: '$caregiver', b: '$subject', kind: 'kin', affection: 0.08, obligation: 0.04, reason: 'a child words opened an old grief' },
+          { type: 'flag', personId: '$subject', flag: 'inherited_wish_grief', add: true, reason: 'the caregiver wept at the child words' },
+        ],
+      },
+    ],
+    tags: ['childhood', 'family', 'wish', 'grief', 'uncanny', 'drama'],
+    ...viennaBasis,
+  },
+  {
     id: 'vienna-life-school-enrolment',
     version: 1,
     packId: PACK,
@@ -617,7 +791,12 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
       { kind: 'education', in: ['none', 'home'] },
       { kind: 'cash', householdId: 'subject', max: 500 },
     ],
-    outcomes: [
+        adaptiveContexts: [
+      { id: 'famous-child', conditions: [{ kind: 'hasState', stateId: 'fame', owner: 'person' }], weightMultiplier: 1.35, tags: ['fame'] },
+      { id: 'blacklisted-family', conditions: [{ kind: 'hasState', stateId: 'blacklisted', owner: 'person' }], weightMultiplier: 1.4, tags: ['stigma'] },
+      { id: 'grieving-school', conditions: [{ kind: 'hasState', stateId: 'grief', owner: 'person' }], weightMultiplier: 1.25, tags: ['grief'] },
+    ],
+outcomes: [
       {
         id: 'enrolled',
         weight: 0.55,
@@ -860,7 +1039,12 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
       { kind: 'education', in: ['primary', 'home'] },
       { kind: 'cash', householdId: 'subject', max: 45 },
     ],
-    outcomes: [
+        adaptiveContexts: [
+      { id: 'debt-labour', conditions: [{ kind: 'hasState', stateId: 'debt-bondage', owner: 'person' }], weightMultiplier: 1.4, tags: ['debt'] },
+      { id: 'caring-labour', conditions: [{ kind: 'hasState', stateId: 'raising-child', owner: 'household' }], weightMultiplier: 1.3, tags: ['family'] },
+      { id: 'famous-labour', conditions: [{ kind: 'hasState', stateId: 'fame', owner: 'person' }], weightMultiplier: 1.25, tags: ['fame'] },
+    ],
+outcomes: [
       {
         id: 'folds-notices',
         weight: 0.55,
@@ -2576,7 +2760,12 @@ export const VIENNA_LIFE_SCENES: SceneDefinition[] = [
       { kind: 'stage', in: ['adulthood'] },
       { kind: 'health', max: 0.9 },
     ],
-    outcomes: [
+        adaptiveContexts: [
+      { id: 'chronic-injury', conditions: [{ kind: 'hasState', stateId: 'chronic-illness', owner: 'person' }], weightMultiplier: 1.5, tags: ['illness'] },
+      { id: 'debt-injury', conditions: [{ kind: 'hasState', stateId: 'debt-bondage', owner: 'person' }], weightMultiplier: 1.25, tags: ['debt'] },
+      { id: 'famous-injury', conditions: [{ kind: 'hasState', stateId: 'fame', owner: 'person' }], weightMultiplier: 1.3, tags: ['fame'] },
+    ],
+outcomes: [
       {
         id: 'clinic-treatment',
         weight: 0.5,

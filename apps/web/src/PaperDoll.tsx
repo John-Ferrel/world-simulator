@@ -6,6 +6,7 @@ import {
   textilePalette,
 } from '../../../packages/visuals/paper-doll';
 import type { DollConfig } from '../../../packages/contracts';
+import OriginalPortrait from './OriginalPortrait';
 const images = new Map<string, Promise<HTMLImageElement>>();
 function load(src: string) {
   if (!images.has(src))
@@ -182,8 +183,15 @@ export function CompactDollEditor({
   return (
     <div className="compact-doll">
       <div className="compact-doll-preview">
-        <PaperDoll
-          person={{ name: '出生预览', appearance: { ...value, doll: d }, age: 24, health: 1 }}
+        <OriginalPortrait
+          person={{
+            name: '出生预览',
+            appearance: { ...value, doll: d },
+            age: 0,
+            health: { vitality: 1 },
+            mood: 0.15,
+            roles: [],
+          }}
         />
         <button type="button" className="text-button" onClick={randomize}>
           随机外观

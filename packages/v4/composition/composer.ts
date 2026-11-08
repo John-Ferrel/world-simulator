@@ -349,12 +349,15 @@ function compileKernel(
     conditions,
     tags,
     familyId: kernel.familyId ?? kernel.id,
-    subjectProvenance: [
-      'birth',
-      'initial',
-      'materialized_population',
-      'historical_activation',
-    ] as SceneDefinition['subjectProvenance'],
+    subjectProvenance:
+      variant?.subjectProvenance ??
+      kernel.subjectProvenance ??
+      ([
+        'birth',
+        'initial',
+        'materialized_population',
+        'historical_activation',
+      ] as SceneDefinition['subjectProvenance']),
     cooldownYears: kernel.cooldownYears ?? 2,
     weight: kernel.weight ?? 1,
     ...(kernel.adaptiveContexts || variant?.adaptiveContexts

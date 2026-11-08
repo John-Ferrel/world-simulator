@@ -259,6 +259,7 @@ export type V4PersonSummaryRecord = {
   employment?: Pick<NonNullable<Person['employment']>, 'occupation'>;
   roles: string[];
   appearance?: Person['appearance'];
+  life?: Person['life'];
   lifeContract?: Person['lifeContract'];
   historicalIdentity?: Person['historicalIdentity'];
   agency?: Person['agency'];
@@ -392,6 +393,7 @@ const PERSON_SUMMARY_COLUMNS = `
   p.payload #>> '{employment,occupation}' AS employment_occupation,
   p.payload->'roles' AS roles,
   p.payload->'appearance' AS appearance,
+  p.payload->'life' AS life,
   p.payload->'lifeContract' AS life_contract,
   p.payload->'historicalIdentity' AS historical_identity,
   p.payload->'agency' AS agency,
@@ -429,6 +431,7 @@ function personSummaryFromRow(row: any): V4PersonSummaryRecord {
     employment: row.employment_occupation ? { occupation: row.employment_occupation } : undefined,
     roles: Array.isArray(row.roles) ? row.roles : [],
     appearance: row.appearance ?? undefined,
+    life: row.life ?? undefined,
     lifeContract: row.life_contract ?? undefined,
     historicalIdentity: row.historical_identity ?? undefined,
     agency: row.agency ?? undefined,

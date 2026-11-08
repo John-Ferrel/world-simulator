@@ -1,6 +1,6 @@
 # Phase 19 — Story Shape Report
 
-Generated: 2026-11-08T15:30:47.667Z
+Generated: 2026-11-08T18:32:24.415Z
 
 Deterministic editorial aid. `shapeKey` is role topology + condition kinds + outcome effect skeleton + branch count. It does not judge literary quality.
 
@@ -8,8 +8,8 @@ Deterministic editorial aid. `shapeKey` is role topology + condition kinds + out
 
 | Metric | Count |
 |---|---:|
-| Kernels | 2124 |
-| Distinct shapes | 2093 |
+| Kernels | 2160 |
+| Distinct shapes | 2129 |
 | Shapes with >=2 kernels | 27 |
 
 ## Pack shape diversity
@@ -33,7 +33,9 @@ Deterministic editorial aid. `shapeKey` is role topology + condition kinds + out
 | pack-collision-power-love | 22 | 22 | 1 |
 | pack-collision-luck-craft | 22 | 22 | 1 |
 | pack-collision-family-war | 20 | 20 | 1 |
+| pack-dramatic-overhaul | 20 | 20 | 1 |
 | pack-dramatic-lives | 16 | 16 | 1 |
+| pack-early-life-drama | 16 | 16 | 1 |
 | pack-life-course | 12 | 12 | 1 |
 | pack-absurd-fortune | 11 | 11 | 1 |
 | pack-work-craft | 11 | 11 | 1 |
@@ -44,8 +46,6 @@ Deterministic editorial aid. `shapeKey` is role topology + condition kinds + out
 | pack-desire-scandal | 10 | 10 | 1 |
 | pack-faith-miracles | 10 | 10 | 1 |
 | pack-office-influence | 9 | 9 | 1 |
-| pack-curse-betrayal | 8 | 8 | 1 |
-| pack-family-continuity | 7 | 7 | 1 |
 
 ## Largest structural clusters
 
@@ -83,10 +83,11 @@ These group kernels that consume the same standing state, even when their effect
 
 | Count | State core | Example kernels |
 |---:|---|---|
-| 9 | `hasState:raising-child:household` | r15-fam.school-registration, r15-fam.child-leaves, r15-fam.child-returns, lc17-nest.last-child-leaves, iw18-home.ration-tin |
-| 8 | `hasState:grief:person` | fm17-seance.parlor-table, fm17-consolation.kitchen, df18-luck.charm-from-the-dead, df18-dream.three-knocks, df18-ghost.funeral-coat |
+| 10 | `hasState:raising-child:household` | r15-fam.school-registration, r15-fam.child-leaves, r15-fam.child-returns, lc17-nest.last-child-leaves, iw18-home.ration-tin |
+| 9 | `hasState:grief:person` | fm17-seance.parlor-table, fm17-consolation.kitchen, df18-luck.charm-from-the-dead, df18-dream.three-knocks, df18-ghost.funeral-coat |
 | 7 | `hasState:oj18-odd-apprenticeship:person` | oj18-watch.keys, oj18-cinema.censor, oj18-zoo.escape, oj18-mortuary.estate, oj18-perfume.recipe |
 | 6 | `hasState:forbidden-attachment` | r15-love.ultimatum, r15-love.jealous-rival, r15-love.scandal, ds17-exposure.photograph, ld18-room.rented-hour |
+| 6 | `hasState:grief:person|hasState:raising-child:household` | fw19-split.grief-address, p21-family-secret, p22-bureaucratic-miracle, p22-dead-voice-child, p22-child-matchmaker |
 | 6 | `hasState:ld18-impossible-attachment` | ld18-divorce.bench, ld18-intimacy.hairwash, ld18-marriage.tolerated, ld18-future.two-rooms, ld18-breakup.returned-keys |
 | 6 | `hasState:tag:wish:power` | r15-wish.power-offer, r15-wish.found-faction, r15-wish.power-intrigue, r15-wish.power-price, r15-history.street-assembly |
 | 5 | `hasState:bc18-bureaucratic-ghost:person` | bc18-ghost.own-funeral, bc18-ghost.pension-window, bc18-ghost.double-tax, bc18-ghost.census-night, bc18-ghost.quiet-correction |
@@ -102,7 +103,6 @@ These group kernels that consume the same standing state, even when their effect
 | 5 | `hasState:public-scandal:person` | af17-humiliation.puppet-show, fm17-miracle.witness, bc18-fame.charity-matinee, ml18-scandal.public-win, pc20-scandal.apology-letter |
 | 5 | `hasState:sm18-town-secret:person` | sm18-letter.wrong-address, sm18-neighbor.wall-noise, sm18-secret.protect-or-tell, sm18-secret.confession, sm18-secret.market-rumor |
 | 4 | `hasState:df18-borrowed-luck:person` | df18-luck.repayment-comes-due, df18-luck.win-at-the-church-lottery, df18-luck.price-in-a-name, df18-luck.return-the-charm |
-| 4 | `hasState:em18-late-bloom:person` | em18-late-bloom.courting-family, em18-late-bloom.rent-increase, em18-late-bloom.legacy-walk, eh19-bridge.first-question |
 
 ## Production clusters
 
@@ -115,6 +115,7 @@ These group kernels that create the same state/transition, even when their entry
 | 11 | `state_add:bc18-ridiculous-fame` | bc18-fame.wrong-bust, bc18-fame.charity-matinee, bc18-ghost.own-funeral, bc18-ghost.census-night, bc18-inherit.forty-seven-franz |
 | 10 | `state_add:ld18-public-desire` | ld18-letter.misdelivered, ld18-divorce.bench, ld18-scandal.rumor, ld18-raid.private-club, ld18-marriage.tolerated |
 | 10 | `state_add:oj18-odd-apprenticeship` | oj18-watch.hire, oj18-watch.second-job, oj18-cinema.reel, oj18-zoo.night, oj18-taxi.night-fare |
+| 8 | `state_add:p22-family-legend` | p22-warm-fathers-letter, p22-warm-anonymous-gifts, p22-warm-naming-feast, p22-warm-night-move, p22-comic-christening |
 | 7 | `state_add:ml18-reversal|state_add:ml18-sudden-fortune` | ml18-gambling.card-system, ml18-investment.sugar-bonds, ml18-luck.wrong-horse, ml18-business.bottle-cap-patent, ml18-bank.run-on-the-savings |
 | 7 | `state_add:public-scandal` | fa17-press.plagiarism-accusation, fa17-cabaret.political-satire, af17-duel.borrowed-insult, af17-humiliation.puppet-show, ld18-jealousy.rival |
 | 6 | `state_add:ad20-public-attention` | ad20-wedding, ad20-public-speech, ad20-shop-opening, ad20-newspaper-interview, ad20-public-mistake |
@@ -129,14 +130,13 @@ These group kernels that create the same state/transition, even when their entry
 | 5 | `state_add:pc20-public-reversal` | pc20-fame.old-accuser, pc20-testimony.new-caption, pc20-investigation.exoneration, pc20-investigation.sealed-file, pc20-family.secret-papers |
 | 4 | `state_add:blacklisted` | r15-org.strike-settlement, wc17-factory.accident, wc17-strike.bargaining-table, oj18-cinema.censor |
 | 4 | `state_add:em18-late-bloom` | em18-late-bloom.first-dance, em18-late-bloom.shop-sign, em18-late-bloom.last-apprentice, em18-late-bloom.encore |
-| 4 | `state_add:office-under-siege` | office16-favor.private-sinecure, office16-scandal.public-hearing, office16-admin.quiet-ledger, office16-corruption.inspection |
 
 ## Repeated 8-character phrases
 
 | Count | Phrase |
 |---:|---|
-| 33 | 在门口站了一会儿 |
-| 13 | 门口站了一会儿把 |
+| 34 | 在门口站了一会儿 |
+| 14 | 门口站了一会儿把 |
 | 11 | 门口站了很久最后 |
 | 10 | 笔尖在纸上停了一 |
 | 9 | 一张写着地址的纸 |
@@ -145,15 +145,17 @@ These group kernels that create the same state/transition, even when their entry
 | 7 | 一封没有署名的信 |
 | 7 | 了一眼什么也没说 |
 | 7 | 发现自己一直攥着 |
+| 7 | 听见自己的名字被 |
 | 7 | 尖在纸上停了一下 |
 | 7 | 账本翻到最后一页 |
 | 6 | 口站了一会儿听见 |
 | 6 | 口等着手里提着一 |
-| 6 | 听见自己的名字被 |
 | 6 | 地址写在烟盒背面 |
 | 6 | 才发现自己一直攥 |
 | 6 | 把账本翻到最后一 |
 | 6 | 站在门口没有进来 |
+| 6 | 被叫去问话回来时 |
+| 6 | 见自己的名字被念 |
 | 5 | 人在门口站了一会 |
 | 5 | 发现自己的名字被 |
 | 5 | 发现自己的手一直 |
@@ -163,8 +165,6 @@ These group kernels that create the same state/transition, even when their entry
 | 5 | 工具一件件擦干净 |
 | 5 | 把围巾往上拉了拉 |
 | 5 | 把门开了一条缝又 |
-| 5 | 楼梯口站了一会儿 |
-| 5 | 翻到最后一页发现 |
 
 ## Use
 

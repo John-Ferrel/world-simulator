@@ -1,0 +1,5315 @@
+{
+  "id": "pack-early-life-drama",
+  "version": 1,
+  "title": "早期人生戏剧：摇篮边的信、兆头与家事",
+  "description": "为 0–7 岁玩家孩子准备的十六个早期人生 kernel。孩子不能像成人一样行动；故事来自父母、兄弟姐妹、邻居、接生婆、医生、公证人和工厂，以及家庭在贫困、战争与秘密中的压力。四个温暖、四个喜剧、四个诡异/阴暗、四个戏剧性 kernel，全部使用有界 typed effects；只有火灾 kernel 含一个稀有、明确处理的儿童死亡结局。",
+  "author": "phase22-early-life-author",
+  "model": "deepseek-v4.1-flash-subagent",
+  "generatedAt": "2026-11-09",
+  "sourceBriefId": "phase22-early-life-content",
+  "rationale": "Phase 21 的早期人生已有喂奶、发烧、第一次笑、第一句话、楼梯事故、家庭故事和第一个朋友，但 0–7 岁仍缺少可重复、彼此不同的家庭/邻里机制。本 pack 不把婴儿写成成人：每个 kernel 的主语都是孩子，行动却由父母、邻居、接生婆、医生、公证人或工头承担；两个 State 让家族传说和孩子的兆头可以被后续 kernel 消费，而不是一次性的散文标签。",
+  "themes": [
+    "early_life",
+    "family_legend",
+    "child_omen",
+    "inheritance",
+    "anonymous_gift",
+    "naming",
+    "christening",
+    "sibling",
+    "fire",
+    "factory",
+    "superstition",
+    "poverty"
+  ],
+  "era": "Vienna, 1900–1918",
+  "tone": [
+    "warm",
+    "comic",
+    "strange",
+    "dark",
+    "dramatic",
+    "tender"
+  ],
+  "scope": [
+    "infancy",
+    "childhood",
+    "family",
+    "household",
+    "neighborhood",
+    "work",
+    "health",
+    "inheritance"
+  ],
+  "rarity": "common",
+  "contentWarnings": [
+    "child illness and accident",
+    "one rare child death in a tenement fire",
+    "poverty and food insecurity",
+    "family conflict and separation",
+    "superstition and grief",
+    "no sexual content involving minors"
+  ],
+  "states": [
+    {
+      "id": "p22-family-legend",
+      "version": 1,
+      "packId": "pack-early-life-drama",
+      "title": "家族传说",
+      "description": "一个关于这个孩子、这个家或某件旧物的故事，被反复讲述、添油加醋或刻意压低声音。温暖、隐秘、危险和承诺四个参数决定它现在是护身符、负担还是把柄。",
+      "owner": "person",
+      "slot": "p22_family_legend",
+      "conflict": "replace",
+      "tags": [
+        "family_legend",
+        "family",
+        "story",
+        "secret",
+        "inheritance",
+        "promise",
+        "memory",
+        "childhood"
+      ],
+      "parameters": {
+        "warmth": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "secrecy": {
+          "type": "number",
+          "default": 40,
+          "min": 0,
+          "max": 100
+        },
+        "danger": {
+          "type": "number",
+          "default": 25,
+          "min": 0,
+          "max": 100
+        },
+        "promise": {
+          "type": "number",
+          "default": 50,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 48,
+        "max": 84
+      },
+      "exitWhen": [
+        {
+          "kind": "age",
+          "min": 8
+        }
+      ],
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "family",
+            "story",
+            "secret",
+            "inheritance",
+            "gift",
+            "feast",
+            "letter"
+          ],
+          "multiplier": 1.3
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "work",
+            "factory",
+            "school"
+          ],
+          "multiplier": 0.85
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "family",
+            "story"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "the-story-changes-hands",
+          "everyMonths": 24,
+          "check": {
+            "attribute": "willpower",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "told-at-the-table",
+              "result": "success",
+              "weight": 3,
+              "text": "又过了一年，{subject}家的故事在饭桌上换了新的讲法：多了一句笑话，少了一处哭声。听的人把汤匙放下，等下一句；讲故事的人却先去看窗子有没有关好，谁也没有先动筷子。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-family-legend",
+                  "key": "warmth",
+                  "delta": 3,
+                  "reason": "the legend was told warmly"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-family-legend",
+                  "key": "secrecy",
+                  "delta": -2,
+                  "reason": "a detail was left in the open"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-family-legend",
+                  "key": "promise",
+                  "delta": 2,
+                  "reason": "the family promised to keep telling it"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "a familiar story"
+                }
+              ]
+            },
+            {
+              "id": "a-detail-goes-missing",
+              "result": "failure",
+              "weight": 2,
+              "text": "又过了一年，故事里最要紧的那件东西不见了：先是名字，后来是地点。{subject}问起时，大人说“你记错了”；可柜子最底层那只空盒子，谁也没有扔，锁却换过了，钥匙也不见了。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-family-legend",
+                  "key": "secrecy",
+                  "delta": 4,
+                  "reason": "a detail was quietly dropped"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-family-legend",
+                  "key": "danger",
+                  "delta": 3,
+                  "reason": "the missing detail made the story unsafe"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-family-legend",
+                  "key": "warmth",
+                  "delta": -2,
+                  "reason": "the story grew colder"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "a story with a hole"
+                }
+              ]
+            },
+            {
+              "id": "the-wrong-person-hears",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "又过了一年，{subject}在门口把故事讲给一个收旧瓶的人听。第二天，整条楼道都在传另一个版本；家里把窗关上，把声音压得更低，故事从此有了第二个名字。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-family-legend",
+                  "key": "secrecy",
+                  "delta": -5,
+                  "reason": "the story left the house"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-family-legend",
+                  "key": "danger",
+                  "delta": 8,
+                  "reason": "a stranger retold the story"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "legend_leaked",
+                  "add": true,
+                  "reason": "the family story reached the street"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "the story turned against the house"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "someone-asks-again",
+          "onTags": [
+            "family",
+            "letter",
+            "gift",
+            "feast",
+            "inheritance"
+          ],
+          "chance": 0.35,
+          "cooldownMonths": 18,
+          "maxPerYear": 1,
+          "text": "又有人问起{subject}家的那件旧事。大人先笑了一下，才说“都是很早以前了”；问的人点点头，眼睛却往摇篮那边看，手指在杯沿上停了一会儿，谁也没有接话，窗外有风。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "key": "secrecy",
+              "delta": 4,
+              "reason": "a guest asked about the old story"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "key": "warmth",
+              "delta": 2,
+              "reason": "the story was told again"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a story kept alive"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase22-early-life-author",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把家族传说写成可追踪的四个参数：它既能护住孩子，也能变成被外人抓住的把柄。"
+      }
+    },
+    {
+      "id": "p22-child-omen",
+      "version": 1,
+      "packId": "pack-early-life-drama",
+      "title": "孩子身上的兆头",
+      "description": "一个关于这个孩子的巧合、梦、预言或旁人的注视。它不决定命运，只改变谁在看、谁在护、谁在怕；孩子的日常仍由喂饭、睡觉和门口的人声组成。",
+      "owner": "person",
+      "slot": "p22_child_omen",
+      "conflict": "replace",
+      "tags": [
+        "child_omen",
+        "omen",
+        "strangeness",
+        "attention",
+        "protection",
+        "fear",
+        "superstition",
+        "childhood"
+      ],
+      "parameters": {
+        "strangeness": {
+          "type": "number",
+          "default": 55,
+          "min": 0,
+          "max": 100
+        },
+        "attention": {
+          "type": "number",
+          "default": 45,
+          "min": 0,
+          "max": 100
+        },
+        "protection": {
+          "type": "number",
+          "default": 35,
+          "min": 0,
+          "max": 100
+        },
+        "fear": {
+          "type": "number",
+          "default": 30,
+          "min": 0,
+          "max": 100
+        }
+      },
+      "durationMonths": {
+        "min": 48,
+        "max": 84
+      },
+      "exitWhen": [
+        {
+          "kind": "age",
+          "min": 8
+        }
+      ],
+      "modifiers": [
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "omen",
+            "strange",
+            "doctor",
+            "midwife",
+            "superstition",
+            "dream",
+            "coincidence"
+          ],
+          "multiplier": 1.35
+        },
+        {
+          "kind": "scene_weight",
+          "tags": [
+            "routine",
+            "quiet"
+          ],
+          "multiplier": 0.8
+        },
+        {
+          "kind": "check_bonus",
+          "tags": [
+            "omen",
+            "superstition"
+          ],
+          "bonus": 1
+        }
+      ],
+      "ticks": [
+        {
+          "id": "the-omen-returns",
+          "everyMonths": 24,
+          "check": {
+            "attribute": "perception",
+            "dc": 11
+          },
+          "outcomes": [
+            {
+              "id": "nothing-happens",
+              "result": "success",
+              "weight": 3,
+              "text": "又过了一年，什么也没有发生。{subject}照常吃饭、摔跤、把鞋穿反；那个说过预言的人搬走了。家里把红绳解下来，却没有扔，只收进针线盒最里面，红绳上落了一点灰。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-child-omen",
+                  "key": "strangeness",
+                  "delta": -2,
+                  "reason": "the omen did not repeat"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-child-omen",
+                  "key": "fear",
+                  "delta": -3,
+                  "reason": "a quiet year"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-child-omen",
+                  "key": "protection",
+                  "delta": 2,
+                  "reason": "the red thread was kept"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": 0.01,
+                  "reason": "an ordinary year"
+                }
+              ]
+            },
+            {
+              "id": "the-coincidence-repeats",
+              "result": "failure",
+              "weight": 2,
+              "text": "又过了一年，同一件小事又发生了：钟停在同一个时刻，门口的狗对着空处叫。{subject}正在学系鞋带，抬头问“又来了吗”；大人说没有，手却先去摸门框，谁也没有回答。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-child-omen",
+                  "key": "strangeness",
+                  "delta": 5,
+                  "reason": "the coincidence repeated"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-child-omen",
+                  "key": "attention",
+                  "delta": 4,
+                  "reason": "the household began watching"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-child-omen",
+                  "key": "fear",
+                  "delta": 3,
+                  "reason": "the omen returned"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.01,
+                  "reason": "a repeated coincidence"
+                }
+              ]
+            },
+            {
+              "id": "the-whole-street-knows",
+              "result": "critical_failure",
+              "weight": 1,
+              "text": "又过了一年，整条街都知道了{subject}的事。卖菜的女人在门口画十字，孩子被大人拉远；{subject}不懂为什么，只学会在别人看过来时先低下头，也学会了绕路走，不再问为什么。",
+              "effects": [
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-child-omen",
+                  "key": "attention",
+                  "delta": 10,
+                  "reason": "the street began to watch"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-child-omen",
+                  "key": "fear",
+                  "delta": 8,
+                  "reason": "the omen became public"
+                },
+                {
+                  "type": "state_parameter",
+                  "ownerType": "person",
+                  "ownerId": "$subject",
+                  "stateId": "p22-child-omen",
+                  "key": "protection",
+                  "delta": -3,
+                  "reason": "the family lost control of the story"
+                },
+                {
+                  "type": "flag",
+                  "personId": "$subject",
+                  "flag": "omen_public",
+                  "add": true,
+                  "reason": "the omen became street knowledge"
+                },
+                {
+                  "type": "mood",
+                  "personId": "$subject",
+                  "amount": -0.02,
+                  "reason": "being watched"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "id": "a-stranger-touches-the-door",
+          "onTags": [
+            "omen",
+            "strange",
+            "doctor",
+            "midwife",
+            "superstition"
+          ],
+          "chance": 0.4,
+          "cooldownMonths": 12,
+          "maxPerYear": 1,
+          "text": "一个陌生人把手按在{subject}家的门框上，说这样能把坏运气留在门外。大人没有拦，只等那人走远，才用湿布把门框擦了一遍，布上留下一点灰，门框上留下一道浅印。",
+          "effects": [
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "key": "attention",
+              "delta": 5,
+              "reason": "a stranger noticed the child"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "key": "fear",
+              "delta": 4,
+              "reason": "the household feared the omen"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "key": "protection",
+              "delta": 2,
+              "reason": "the door was wiped clean"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.01,
+              "reason": "a stranger at the door"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "kind": "generated",
+        "author": "phase22-early-life-author",
+        "model": "deepseek-v4.1-flash-subagent",
+        "rationale": "把兆头写成注意力与保护的网络，而不是命运判决；孩子仍是孩子，旁人却在改变自己的行为。"
+      }
+    }
+  ],
+  "kernels": [
+    {
+      "id": "p22-warm-fathers-letter",
+      "title": "死去的兄弟来信",
+      "domain": "family",
+      "kind": "event",
+      "stage": "infancy",
+      "ageWindow": {
+        "min": 0,
+        "max": 2
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.4,
+      "weight": 1.6,
+      "cooldownYears": 6,
+      "significance": 0.55,
+      "tags": [
+        "infancy",
+        "family",
+        "letter",
+        "uncle",
+        "warm",
+        "melancholy",
+        "memory",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 2
+        },
+        {
+          "key": "father",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 55,
+          "sex": "male",
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.25
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-letter-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 20
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-letter-war",
+          "conditions": [
+            {
+              "kind": "worldYear",
+              "min": 1914,
+              "max": 1918
+            }
+          ],
+          "weightMultiplier": 1.25,
+          "checkBonus": -1,
+          "tags": [
+            "war",
+            "mail"
+          ]
+        },
+        {
+          "id": "p22-letter-kin",
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.5
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": 1,
+          "tags": [
+            "family"
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-recipe-arrives",
+          "weight": 0.45,
+          "text": "信是叔叔死前写的，在邮袋里压了两年才到。{father}拆开时先笑出声：里面没有遗言，只有一张李子饺子的做法和一个关于祖母的笨笑话。那天晚上，全家真的吃了饺子。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 70,
+                "secrecy": 20,
+                "danger": 5,
+                "promise": 65
+              },
+              "reason": "a dead brother's ordinary letter became a family story"
+            },
+            {
+              "type": "mood",
+              "personId": "$father",
+              "amount": 0.04,
+              "reason": "the letter was full of ordinary life"
+            },
+            {
+              "type": "relation",
+              "a": "$father",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the father read the letter beside the cradle",
+              "affection": 0.04
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "家里有一封叔叔留下的信，里面写着李子饺子的做法。",
+              "confidence": 0.5,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "significance": 0.55
+        },
+        {
+          "id": "the-letter-is-not-opened",
+          "weight": 0.3,
+          "text": "{father}把信塞进外套衬里，说等忙完再看。可那件外套整个冬天都挂在门后，袖口沾着印刷厂的墨；{subject}会爬以后，最先够到的就是那只露出来的信封角，纸边已经被摸得发软。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 40,
+                "secrecy": 55,
+                "danger": 15,
+                "promise": 45
+              },
+              "reason": "the letter stayed unopened in a coat"
+            },
+            {
+              "type": "flag",
+              "personId": "$father",
+              "flag": "unopened_letter",
+              "add": true,
+              "reason": "the dead brother's letter was hidden in a coat"
+            },
+            {
+              "type": "mood",
+              "personId": "$father",
+              "amount": -0.02,
+              "reason": "an unopened letter"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "门后那件外套里有一封没有拆开的信。",
+              "confidence": 0.4,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 15
+            }
+          ],
+          "significance": 0.5
+        },
+        {
+          "id": "the-neighbour-remembers",
+          "weight": 0.25,
+          "text": "送信的邻居说，叔叔年轻时在桥边救过一个落水的孩子，自己却冻坏了肺。{father}听完把信折好，放进糖罐底下；{subject}伸手去拍罐盖，拍得很响，像在替那封信回答。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 60,
+                "secrecy": 30,
+                "danger": 10,
+                "promise": 55
+              },
+              "reason": "a neighbour added a kinder version of the dead brother"
+            },
+            {
+              "type": "mood",
+              "personId": "$father",
+              "amount": 0.02,
+              "reason": "a neighbour remembered his brother kindly"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$subject",
+              "kind": "acquaintance",
+              "reason": "the neighbour told the family a story",
+              "trust": 0.04
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "叔叔曾经在桥边救过一个孩子。",
+              "confidence": 0.55,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.45
+            }
+          ],
+          "significance": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p22-warm-anonymous-gifts",
+      "title": "门口的匿名包裹",
+      "domain": "household",
+      "kind": "event",
+      "stage": "infancy",
+      "ageWindow": {
+        "min": 0,
+        "max": 2
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.45,
+      "weight": 1.7,
+      "cooldownYears": 5,
+      "significance": 0.5,
+      "tags": [
+        "infancy",
+        "family",
+        "gift",
+        "poverty",
+        "neighbor",
+        "warm",
+        "mystery",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 2
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 20
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-gifts-very-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 8
+            }
+          ],
+          "weightMultiplier": 1.5,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-gifts-crowded",
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "weightMultiplier": 1.25,
+          "checkBonus": -1,
+          "tags": [
+            "tenement"
+          ]
+        },
+        {
+          "id": "p22-gifts-war",
+          "conditions": [
+            {
+              "kind": "worldYear",
+              "min": 1914,
+              "max": 1918
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": -1,
+          "tags": [
+            "war"
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "a-parcel-of-coal",
+          "weight": 0.35,
+          "text": "门口多了一小包煤，用旧报纸裹着，纸上没有字，还沾着一点面粉。{caregiver}追到楼梯口，只看见一个穿灰外套的人拐过街角；那堆煤让屋里暖了整整一个星期。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 3,
+              "reason": "anonymous coal saved fuel money"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "a warmer room"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.03,
+              "reason": "an anonymous kindness"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "anonymous_gift_coal",
+              "add": true,
+              "reason": "coal arrived without a name"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 65,
+                "secrecy": 50,
+                "danger": 10,
+                "promise": 40
+              },
+              "reason": "the anonymous coal became a family story"
+            }
+          ],
+          "significance": 0.5
+        },
+        {
+          "id": "the-knitted-bootee",
+          "weight": 0.25,
+          "text": "包裹里只有一只毛线小鞋，针脚很密，尺寸正好，只有脚后跟歪了一处。{caregiver}把另一只也找了一遍，没找到；{subject}抓着那只小鞋睡了一下午，醒来时鞋面上全是口水。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.04,
+              "reason": "a stranger knitted for the baby"
+            },
+            {
+              "type": "relation",
+              "a": "$caregiver",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the caregiver kept the single bootee",
+              "affection": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "single_bootee",
+              "add": true,
+              "reason": "one knitted bootee arrived"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 70,
+                "secrecy": 45,
+                "danger": 5,
+                "promise": 50
+              },
+              "reason": "the single bootee became a story"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "significance": 0.5
+        },
+        {
+          "id": "the-giver-is-watched",
+          "weight": 0.25,
+          "text": "邻居说，看见一个年轻女人在门口站了很久，手里提着东西，最后没有敲门。{caregiver}追出去时，街上只剩卖栗子的推车；那天晚饭多了一小袋栗子，谁也没有问是谁买的。",
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "匿名送东西的人可能是一个年轻女人。",
+              "confidence": 0.45,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.01,
+              "reason": "a gift with no name"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "anonymous_giver_seen",
+              "add": true,
+              "reason": "a neighbour saw the giver"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "a bag of chestnuts"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.5
+            }
+          ],
+          "significance": 0.45
+        },
+        {
+          "id": "the-gifts-stop",
+          "weight": 0.15,
+          "text": "家里四处打听以后，包裹不再来了。{subject}的鞋已经顶脚，{caregiver}把那只毛线小鞋拆开，添了线，重新织成一只手套；手套只有一只，另一只留给明年，虽然明年可能就不冷了。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.03,
+              "reason": "the anonymous gifts stopped"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "the bootee was unravelled and reused"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "gifts_stopped",
+              "add": true,
+              "reason": "the anonymous gifts ended"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "cold hands",
+              "add": true,
+              "reason": "one mitten for two hands"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 5
+            }
+          ],
+          "significance": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p22-warm-naming-feast",
+      "title": "取名宴上的第二块蛋糕",
+      "domain": "family",
+      "kind": "event",
+      "stage": "infancy",
+      "ageWindow": {
+        "min": 0,
+        "max": 1
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.5,
+      "weight": 1.8,
+      "cooldownYears": 8,
+      "significance": 0.5,
+      "tags": [
+        "infancy",
+        "family",
+        "feast",
+        "name",
+        "neighbor",
+        "warm",
+        "tender",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 1
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 2,
+          "maxAge": 16,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 0,
+          "max": 1
+        },
+        {
+          "kind": "householdSize",
+          "min": 3
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-feast-big",
+          "conditions": [
+            {
+              "kind": "householdSize",
+              "min": 5
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "tags": [
+            "family"
+          ]
+        },
+        {
+          "id": "p22-feast-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 15
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": -1,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-feast-kin",
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.4
+            }
+          ],
+          "weightMultiplier": 1.25,
+          "checkBonus": 1,
+          "tags": [
+            "family"
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-name-is-too-long",
+          "weight": 0.35,
+          "text": "两个祖母的名字都想要，最后写在纸上连成一串。{neighbor}念到一半就笑了，说这孩子以后签名字要多蘸一次墨水；{subject}在摇篮里睡着，拳头举在耳边，蛋糕上只插了一根蜡烛。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.04,
+              "reason": "a name argued over with love"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$subject",
+              "kind": "acquaintance",
+              "reason": "the neighbour came to the naming feast",
+              "trust": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "double_name",
+              "add": true,
+              "reason": "the child received two family names"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "我的名字里有两个祖母的名字。",
+              "confidence": 0.6,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 75,
+                "secrecy": 15,
+                "danger": 5,
+                "promise": 60
+              },
+              "reason": "the naming feast became a warm family story"
+            }
+          ],
+          "significance": 0.55
+        },
+        {
+          "id": "the-cake-falls",
+          "weight": 0.25,
+          "text": "蛋糕从桌边滑下去，{neighbor}用围裙接住了，奶油还是蹭了一手，桌布上也留了一块白印。大家把没沾地的半边分着吃；{sibling}舔着手指说，这是最好吃的一次掉蛋糕。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.05,
+              "reason": "the cake was saved"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$caregiver",
+              "kind": "acquaintance",
+              "reason": "the neighbour caught the cake",
+              "trust": 0.05
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a feast cake"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cake_saved",
+              "add": true,
+              "reason": "the naming cake was caught mid-fall"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "significance": 0.5
+        },
+        {
+          "id": "the-empty-chair",
+          "weight": 0.2,
+          "text": "{caregiver}在桌边多摆了一把椅子，说是给没能来的人，杯子用的是祖父留下的旧杯子，杯底有一圈茶渍。{subject}伸手去抓那只空杯，抓得杯子在桌上转了一圈；{neighbor}低下头，把酒喝得很慢。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.01,
+              "reason": "an absent guest was remembered"
+            },
+            {
+              "type": "relation",
+              "a": "$caregiver",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the child reached for the empty cup",
+              "affection": 0.03
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "取名宴上有一把椅子是留给不在的人的。",
+              "confidence": 0.5,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "key": "warmth",
+              "delta": 3,
+              "reason": "the absent guest was folded into the story"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-family-legend",
+              "owner": "person",
+              "parameter": "warmth",
+              "min": 60
+            }
+          ],
+          "significance": 0.55
+        },
+        {
+          "id": "the-neighbour-cries",
+          "weight": 0.2,
+          "text": "{neighbor}抱着{subject}忽然哭了，说这孩子像她许多年前失去的儿子。{caregiver}不知道该说什么，只把蛋糕又切了一块，推到她面前；{neighbor}把孩子抱得更紧，眼泪落在襁褓上，久久没有松开。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$neighbor",
+              "amount": -0.03,
+              "reason": "a guest wept at the feast"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$subject",
+              "kind": "acquaintance",
+              "reason": "the neighbour held the child and wept",
+              "affection": 0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "guest_cried",
+              "add": true,
+              "reason": "a guest wept at the naming feast"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.6
+            }
+          ],
+          "significance": 0.6
+        }
+      ]
+    },
+    {
+      "id": "p22-warm-night-move",
+      "title": "夜里搬家",
+      "domain": "household",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 3,
+        "max": 5
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.4,
+      "weight": 1.6,
+      "cooldownYears": 6,
+      "significance": 0.55,
+      "tags": [
+        "childhood",
+        "family",
+        "move",
+        "neighbor",
+        "tenement",
+        "warm",
+        "bittersweet",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 3,
+          "maxAge": 5
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 2,
+          "maxAge": 16,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 3,
+          "max": 5
+        },
+        {
+          "kind": "overcrowded",
+          "value": true
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-move-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 10
+            }
+          ],
+          "weightMultiplier": 1.35,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-move-big",
+          "conditions": [
+            {
+              "kind": "householdSize",
+              "min": 5
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "checkBonus": -1,
+          "tags": [
+            "family"
+          ]
+        },
+        {
+          "id": "p22-move-war",
+          "conditions": [
+            {
+              "kind": "worldYear",
+              "min": 1914,
+              "max": 1918
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": -1,
+          "tags": [
+            "war"
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-cradle-goes-first",
+          "weight": 0.4,
+          "text": "搬家定在夜里，怕白天遇见旧房东。{neighbor}在前面打灯，{caregiver}抱着摇篮，{subject}抱着一只枕头跟在后面。新屋有一扇能看见院子的窗，孩子把枕头放在窗台上，说这是给月亮留的。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "a new room with a window"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a less crowded room"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$subject",
+              "kind": "acquaintance",
+              "reason": "the neighbour helped carry the cradle",
+              "trust": 0.08
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "moving at night"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "moved_at_night",
+              "add": true,
+              "reason": "the family moved before dawn"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 65,
+                "secrecy": 35,
+                "danger": 15,
+                "promise": 55
+              },
+              "reason": "the night move became a family story"
+            }
+          ],
+          "significance": 0.55
+        },
+        {
+          "id": "the-cart-loses-a-wheel",
+          "weight": 0.35,
+          "text": "手推车在石子路上掉了一只轮子，锅碗滚了一地，邻居的独轮车吱呀作响。{neighbor}从家里推来独轮车，两个孩子坐在车斗里笑；{caregiver}一边捡勺子，一边也忍不住笑。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "a broken cart wheel"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a comic move"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$caregiver",
+              "kind": "acquaintance",
+              "reason": "the neighbour lent a barrow",
+              "trust": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cart_wheel",
+              "add": true,
+              "reason": "the moving cart lost a wheel"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "significance": 0.5
+        },
+        {
+          "id": "the-old-landlord-watches",
+          "weight": 0.25,
+          "text": "旧房东站在街角，一动不动地看着他们把东西搬走，手里捏着一串钥匙，钥匙一直没响。{subject}以为那是一尊石像，还朝他挥了挥手；{caregiver}把孩子的头按回怀里，脚步没有停。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a landlord watched the move"
+            },
+            {
+              "type": "relation",
+              "a": "$caregiver",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the caregiver hurried the child past",
+              "fear": 0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "landlord_watched",
+              "add": true,
+              "reason": "the old landlord watched the night move"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 5
+            }
+          ],
+          "significance": 0.55
+        }
+      ]
+    },
+    {
+      "id": "p22-comic-christening",
+      "title": "洗礼盆边的三声喷嚏",
+      "domain": "family",
+      "kind": "event",
+      "stage": "infancy",
+      "ageWindow": {
+        "min": 0,
+        "max": 1
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.5,
+      "weight": 1.8,
+      "cooldownYears": 8,
+      "significance": 0.5,
+      "tags": [
+        "infancy",
+        "family",
+        "christening",
+        "church",
+        "neighbor",
+        "comic",
+        "tender",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 1
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 0,
+          "max": 1
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.25
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-christening-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 15
+            }
+          ],
+          "weightMultiplier": 1.25,
+          "checkBonus": -1,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-christening-big",
+          "conditions": [
+            {
+              "kind": "householdSize",
+              "min": 4
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "tags": [
+            "family"
+          ]
+        },
+        {
+          "id": "p22-christening-omen",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-child-omen",
+              "owner": "person",
+              "parameter": "attention",
+              "min": 40
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "checkBonus": -1,
+          "tags": [
+            "omen"
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-priest-sneezes",
+          "weight": 0.3,
+          "text": "神父念到孩子的名字时打了个大喷嚏，蜡烛灭了，{subject}却笑出了声。{neighbor}赶紧去点蜡烛，手一抖，火苗又灭了；教堂里第一次有人笑，神父也笑了，说这是今天最响的一声阿门。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.04,
+              "reason": "laughter in the church"
+            },
+            {
+              "type": "relation",
+              "a": "$official",
+              "b": "$subject",
+              "kind": "acquaintance",
+              "reason": "the priest sneezed at the font",
+              "trust": 0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "christening_sneeze",
+              "add": true,
+              "reason": "the christening began with a sneeze"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 70,
+                "secrecy": 10,
+                "danger": 5,
+                "promise": 40
+              },
+              "reason": "the comic christening became a family story"
+            }
+          ],
+          "significance": 0.5
+        },
+        {
+          "id": "the-wrong-name",
+          "weight": 0.25,
+          "text": "神父念的是另一张纸条上的名字。{caregiver}小声纠正，{subject}正好吐出一口奶，落在登记簿边上；神父用袖子擦了擦，说这样也算盖过章了，只是纸角留下一小片湿痕。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.01,
+              "reason": "the wrong name was read"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "洗礼时神父差点念错孩子的名字。",
+              "confidence": 0.7,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wrong_christening_name",
+              "add": true,
+              "reason": "the wrong name was read at the font"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a christening candle"
+            }
+          ],
+          "significance": 0.45
+        },
+        {
+          "id": "the-candle-hits-the-font",
+          "weight": 0.2,
+          "text": "蜡烛从烛台上滑下来，正掉进洗礼盆，水花溅了{neighbor}一脸，洗礼盆里的水晃了很久。{subject}吓得大哭，{neighbor}的帽子却浮在水面上，像一只黑色的船；孩子的鞋也湿了一只。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a fright at the font"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$caregiver",
+              "kind": "acquaintance",
+              "reason": "the christening splashed the godparent",
+              "trust": -0.02
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a ruined hat"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "startled by the christening",
+              "add": true,
+              "reason": "a candle fell into the font"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "significance": 0.5
+        },
+        {
+          "id": "the-godparent-cries",
+          "weight": 0.25,
+          "text": "{neighbor}从头哭到尾，眼泪把祷词都打湿了。{subject}一直盯着她看，最后伸手去够她的玻璃耳环，耳环晃得很亮；仪式结束后，大家分了一块很甜的蛋糕，孩子伸手去摸。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.03,
+              "reason": "a tearful but sweet christening"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$subject",
+              "kind": "acquaintance",
+              "reason": "the godparent wept through the rite",
+              "affection": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "godparent_cried",
+              "add": true,
+              "reason": "the godparent cried through the christening"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.5
+            }
+          ],
+          "significance": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p22-comic-mistaken-child",
+      "title": "市场尽头的认错",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 3,
+        "max": 5
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.42,
+      "weight": 1.7,
+      "cooldownYears": 5,
+      "significance": 0.5,
+      "tags": [
+        "childhood",
+        "family",
+        "market",
+        "neighbor",
+        "mistaken_identity",
+        "comic",
+        "tender",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 3,
+          "maxAge": 5
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 55,
+          "maxAge": 85
+        },
+        {
+          "key": "lostBoy",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 1,
+          "maxAge": 7
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 3,
+          "max": 5
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.25
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-mistake-crowded",
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "tags": [
+            "tenement"
+          ]
+        },
+        {
+          "id": "p22-mistake-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 15
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": -1,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-mistake-omen",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-child-omen",
+              "owner": "person",
+              "parameter": "attention",
+              "min": 40
+            }
+          ],
+          "weightMultiplier": 1.4,
+          "checkBonus": -1,
+          "tags": [
+            "omen"
+          ]
+        }
+      ],
+      "check": {
+        "attribute": "perception",
+        "dc": 10,
+        "successOutcomeIds": [
+          "the-cherries-under-the-stall",
+          "the-real-boy-laughs"
+        ],
+        "failureOutcomeIds": [
+          "the-hat-is-the-same",
+          "the-neighbour-wont-let-go"
+        ],
+        "criticalFailureOutcomeIds": [
+          "the-neighbour-wont-let-go"
+        ],
+        "criticalSuccessOutcomeIds": [
+          "the-real-boy-laughs"
+        ]
+      },
+      "outcomes": [
+        {
+          "id": "the-cherries-under-the-stall",
+          "weight": 0.35,
+          "text": "市场尽头，一个老太太抓住{subject}的手腕，说“你可回来了”。{subject}低头看见摊子底下露出两只鞋；真正的孩子正躲在那里吃樱桃，嘴边全是红的，手里还攥着老太太的篮子。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a case of mistaken identity"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$subject",
+              "kind": "acquaintance",
+              "reason": "the neighbour mistook the child for her grandson",
+              "trust": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "mistaken_for_grandson",
+              "add": true,
+              "reason": "a neighbour mistook the child at the market"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a handful of cherries"
+            }
+          ],
+          "significance": 0.5
+        },
+        {
+          "id": "the-hat-is-the-same",
+          "weight": 0.3,
+          "text": "两个孩子的帽子一模一样，两个大人在摊子前换了半天，才发现怀里的孩子都在睡。{subject}醒来时看见一张陌生的脸，愣了一会儿，又睡着了；两个母亲互相道歉，又互相检查帽子。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a harmless baby swap"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$caregiver",
+              "kind": "acquaintance",
+              "reason": "the mothers sorted out the hats",
+              "trust": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hat_swap",
+              "add": true,
+              "reason": "two identical hats caused a brief swap"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "significance": 0.5
+        },
+        {
+          "id": "the-neighbour-wont-let-go",
+          "weight": 0.2,
+          "text": "老太太不肯松手，指甲掐进{subject}的袖子。{caregiver}一根一根掰开她的手指，她才发现自己认错了人，连声道歉，从篮子里拿出一根香肠塞过来；孩子回家后一直搓手腕。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a stranger held too tight"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$subject",
+              "kind": "acquaintance",
+              "reason": "the neighbour gripped the child too hard",
+              "fear": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "held_too_tight",
+              "add": true,
+              "reason": "a stranger held the child too tightly"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "an apologetic sausage"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-child-omen",
+              "owner": "person",
+              "parameter": "attention",
+              "min": 50
+            }
+          ],
+          "significance": 0.55
+        },
+        {
+          "id": "the-real-boy-laughs",
+          "weight": 0.15,
+          "text": "真正的孩子从摊子底下爬出来，笑得直不起腰，说奶奶每个月都要认错一次。{subject}跟着笑，两个孩子在樱桃核堆里玩了很久，脚下咯吱响，直到各自的家长来拎人。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.05,
+              "reason": "a game of mistaken identity"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$subject",
+              "kind": "acquaintance",
+              "reason": "the lost boy turned the mistake into a game",
+              "affection": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "hide_and_seek",
+              "add": true,
+              "reason": "the lost boy was hiding under the stall"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.5
+            }
+          ],
+          "significance": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p22-comic-job-or-child",
+      "title": "洗衣房里的家长会",
+      "domain": "work",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 4,
+        "max": 7
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.38,
+      "weight": 1.6,
+      "cooldownYears": 5,
+      "significance": 0.5,
+      "tags": [
+        "childhood",
+        "family",
+        "work",
+        "laundry",
+        "neighbor",
+        "comic",
+        "tender",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 4,
+          "maxAge": 7
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 65,
+          "sameHousehold": false,
+          "occupation": "Vorarbeiter"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 4,
+          "max": 7
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 30
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-job-very-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 10
+            }
+          ],
+          "weightMultiplier": 1.4,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-job-big",
+          "conditions": [
+            {
+              "kind": "householdSize",
+              "min": 5
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": -1,
+          "tags": [
+            "family"
+          ]
+        },
+        {
+          "id": "p22-job-kin",
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.5
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": 1,
+          "tags": [
+            "family"
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-child-comes-to-work",
+          "weight": 0.35,
+          "text": "家长会和工作撞在同一天。{caregiver}把{subject}带进洗衣房，孩子坐在一堆待叠的床单中间，把袜子按颜色排成队，还唱了学校学的那首歌。老板娘笑得直不起腰，准了半天假。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.04,
+              "reason": "the child charmed the laundry"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a day among warm sheets"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 2,
+              "reason": "half a day's wages kept"
+            },
+            {
+              "type": "relation",
+              "a": "$caregiver",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the caregiver brought the child to work",
+              "affection": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "laundry_day",
+              "add": true,
+              "reason": "the child spent the day at the laundry"
+            }
+          ],
+          "significance": 0.55
+        },
+        {
+          "id": "the-shift-is-lost",
+          "weight": 0.25,
+          "text": "{caregiver}选了家长会，少拿一天工钱。回家的路上买了半磅面包和一小块猪油；{subject}把家长会上的画摊在桌上，画纸边角被油浸透了，画里有一台冒蒸汽的洗衣机，旁边站着两个人。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -4,
+              "reason": "a day's wages lost"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the caregiver came to the school"
+            },
+            {
+              "type": "relation",
+              "a": "$caregiver",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the caregiver chose the child for a day",
+              "affection": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "chose_child",
+              "add": true,
+              "reason": "the caregiver chose the child over a shift"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 10
+            }
+          ],
+          "significance": 0.55
+        },
+        {
+          "id": "the-boss-says-no",
+          "weight": 0.2,
+          "text": "老板不准假。{caregiver}把{subject}托给楼下的邻居，在楼梯扶手上系了一根红绳，说从洗衣房窗口能看见。孩子整下午都坐在楼梯口，看着那根红绳在风里轻轻动，一直没有回头。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "waiting for a red thread"
+            },
+            {
+              "type": "relation",
+              "a": "$caregiver",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the caregiver left a red thread on the stair",
+              "obligation": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "red_thread",
+              "add": true,
+              "reason": "a red thread marked the stairwell"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "significance": 0.55
+        },
+        {
+          "id": "the-play-comes-to-the-laundry",
+          "weight": 0.2,
+          "text": "{subject}和几个孩子把家长会的小戏搬到洗衣房院子里演。工人坐在木箱上看，铜币丢进一只帽子里；蒸汽从窗里冒出来，像舞台上的云，{caregiver}一边拧床单，一边偷偷抹眼睛。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.05,
+              "reason": "the play came to the laundry"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.04,
+              "reason": "a play in the yard"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "coins from the audience"
+            },
+            {
+              "type": "relation",
+              "a": "$caregiver",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the child performed in the laundry yard",
+              "affection": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "laundry_play",
+              "add": true,
+              "reason": "the school play was performed at the laundry"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.6
+            }
+          ],
+          "significance": 0.55
+        }
+      ]
+    },
+    {
+      "id": "p22-comic-name-register",
+      "title": "登记簿上的新名字",
+      "domain": "family",
+      "kind": "event",
+      "stage": "infancy",
+      "ageWindow": {
+        "min": 0,
+        "max": 1
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.46,
+      "weight": 1.7,
+      "cooldownYears": 8,
+      "significance": 0.45,
+      "tags": [
+        "infancy",
+        "family",
+        "bureaucracy",
+        "name",
+        "official",
+        "comic",
+        "tender",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 1
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 75
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 0,
+          "max": 1
+        },
+        {
+          "kind": "householdSize",
+          "min": 2
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-register-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 15
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": -1,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-register-big",
+          "conditions": [
+            {
+              "kind": "householdSize",
+              "min": 5
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "tags": [
+            "family"
+          ]
+        },
+        {
+          "id": "p22-register-legend",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-family-legend",
+              "owner": "person",
+              "parameter": "promise",
+              "min": 50
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "tags": [
+            "family",
+            "story"
+          ]
+        }
+      ],
+      "check": {
+        "attribute": "perception",
+        "dc": 10,
+        "successOutcomeIds": [
+          "the-name-is-corrected",
+          "the-clerk-was-right"
+        ],
+        "failureOutcomeIds": [
+          "the-clerk-hears-a-sneeze",
+          "the-name-stays"
+        ],
+        "criticalFailureOutcomeIds": [
+          "the-name-stays"
+        ],
+        "criticalSuccessOutcomeIds": [
+          "the-clerk-was-right"
+        ]
+      },
+      "outcomes": [
+        {
+          "id": "the-clerk-hears-a-sneeze",
+          "weight": 0.3,
+          "text": "登记员把{subject}打喷嚏的声音当成了名字，低头就写，笔尖还在舌头上蘸了蘸。{caregiver}抱着孩子，没看见那行字；等到拿着纸回家，才发现孩子的名字里多了一个“嚏”。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.04,
+              "reason": "a ridiculous clerical mistake"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "登记簿上孩子的名字被写成了喷嚏声。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "registered_as_hatschi",
+              "add": true,
+              "reason": "a sneeze became part of the registered name"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 65,
+                "secrecy": 10,
+                "danger": 5,
+                "promise": 45
+              },
+              "reason": "the registered sneeze became a family story"
+            }
+          ],
+          "significance": 0.5
+        },
+        {
+          "id": "the-name-is-corrected",
+          "weight": 0.25,
+          "text": "{caregiver}当场发现，要求改回来。登记员叹了口气，收了三克朗，把“嚏”划掉，在旁边写上正确的字，然后把笔搁下；{subject}全程睡着，什么也没损失，只是那张纸被折成了四折。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "fee to correct the register"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.02,
+              "reason": "the name was corrected"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "name_corrected",
+              "add": true,
+              "reason": "the register was corrected at the desk"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "min": 10
+            }
+          ],
+          "significance": 0.45
+        },
+        {
+          "id": "the-name-stays",
+          "weight": 0.25,
+          "text": "家里拿不出改名字的钱，那个多出来的字就留在了纸上。邻居开始叫{subject}“小喷嚏”；孩子听见了会笑，把这个名字当成自己的小名，{caregiver}听见了会先皱眉，再跟着笑。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.01,
+              "reason": "the name could not be corrected"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "邻居开始用那个多出来的字叫孩子。",
+              "confidence": 0.6,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "ridiculous_name",
+              "add": true,
+              "reason": "the clerical name stuck"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 5
+            }
+          ],
+          "significance": 0.5
+        },
+        {
+          "id": "the-clerk-was-right",
+          "weight": 0.2,
+          "text": "{caregiver}回家说起这事，祖母忽然安静了：那个“嚏”正是祖父小时候的外号。登记员并不知道，可纸上多出来的字，像是从旧相册里走出来的；祖母翻到一半就停住了。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.02,
+              "reason": "a coincidence in the register"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "登记簿上的错字竟是祖父的外号。",
+              "confidence": 0.6,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 55,
+                "secrecy": 45,
+                "danger": 10,
+                "promise": 50
+              },
+              "reason": "the register coincidence entered the family story"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.6
+            }
+          ],
+          "significance": 0.55
+        }
+      ]
+    },
+    {
+      "id": "p22-strange-midwife-face",
+      "title": "接生婆说见过这张脸",
+      "domain": "family",
+      "kind": "event",
+      "stage": "infancy",
+      "ageWindow": {
+        "min": 0,
+        "max": 1
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.38,
+      "weight": 1.6,
+      "cooldownYears": 7,
+      "significance": 0.6,
+      "tags": [
+        "infancy",
+        "family",
+        "midwife",
+        "omen",
+        "strange",
+        "eerie",
+        "superstition",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 1
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "midwife",
+          "kind": "worker",
+          "required": true,
+          "minAge": 30,
+          "maxAge": 75,
+          "sameHousehold": false,
+          "occupation": "Hebamme"
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 0,
+          "max": 1
+        },
+        {
+          "kind": "hasRelation",
+          "relationKind": "kin",
+          "minTrust": 0.25
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-midwife-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 15
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-midwife-kin",
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.6
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": 1,
+          "tags": [
+            "family"
+          ]
+        },
+        {
+          "id": "p22-midwife-war",
+          "conditions": [
+            {
+              "kind": "worldYear",
+              "min": 1914,
+              "max": 1918
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": -1,
+          "tags": [
+            "war"
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "she-has-seen-it-before",
+          "weight": 0.4,
+          "text": "接生婆把{subject}翻过来看了一遍，忽然说这张脸她见过——在出生前的一个梦里。她不肯收钱，只把一根红绳系在摇篮栏杆上，系得很紧，红绳上还打了一个结，说别问为什么。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "parameters": {
+                "strangeness": 70,
+                "attention": 55,
+                "protection": 40,
+                "fear": 45
+              },
+              "reason": "the midwife recognised the baby's face from a dream"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.02,
+              "reason": "the midwife's strange claim"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "midwife_red_thread",
+              "add": true,
+              "reason": "the midwife tied a red thread to the cradle"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "接生婆说她在孩子出生前梦见过这张脸。",
+              "confidence": 0.5,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "significance": 0.65
+        },
+        {
+          "id": "the-face-is-her-own",
+          "weight": 0.35,
+          "text": "接生婆说，孩子像她死去多年的妹妹。{caregiver}请她出去；她在门口站了一会儿，把带来的包放下，说里面的小衣服不是新的，但洗得很干净，衣角还绣着一个旧名字。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "parameters": {
+                "strangeness": 60,
+                "attention": 45,
+                "protection": 25,
+                "fear": 50
+              },
+              "reason": "the midwife saw her dead sister in the baby"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.03,
+              "reason": "the midwife's grief entered the room"
+            },
+            {
+              "type": "relation",
+              "a": "$midwife",
+              "b": "$caregiver",
+              "kind": "acquaintance",
+              "reason": "the midwife compared the baby to her dead sister",
+              "fear": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "midwife_sister",
+              "add": true,
+              "reason": "the midwife saw her dead sister in the child"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.5
+            }
+          ],
+          "significance": 0.6
+        },
+        {
+          "id": "the-midwife-says-nothing",
+          "weight": 0.25,
+          "text": "接生婆什么也没说，只夸孩子手劲大。走的时候，她在门口回头看了摇篮一眼，看了很久；{caregiver}后来才发现，她把自己的铜顶针落在了摇篮边上，内侧磨得发亮。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "parameters": {
+                "strangeness": 45,
+                "attention": 35,
+                "protection": 30,
+                "fear": 25
+              },
+              "reason": "the midwife left a thimble and a long look"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.01,
+              "reason": "an unexplained look"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "midwife_stare",
+              "add": true,
+              "reason": "the midwife stared at the cradle"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 8
+            }
+          ],
+          "significance": 0.55
+        }
+      ]
+    },
+    {
+      "id": "p22-strange-grandmother-voice",
+      "title": "祖母的口头禅",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 3,
+        "max": 5
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.36,
+      "weight": 1.5,
+      "cooldownYears": 6,
+      "significance": 0.65,
+      "tags": [
+        "childhood",
+        "family",
+        "grandmother",
+        "memory",
+        "omen",
+        "strange",
+        "eerie",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 3,
+          "maxAge": 5
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": false,
+          "minAge": 2,
+          "maxAge": 16,
+          "sameHousehold": true
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 3,
+          "max": 5
+        },
+        {
+          "kind": "householdSize",
+          "min": 4
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-voice-omen",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-child-omen",
+              "owner": "person",
+              "parameter": "strangeness",
+              "min": 40
+            }
+          ],
+          "weightMultiplier": 1.4,
+          "checkBonus": -1,
+          "tags": [
+            "omen"
+          ]
+        },
+        {
+          "id": "p22-voice-legend",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-family-legend",
+              "owner": "person",
+              "parameter": "secrecy",
+              "min": 40
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "tags": [
+            "family",
+            "secret"
+          ]
+        },
+        {
+          "id": "p22-voice-kin",
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.5
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": 1,
+          "tags": [
+            "family"
+          ]
+        }
+      ],
+      "check": {
+        "attribute": "luck",
+        "dc": 11,
+        "successOutcomeIds": [
+          "the-recipe-is-right",
+          "the-same-saying"
+        ],
+        "failureOutcomeIds": [
+          "the-child-is-playing",
+          "the-neighbour-hears"
+        ],
+        "criticalFailureOutcomeIds": [
+          "the-neighbour-hears"
+        ],
+        "criticalSuccessOutcomeIds": [
+          "the-same-saying"
+        ]
+      },
+      "outcomes": [
+        {
+          "id": "the-same-saying",
+          "weight": 0.3,
+          "text": "{subject}蹲在灶边玩土豆，忽然说：“先关火，再关窗。”那是祖母生前每次做饭都要说的话，连停顿都一样。{caregiver}手里的勺子掉进锅里，锅里的水正好开了，谁也没有去关。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.04,
+              "reason": "the dead grandmother's voice"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "孩子说出了祖母生前常说的那句话。",
+              "confidence": 0.7,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "grandmother_saying",
+              "add": true,
+              "reason": "the child used the dead grandmother's exact phrase"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "key": "strangeness",
+              "delta": 5,
+              "reason": "the dead grandmother's phrase returned"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-child-omen",
+              "owner": "person",
+              "parameter": "strangeness",
+              "min": 30
+            }
+          ],
+          "significance": 0.65
+        },
+        {
+          "id": "the-recipe-is-right",
+          "weight": 0.25,
+          "text": "{subject}报出祖母做李子饺子的步骤，连她总把糖放两遍这个错也记得。{caregiver}先是笑，笑着笑着去擦眼睛；那天晚上，家里按孩子说的做了一遍，孩子坚持说糖要放两遍。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.03,
+              "reason": "a recipe returned intact"
+            },
+            {
+              "type": "relation",
+              "a": "$caregiver",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the child recited the grandmother's recipe",
+              "affection": 0.04
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "祖母做李子饺子时会放两遍糖。",
+              "confidence": 0.7,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "key": "warmth",
+              "delta": 4,
+              "reason": "the grandmother's recipe was cooked again"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "key": "secrecy",
+              "delta": 2,
+              "reason": "the recipe kept the family close"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-family-legend",
+              "owner": "person",
+              "parameter": "warmth",
+              "min": 50
+            }
+          ],
+          "significance": 0.6
+        },
+        {
+          "id": "the-child-is-playing",
+          "weight": 0.25,
+          "text": "{caregiver}认定孩子在学大人说话，笑着拍手。{subject}愣了一下，又把那句话说得更响；{sibling}也跟着学，三个人的声音在厨房里撞来撞去，最后谁也说不清原句是什么，一起笑了。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.02,
+              "reason": "a child's imitation"
+            },
+            {
+              "type": "relation",
+              "a": "$sibling",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the sibling joined the imitation",
+              "affection": 0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "saying_is_a_game",
+              "add": true,
+              "reason": "the family treated the phrase as a game"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.6
+            }
+          ],
+          "significance": 0.55
+        },
+        {
+          "id": "the-neighbour-hears",
+          "weight": 0.2,
+          "text": "隔墙的邻居听见那句话，第二天在门口画了个十字，说祖母的声音又回来了。{subject}问什么是“回来”；{caregiver}说就是有人还记得，记得太清楚了，邻居画完又朝门里看了一眼。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "a neighbour crossed herself"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "邻居说听见了祖母的那句话。",
+              "confidence": 0.55,
+              "sourceKind": "told",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "neighbour_heard",
+              "add": true,
+              "reason": "the neighbour heard the dead grandmother's phrase"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "key": "attention",
+              "delta": 4,
+              "reason": "the neighbour began to listen"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            },
+            {
+              "kind": "hasState",
+              "stateId": "p22-child-omen",
+              "owner": "person",
+              "parameter": "attention",
+              "min": 20
+            }
+          ],
+          "significance": 0.6
+        }
+      ]
+    },
+    {
+      "id": "p22-strange-cradle-secret",
+      "title": "摇篮衬里的硬角",
+      "domain": "family",
+      "kind": "event",
+      "stage": "infancy",
+      "ageWindow": {
+        "min": 0,
+        "max": 2
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.34,
+      "weight": 1.5,
+      "cooldownYears": 7,
+      "significance": 0.6,
+      "tags": [
+        "infancy",
+        "family",
+        "cradle",
+        "secret",
+        "inheritance",
+        "strange",
+        "dark",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 2
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "kind": "overcrowded",
+          "value": true
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-cradle-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 10
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-cradle-legend",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-family-legend",
+              "owner": "person",
+              "parameter": "secrecy",
+              "min": 50
+            }
+          ],
+          "weightMultiplier": 1.4,
+          "tags": [
+            "family",
+            "secret"
+          ]
+        },
+        {
+          "id": "p22-cradle-kin",
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.5
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": 1,
+          "tags": [
+            "family"
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "the-bundle-in-the-lining",
+          "weight": 0.3,
+          "text": "{caregiver}拆洗摇篮衬里时，摸到一个硬角：一小块油布，里面包着一张当票和一缕头发，当票上的日期已经模糊。{caregiver}看了很久，又把油布缝回去，针脚比原来更密。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 35,
+                "secrecy": 80,
+                "danger": 55,
+                "promise": 40
+              },
+              "reason": "a hidden bundle was found in the cradle lining"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.03,
+              "reason": "a secret in the cradle"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cradle_bundle",
+              "add": true,
+              "reason": "a bundle was sewn into the cradle"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "摇篮衬里藏着一张当票和一缕头发。",
+              "confidence": 0.8,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "significance": 0.65
+        },
+        {
+          "id": "the-ticket-is-redeemed",
+          "weight": 0.25,
+          "text": "{caregiver}拿着当票去赎，取回一把银勺子，勺柄上刻着一个看不清的字母。回家后把勺子塞进{subject}手里，说“用吧”；孩子敲着桌沿，勺子发出很轻的响声，像在回答什么。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "redeeming the pawn ticket"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a silver spoon to cut the first teeth"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 55,
+                "secrecy": 60,
+                "danger": 25,
+                "promise": 55
+              },
+              "reason": "the pawned spoon returned to the family"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "spoon_returned",
+              "add": true,
+              "reason": "the cradle's pawn ticket bought back a spoon"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "min": 15
+            }
+          ],
+          "significance": 0.6
+        },
+        {
+          "id": "the-neighbour-knows",
+          "weight": 0.25,
+          "text": "邻居说，这只摇篮是从另一户人家借来的，那家的孩子没活过第一个冬天。{caregiver}想把它劈了烧火，斧子举起来又放下，最后靠在门后；那天夜里，孩子还是睡在里面。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.04,
+              "reason": "the cradle's history"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$caregiver",
+              "kind": "acquaintance",
+              "reason": "the neighbour told the cradle's history",
+              "fear": 0.05
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 25,
+                "secrecy": 70,
+                "danger": 65,
+                "promise": 30
+              },
+              "reason": "the borrowed cradle carried another child's death"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cradle_history",
+              "add": true,
+              "reason": "the cradle had belonged to a dead child"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.6
+            }
+          ],
+          "significance": 0.65
+        },
+        {
+          "id": "it-is-only-a-stone",
+          "weight": 0.2,
+          "text": "硬角其实是一块被磨圆的石头，是家里那个孩子小时候藏在摇篮里的“宝贝”。{caregiver}先笑，笑完又抹眼睛；{subject}抓住石头就往嘴里塞，被及时抠了出来，石头被洗干净放进针线盒。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.02,
+              "reason": "a false alarm"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 50,
+                "secrecy": 30,
+                "danger": 10,
+                "promise": 40
+              },
+              "reason": "a child's stone became a cradle story"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "stone_in_cradle",
+              "add": true,
+              "reason": "the cradle's secret was only a stone"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 5
+            }
+          ],
+          "significance": 0.55
+        }
+      ]
+    },
+    {
+      "id": "p22-strange-doctor-prediction",
+      "title": "医生没有写下的那一行",
+      "domain": "health",
+      "kind": "event",
+      "stage": "infancy",
+      "ageWindow": {
+        "min": 0,
+        "max": 2
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.35,
+      "weight": 1.5,
+      "cooldownYears": 6,
+      "significance": 0.65,
+      "tags": [
+        "infancy",
+        "family",
+        "doctor",
+        "illness",
+        "omen",
+        "strange",
+        "dark",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 0,
+          "maxAge": 2
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 16,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "doctor",
+          "kind": "worker",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75,
+          "sameHousehold": false,
+          "occupation": "Arzt"
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 0,
+          "max": 2
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "min": 10
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-doctor-rich",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "min": 50
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "checkBonus": 1,
+          "tags": [
+            "class"
+          ]
+        },
+        {
+          "id": "p22-doctor-kin",
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.5
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "tags": [
+            "family"
+          ]
+        },
+        {
+          "id": "p22-doctor-war",
+          "conditions": [
+            {
+              "kind": "worldYear",
+              "min": 1914,
+              "max": 1918
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": -1,
+          "tags": [
+            "war",
+            "health"
+          ]
+        }
+      ],
+      "check": {
+        "attribute": "resilience",
+        "dc": 12,
+        "successOutcomeIds": [
+          "the-doctor-is-optimistic",
+          "the-doctor-asks-for-the-cradle"
+        ],
+        "failureOutcomeIds": [
+          "the-prediction-comes-true",
+          "the-doctor-writes-nothing"
+        ],
+        "criticalFailureOutcomeIds": [
+          "the-prediction-comes-true"
+        ],
+        "criticalSuccessOutcomeIds": [
+          "the-doctor-asks-for-the-cradle"
+        ]
+      },
+      "outcomes": [
+        {
+          "id": "the-doctor-writes-nothing",
+          "weight": 0.3,
+          "text": "医生听完胸口，提笔写了一句，又划掉，只留下一个墨团。他把纸折好，说“把屋子烧暖一点”；{caregiver}等医生走后，对着灯看那张纸，认出墨团底下露出半个“冬”字，灯芯正好爆了一下。",
+          "effects": [
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "parameters": {
+                "strangeness": 60,
+                "attention": 65,
+                "protection": 25,
+                "fear": 55
+              },
+              "reason": "the doctor crossed out a winter prediction"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.04,
+              "reason": "a crossed-out diagnosis"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "医生写下又划掉的诊断里，露出一个“冬”字。",
+              "confidence": 0.55,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "significance": 0.65
+        },
+        {
+          "id": "the-doctor-is-optimistic",
+          "weight": 0.25,
+          "text": "医生说孩子只是瘦，开了一瓶味道很坏的补药，说“过了春天就好了”。{caregiver}把这句话记了很多年；每年春天，家里都要说一遍，像在核对一张旧账单，药瓶上还贴着手写的标签。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.03,
+              "reason": "the doctor was optimistic"
+            },
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a tonic and a hopeful sentence"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "parameters": {
+                "strangeness": 40,
+                "attention": 35,
+                "protection": 45,
+                "fear": 20
+              },
+              "reason": "the doctor promised spring would fix it"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "doctor_optimism",
+              "add": true,
+              "reason": "the doctor promised the child would outgrow it"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "min": 30
+            }
+          ],
+          "significance": 0.55
+        },
+        {
+          "id": "the-doctor-asks-for-the-cradle",
+          "weight": 0.25,
+          "text": "医生问孩子睡在哪里，看见摇篮紧挨着炉子，皱起眉头。他让{caregiver}当晚就把摇篮挪到窗边；{subject}换了位置，第一夜睡得比从前沉，窗边的风比炉边冷，孩子却睡得很沉。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the cradle was moved away from the stove"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.01,
+              "reason": "a change in the room"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "parameters": {
+                "strangeness": 35,
+                "attention": 30,
+                "protection": 50,
+                "fear": 25
+              },
+              "reason": "the doctor moved the cradle"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "cradle_moved",
+              "add": true,
+              "reason": "the doctor ordered the cradle moved"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "significance": 0.55
+        },
+        {
+          "id": "the-prediction-comes-true",
+          "weight": 0.2,
+          "text": "那年冬天，{subject}咳得整夜停不下来，脸涨得发紫。医生再来时，看了{caregiver}一眼，没有说话；那张划掉的纸被从抽屉里拿出来，压在药瓶底下，纸角已经卷了，谁也没有先开口。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.12,
+              "reason": "whooping cough in the winter"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "whooping cough",
+              "add": true,
+              "reason": "the doctor's crossed-out winter prediction came true"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.05,
+              "reason": "the prediction came true"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "key": "fear",
+              "delta": 10,
+              "reason": "the omen proved true"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "health",
+              "max": 0.55
+            },
+            {
+              "kind": "hasState",
+              "stateId": "p22-child-omen",
+              "owner": "person",
+              "parameter": "fear",
+              "min": 30
+            }
+          ],
+          "significance": 0.75
+        }
+      ]
+    },
+    {
+      "id": "p22-drama-inheritance-papers",
+      "title": "被换过的继承文书",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 4,
+        "max": 7
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.34,
+      "weight": 1.5,
+      "cooldownYears": 8,
+      "significance": 0.7,
+      "tags": [
+        "childhood",
+        "family",
+        "inheritance",
+        "papers",
+        "secret",
+        "official",
+        "dramatic",
+        "dark",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 4,
+          "maxAge": 7
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 65,
+          "sameHousehold": true
+        },
+        {
+          "key": "official",
+          "kind": "official",
+          "required": true,
+          "minAge": 28,
+          "maxAge": 75
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 25,
+          "maxAge": 80
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 4,
+          "max": 7
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "min": 100
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-papers-rich",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "min": 300
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "checkBonus": 1,
+          "tags": [
+            "class"
+          ]
+        },
+        {
+          "id": "p22-papers-legend",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-family-legend",
+              "owner": "person",
+              "parameter": "secrecy",
+              "min": 40
+            }
+          ],
+          "weightMultiplier": 1.4,
+          "checkBonus": -1,
+          "tags": [
+            "family",
+            "secret"
+          ]
+        },
+        {
+          "id": "p22-papers-kin",
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.4
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "tags": [
+            "family"
+          ]
+        }
+      ],
+      "check": {
+        "attribute": "perception",
+        "dc": 12,
+        "successOutcomeIds": [
+          "the-seal-is-wrong",
+          "the-child-remembers-the-number"
+        ],
+        "failureOutcomeIds": [
+          "the-papers-are-copied",
+          "the-notary-is-a-cousin"
+        ],
+        "criticalFailureOutcomeIds": [
+          "the-notary-is-a-cousin"
+        ],
+        "criticalSuccessOutcomeIds": [
+          "the-child-remembers-the-number"
+        ]
+      },
+      "outcomes": [
+        {
+          "id": "the-seal-is-wrong",
+          "weight": 0.3,
+          "text": "{subject}把墨水瓶碰倒在继承文书上。{caregiver}一边擦一边看见，纸角的火漆印是去年的，文书却写着十年前的日期。公证人伸手去够那张纸，慢了一步，脸一下子白了。",
+          "effects": [
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "继承文书上的火漆印比文书日期新。",
+              "confidence": 0.75,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "wrong_seal",
+              "add": true,
+              "reason": "the inheritance seal was from the wrong year"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.03,
+              "reason": "a swapped paper"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -2,
+              "reason": "ink and a ruined envelope"
+            },
+            {
+              "type": "state_add",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "parameters": {
+                "warmth": 30,
+                "secrecy": 75,
+                "danger": 60,
+                "promise": 65
+              },
+              "reason": "the inheritance papers became a dangerous family story"
+            }
+          ],
+          "significance": 0.7
+        },
+        {
+          "id": "the-papers-are-copied",
+          "weight": 0.25,
+          "text": "家里花钱要了一份副本。副本和原件一字不差，唯独少了一页；公证人说那一页本来就不存在。{subject}在旁边数纸角，数来数去都是双数，只有那一份是单数。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -8,
+              "reason": "a certified copy"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "继承文书的副本少了一页。",
+              "confidence": 0.7,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "missing_page",
+              "add": true,
+              "reason": "the inheritance copy was missing a page"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "key": "secrecy",
+              "delta": 5,
+              "reason": "the missing page deepened the secret"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "min": 300
+            },
+            {
+              "kind": "hasState",
+              "stateId": "p22-family-legend",
+              "owner": "person",
+              "parameter": "secrecy",
+              "min": 20
+            }
+          ],
+          "significance": 0.65
+        },
+        {
+          "id": "the-child-remembers-the-number",
+          "weight": 0.25,
+          "text": "{subject}忽然念出一串数字，说是“那天在桌上听见的”。{caregiver}愣住：那是旧宅的包裹编号。他们在一只帽盒底下找到那张被换走的纸，纸上有同样的号码，盒里还有一股樟脑味。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": 0.04,
+              "reason": "a child's memory broke the case"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "继承文书和一只帽盒共用同一个包裹编号。",
+              "confidence": 0.65,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "parcel_number",
+              "add": true,
+              "reason": "the child remembered the parcel number"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "key": "promise",
+              "delta": 5,
+              "reason": "the child became the keeper of a clue"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.6
+            }
+          ],
+          "significance": 0.7
+        },
+        {
+          "id": "the-notary-is-a-cousin",
+          "weight": 0.2,
+          "text": "公证人摘下眼镜擦了很久，{caregiver}才认出他是远房表叔。屋里没有人提高声音；表叔把文书推回来，说“再查查”，手指却在桌下抖，袖口磨破了，露出里面的线，谁也没有留他吃饭。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.05,
+              "reason": "the swap was family"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$caregiver",
+              "kind": "acquaintance",
+              "reason": "the notary was a distant cousin",
+              "fear": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "notary_cousin",
+              "add": true,
+              "reason": "the notary was a relative"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-family-legend",
+              "key": "danger",
+              "delta": 8,
+              "reason": "the family secret had an inside hand"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-family-legend",
+              "owner": "person",
+              "parameter": "danger",
+              "min": 40
+            }
+          ],
+          "significance": 0.75
+        }
+      ]
+    },
+    {
+      "id": "p22-drama-sibling-runs-away",
+      "title": "那个孩子的鞋印到了河边",
+      "domain": "family",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 4,
+        "max": 7
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.36,
+      "weight": 1.6,
+      "cooldownYears": 7,
+      "significance": 0.7,
+      "tags": [
+        "childhood",
+        "family",
+        "sibling",
+        "runaway",
+        "river",
+        "police",
+        "dramatic",
+        "dark",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 4,
+          "maxAge": 7
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "sibling",
+          "kind": "sibling",
+          "required": true,
+          "minAge": 7,
+          "maxAge": 16,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 20,
+          "maxAge": 80
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 4,
+          "max": 7
+        },
+        {
+          "kind": "householdSize",
+          "min": 4
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-run-crowded",
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "checkBonus": -1,
+          "tags": [
+            "tenement"
+          ]
+        },
+        {
+          "id": "p22-run-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 15
+            }
+          ],
+          "weightMultiplier": 1.25,
+          "checkBonus": -1,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-run-kin",
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.5
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": 1,
+          "tags": [
+            "family"
+          ]
+        },
+        {
+          "id": "p22-run-legend",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-family-legend",
+              "owner": "person",
+              "parameter": "promise",
+              "min": 50
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "checkBonus": 1,
+          "tags": [
+            "family",
+            "story"
+          ]
+        }
+      ],
+      "check": {
+        "attribute": "empathy",
+        "dc": 11,
+        "successOutcomeIds": [
+          "the-sibling-was-hiding",
+          "the-neighbour-saw-him"
+        ],
+        "failureOutcomeIds": [
+          "the-sibling-comes-back-at-dark",
+          "the-sibling-is-gone"
+        ],
+        "criticalFailureOutcomeIds": [
+          "the-sibling-is-gone"
+        ],
+        "criticalSuccessOutcomeIds": [
+          "the-sibling-was-hiding"
+        ]
+      },
+      "outcomes": [
+        {
+          "id": "the-sibling-comes-back-at-dark",
+          "weight": 0.3,
+          "text": "{sibling}天黑才回来，鞋湿到脚踝，说只是去河边坐了一会儿。{caregiver}打了{sibling}一下，又抱住{sibling}；{subject}躺在床上装睡，听见两个人的呼吸都还没平，楼下的狗叫了一声，谁也没有点灯。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.03,
+              "reason": "a child ran to the river"
+            },
+            {
+              "type": "relation",
+              "a": "$sibling",
+              "b": "$caregiver",
+              "kind": "kin",
+              "reason": "the sibling came back from the river",
+              "trust": -0.03,
+              "obligation": 0.05
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "the child pretended to sleep",
+              "affection": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sibling_returned",
+              "add": true,
+              "reason": "the sibling came back at dark"
+            }
+          ],
+          "significance": 0.65
+        },
+        {
+          "id": "the-sibling-is-gone",
+          "weight": 0.25,
+          "text": "{sibling}带走了外套和切面包的刀，枕头底下留了一张纸条，只写着“别找我”。{caregiver}去了警察局，警察只记下外套的颜色；{subject}把{sibling}的帽子抱在怀里，抱到帽檐都变了形。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.06,
+              "reason": "a child left home"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "the sibling disappeared",
+              "fear": 0.05,
+              "obligation": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "sibling_gone",
+              "add": true,
+              "reason": "the sibling ran away"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$caregiver",
+              "proposition": "大孩子留了一张“别找我”的纸条。",
+              "confidence": 0.8,
+              "sourceKind": "document",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 10
+            }
+          ],
+          "significance": 0.75
+        },
+        {
+          "id": "the-neighbour-saw-him",
+          "weight": 0.25,
+          "text": "邻居说在车站看见{sibling}，背着一只旧包，往南边去了。{caregiver}追到车站，回来时一个人；{subject}问{sibling}呢，{caregiver}只说“会回来的”，然后把门闩上，车站的钟正好敲了四下，门闩响了很久。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.04,
+              "reason": "a sighting at the station"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$caregiver",
+              "kind": "acquaintance",
+              "reason": "the neighbour saw the sibling at the station",
+              "trust": 0.03
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "station_sighting",
+              "add": true,
+              "reason": "the sibling was seen at the station"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.6
+            }
+          ],
+          "significance": 0.7
+        },
+        {
+          "id": "the-sibling-was-hiding",
+          "weight": 0.2,
+          "text": "{sibling}其实一直躲在楼梯下面，听见{caregiver}哭了，也听见{subject}替{sibling}撒谎。{subject}端了一只土豆下去，土豆还热着；两个人蹲在煤灰里，谁也没有先说话，煤灰沾在两个人的膝盖上。",
+          "effects": [
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the sibling was found under the stairs"
+            },
+            {
+              "type": "relation",
+              "a": "$subject",
+              "b": "$sibling",
+              "kind": "kin",
+              "reason": "the child brought the sibling a potato",
+              "affection": 0.06,
+              "trust": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "under_the_stairs",
+              "add": true,
+              "reason": "the runaway sibling was hiding under the stairs"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "significance": 0.7
+        }
+      ]
+    },
+    {
+      "id": "p22-drama-fire",
+      "title": "灶间的火",
+      "domain": "household",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 3,
+        "max": 5
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.32,
+      "weight": 1.5,
+      "cooldownYears": 8,
+      "significance": 0.85,
+      "tags": [
+        "childhood",
+        "family",
+        "fire",
+        "accident",
+        "neighbor",
+        "survival",
+        "dramatic",
+        "danger",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 3,
+          "maxAge": 5
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 80
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 3,
+          "max": 5
+        },
+        {
+          "kind": "overcrowded",
+          "value": true
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-fire-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 10
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "checkBonus": -1,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-fire-protected",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-child-omen",
+              "owner": "person",
+              "parameter": "protection",
+              "min": 40
+            }
+          ],
+          "weightMultiplier": 1.4,
+          "checkBonus": 1,
+          "tags": [
+            "omen"
+          ]
+        },
+        {
+          "id": "p22-fire-fear",
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-child-omen",
+              "owner": "person",
+              "parameter": "fear",
+              "min": 50
+            }
+          ],
+          "weightMultiplier": 1.3,
+          "checkBonus": -1,
+          "tags": [
+            "omen"
+          ]
+        }
+      ],
+      "check": {
+        "attribute": "luck",
+        "dc": 12,
+        "successOutcomeIds": [
+          "the-neighbour-catches-the-child",
+          "the-fire-is-put-out-with-soup"
+        ],
+        "failureOutcomeIds": [
+          "the-child-hides-under-the-table",
+          "the-smoke-takes-the-child"
+        ],
+        "criticalFailureOutcomeIds": [
+          "the-smoke-takes-the-child"
+        ],
+        "criticalSuccessOutcomeIds": [
+          "the-fire-is-put-out-with-soup"
+        ]
+      },
+      "outcomes": [
+        {
+          "id": "the-neighbour-catches-the-child",
+          "weight": 0.35,
+          "text": "油灯倒了，窗帘先冒烟，随后窜起火。{neighbor}冲进来，用湿毯子裹住{subject}，自己的手背烧起一串水泡，后来留了疤。孩子的头发全是烟味，人还醒着，邻居的手一直抖，孩子记得。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.08,
+              "reason": "smoke and a tenement fire"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "smoke in the lungs",
+              "add": true,
+              "reason": "a curtain fire filled the room"
+            },
+            {
+              "type": "health",
+              "personId": "$neighbor",
+              "amount": -0.05,
+              "reason": "burns from the rescue"
+            },
+            {
+              "type": "relation",
+              "a": "$neighbor",
+              "b": "$subject",
+              "kind": "acquaintance",
+              "reason": "the neighbour carried the child out of the fire",
+              "trust": 0.1
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -5,
+              "reason": "burnt curtains and a new blanket"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fire_survived",
+              "add": true,
+              "reason": "the child was carried out of a fire"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.06,
+              "reason": "a fire in the room"
+            }
+          ],
+          "significance": 0.85
+        },
+        {
+          "id": "the-child-hides-under-the-table",
+          "weight": 0.3,
+          "text": "{subject}记得大人说过“着火就躲低”，便钻到湿桌子底下，把脸埋进围裙。消防员进来时先看见一双鞋；桌子烧焦了一角，孩子只呛了几口烟，靴子在地上留下黑印。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "smoke under the table"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "night terrors",
+              "add": true,
+              "reason": "the child hid under a table during the fire"
+            },
+            {
+              "type": "relation",
+              "a": "$caregiver",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the child hid where the caregiver told them to",
+              "fear": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "fire_hid",
+              "add": true,
+              "reason": "the child hid under the table"
+            },
+            {
+              "type": "state_parameter",
+              "ownerType": "person",
+              "ownerId": "$subject",
+              "stateId": "p22-child-omen",
+              "key": "protection",
+              "delta": 5,
+              "reason": "the omen's protection held"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasState",
+              "stateId": "p22-child-omen",
+              "owner": "person",
+              "parameter": "protection",
+              "min": 45
+            }
+          ],
+          "significance": 0.8
+        },
+        {
+          "id": "the-fire-is-put-out-with-soup",
+          "weight": 0.25,
+          "text": "{caregiver}端起一锅汤泼过去，火“嗤”地灭了，屋里全是白菜和烟的味道，锅底烧穿了一个洞。{subject}被呛得直咳，却又笑起来，说锅里的汤比火还厉害，锅被扔在门口，孩子记得。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.02,
+              "reason": "smoke and cabbage soup"
+            },
+            {
+              "type": "condition",
+              "personId": "$subject",
+              "condition": "cough",
+              "add": true,
+              "reason": "a fire was put out with soup"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.02,
+              "reason": "the fire went out"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -1,
+              "reason": "a pot of soup"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "soup_fire",
+              "add": true,
+              "reason": "the fire was put out with soup"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 5
+            }
+          ],
+          "significance": 0.75
+        },
+        {
+          "id": "the-smoke-takes-the-child",
+          "weight": 0.1,
+          "text": "烟先灌满屋子，{subject}没有醒。{neighbor}把摇篮搬到院子里时，孩子已经软了，邻居没有把摇篮放下；{caregiver}坐在楼梯上，手里攥着一只小鞋，鞋底还沾着灶灰，楼下的雪被踩成灰色。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$subject",
+              "amount": -0.8,
+              "reason": "smoke inhalation"
+            },
+            {
+              "type": "death",
+              "personId": "$subject",
+              "cause": "smoke inhalation in a tenement fire",
+              "reason": "the child did not wake before the smoke filled the room"
+            },
+            {
+              "type": "mood",
+              "personId": "$caregiver",
+              "amount": -0.12,
+              "reason": "the child died in the fire"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "burial after the fire"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "health",
+              "max": 0.55
+            }
+          ],
+          "significance": 0.95
+        }
+      ]
+    },
+    {
+      "id": "p22-drama-factory-accident",
+      "title": "厂里送回一件外套",
+      "domain": "work",
+      "kind": "event",
+      "stage": "childhood",
+      "ageWindow": {
+        "min": 5,
+        "max": 7
+      },
+      "subjectProvenance": [
+        "birth"
+      ],
+      "baseRate": 0.34,
+      "weight": 1.5,
+      "cooldownYears": 7,
+      "significance": 0.65,
+      "tags": [
+        "childhood",
+        "family",
+        "work",
+        "factory",
+        "accident",
+        "foreman",
+        "dramatic",
+        "gritty",
+        "drama"
+      ],
+      "roles": [
+        {
+          "key": "subject",
+          "kind": "subject",
+          "required": true,
+          "minAge": 5,
+          "maxAge": 7
+        },
+        {
+          "key": "caregiver",
+          "kind": "parent",
+          "required": true,
+          "minAge": 18,
+          "maxAge": 60,
+          "sameHousehold": true
+        },
+        {
+          "key": "foreman",
+          "kind": "worker",
+          "required": true,
+          "minAge": 25,
+          "maxAge": 65,
+          "sameHousehold": false,
+          "occupation": "Vorarbeiter"
+        },
+        {
+          "key": "neighbor",
+          "kind": "neighbor",
+          "required": false,
+          "minAge": 18,
+          "maxAge": 75
+        }
+      ],
+      "conditions": [
+        {
+          "kind": "age",
+          "min": 5,
+          "max": 7
+        },
+        {
+          "kind": "cash",
+          "householdId": "subject",
+          "max": 40
+        }
+      ],
+      "adaptiveContexts": [
+        {
+          "id": "p22-factory-very-poor",
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 10
+            }
+          ],
+          "weightMultiplier": 1.4,
+          "checkBonus": -1,
+          "tags": [
+            "poverty"
+          ]
+        },
+        {
+          "id": "p22-factory-crowded",
+          "conditions": [
+            {
+              "kind": "overcrowded",
+              "value": true
+            }
+          ],
+          "weightMultiplier": 1.2,
+          "tags": [
+            "tenement"
+          ]
+        },
+        {
+          "id": "p22-factory-war",
+          "conditions": [
+            {
+              "kind": "worldYear",
+              "min": 1914,
+              "max": 1918
+            }
+          ],
+          "weightMultiplier": 1.25,
+          "checkBonus": -1,
+          "tags": [
+            "war",
+            "work"
+          ]
+        }
+      ],
+      "check": {
+        "attribute": "luck",
+        "dc": 11,
+        "successOutcomeIds": [
+          "the-factory-pays",
+          "the-child-carries-the-tools"
+        ],
+        "failureOutcomeIds": [
+          "the-foreman-lies",
+          "the-coat-comes-home"
+        ],
+        "criticalFailureOutcomeIds": [
+          "the-coat-comes-home"
+        ],
+        "criticalSuccessOutcomeIds": [
+          "the-child-carries-the-tools"
+        ]
+      },
+      "outcomes": [
+        {
+          "id": "the-coat-comes-home",
+          "weight": 0.3,
+          "text": "厂里送回{caregiver}的外套，袖子从肘部撕开，上面有机油和一点洗不掉的血，口袋里还有半张工票。人没有回来，手先回来了：{subject}以为外套就是大人，抱着它坐了一下午。",
+          "effects": [
+            {
+              "type": "health",
+              "personId": "$caregiver",
+              "amount": -0.1,
+              "reason": "a crushed hand at the factory"
+            },
+            {
+              "type": "condition",
+              "personId": "$caregiver",
+              "condition": "crushed hand",
+              "add": true,
+              "reason": "the factory accident crushed a hand"
+            },
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -3,
+              "reason": "a torn coat and lost wages"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.04,
+              "reason": "the coat came home without the person"
+            },
+            {
+              "type": "relation",
+              "a": "$caregiver",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the child held the injured caregiver's coat",
+              "obligation": 0.05
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "coat_not_father",
+              "add": true,
+              "reason": "the factory sent home a coat"
+            }
+          ],
+          "significance": 0.7
+        },
+        {
+          "id": "the-foreman-lies",
+          "weight": 0.25,
+          "text": "工头说只是“蹭了一下”，可{caregiver}六个星期不能上工。家里卖了座钟，钟摆被搬走时还在晃；{subject}听见工头在门口说“别闹大”，把这句话记了很久，家里没有人再提那座钟。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": -6,
+              "reason": "six weeks without wages"
+            },
+            {
+              "type": "health",
+              "personId": "$caregiver",
+              "amount": -0.06,
+              "reason": "an untreated factory injury"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": -0.03,
+              "reason": "a lie at the door"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "foreman_lie",
+              "add": true,
+              "reason": "the foreman called the accident minor"
+            },
+            {
+              "type": "knowledge",
+              "holderId": "$subject",
+              "proposition": "工头说事故只是蹭了一下。",
+              "confidence": 0.6,
+              "sourceKind": "witnessed",
+              "visibility": "private",
+              "trueInWorld": true
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "max": 15
+            }
+          ],
+          "significance": 0.7
+        },
+        {
+          "id": "the-child-carries-the-tools",
+          "weight": 0.25,
+          "text": "{subject}替{caregiver}把工具袋提到厂门口，袋子比孩子还宽。工头看了一眼，给了孩子一枚铜币，说“回家去”。{subject}把铜币攥了一路，回家才发现手心全是汗，铜币被藏在枕头底下。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 1,
+              "reason": "a copper coin from the foreman"
+            },
+            {
+              "type": "relation",
+              "a": "$caregiver",
+              "b": "$subject",
+              "kind": "kin",
+              "reason": "the child carried the tool bag to the factory",
+              "affection": 0.04
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "tool_bag",
+              "add": true,
+              "reason": "the child carried the tools to the factory gate"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.01,
+              "reason": "a small errand"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "hasRelation",
+              "relationKind": "kin",
+              "minTrust": 0.5
+            }
+          ],
+          "significance": 0.65
+        },
+        {
+          "id": "the-factory-pays",
+          "weight": 0.2,
+          "text": "厂里赔了一小笔钱，{caregiver}买了一件大一号的新外套，说孩子长得快，能穿两年。{subject}把手伸进空袖子，袖子长出一大截，在风里晃，像一条没有人的路，孩子穿着它去上学。",
+          "effects": [
+            {
+              "type": "cash",
+              "householdId": "$household",
+              "amount": 4,
+              "reason": "small compensation"
+            },
+            {
+              "type": "health",
+              "personId": "$caregiver",
+              "amount": 0.02,
+              "reason": "a treated hand"
+            },
+            {
+              "type": "mood",
+              "personId": "$subject",
+              "amount": 0.03,
+              "reason": "a new coat"
+            },
+            {
+              "type": "flag",
+              "personId": "$subject",
+              "flag": "compensation_coat",
+              "add": true,
+              "reason": "the factory paid for a too-large coat"
+            }
+          ],
+          "conditions": [
+            {
+              "kind": "cash",
+              "householdId": "subject",
+              "min": 20
+            }
+          ],
+          "significance": 0.65
+        }
+      ]
+    }
+  ]
+}

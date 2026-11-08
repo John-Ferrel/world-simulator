@@ -1532,6 +1532,10 @@ function resolvedSceneHistory(world: WorldState): Map<string, number> {
   return history;
 }
 
+function baseSceneId(sceneId: string): string {
+  return sceneId.split('::')[0] ?? sceneId;
+}
+
 function sceneKey(sceneId: string, personId: Id): string {
   return `${sceneId}\u0000${personId}`;
 }
@@ -1990,7 +1994,7 @@ function sceneEligible(
   if (age < definition.ageWindow.min || age > definition.ageWindow.max) return false;
   if (!conditionsPass(context.world, subject, definition.conditions, date)) return false;
 
-  const historyKey = sceneKey(definition.id, subject.id);
+  const historyKey = sceneKey(baseSceneId(definition.id), subject.id);
   const lastResolved = context.sceneHistory.get(historyKey);
   // A scene never resolves twice for the same person in the same calendar
   // year, even across the two annual checkpoints.
@@ -4888,7 +4892,7 @@ function sceneEligiblePrepared(
   ) {
     return false;
   }
-  const historyKey = sceneKey(definition.id, subject.id);
+  const historyKey = sceneKey(baseSceneId(definition.id), subject.id);
   const lastResolved = context.sceneHistory.get(historyKey);
   if (lastResolved !== undefined && Math.floor(lastResolved / 12) === date.year) return false;
   if (definition.oncePerPerson === true && lastResolved !== undefined) return false;
@@ -4901,6 +4905,14 @@ function sceneEligiblePrepared(
     }
   }
   return true;
+}
+
+function narrativeTierMultiplier(definition: SceneDefinition): number {
+  const tags = definition.tags ?? [];
+  if (tags.includes('extraordinary')) return 2.2;
+  if (tags.includes('high_drama')) return 1.9;
+  if (tags.includes('drama')) return 1.4;
+  return 1;
 }
 
 function adaptiveTotalsFor(
@@ -4973,6 +4985,7 @@ function pickOrdinaryCandidate(
       definition,
       weight:
         Math.max(0, definition.weight ?? 1) *
+        narrativeTierMultiplier(definition) *
         adaptiveTotalsFor(context, definition, subject, date).weightMultiplier,
     });
   }
@@ -5105,6 +5118,7 @@ function runEventYear(
           definition,
           weight:
             Math.max(0, definition.weight ?? 1) *
+            narrativeTierMultiplier(definition) *
             adaptiveTotalsFor(context, definition, subject, date).weightMultiplier,
         });
       }
@@ -5224,6 +5238,7 @@ function runEventYear(
             1.5 *
             crossStateWeight *
             crossPackWeight *
+            narrativeTierMultiplier(definition) *
             adaptiveTotalsFor(context, definition, subject, date).weightMultiplier,
           cast,
           crossStateCount,
@@ -5347,6 +5362,7 @@ function runEventYear(
             definition,
             weight:
               Math.max(0, definition.weight ?? 1) *
+              narrativeTierMultiplier(definition) *
               adaptiveTotalsFor(context, definition, subject, date).weightMultiplier,
           });
         }
@@ -5389,6 +5405,7 @@ function runEventYear(
                 definition,
                 weight:
                   Math.max(0, definition.weight ?? 1) *
+                  narrativeTierMultiplier(definition) *
                   adaptiveTotalsFor(context, definition, subject, date).weightMultiplier,
               });
             }
@@ -5443,13 +5460,19 @@ function runEventYear(
       // Ordinary events belong to the year that just elapsed, not to a random
       // future month of the target year. The world header may already show
       // 1914-01 while the log is still filling 1913.
+      let eventDate = addMonths(from, eventMonth - 1);
+      const minAge = chosen.definition.ageWindow?.min ?? 0;
+      const minAgeIndex = subject.born.year * 12 + subject.born.month + minAge * 12;
+      if (monthIndex(eventDate) < minAgeIndex) {
+        eventDate = addMonths(from, Math.max(0, minAgeIndex - monthIndex(from)));
+      }
       resolveScene(
         context,
         chosen.definition,
         subject,
         cast.roles,
         selection,
-        addMonths(from, eventMonth - 1),
+        eventDate,
         0,
       );
       ordinary += 1;
@@ -5851,6 +5874,8 @@ function resolveScene(
   };
   appendScene(context, instance);
   context.sceneHistory.set(sceneKey(definition.id, subject.id), monthIndex(date));
+  const baseId = baseSceneId(definition.id);
+  if (baseId !== definition.id) context.sceneHistory.set(sceneKey(baseId, subject.id), monthIndex(date));
   return event;
 }
 

@@ -227,7 +227,7 @@ pnpm v4:phase18-lives 45 phase18-a,phase18-b,phase18-c
 pnpm v4:phase18-coverage docs/v4/phase-15-phase18-a.json
 ```
 
-自然人生 A/B/C 合计 60,074 events；新 Pack 贡献 9.65% 世界事件、8.37% focal events（Phase 17 为 3.1%）。20/20 新 State 至少出现一次，185/232 修订前新 Kernel 在世界中触发，但只有 113/232 到达 focal person。独立 Critic 给 Life 17/30（Phase 17 16/30）、Scene 22/30，并指出官僚幽灵/奇职秘密测试/横财抽成三组结构重复。focal share 仍低于 12%，repeatRate 约 0.220 高于 Phase 17 的 0.1965；不能把 233 kernels 当作生活质量已修复。
+自然人生 A/B/C 合计 60,074 events；新 Pack 贡献 9.45% 世界事件、8.37% focal events（Phase 17 为 3.1%）。20/20 新 State 至少出现一次，185/232 修订前新 Kernel 在世界中触发，但只有 113/232 到达 focal person。独立 Critic 给 Life 17/30（Phase 17 16/30）、Scene 22/30，并指出官僚幽灵/奇职秘密测试/横财抽成三组结构重复。focal share 仍低于 12%，repeatRate 约 0.220 高于 Phase 17 的 0.1965；不能把 233 kernels 当作生活质量已修复。
 
 完整证据见 [report](docs/v4/phase-18-report.md)、[design](docs/v4/phase-18-content-design.md)、[diversity](docs/v4/phase-18-content-diversity.md)、[critique](docs/v4/phase-18-critique.md) 与 [ADR 018](docs/decisions/ADR-018-creative-index-and-content-production.md)。
 
@@ -285,6 +285,20 @@ Phase 21 不增加 Engine 复杂度，而是先修玩家真正看到的东西：
 - **浏览器验收**：`tests/v4-browser/phase21.spec.ts` 通过（9.5s）；截图 `docs/v4/phase-21-browser-final.png`。
 
 独立 Critic（修订前）给 **Scene 24/30、Life 19/30**（Phase 20: 22/18），并抓到 1914-01 header vs 1914.09 日志的 chronology bug；修订已修 chronology 并重跑，分数不冒充修订后。完整见 `docs/v4/phase-21-critique.md`；完整证据见 [report](docs/v4/phase-21-report.md)、[experience audit](docs/v4/phase-21-experience-audit.md)、[visual design](docs/v4/phase-21-visual-design.md)、[dramatic content](docs/v4/phase-21-dramatic-content.md)、[playtest](docs/v4/phase-21-playtest.md)。
+
+## Phase 22 Creative Overhaul
+
+Phase 22 把内容库从 **113 / 2,124 / 32** 扩展到 **117 states / 2,160 kernels / 34 packs**，新增：
+
+- `pack-dramatic-overhaul`：20 kernels、2 states、100 adaptive contexts、20 checks、20 conditional outcomes、280 compiled scenes；山羊继承、仇人婚礼、道歉变求婚、假订婚、继承债务、假剧评、诅咒彩票等，5 comic / 5 romantic / 5 dark / 5 warm。
+- `pack-early-life-drama`：16 kernels、2 states、49 adaptive contexts、8 checks、16 conditional outcomes；0–7 岁，家庭/产婆/医生/邻居/公证人视角。
+- 3 个早期 base scenes（死人的信、抱错孩子的传闻、孩子重复外婆的愿望）+ 4 个高频 base scene retrofit。
+- `high_drama` ×1.9 / `drama` ×1.4 权重层，让带 tag 的内容更常出现。
+- **原创 200×240 分层 SVG 半身像**替换 LPC 64×64：年龄、发型、服装、职业配件、fame/scandal/grief/illness/debt/curse、情绪/健康、死亡。
+
+自然 A/B/C：**62,267 events / 4,104 focal**；总 drama focal **144（3.51%）**，其中 **early 119 / adult 25（0.61%）**；early-life pack **1,283 world（2.06%）**；4/4 新 State 出现；repeatRate **0.2613**。
+
+独立 Critic（修订前）给 **Scene 24/30、Life 20/30**（Phase 21: 24/19）；Visual Critic 给 Character art **4.5/10**、Visual identity **4/10**。完整证据见 [report](docs/v4/phase-22-report.md)、[creative direction](docs/v4/phase-22-creative-direction.md)、[dramatic content](docs/v4/phase-22-dramatic-content.md)、[visual design](docs/v4/phase-22-visual-design.md)、[playtests](docs/v4/phase-22-playtests.md)、[critique](docs/v4/phase-22-critique.md)。
 
 ## 已知限制与边界
 

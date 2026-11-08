@@ -163,6 +163,7 @@ export type KernelVariant = {
   outcomes?: KernelOutcome[];
   /** Optional adaptive contexts added by this variant. */
   adaptiveContexts?: AdaptiveContext[];
+  subjectProvenance?: import('../domain.js').SceneDefinition['subjectProvenance'];
   rateMultiplier?: number;
 };
 
@@ -180,6 +181,8 @@ export type PlotKernel = {
   /** Milieu ids/tags this kernel can inhabit; empty means any milieu. */
   milieus?: string[];
   conditions?: SceneCondition[];
+  /** Restrict this kernel to a provenance class (e.g. player births). */
+  subjectProvenance?: import('../domain.js').SceneDefinition['subjectProvenance'];
   /**
    * Phase 20 optional contexts. They do not gate the kernel; matching contexts
    * modify selection weight/check and can be referenced by outcome conditions.

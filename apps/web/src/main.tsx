@@ -1,7 +1,8 @@
 import '@fontsource/noto-sans-sc/400.css';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import PaperDoll, { CompactDollEditor } from './PaperDoll';
+import { CompactDollEditor } from './PaperDoll';
+import OriginalPortrait from './OriginalPortrait';
 import WorldMap from './WorldMap';
 import {
   historicalPhaseLabel,
@@ -79,6 +80,9 @@ type PersonSummary = {
   locationId: string;
   locationName?: string;
   occupation: string;
+  mood?: number;
+  flags?: string[];
+  stateTags?: string[];
   historical?: HistoricalIdentity;
   agency?: {
     goal: string;
@@ -753,10 +757,10 @@ function AuthScreen({ onDone }: { onDone: () => void }) {
   return (
     <div className="auth-screen">
       <div className="auth-world">
-        <div className="eyebrow">另一个历史 · 1900</div>
+        <div className="eyebrow">另一个历史 · 1912</div>
         <h1>世界人生</h1>
         <p>
-          1900 年的真实地球，历史尚未确定。你写下一个新生儿的名字与愿望，然后基本不再控制他。
+          1912 年的维也纳，历史尚未确定。你写下一个新生儿的名字与愿望，然后基本不再控制他。
           他在家庭、学校、工作、战争与疾病中自行生活。
         </p>
         <div className="auth-note">
@@ -807,6 +811,22 @@ function AuthScreen({ onDone }: { onDone: () => void }) {
       </form>
     </div>
   );
+}
+
+function birthWorldText(year: number): string {
+  if (year < 1914)
+    return '奥匈帝国进入第二个十年。维也纳的公寓里挤着工人家庭，印刷厂和纺织厂按件付钱，学校按学期收学费，医院按次收出诊费。战争、配给和流感还没有发生，但都已在路上。';
+  if (year < 1918)
+    return '战争已经拖进第三年。面包、煤和药品都要排队，男人从前线回来时少一条胳膊，女人在工厂和厨房之间来回跑。孩子出生在一个把未来当作奢侈品的年份。';
+  if (year < 1934)
+    return '共和国在废墟上重建，房租、工作和选票都在变动。咖啡馆里谈政治，公寓里谈欠租，孩子的摇篮旁边放着一份找不到工作的证明。';
+  if (year < 1938)
+    return '威权政府把街道变成制服和口号。报纸越来越薄，邻居越来越沉默；孩子出生时，父母已经在教他哪些话不能在楼梯间说。';
+  if (year < 1945)
+    return '战争和占领把城市切成几块。配给卡、空袭和失踪名单是日常；一个新生儿既是希望，也是一张需要藏好的口粮卡。';
+  if (year < 1955)
+    return '战后重建开始了。废墟还没清完，商店先开了门；盟军、黑市、救济汤和舞厅同时存在。孩子出生在一个既疲惫又急于忘记的年代。';
+  return '城市在重建中变得更快、更亮，也更陌生。电视、自助商店和新的公寓楼进入生活；孩子出生时，父母谈的是工资、房贷和要不要买一台收音机。';
 }
 
 function BirthScreen({
@@ -882,10 +902,7 @@ function BirthScreen({
       <div className="birth-layout">
         <aside className="birth-world">
           <h2>此刻的世界</h2>
-          <p>
-            奥匈帝国进入第二个十年。维也纳的公寓里挤着工人家庭，印刷厂和纺织厂按件付钱，
-            学校按学期收学费，医院按次收出诊费。战争、配给和流感还没有发生，但都已在路上。
-          </p>
+          <p>{birthWorldText(world.date.year)}</p>
           <div className="birth-facts">
             <div>
               <span>世界时间</span>
@@ -1219,7 +1236,7 @@ function PersonPane({
                 ? '历史人物'
                 : (person.occupation ?? '维也纳')}
         </div>
-        <PaperDoll person={{ ...person, age }} direction={2} motion />
+        <OriginalPortrait person={{ ...person, age }} />
         <div className="portrait-years">{lifeSpanText(person)}</div>
         {person.died && <div className="death-stamp">卒</div>}
       </div>
