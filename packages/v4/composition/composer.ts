@@ -253,6 +253,7 @@ function compileOutcomes(
     result.push({
       id: outcome.id,
       weight: outcome.weight,
+      ...(outcome.title ? { title: resolveText(outcome.title, context, milieu) } : {}),
       immediateText: resolveText(outcome.text, context, milieu),
       effects,
       ...(branchConditions.length > 0 ? { conditions: branchConditions } : {}),
@@ -359,6 +360,7 @@ function compileKernel(
         'historical_activation',
       ] as SceneDefinition['subjectProvenance']),
     cooldownYears: kernel.cooldownYears ?? 2,
+    oncePerPerson: kernel.oncePerPerson ?? false,
     weight: kernel.weight ?? 1,
     ...(kernel.adaptiveContexts || variant?.adaptiveContexts
       ? {

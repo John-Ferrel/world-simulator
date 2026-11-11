@@ -299,3 +299,16 @@ M1–M4 主干已接入正式 `World.runtime`/`advance`/`storage.step`：版本�
 - **Critic**：修订前 Scene 24/30、Life 20/30（Phase 21: 24/19）；指出 3.51% 主要是 early-life、adult 0.61%、repeat 0.2613、role/POV/name bug、State 不可见、肖像同一张脸。
 - **未完成/限制**：adult drama 仍低；repeat 回归；early 前重后轻；`p22-strange-midwife-face`/`p22-banker-novel`/`p22-cursed-lottery` 自然 0；全库 role/pronoun/name 未修；State 参数不可视；历史国界未做；没有玩家留存数据。
 - 交付：`docs/v4/phase-22-*.md`、`phase-22-playtests.json`、两个新 pack、`OriginalPortrait.tsx`、Phase22 browser test。
+
+## Phase 23 执行状态（2026-11-12）
+
+- **目标**：Blood, Desire & History；成年高赌注戏剧 + 活的历史政治世界 + 世界新闻 + 事件标题。
+- **内容**：`pack-phase23-high-stakes` 18/2/72/97/15/18/252；72/72 outcome titles；122 overlay + 9 fallback；119 states / 2,178 kernels / 35 packs。
+- **政治世界**：93 polities / 33 tensions / 42 sources / 107 ISO；1912/1918/1938/1945/1955/1991；月粒度 Vichy/Anschluss/占领；维也纳政党/国家机构 Organization/Position。
+- **历史地图**：现代几何 + 政权归属叠层；1912/1938/1940/1945/1955 变化；近似标注，不是测绘图。
+- **世界新闻**：75 anchors / 30 ambient / 15 rumors；`v4_world_news` 持久化；四类 provenance；UI 公报；1912–1920 7→86 条。
+- **自然 A/B/C**：64,259 events / 4,192 focal；adult drama 95（3.07%）；p23 focal 38（0.91%）；17/27 lives adult drama；repeat 0.2258；p23 world 502。
+- **浏览器**：Phase23 test 1 passed（4.1s）；1912 + 1940 截图。
+- **Critic**：修订前 Scene 26/30、Life 20/30（Phase 22: 24/20）；指出 adult drama 仍窄、p23 分布集中/全部 1 月、premise asserted、gazette future/category bug、政治面板静态、地图近似。修订响应见 `phase-23-critique.md`。
+- **未完成/限制**：10/27 无 adult drama；top 3 p23 占 65%；father-sells-daughter/dead-sister-returns 零出现；bigamy 不是实际双重婚姻；personal→world echo 弱；pressures 不可见；地图近似；1940 浏览器仍是 newborn + 参数行；没有真实玩家留存。
+- 交付：`docs/v4/phase-23-*.md`、`phase-23-playtests.json`、`phase-23-news-1912-1920.json`、pack、political-world、world-news、migration 009、Phase23 browser test。

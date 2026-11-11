@@ -15,6 +15,7 @@ import {
   latestV4WorldMeta,
   migrateV4,
   recentV4Events,
+  recentV4News,
   v4EventDetail,
   v4EventLookups,
   v4PersonDetail,
@@ -31,6 +32,8 @@ import {
 } from '../../packages/v4/store.js';
 import { macroProposalSummary, v4MacroState } from '../../packages/v4/macro-store.js';
 import { ageAt, type EventFact, type Person, type WorldState } from '../../packages/v4/domain.js';
+import { eventTitleFor } from '../../packages/v4/event-titles.js';
+import { politicalSnapshot } from '../../packages/v4/political-world/index.js';
 import {
   VIENNA_1912_CHRONICLE,
   VIENNA_1912_SCENES,
@@ -72,6 +75,16 @@ const Appearance = z
     doll: z.record(z.string(), z.unknown()).optional(),
   })
   .strict();
+
+const NewsQuery = z.object({
+  scope: z.enum(['global', 'regional', 'local']).optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(80),
+});
+
+const PoliticalWorldQuery = z.object({
+  year: z.coerce.number().int().min(1900).max(2100).optional(),
+  month: z.coerce.number().int().min(1).max(12).optional(),
+});
 
 const WorldQuery = z.object({
   limit: z.coerce.number().int().min(1).max(V4_PERSON_PAGE_MAX).default(V4_PERSON_PAGE_DEFAULT),
@@ -251,10 +264,11 @@ export function makeV4Api() {
         return reply.code(400).send({ error: '人物分页游标无效' });
       throw error;
     }
-    const [viewer, index, recent] = await Promise.all([
+    const [viewer, index, recent, news] = await Promise.all([
       user(req),
       v4WorldIndex(meta.id),
       recentV4Events(meta.id, 100),
+      recentV4News(meta.id, 140),
     ]);
     const publicEvents = recent.filter((event) => event.visibility === 'public');
     const lookups = await v4EventLookups(meta.id, publicEvents);
@@ -280,6 +294,12 @@ export function makeV4Api() {
       recentEvents: publicEvents.map((event) =>
         projectEvent(event, lookups, meta.macro?.developments),
       ),
+      news: news.filter(
+        (item) =>
+          item.date.year < meta.date.year ||
+          (item.date.year === meta.date.year && item.date.month <= meta.date.month),
+      ),
+      politicalWorld: politicalSnapshot(meta.date.year, meta.date.month),
       chronicle: [...VIENNA_1912_CHRONICLE, ...VIENNA_POSTWAR_CHRONICLE]
         .filter(
           (entry) =>
@@ -340,6 +360,29 @@ export function makeV4Api() {
           }
         : null,
     };
+  });
+
+  app.get('/api/v4/news', async (req, reply) => {
+    const meta = await latestV4WorldMeta();
+    if (!meta) return reply.code(404).send({ error: 'v4 世界尚未启动' });
+    const query = NewsQuery.parse(req.query);
+    const news = await recentV4News(meta.id, query.limit, query.scope);
+    return {
+      date: meta.date,
+      news: news.filter(
+        (item) =>
+          item.date.year < meta.date.year ||
+          (item.date.year === meta.date.year && item.date.month <= meta.date.month),
+      ),
+    };
+  });
+
+  app.get('/api/v4/political-world', async (req, reply) => {
+    const meta = await latestV4WorldMeta();
+    if (!meta) return reply.code(404).send({ error: 'v4 世界尚未启动' });
+    const query = PoliticalWorldQuery.parse(req.query);
+    const year = query.year ?? meta.date.year;
+    return politicalSnapshot(year, query.month ?? meta.date.month);
   });
 
   app.get('/api/v4/macro', async (_req, reply) => {
@@ -934,10 +977,9 @@ function projectEvent(
   const sceneId = event.sceneId ? lookups.sceneIdByInstance[event.sceneId] : undefined;
   const sceneTitle = sceneId ? sceneTitles.get(sceneId) : undefined;
   const title =
-    sceneTitle ??
-    event.title ??
-    ACTION_TITLES[event.action] ??
-    (event.provenance.kind === 'birth' ? '出生' : undefined) ??
+    eventTitleFor(event.action, sceneTitle, event.title) ||
+    ACTION_TITLES[event.action] ||
+    (event.provenance.kind === 'birth' ? '出生' : undefined) ||
     (event.provenance.kind === 'scene' || event.provenance.kind === 'system'
       ? '生活记录'
       : undefined);

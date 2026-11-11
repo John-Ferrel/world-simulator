@@ -300,6 +300,20 @@ Phase 22 把内容库从 **113 / 2,124 / 32** 扩展到 **117 states / 2,160 ker
 
 独立 Critic（修订前）给 **Scene 24/30、Life 20/30**（Phase 21: 24/19）；Visual Critic 给 Character art **4.5/10**、Visual identity **4/10**。完整证据见 [report](docs/v4/phase-22-report.md)、[creative direction](docs/v4/phase-22-creative-direction.md)、[dramatic content](docs/v4/phase-22-dramatic-content.md)、[visual design](docs/v4/phase-22-visual-design.md)、[playtests](docs/v4/phase-22-playtests.md)、[critique](docs/v4/phase-22-critique.md)。
 
+## Phase 23 Blood, Desire & History
+
+Phase 23 把内容库从 **117 / 2,160 / 34** 扩展到 **119 states / 2,178 kernels / 35 packs**，新增：
+
+- `pack-phase23-high-stakes`：18 kernels、2 states、72 outcomes、97 adaptive contexts、15 checks、18 conditional outcomes、252 compiled scenes；72/72 outcome titles。爱情/欲望/背叛、暴力/恐惧/政治、荒诞/黑色幽默、家庭秘密/重逢。
+- **Event Presentation**：`SceneOutcome.title` / `KernelOutcome.title` 进入 runtime；API 不再用 scene title 覆盖 outcome title；122 个旧内容标题 overlay；日志 3 行折叠、展开全文、细节折叠、中文 tag。
+- **政治世界**：93 polities / 33 tensions / 42 sources / 107 ISO；1912/1918/1938/1945/1955/1991 快照；领袖、政府、政党、派系、民族矛盾；Vichy/Anschluss/占领月份粒度；维也纳政党/国家机构 Organization/Position。
+- **历史地图**：现代 Natural Earth 几何 + 历史政权归属叠层；1912 奥匈/德意志/俄罗斯/奥斯曼，1938 大德意志/保护国/总督府，1940 维希法国，1945 被占领奥地利/德国，1955 第二共和国。明确标注近似，不是测绘图。
+- **世界新闻**：75 historical anchors / 30 ambient templates / 15 rumors；`v4_world_news` 持久化；reference / simulation / ambient / rumor 四类 provenance；世界公报 tab，全球/地区/本地过滤。
+
+自然 A/B/C：**64,259 events / 4,192 focal**；**adult drama 95（3.07%）**（Phase 22: 0.61%）；p23 focal **38（0.91%）**；**17/27 lives with adult drama**；repeatRate **0.2258**（Phase 22: 0.2613）；p23 world 502。
+
+独立 Critic（修订前）给 **Scene 26/30、Life 20/30**（Phase 22: 24/20）：标题和页面文字更好，但被生活出来的世界没有同步提升。完整证据见 [report](docs/v4/phase-23-report.md)、[design](docs/v4/phase-23-design.md)、[dramatic content](docs/v4/phase-23-dramatic-content.md)、[political world](docs/v4/phase-23-political-world.md)、[historical geography](docs/v4/phase-23-historical-geography.md)、[world news](docs/v4/phase-23-world-news.md)、[playtests](docs/v4/phase-23-playtests.md)、[critique](docs/v4/phase-23-critique.md)。
+
 ## 已知限制与边界
 
 - **内容范围**：静态运行时 183 个事件场景（含 104 个生成场景、519 条生成叙事变体）和 50 个主动 Task（144 outcomes/288 narrations）；另有运行时 content pack 机制，发布后动态加载，仍只是维也纳切片，不是完整 1900 地球人生。离婚、再婚、同性关系、继承和住房容量已有第一版机制，但缺少玩家选择、完整法律程序、再婚/继承分配策略和大规模内容覆盖。

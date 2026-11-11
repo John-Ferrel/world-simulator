@@ -28,6 +28,7 @@ import livingConsequences from './pack-living-consequences.json' with { type: 'j
 import dramaticLives from './pack-dramatic-lives.json' with { type: 'json' };
 import dramaticOverhaul from './pack-dramatic-overhaul.json' with { type: 'json' };
 import earlyLifeDrama from './pack-early-life-drama.json' with { type: 'json' };
+import phase23HighStakes from './pack-phase23-high-stakes.json' with { type: 'json' };
 import collisionPowerLove from './pack-collision-power-love.json' with { type: 'json' };
 import collisionFamilyWar from './pack-collision-family-war.json' with { type: 'json' };
 import collisionLuckCraft from './pack-collision-luck-craft.json' with { type: 'json' };
@@ -77,6 +78,7 @@ export const GENERATED_STATE_PACKS: StatePack[] = [
   dramaticLives,
   dramaticOverhaul,
   earlyLifeDrama,
+  phase23HighStakes,
 ] as unknown as StatePack[];
 
 export const GENERATED_STATES: StateDefinition[] = GENERATED_STATE_PACKS.flatMap(

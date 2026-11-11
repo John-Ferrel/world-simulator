@@ -10,6 +10,30 @@ type City = {
   major?: boolean;
 };
 
+type PoliticalLeader = { role: string; title: string; name: string };
+type PoliticalPolity = {
+  id: string;
+  name: string;
+  englishName: string;
+  kind: string;
+  capital: string;
+  government: string;
+  leaders: PoliticalLeader[];
+  approximate?: boolean;
+  notes?: string;
+  color: string;
+};
+type PoliticalSnapshot = {
+  date: { year: number; month: number };
+  polities: PoliticalPolity[];
+  viennaPolity?: PoliticalPolity;
+  map: Record<
+    string,
+    { iso: string; polityId: string; name: string; color: string; approximate: boolean; capital: string }
+  >;
+  note: string;
+};
+
 const W = 720;
 const H = 360;
 
@@ -80,24 +104,30 @@ function settlementFor(locationId?: string): string | undefined {
   return undefined;
 }
 
-function placeForSettlement(settlementId?: string): string | undefined {
-  return CITIES.find((city) => city.id === settlementId)?.placeId;
-}
-
 export default function WorldMap({
   people,
   selectedId,
   activePlace,
   onPlace,
+  politicalWorld,
+  year,
 }: {
   people: { id: string; locationId: string; name: string; died?: unknown }[];
   selectedId: string | null;
   activePlace: string | null;
   onPlace: (id: string) => void;
+  politicalWorld?: PoliticalSnapshot;
+  year?: number;
 }) {
   const [features, setFeatures] = useState<GeoFeature[]>([]);
   const [failed, setFailed] = useState(false);
-  const [view, setView] = useState({ cx: project([16.3738, 48.2082])[0], cy: project([16.3738, 48.2082])[1], zoom: 2.35 });
+  const [hoveredIso, setHoveredIso] = useState<string | null>(null);
+  const [pinnedIso, setPinnedIso] = useState<string | null>(null);
+  const [view, setView] = useState({
+    cx: project([16.3738, 48.2082])[0],
+    cy: project([16.3738, 48.2082])[1],
+    zoom: 2.35,
+  });
   const drag = useRef<{ x: number; y: number; cx: number; cy: number } | null>(null);
   const svg = useRef<SVGSVGElement>(null);
 
@@ -116,7 +146,14 @@ export default function WorldMap({
   const vw = W / view.zoom;
   const vh = H / view.zoom;
 
-  const paths = useMemo(() => features.map((feature) => ({ feature, d: featurePath(feature) })), [features]);
+  const paths = useMemo(
+    () =>
+      features.map((feature) => {
+        const iso = feature.properties?.id ?? '';
+        return { feature, d: featurePath(feature), entry: politicalWorld?.map[iso] };
+      }),
+    [features, politicalWorld],
+  );
   const graticule = useMemo(() => {
     const lines: { x1: number; y1: number; x2: number; y2: number; key: string }[] = [];
     for (let lon = -180; lon <= 180; lon += 30) {
@@ -129,6 +166,39 @@ export default function WorldMap({
     }
     return lines;
   }, []);
+
+  const legend = useMemo(() => {
+    if (!politicalWorld) return [];
+    const counts = new Map<string, number>();
+    for (const entry of Object.values(politicalWorld.map)) {
+      counts.set(entry.polityId, (counts.get(entry.polityId) ?? 0) + 1);
+    }
+    const ranked = [...counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([polityId, count]) => ({
+        polity: politicalWorld.polities.find((entry) => entry.id === polityId),
+        count,
+      }))
+      .filter(
+        (entry): entry is { polity: PoliticalPolity; count: number } => Boolean(entry.polity),
+      );
+    const current = politicalWorld.viennaPolity;
+    if (current && !ranked.some((entry) => entry.polity.id === current.id)) {
+      return [{ polity: current, count: 0 }, ...ranked.slice(0, 6)];
+    }
+    return ranked.slice(0, 7);
+  }, [politicalWorld]);
+
+  const activeIso = hoveredIso ?? pinnedIso;
+  const hoveredEntry = activeIso ? politicalWorld?.map[activeIso] : undefined;
+  const hoveredPolity = hoveredEntry
+    ? politicalWorld?.polities.find((polity) => polity.id === hoveredEntry.polityId)
+    : undefined;
+  const focusPolity = hoveredPolity ?? politicalWorld?.viennaPolity;
+  const focusLeader = focusPolity?.leaders.find((leader) => leader.role === 'head_of_state');
+  const focusGovernment = focusPolity?.leaders.find(
+    (leader) => leader.role === 'head_of_government',
+  );
 
   function focus(zoom: number, city?: City) {
     const [x, y] = project([city?.lon ?? 16.3738, city?.lat ?? 48.2082]);
@@ -168,7 +238,10 @@ export default function WorldMap({
   return (
     <div className="world-map">
       <div className="world-map-toolbar">
-        <span>真实地理 · 世界</span>
+        <span>
+          {politicalWorld ? `政治地图 · ${year ?? politicalWorld.date.year}` : '真实地理 · 世界'}
+          {politicalWorld && <small>近似政权归属</small>}
+        </span>
         <div>
           <button type="button" onClick={() => setView({ cx: W / 2, cy: H / 2, zoom: 1 })}>
             全球
@@ -186,7 +259,11 @@ export default function WorldMap({
         className="world-map-svg"
         viewBox={`${view.cx - vw / 2} ${view.cy - vh / 2} ${vw} ${vh}`}
         role="img"
-        aria-label="真实世界地图：欧洲、地中海、城市与人物当前位置"
+        aria-label={
+          politicalWorld
+            ? '历史政治地图：政权归属叠层、城市与人物当前位置'
+            : '真实世界地图：欧洲、地中海、城市与人物当前位置'
+        }
         onWheel={onWheel}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -211,9 +288,23 @@ export default function WorldMap({
           </g>
         )}
         <g className="world-map-countries">
-          {paths.map(({ feature, d }) => (
-            <path key={feature.properties?.id ?? d.slice(0, 24)} d={d}>
-              <title>{feature.properties?.name ?? ''}</title>
+          {paths.map(({ feature, d, entry }) => (
+            <path
+              key={feature.properties?.id ?? d.slice(0, 24)}
+              d={d}
+              className={entry ? 'political' : undefined}
+              fill={entry?.color}
+              fillOpacity={entry ? 0.62 : undefined}
+              data-polity={entry?.polityId}
+              onMouseEnter={() => setHoveredIso(feature.properties?.id ?? null)}
+              onMouseLeave={() => setHoveredIso(null)}
+              onClick={() => setPinnedIso(feature.properties?.id ?? null)}
+            >
+              <title>
+                {entry
+                  ? `${entry.name}${entry.approximate ? '（近似）' : ''} · ${feature.properties?.name ?? ''}`
+                  : feature.properties?.name ?? ''}
+              </title>
             </path>
           ))}
         </g>
@@ -247,9 +338,68 @@ export default function WorldMap({
           })}
         </g>
       </svg>
+      {politicalWorld && (
+        <div className="world-map-legend">
+          {legend.map(({ polity }) => (
+            <button
+              key={polity.id}
+              type="button"
+              className="world-map-legend-item"
+              onMouseEnter={() => {
+                const iso = Object.values(politicalWorld.map).find(
+                  (entry) => entry.polityId === polity.id,
+                )?.iso;
+                if (iso) setHoveredIso(iso);
+              }}
+              onMouseLeave={() => setHoveredIso(null)}
+              onClick={() => {
+                const iso = Object.values(politicalWorld.map).find(
+                  (entry) => entry.polityId === polity.id,
+                )?.iso;
+                if (iso) setPinnedIso(iso);
+              }}
+            >
+              <span style={{ background: polity.color }} />
+              {polity.name}
+            </button>
+          ))}
+        </div>
+      )}
+      {politicalWorld && focusPolity && (
+        <div className="world-map-polity-card" data-polity-card={focusPolity.id}>
+          <div className="world-map-polity-head">
+            <strong>{focusPolity.name}</strong>
+            <small>{focusPolity.englishName}</small>
+          </div>
+          <div className="world-map-polity-meta">
+            <span>{focusPolity.capital}</span>
+            <span>{focusPolity.approximate ? '近似边界' : '政权归属'}</span>
+          </div>
+          <p>{focusPolity.government}</p>
+          <div className="world-map-polity-leaders">
+            {focusLeader && (
+              <span>
+                {focusLeader.title}：{focusLeader.name}
+              </span>
+            )}
+            {focusGovernment && (
+              <span>
+                {focusGovernment.title}：{focusGovernment.name}
+              </span>
+            )}
+          </div>
+          {focusPolity.notes && <small>{focusPolity.notes}</small>}
+        </div>
+      )}
       <div className="world-map-caption">
         <span>{personCity ? `人物在 ${personCity.name}` : '人物位置未知'}</span>
-        <span>{activeCity ? `查看 ${activeCity.name}` : '点击维也纳 / 克洛斯特新堡'}</span>
+        <span>
+          {politicalWorld
+            ? `${politicalWorld.note.slice(0, 42)}…`
+            : activeCity
+              ? `查看 ${activeCity.name}`
+              : '点击维也纳 / 克洛斯特新堡'}
+        </span>
       </div>
       <div className="world-map-zoom">
         <button type="button" onClick={() => setView((v) => ({ ...v, zoom: Math.min(12, v.zoom * 1.25) }))}>

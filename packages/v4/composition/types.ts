@@ -133,6 +133,8 @@ export type KernelVariantWhen = {
 export type KernelOutcome = {
   id: string;
   weight: number;
+  /** Short player-facing title for this specific outcome. */
+  title?: string;
   /** Role tokens such as {subject}, {teacher}; optional {milieu}/{context}. */
   text: string;
   effects: EventEffect[];
@@ -197,6 +199,8 @@ export type PlotKernel = {
   /** Scheduling weight among eligible ordinary scenes. Defaults to 1. */
   weight?: number;
   cooldownYears?: number;
+  /** A revelation/unique incident resolves at most once for one person. */
+  oncePerPerson?: boolean;
   significance?: number;
   task?: GeneratedTaskMeta;
   /** Optional subject occupation restriction supplied by the milieu. */

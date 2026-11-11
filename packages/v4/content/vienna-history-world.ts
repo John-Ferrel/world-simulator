@@ -1,6 +1,7 @@
 import type { WorldState } from '../domain.js';
 import { applyViennaHistoricalPeople } from './vienna-history-people.js';
 import { seedViennaHistoricalProcesses } from './vienna-history-seed.js';
+import { ensureWorldNews } from '../world-news.js';
 
 /**
  * Install the curated 1912 historical layer into a new/loaded world. This is an
@@ -9,5 +10,5 @@ import { seedViennaHistoricalProcesses } from './vienna-history-seed.js';
  */
 export function applyViennaHistoricalWorld(world: WorldState): WorldState {
   const withPeople = applyViennaHistoricalPeople(world);
-  return seedViennaHistoricalProcesses(withPeople);
+  return ensureWorldNews(seedViennaHistoricalProcesses(withPeople));
 }

@@ -12,6 +12,8 @@
  * `outcomePolicy` / `choicePolicy` without changing the simulation contract.
  */
 
+import { eventTitleFor } from './event-titles.js';
+import { ensureWorldNews } from './world-news.js';
 import {
   addMonths,
   ageAt,
@@ -1071,6 +1073,7 @@ export function advanceV4Year(
   const repairStarted = Date.now();
   repairPartnerUniqueness(draft, target);
   repairMinorHouseholds(draft, target);
+  ensureWorldNews(draft, target);
   timings.repairs = Date.now() - repairStarted;
 
   assertWorldV4(draft);
@@ -1524,10 +1527,14 @@ function resolvedSceneHistory(world: WorldState): Map<string, number> {
   const history = new Map<string, number>();
   for (const scene of world.scenes) {
     if (scene.status !== 'resolved' || !isWorldDate(scene.date)) continue;
-    const key = sceneKey(scene.sceneId, scene.subjectId);
     const month = monthIndex(scene.date);
-    const previous = history.get(key);
-    if (previous === undefined || month > previous) history.set(key, month);
+    for (const key of [
+      sceneKey(scene.sceneId, scene.subjectId),
+      sceneKey(baseSceneId(scene.sceneId), scene.subjectId),
+    ]) {
+      const previous = history.get(key);
+      if (previous === undefined || month > previous) history.set(key, month);
+    }
   }
   return history;
 }
@@ -5673,7 +5680,6 @@ function buildIncidentTrace(
       participants.push({ personId, role, name: context.world.organizations[personId]!.name });
     }
   }
-  const agency = subject.agency?.summary ?? subject.lifeContract?.privateGoal;
   const interpolate = (value: string | undefined): string | undefined =>
     value === undefined
       ? undefined
@@ -5700,7 +5706,7 @@ function buildIncidentTrace(
       roles: [...subject.roles],
     },
     participants,
-    ...((outcome.trace?.motive ?? agency) ? { motive: outcome.trace?.motive ?? agency } : {}),
+    ...(outcome.trace?.motive ? { motive: outcome.trace.motive } : {}),
     ...(outcome.trace?.conflict ? { conflict: outcome.trace.conflict } : {}),
     ...(outcome.trace?.response ? { response: outcome.trace.response } : {}),
     effects: effects.map((effect) => ({
@@ -5750,7 +5756,7 @@ function resolveScene(
     subjectId: subject.id,
     participants: buildParticipants(context.world, subject, roles),
     action: `${definition.id}/${outcome.id}`,
-    title: definition.title,
+    title: eventTitleFor(`${definition.id}/${outcome.id}`, definition.title, outcome.title),
     tags: definition.tags,
     historyRefs,
     causes: causeEventId ? [causeEventId] : [],
@@ -6021,7 +6027,7 @@ function stateTickFact(
       subjectId: subject.id,
       participants,
       action,
-      title: definition.title,
+      title: eventTitleFor(action, definition.title),
       tags: [definition.id, ...definition.tags, 'state', 'state_tick'],
       causes: [],
       effects: bindStateEffectsToInstance(effects, instance),
@@ -6429,7 +6435,7 @@ function runStateReactionsInner(context: EngineContext, trigger: EventFact, dept
             ),
           ],
           action: `state_reaction:${definition.id}/${reaction.id}`,
-          title: definition.title,
+          title: eventTitleFor(`state_reaction:${definition.id}/${reaction.id}`, definition.title),
           tags: [
             definition.id,
             ...definition.tags,

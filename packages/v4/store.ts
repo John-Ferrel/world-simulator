@@ -2,8 +2,9 @@ import { readFile } from 'node:fs/promises';
 import { migrate as migrateBase, pool } from '../storage/index.js';
 import type { EventFact, Household, Person, Place, Relation, WorldState } from './domain.js';
 import { defaultMacroState, type MacroState } from './macro.js';
+import type { WorldNewsItem } from './world-news.js';
 
-const V4_MIGRATION_VERSION = 8;
+const V4_MIGRATION_VERSION = 9;
 
 /**
  * Apply the v4 schema. The schema is additive and independent of the archived
@@ -31,6 +32,7 @@ export async function migrateV4(): Promise<void> {
       6: '006_v4_runtime_content.sql',
       7: '007_v4_macro_world_year.sql',
       8: '008_v4_states.sql',
+      9: '009_v4_world_news.sql',
     };
     for (let version = Math.max(3, latest + 1); version <= V4_MIGRATION_VERSION; version += 1) {
       const file = migrationFiles[version];
@@ -138,6 +140,7 @@ export async function loadV4World(worldId: string): Promise<WorldState | undefin
     scenes,
     events,
     states,
+    news,
   ] = await Promise.all([
     rows<any>('v4_places', worldId),
     rows<any>('v4_households', worldId),
@@ -151,6 +154,7 @@ export async function loadV4World(worldId: string): Promise<WorldState | undefin
     rows<any>('v4_scenes', worldId),
     rows<any>('v4_events', worldId),
     rows<any>('v4_states', worldId),
+    rows<any>('v4_world_news', worldId),
   ]);
   const byId = <T extends { id: string }>(values: T[]) =>
     Object.fromEntries(values.map((value) => [value.id, value]));
@@ -176,6 +180,9 @@ export async function loadV4World(worldId: string): Promise<WorldState | undefin
     events: events.sort(
       (a, b) =>
         (a.date?.year ?? 0) - (b.date?.year ?? 0) || (a.date?.month ?? 0) - (b.date?.month ?? 0),
+    ),
+    news: (news as WorldNewsItem[]).sort(
+      (a, b) => b.date.year - a.date.year || b.date.month - a.date.month,
     ),
     pressures: meta.pressures,
     ...(meta.macro ? { macro: meta.macro } : {}),
@@ -767,6 +774,7 @@ export async function seedV4World(world: WorldState): Promise<V4WorldMeta> {
     );
     await writeEntities(client, world);
     await writeFacts(client, world);
+    await writeNews(client, world);
     await client.query('COMMIT');
     return (await v4WorldMeta(world.id))!;
   } catch (error) {
@@ -836,6 +844,23 @@ async function writeFacts(client: any, world: WorldState) {
   );
 }
 
+async function writeNews(client: any, world: WorldState) {
+  const news = world.news ?? [];
+  if (news.length === 0) return;
+  await client.query(
+    `INSERT INTO v4_world_news(world_id,id,date_year,date_month,scope,category,provenance,title,summary,payload)
+     SELECT $1, item->>'id', (item->'date'->>'year')::int, (item->'date'->>'month')::int,
+            item->>'scope', item->>'category', item->>'provenance', item->>'title',
+            item->>'summary', item
+     FROM jsonb_array_elements($2::jsonb) AS item
+     ON CONFLICT(world_id,id) DO UPDATE SET
+       date_year=EXCLUDED.date_year, date_month=EXCLUDED.date_month,
+       scope=EXCLUDED.scope, category=EXCLUDED.category, provenance=EXCLUDED.provenance,
+       title=EXCLUDED.title, summary=EXCLUDED.summary, payload=EXCLUDED.payload`,
+    [world.id, JSON.stringify(news)],
+  );
+}
+
 export async function saveV4World(
   world: WorldState,
   expectedRevision: number,
@@ -869,6 +894,7 @@ export async function saveV4World(
     );
     await writeEntities(client, world);
     await writeFacts(client, world);
+    await writeNews(client, world);
     await client.query('COMMIT');
     return revision;
   } catch (error) {
@@ -956,6 +982,26 @@ export async function recentV4Events(worldId: string, limit = 40): Promise<Event
       [worldId, limit],
     )
   ).rows.map((row) => row.payload as EventFact);
+}
+
+export async function recentV4News(
+  worldId: string,
+  limit = 80,
+  scope?: 'global' | 'regional' | 'local',
+): Promise<WorldNewsItem[]> {
+  const capped = Math.max(1, Math.min(200, limit));
+  const params: any[] = [worldId, capped];
+  const scopeClause = scope ? ' AND scope=$3' : '';
+  if (scope) params.push(scope);
+  return (
+    await pool.query(
+      `SELECT payload FROM v4_world_news
+       WHERE world_id=$1${scopeClause}
+       ORDER BY date_year DESC, date_month DESC, id
+       LIMIT $2`,
+      params,
+    )
+  ).rows.map((row) => row.payload as WorldNewsItem);
 }
 
 export async function v4EventsForPerson(

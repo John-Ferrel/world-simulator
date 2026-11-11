@@ -1,8 +1,10 @@
 # v4 实现与验收报告
 
-日期：2026-11-09（滚动更新；最近一轮为 Phase 22）
+日期：2026-11-12（滚动更新；最近一轮为 Phase 23）
 范围：`simulator-1031` 断代重写的 Vienna 1912 垂直切片及其通用人生延伸。
 重要：本报告只记录 v4 实际运行过的证据。旧 v1–v3 的 318 项测试、长跑和备份恢复数字属于旧架构，不能替代 v4 验收。
+
+> 2026-11-12 Phase 23 更新：Blood, Desire & History。内容库 **119 states / 2,178 kernels / 35 packs**；新增 `pack-phase23-high-stakes`（18 kernels/2 states/72 outcomes/97 adaptive/15 checks/18 conditional/252 scenes）。事件 outcome title 进入 runtime；API 标题优先级修复；122 个旧内容标题 overlay；日志 3 行折叠 + 展开 + 细节。新增 `packages/v4/political-world/`：**93 polities / 33 tensions / 42 sources / 107 ISO**，1912/1918/1938/1945/1955/1991 快照，月粒度关键转折；历史地图用现代几何 + 政权归属叠层（近似）。新增 `packages/v4/world-news.ts` + `v4_world_news`：75 anchors / 30 ambient / 15 rumors，reference/simulation/ambient/rumor 四类 provenance；UI 世界公报。自然 A/B/C：64,259 events / 4,192 focal；**adult drama 95（3.07%）**；p23 focal 38（0.91%）；17/27 lives with adult drama；repeatRate **0.2258**；p23 world 502。浏览器 Phase23 test 4.1s；`pnpm test` **103 files / 588 pass / 37 skip（625）**；build 3.06s；35 packs validate。Critic 修订前 **Scene 26/30、Life 20/30**。完整报告见 [phase-23-report.md](phase-23-report.md)、[design](phase-23-design.md)、[dramatic content](phase-23-dramatic-content.md)、[political world](phase-23-political-world.md)、[historical geography](phase-23-historical-geography.md)、[world news](phase-23-world-news.md)、[playtests](phase-23-playtests.md)、[critique](phase-23-critique.md)。
 
 > 2026-11-09 Phase 22 更新：Creative Overhaul。内容库 **117 states / 2,160 kernels / 34 packs**；新增 `pack-dramatic-overhaul`（20 kernels/2 states/100 adaptive/20 checks/20 conditional/280 scenes）与 `pack-early-life-drama`（16/2/49/8/16/224），3 个早期 base scenes、4 个 base retrofit，`high_drama` ×1.9 / `drama` ×1.4。自然 A/B/C：62,267 events / 4,104 focal；总 drama 144（3.51%），其中 early 119、adult 25（0.61%）；early-life 1,283 world（2.06%）；4/4 新 State；repeatRate 0.2613。原创 200×240 分层 SVG 半身像替换 LPC。浏览器 Phase22 test 9.4s。Critic 修订前 Scene 24/30、Life 20/30；Visual Critic 4.5/10、4/10。完整报告见 [phase-22-report.md](phase-22-report.md)、[creative direction](phase-22-creative-direction.md)、[dramatic content](phase-22-dramatic-content.md)、[visual design](phase-22-visual-design.md)、[playtests](phase-22-playtests.md)、[critique](phase-22-critique.md)。
 
@@ -444,3 +446,22 @@ Vienna 1912 垂直切片现在是一个真实可运行的最小 v4：有持久�
 | 独立 Critic | 修订前 **Scene 24/30、Life 20/30**（Phase 21: 24/19）；3.51% 主要是 early-life、adult 0.61%、repeat 0.2613、role/POV/name bug、State 不可见、肖像同一张脸。完整见 `phase-22-critique.md` |
 
 未完成/限制：adult drama 0.61% 仍低；repeat 0.2613 高于 Phase 21；early 前重后轻；`p22-strange-midwife-face`/`p22-banker-novel`/`p22-cursed-lottery` 自然 0；全库 role/pronoun/name 未修；State 参数不可视；历史国界未做；没有玩家留存数据。不得把 117/2,160/34 或 3.51% total drama 当作“成年戏剧主纹理”已解决。
+
+## Phase 23（2026-11-12）— Blood, Desire & History
+
+完整报告：`docs/v4/phase-23-report.md`；设计：`phase-23-design.md`；戏剧：`phase-23-dramatic-content.md`；政治世界：`phase-23-political-world.md`；历史地理：`phase-23-historical-geography.md`；新闻：`phase-23-world-news.md`；试玩：`phase-23-playtests.md`；Critic：`phase-23-critique.md`。
+
+| 项 | 实测 |
+|---|---|
+| 内容规模 | **119 states / 2,178 kernels / 35 packs**；2,147 story shapes；44 high-similarity pairs |
+| High-Stakes Pack | 18 kernels / 2 states / 72 outcomes / 97 adaptive / 15 checks / 18 conditional / 252 scenes；72/72 outcome titles |
+| 事件标题 | `SceneOutcome.title` + API priority fix + 122 overlay + 9 fallback；日志折叠/展开/细节 |
+| 政治世界 | 93 polities / 33 tensions / 42 sources / 107 ISO；1912/1918/1938/1945/1955/1991；月粒度关键转折 |
+| 历史地图 | 现代几何 + 政权归属叠层；1912/1938/1940/1945/1955 政权变化；明确近似，不是测绘图 |
+| 世界新闻 | 75 anchors / 30 ambient / 15 rumors；`v4_world_news` 持久化；四类 provenance；UI 公报 |
+| 自然 A/B/C | 64,259 events / 4,192 focal；adult drama 95（3.07%）；p23 38（0.91%）；17/27 lives adult drama；repeat 0.2258；p23 world 502 |
+| 浏览器 | Phase23 test **1 passed（4.1s）**；1912 + 1940 截图 |
+| 测试 | `pnpm test` **103 files / 588 pass / 37 skip（625）**；build 3.06s；tsc 通过；35 packs validate |
+| 独立 Critic | 修订前 **Scene 26/30、Life 20/30**；指出标题进步、adult drama 仍窄、p23 分布集中/全部 1 月、premise asserted、gazette future date/category bug、政治面板静态、地图近似。修订响应见 critique |
+
+未完成/限制：adult drama 3.07% 仍不是多数人生（10/27 没有）；p23 top 3 占 65%；father-sells-daughter/dead-sister-returns 零出现；p23 focal 全部 1 月；bigamy 不是实际双重婚姻；personal→world echo 弱；pressures 不可见；地图是近似；1940 浏览器截图仍是 newborn + 参数行；没有真实玩家留存。不得把 3.07% 说成全部 Phase 23，也不得说 18/18 kernels/72/72 outcomes 可达。

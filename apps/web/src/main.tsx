@@ -170,6 +170,89 @@ type Chronicle = {
   text: string;
   sourceIds: string[];
 };
+type WorldNewsItem = {
+  id: string;
+  date: Date4;
+  scope: 'global' | 'regional' | 'local';
+  category: string;
+  title: string;
+  summary: string;
+  provenance: 'reference' | 'simulation' | 'ambient' | 'rumor';
+  reliability: 'confirmed' | 'reported' | 'rumor';
+  polityId?: string;
+  placeId?: string;
+  sourceUrls?: string[];
+  relatedEventIds?: string[];
+  tags?: string[];
+};
+type PoliticalLeader = {
+  role: string;
+  title: string;
+  name: string;
+  from?: number;
+  to?: number;
+  partyId?: string;
+  polityId?: string;
+  polityName?: string;
+};
+type PoliticalParty = {
+  id: string;
+  name: string;
+  englishName?: string;
+  ideology: string;
+  leader?: string;
+  influence: string;
+  polityId?: string;
+  polityName?: string;
+};
+type PoliticalTension = {
+  id: string;
+  title: string;
+  description: string;
+  severity: number;
+  region: string;
+};
+type PoliticalPolity = {
+  id: string;
+  name: string;
+  englishName: string;
+  kind: string;
+  capital: string;
+  government: string;
+  leaders: PoliticalLeader[];
+  parties: PoliticalParty[];
+  factions?: string[];
+  tensions: string[];
+  allies?: string[];
+  rivals?: string[];
+  isoCodes: string[];
+  color: string;
+  approximate?: boolean;
+  notes?: string;
+  sourceIds: string[];
+};
+type PoliticalSnapshot = {
+  date: Date4;
+  polities: PoliticalPolity[];
+  leaders: PoliticalLeader[];
+  parties: PoliticalParty[];
+  tensions: PoliticalTension[];
+  viennaPolity?: PoliticalPolity;
+  map: Record<
+    string,
+    {
+      iso: string;
+      polityId: string;
+      name: string;
+      color: string;
+      status: string;
+      approximate: boolean;
+      capital: string;
+    }
+  >;
+  note: string;
+};
+
 type World = {
   id: string;
   date: Date4;
@@ -186,6 +269,8 @@ type World = {
   places: { id: string; name: string; kind: string }[];
   organizations: { id: string; name: string; kind: string }[];
   recentEvents: LogEvent[];
+  news?: WorldNewsItem[];
+  politicalWorld?: PoliticalSnapshot;
   chronicle: Chronicle[];
   macro?: {
     developments?: WorldHistoricalDevelopment[];
@@ -337,6 +422,25 @@ function lifeChapter(age: number): string {
 function lifeSpanText(person: Pick<PersonSummary, 'born' | 'died'>): string {
   return `${shortDate(person.born)} — ${person.died ? shortDate(person.died) : '至今'}`;
 }
+
+const tagText: Record<string, string> = {
+  love: '爱情', desire: '欲望', betrayal: '背叛', ledger: '账本', secret: '秘密',
+  blackmail: '勒索', crime: '犯罪', fear: '恐惧', testimony: '证词', police: '警察',
+  lover: '情人', neighbor: '邻居', family: '家庭', debt: '债务', coercive_marriage: '逼婚',
+  generational: '代际', dark: '黑暗', warmth: '温暖', absurd: '荒诞', black_comedy: '黑色喜剧',
+  fame: '名声', rumor: '流言', mistaken_identity: '身份错认', newspaper: '报纸',
+  politics: '政治', repression: '镇压', secret_police: '秘密警察', fatherhood: '父职',
+  old_lover: '旧情人', trial: '审判', conspiracy: '阴谋', conman: '骗子', memory: '记忆',
+  guilt: '愧疚', obsession: '痴迷', stalker: '跟踪者', wedding: '婚礼', revenge: '复仇',
+  marriage: '婚姻', family_enemy: '家族仇敌', media: '媒体', impostor: '冒名',
+  hero: '英雄', war: '战争', coup: '政变', surveillance: '监视', border: '边境',
+  smuggling: '走私', violence: '暴力', medicine: '药品', labor: '劳工', strike: '罢工',
+  committee: '委员会', blacklist: '黑名单', funeral: '葬礼', lottery: '彩票', greed: '贪婪',
+  grief: '悲伤', reunion: '重逢', family_secret: '家族秘密', return: '归来',
+  good_deed: '善举', disaster: '灾难', irony: '反讽', duel: '决斗', misprint: '误印',
+  honor: '荣誉', bigamy: '重婚', double_life: '双重生活', collision: '撞破',
+  high_drama: '高戏剧', drama: '戏剧', public: '公开', scandal: '丑闻',
+};
 
 const eventKindText: Record<LogKind, string> = {
   birth: '出生',
@@ -1864,8 +1968,21 @@ function LogEntry({
   onOpenEvent: (id: string) => void;
 }) {
   const title = readableLogTitle(event);
+  const [expanded, setExpanded] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const isDeath = event.action === 'death' || event.action === 'statistical_death';
   const people = event.people ?? [];
+  const text = readableLogText(event);
+  const canExpand = text.length > 90;
+  const traceNotes = [
+    event.trace?.motive ? { label: '动机', text: event.trace.motive } : undefined,
+    event.trace?.conflict ? { label: '冲突', text: event.trace.conflict } : undefined,
+    event.trace?.response ? { label: '回应', text: event.trace.response } : undefined,
+  ].filter((note): note is { label: string; text: string } => Boolean(note));
+  const visibleTags = (event.tags ?? [])
+    .filter((tag) => !tag.startsWith('kernel:') && !tag.startsWith('context:') && !tag.startsWith('milieu:'))
+    .map((tag) => tagText[tag] ?? tag)
+    .slice(0, 6);
   const processRefs = event.processRefs ?? [];
   const historicalIds = new Set(
     (event.segments ?? [])
@@ -1896,7 +2013,7 @@ function LogEntry({
         {event.major && <span className="log-badge major-badge">重大</span>}
         {event.kind === 'history' && <span className="log-badge history-badge">历史</span>}
       </div>
-      <p className="log-text">
+      <p className={`log-text ${expanded ? 'expanded' : 'clamped'}`}>
         <SemanticText
           event={event}
           selectedId={selectedId}
@@ -1906,6 +2023,47 @@ function LogEntry({
           onPersonLeave={onPersonLeave}
         />
       </p>
+      {(canExpand || traceNotes.length > 0 || visibleTags.length > 0) && (
+        <div className="log-detail-actions">
+          {canExpand && (
+            <button type="button" className="log-detail-toggle" onClick={() => setExpanded(!expanded)}>
+              {expanded ? '收起正文' : '展开全文'}
+            </button>
+          )}
+          {(traceNotes.length > 0 || visibleTags.length > 0) && (
+            <button
+              type="button"
+              className="log-detail-toggle"
+              onClick={() => setDetailsOpen(!detailsOpen)}
+              aria-expanded={detailsOpen}
+            >
+              {detailsOpen ? '收起细节' : '更多细节'}
+            </button>
+          )}
+        </div>
+      )}
+      {detailsOpen && (
+        <div className="log-detail">
+          {traceNotes.length > 0 && (
+            <dl>
+              {traceNotes.map((note) => (
+                <div key={note.label}>
+                  <dt>{note.label}</dt>
+                  <dd>{note.text}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {visibleTags.length > 0 && (
+            <div className="log-tags">
+              {visibleTags.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </div>
+          )}
+          <small>事件档案 {event.id}</small>
+        </div>
+      )}
       {(event.placeName || people.length > 0) && (
         <div className="log-where">
           {event.placeName && <span>{event.placeName}</span>}
@@ -2246,11 +2404,14 @@ function EventDossierModal({
                     ))}
                   </ul>
                 )}
-                <p className="trace-mechanism">
-                  {event.trace.mechanism.kernelId
-                    ? `机制：${event.trace.mechanism.kernelId} / ${event.trace.mechanism.contextId} / ${event.trace.mechanism.milieuId}`
-                    : `机制：${event.trace.mechanism.sceneId}`}
-                </p>
+                <details className="trace-technical">
+                  <summary>技术细节</summary>
+                  <p className="trace-mechanism">
+                    {event.trace.mechanism.kernelId
+                      ? `机制：${event.trace.mechanism.kernelId} / ${event.trace.mechanism.contextId} / ${event.trace.mechanism.milieuId}`
+                      : `机制：${event.trace.mechanism.sceneId}`}
+                  </p>
+                </details>
               </section>
             )}
             {people.length > 0 && (
@@ -2471,6 +2632,235 @@ function isActiveHistoricalDevelopment(
   return development.status === 'active' && Boolean(development.historical);
 }
 
+
+const newsProvenanceText: Record<string, string> = {
+  reference: '历史参考',
+  simulation: '模拟事实',
+  ambient: '时代氛围',
+  rumor: '传闻',
+};
+const newsCategoryText: Record<string, string> = {
+  war: '战争',
+  diplomacy: '外交',
+  politics: '政治',
+  economy: '经济',
+  society: '社会',
+  culture: '文化',
+  science: '科学',
+  scandal: '丑闻',
+  disaster: '灾难',
+  other: '其他',
+};
+const newsScopeText: Record<string, string> = {
+  global: '全球',
+  regional: '地区',
+  local: '本地',
+};
+
+function WorldNewsPanel({ news, date }: { news: WorldNewsItem[]; date: Date4 }) {
+  const [scope, setScope] = useState<'all' | 'global' | 'regional' | 'local'>('all');
+  const [showAll, setShowAll] = useState(false);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const filtered = news
+    .filter((item) => scope === 'all' || item.scope === scope)
+    .filter(
+      (item) =>
+        item.date.year < date.year ||
+        (item.date.year === date.year && item.date.month <= date.month),
+    )
+    .slice()
+    .sort((a, b) => b.date.year - a.date.year || b.date.month - a.date.month)
+    .slice(0, showAll ? 40 : 7);
+  return (
+    <section className="gazette" aria-label="世界公报">
+      <div className="gazette-head">
+        <div>
+          <div className="gazette-kicker">WORLD GAZETTE</div>
+          <h3>世界公报</h3>
+        </div>
+        <span>{dateText(date)}</span>
+      </div>
+      <div className="gazette-filters" role="group" aria-label="新闻范围">
+        {(['all', 'global', 'regional', 'local'] as const).map((value) => (
+          <button
+            key={value}
+            type="button"
+            className={scope === value ? 'active' : undefined}
+            onClick={() => {
+              setScope(value);
+              setShowAll(false);
+            }}
+          >
+            {value === 'all' ? '全部' : newsScopeText[value]}
+          </button>
+        ))}
+      </div>
+      <div className="gazette-legend">
+        <span className="news-badge reference">历史参考</span>
+        <span className="news-badge simulation">模拟事实</span>
+        <span className="news-badge ambient">时代氛围</span>
+        <span className="news-badge rumor">传闻</span>
+      </div>
+      {filtered.length === 0 && <p className="muted">这个年代还没有留下新闻。</p>}
+      <div className="gazette-list">
+        {filtered.map((item) => {
+          const open = openId === item.id;
+          return (
+            <article key={item.id} className={`gazette-item ${open ? 'open' : ''}`}>
+              <div className="gazette-meta">
+                <time>{shortDate(item.date)}</time>
+                <span className={`news-badge ${item.provenance}`}>
+                  {newsProvenanceText[item.provenance] ?? item.provenance}
+                </span>
+                <span>{newsCategoryText[item.category] ?? item.category}</span>
+                <span>{newsScopeText[item.scope] ?? item.scope}</span>
+              </div>
+              <h4>{item.title}</h4>
+              <p className={open ? 'open' : 'clamped'}>{item.summary}</p>
+              <div className="gazette-actions">
+                <button type="button" className="log-detail-toggle" onClick={() => setOpenId(open ? null : item.id)}>
+                  {open ? '收起' : '展开'}
+                </button>
+                {open && item.sourceUrls && item.sourceUrls.length > 0 && (
+                  <a href={item.sourceUrls[0]} target="_blank" rel="noreferrer">
+                    来源
+                  </a>
+                )}
+                {open && item.relatedEventIds && item.relatedEventIds.length > 0 && (
+                  <span className="gazette-event-ref">关联事件 {item.relatedEventIds[0]}</span>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      {filtered.length >= 7 && (
+        <button type="button" className="link-button gazette-more" onClick={() => setShowAll(!showAll)}>
+          {showAll ? '只看最近' : '展开更早的新闻'}
+        </button>
+      )}
+      <p className="gazette-note">
+        历史参考来自公开资料；模拟事实来自已提交事件；时代氛围与传闻不改变世界状态。
+      </p>
+    </section>
+  );
+}
+
+const influenceText: Record<string, string> = {
+  ruling: '执政',
+  major: '主要',
+  opposition: '反对',
+  fringe: '边缘',
+  banned: '被禁',
+  underground: '地下',
+};
+const leaderRoleText: Record<string, string> = {
+  head_of_state: '国家元首',
+  head_of_government: '政府首脑',
+  foreign_minister: '外交',
+  party_leader: '党魁',
+  other: '要人',
+};
+
+function PoliticalPanel({ political }: { political?: PoliticalSnapshot }) {
+  if (!political) return <p className="muted">这个年份还没有政治世界资料。</p>;
+  const current = political.viennaPolity;
+  const currentLeaders = current
+    ? political.leaders.filter((leader) => leader.polityId === current.id)
+    : [];
+  const currentParties = current
+    ? political.parties.filter((party) => party.polityId === current.id)
+    : [];
+  const powerOrder = ['德意志', '俄罗斯', '苏联', '奥斯曼', '大英', '联合王国', '法国', '意大利', '美国', '日本', '塞尔维亚'];
+  const majorPowers = political.polities
+    .filter((polity) => polity.id !== current?.id)
+    .slice()
+    .sort((a, b) => {
+      const rank = (name: string) => {
+        const index = powerOrder.findIndex((token) => name.includes(token));
+        return index < 0 ? 99 : index;
+      };
+      return rank(a.name) - rank(b.name);
+    })
+    .slice(0, 6);
+  return (
+    <section className="political-panel" aria-label="政治世界">
+      <div className="section-head">
+        <h3>政治世界</h3>
+        <span>{political.date.year} · {political.polities.length} 个政权</span>
+      </div>
+      {current && (
+        <article className="political-current" data-polity={current.id}>
+          <div className="political-current-head">
+            <div>
+              <small>维也纳所属</small>
+              <h4>{current.name}</h4>
+              <span>{current.englishName}</span>
+            </div>
+            <span className="polity-swatch" style={{ background: current.color }} />
+          </div>
+          <p>{current.government}</p>
+          <div className="political-meta">
+            <span>首都 {current.capital}</span>
+            <span>{current.approximate ? '近似边界' : '政权归属'}</span>
+          </div>
+          <div className="political-leaders">
+            {currentLeaders.slice(0, 4).map((leader) => (
+              <div key={`${leader.role}-${leader.name}`}>
+                <small>{leaderRoleText[leader.role] ?? leader.role} · {leader.title}</small>
+                <strong>{leader.name}</strong>
+              </div>
+            ))}
+          </div>
+          <div className="political-parties">
+            {currentParties.slice(0, 5).map((party) => (
+              <span key={party.id} className={`party-chip ${party.influence}`}>
+                {party.name} · {influenceText[party.influence] ?? party.influence}
+              </span>
+            ))}
+          </div>
+          <div className="political-tensions">
+            {current.tensions.slice(0, 4).map((tension) => (
+              <span key={tension}>{tension}</span>
+            ))}
+          </div>
+        </article>
+      )}
+      <div className="political-powers">
+        <h4>列强与邻国</h4>
+        {majorPowers.map((polity) => {
+          const leader = political.leaders.find(
+            (entry) => entry.polityId === polity.id && entry.role === 'head_of_state',
+          );
+          return (
+            <article key={polity.id} className="political-power">
+              <span className="polity-swatch" style={{ background: polity.color }} />
+              <div>
+                <strong>{polity.name}</strong>
+                <small>{polity.government}</small>
+              </div>
+              <span>{leader?.name ?? polity.capital}</span>
+            </article>
+          );
+        })}
+      </div>
+      <div className="political-tension-list">
+        <h4>时代矛盾</h4>
+        {political.tensions.slice(0, 5).map((tension) => (
+          <article key={tension.id}>
+            <div>
+              <strong>{tension.title}</strong>
+              <span>{Math.round(tension.severity * 100)}%</span>
+            </div>
+            <p>{tension.description}</p>
+          </article>
+        ))}
+      </div>
+      <p className="political-note">{political.note}</p>
+    </section>
+  );
+}
+
 function WorldPane({
   world,
   activePlace,
@@ -2485,6 +2875,7 @@ function WorldPane({
   onSelect: (id: string) => void;
 }) {
   const [showAllChronicle, setShowAllChronicle] = useState(false);
+  const [worldTab, setWorldTab] = useState<'map' | 'news' | 'politics'>('map');
   const activeIsSettlement = activePlace === 'place-wien' || activePlace === 'place-klosterneuburg';
   const here = activePlace
     ? world.people.filter(
@@ -2509,12 +2900,29 @@ function WorldPane({
   return (
     <aside className="pane world-pane">
       <div className="pane-label">世界 · 维也纳</div>
+      <div className="world-tabs" role="tablist" aria-label="世界面板">
+        {(['map', 'news', 'politics'] as const).map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            role="tab"
+            aria-selected={worldTab === tab}
+            className={worldTab === tab ? 'active' : undefined}
+            onClick={() => setWorldTab(tab)}
+          >
+            {tab === 'map' ? '地图' : tab === 'news' ? '公报' : '政治'}
+          </button>
+        ))}
+      </div>
+      {worldTab === 'map' && (
       <div className="map-frame">
         <WorldMap
           people={world.people}
           selectedId={selectedId}
           activePlace={activePlace}
           onPlace={setActivePlace}
+          politicalWorld={world.politicalWorld}
+          year={world.date.year}
         />
         <div className="map-caption">
           {placeById[activePlace ?? '']?.name ??
@@ -2523,7 +2931,10 @@ function WorldPane({
               : '真实地理底图 · 点击维也纳或克洛斯特新堡查看在场的人')}
         </div>
       </div>
-      {activePlace && (
+      )}
+      {worldTab === 'news' && <WorldNewsPanel news={world.news ?? []} date={world.date} />}
+      {worldTab === 'politics' && <PoliticalPanel political={world.politicalWorld} />}
+      {worldTab === 'map' && activePlace && (
         <div className="place-people">
           <div className="place-people-head">
             <h3>{placeById[activePlace]?.name}</h3>

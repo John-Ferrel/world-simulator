@@ -974,6 +974,8 @@ export type IncidentTrace = {
 export type SceneOutcome = {
   id: string;
   weight: number;
+  /** Short player-facing title for this specific outcome. */
+  title?: string;
   /** The agent's own disposition chooses among available outcomes; weights are fallback. */
   conditions?: SceneCondition[];
   immediateText: string;
@@ -1142,6 +1144,8 @@ export type WorldState = {
   knowledge: Record<Id, Knowledge>;
   events: EventFact[];
   scenes: SceneInstance[];
+  /** Phase 23 world gazette; bounded and persisted separately from EventFact. */
+  news?: import('./world-news.js').WorldNewsItem[];
   /** Content can reference a small set of world-level pressures. */
   pressures: Record<string, number>;
   /** Phase 3 macro state. Optional so old archives and fixtures remain loadable. */

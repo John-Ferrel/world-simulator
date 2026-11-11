@@ -2289,3 +2289,502 @@ legend {
 .portrait .paper-doll {
   display: none;
 }
+
+/* ---------- Phase 23 event presentation ---------- */
+.log-entry .log-title {
+  font-family: Georgia, 'Noto Sans SC', 'Songti SC', 'Noto Serif CJK SC', serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #26251f;
+}
+.log-entry .log-title-button:hover {
+  color: #7a4f14;
+}
+.log-text.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.log-text.expanded {
+  display: block;
+}
+.log-detail-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 7px;
+}
+.log-detail-toggle {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #7a5b3c;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+.log-detail-toggle:hover {
+  color: #4e3a22;
+}
+.log-detail {
+  margin-top: 8px;
+  padding: 9px 12px;
+  border-left: 2px solid rgba(138, 91, 58, 0.35);
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--paper-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.log-detail dl {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 6px;
+}
+.log-detail dl > div {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 8px;
+}
+.log-detail dt {
+  color: #8a5b3a;
+}
+.log-detail dd {
+  margin: 0;
+}
+.log-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 5px;
+}
+.log-tags span {
+  border: 1px solid rgba(37, 37, 31, 0.16);
+  border-radius: 10px;
+  padding: 0 7px;
+  font-size: 10px;
+}
+.log-detail small {
+  color: var(--faint);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Phase 23 world tabs, gazette and political panel ---------- */
+.world-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+.world-tabs button {
+  background: none;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  color: var(--faint);
+  padding: 5px 12px 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.world-tabs button:hover {
+  color: var(--accent);
+}
+.world-tabs button.active {
+  color: var(--accent);
+  border-color: var(--line);
+  background: rgba(200, 164, 92, 0.06);
+}
+.world-map-toolbar > span small {
+  margin-left: 7px;
+  color: var(--faint);
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+.world-map-countries path.political {
+  stroke: rgba(210, 190, 150, 0.22);
+  stroke-width: 0.5;
+  transition: filter 0.15s ease;
+}
+.world-map-countries path.political:hover {
+  filter: brightness(1.25);
+}
+.world-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 9px;
+  padding: 5px 8px;
+  border-top: 1px solid var(--line);
+}
+.world-map-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: 9px;
+  padding: 0;
+}
+.world-map-legend-item:hover {
+  color: var(--ink);
+}
+.world-map-legend-item span {
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  display: inline-block;
+}
+.world-map-polity-card {
+  padding: 8px 10px 9px;
+  border-top: 1px solid var(--line);
+  background: rgba(8, 14, 11, 0.6);
+}
+.world-map-polity-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.world-map-polity-head strong {
+  color: var(--accent);
+  font-family: Georgia, 'Noto Sans SC', serif;
+  font-size: 13px;
+}
+.world-map-polity-head small {
+  color: var(--faint);
+  font-size: 9px;
+}
+.world-map-polity-meta {
+  display: flex;
+  gap: 10px;
+  margin: 2px 0 4px;
+  color: var(--faint);
+  font-size: 9px;
+}
+.world-map-polity-card p {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.55;
+  margin-bottom: 4px;
+}
+.world-map-polity-leaders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 12px;
+  color: var(--ink);
+  font-size: 9.5px;
+}
+.world-map-polity-card > small {
+  display: block;
+  margin-top: 4px;
+  color: var(--faint);
+  font-size: 8.5px;
+  line-height: 1.45;
+}
+
+.gazette {
+  padding: 10px 18px 22px;
+}
+.gazette-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 7px;
+  border-bottom: 2px solid rgba(200, 164, 92, 0.32);
+}
+.gazette-kicker {
+  color: var(--faint);
+  font-size: 8px;
+  letter-spacing: 0.28em;
+}
+.gazette-head h3 {
+  color: var(--accent);
+  font-family: Georgia, 'Noto Sans SC', 'Songti SC', serif;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  margin-top: 2px;
+}
+.gazette-head > span {
+  color: var(--faint);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.gazette-filters {
+  display: flex;
+  gap: 5px;
+  margin: 8px 0 6px;
+}
+.gazette-filters button {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--faint);
+  padding: 2px 8px;
+  font-size: 10px;
+}
+.gazette-filters button.active {
+  border-color: rgba(200, 164, 92, 0.55);
+  color: var(--accent);
+  background: rgba(200, 164, 92, 0.06);
+}
+.gazette-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.news-badge {
+  display: inline-block;
+  border: 1px solid var(--line);
+  padding: 0 5px;
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  line-height: 1.55;
+}
+.news-badge.reference {
+  color: #c9a86a;
+  border-color: rgba(201, 168, 106, 0.35);
+}
+.news-badge.simulation {
+  color: #9fb08a;
+  border-color: rgba(159, 176, 138, 0.35);
+}
+.news-badge.ambient {
+  color: #8e998b;
+}
+.news-badge.rumor {
+  color: #b07d72;
+  border-color: rgba(176, 125, 114, 0.35);
+}
+.gazette-list {
+  display: flex;
+  flex-direction: column;
+}
+.gazette-item {
+  padding: 9px 0 10px;
+  border-bottom: 1px dotted var(--line);
+}
+.gazette-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 8px;
+  color: var(--faint);
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+}
+.gazette-meta time {
+  color: #b08a5a;
+}
+.gazette-item h4 {
+  color: var(--ink);
+  font-family: Georgia, 'Noto Sans SC', 'Songti SC', serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 4px 0 2px;
+}
+.gazette-item p {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.gazette-item p.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.gazette-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 3px;
+}
+.gazette-actions a {
+  color: #9fb08a;
+  font-size: 10px;
+}
+.gazette-event-ref {
+  color: var(--faint);
+  font-size: 9px;
+}
+.gazette-more {
+  margin-top: 8px;
+}
+.gazette-note {
+  margin-top: 10px;
+  color: var(--faint);
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.political-panel {
+  padding: 10px 18px 22px;
+}
+.political-current {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(200, 164, 92, 0.25);
+  background: rgba(200, 164, 92, 0.04);
+}
+.political-current-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.political-current-head small {
+  color: var(--faint);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+.political-current-head h4 {
+  color: var(--accent);
+  font-family: Georgia, 'Noto Sans SC', serif;
+  font-size: 20px;
+  font-weight: 500;
+  margin: 2px 0;
+}
+.political-current-head span {
+  color: var(--faint);
+  font-size: 9px;
+}
+.polity-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  flex: 0 0 auto;
+}
+.political-current > p {
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.65;
+  margin: 6px 0;
+}
+.political-meta {
+  display: flex;
+  gap: 12px;
+  color: var(--faint);
+  font-size: 9px;
+}
+.political-leaders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 12px;
+  margin: 8px 0;
+}
+.political-leaders div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.political-leaders small {
+  color: var(--faint);
+  font-size: 8.5px;
+}
+.political-leaders strong {
+  color: var(--ink);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+.political-parties,
+.political-tensions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+.party-chip {
+  border: 1px solid var(--line);
+  padding: 0 6px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.7;
+}
+.party-chip.ruling {
+  border-color: rgba(200, 164, 92, 0.45);
+  color: var(--accent);
+}
+.party-chip.banned {
+  color: #9b6b62;
+  text-decoration: line-through;
+}
+.political-tensions span {
+  color: #b08a5a;
+  font-size: 9px;
+}
+.political-powers {
+  margin-top: 14px;
+}
+.political-powers h4,
+.political-tension-list h4 {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  margin-bottom: 5px;
+}
+.political-power {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px dotted var(--line);
+}
+.political-power > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.political-power strong {
+  color: var(--ink);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+.political-power small {
+  color: var(--faint);
+  font-size: 8.5px;
+  line-height: 1.4;
+}
+.political-power > span:last-child {
+  color: var(--muted);
+  font-size: 9px;
+  text-align: right;
+  max-width: 42%;
+}
+.political-tension-list {
+  margin-top: 14px;
+}
+.political-tension-list article {
+  padding: 6px 0;
+  border-bottom: 1px dotted var(--line);
+}
+.political-tension-list article > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.political-tension-list strong {
+  color: #c9a86a;
+  font-size: 10.5px;
+  font-weight: 500;
+}
+.political-tension-list span {
+  color: var(--faint);
+  font-size: 9px;
+}
+.political-tension-list p {
+  color: var(--muted);
+  font-size: 9.5px;
+  line-height: 1.6;
+  margin-top: 2px;
+}
+.political-note {
+  margin-top: 10px;
+  color: var(--faint);
+  font-size: 9px;
+  line-height: 1.6;
+}

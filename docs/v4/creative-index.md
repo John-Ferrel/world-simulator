@@ -1,6 +1,6 @@
 # Creative Index
 
-Generated: 2026-11-08T18:32:23.460Z
+Generated: 2026-11-11T19:30:07.237Z
 
 A deterministic author/editor aid over the runtime content. It is not the registry and does not change runtime behavior.
 
@@ -18,16 +18,16 @@ pnpm v4:creative-index -- --pack packages/v4/content/states/generated/pack-<name
 
 | Metric | Count |
 |---|---:|
-| States | 117 |
-| Kernels | 2160 |
-| Generated packs | 34 |
-| Creative records | 2160 |
+| States | 119 |
+| Kernels | 2178 |
+| Generated packs | 35 |
+| Creative records | 2178 |
 
 ## Stage coverage
 
 | Stage | Kernels |
 |---|---:|
-| adulthood | 1807 |
+| adulthood | 1825 |
 | adolescence | 171 |
 | childhood | 92 |
 | elderhood | 78 |
@@ -37,45 +37,45 @@ pnpm v4:creative-index -- --pack packages/v4/content/states/generated/pack-<name
 
 | Motif | Kernels |
 |---|---:|
-| death | 274 |
-| travel | 245 |
-| debt | 210 |
-| secret | 191 |
-| marriage | 158 |
-| migration | 131 |
-| inheritance | 116 |
-| mistaken_identity | 103 |
-| love | 99 |
+| death | 278 |
+| travel | 249 |
+| debt | 222 |
+| secret | 201 |
+| marriage | 161 |
+| migration | 133 |
+| inheritance | 121 |
+| love | 105 |
+| mistaken_identity | 105 |
 | birth | 74 |
-| luck | 70 |
-| betrayal | 64 |
-| escape | 59 |
-| supernatural | 54 |
-| revolution | 26 |
+| luck | 73 |
+| betrayal | 68 |
+| escape | 60 |
+| supernatural | 56 |
+| revolution | 29 |
 
 ## Tone distribution
 
 | Tone | Kernels |
 |---|---:|
-| dark | 946 |
-| historical | 788 |
-| warm | 646 |
+| dark | 964 |
+| historical | 794 |
+| warm | 653 |
 | gritty | 347 |
-| political | 191 |
-| suspense | 179 |
-| melancholy | 163 |
+| political | 195 |
+| suspense | 182 |
+| melancholy | 165 |
 | everyday | 146 |
-| absurd | 85 |
-| romantic | 82 |
+| absurd | 89 |
+| romantic | 88 |
 | religious | 73 |
-| triumphant | 48 |
+| triumphant | 50 |
 | comic | 40 |
 | eerie | 35 |
 | erotic | 27 |
 
 ## High-similarity pairs
 
-Pairs >= 0.20: **45**. These are candidates for an editor, not automatic rejects.
+Pairs >= 0.20: **44**. These are candidates for an editor, not automatic rejects.
 
 | Score | A | B |
 |---:|---|---|
@@ -92,17 +92,17 @@ Pairs >= 0.20: **45**. These are candidates for an editor, not automatic rejects
 | 0.274 | 研讨课上的第七页 | 研讨课上的第二排 |
 | 0.267 | 给床上的老人翻身 | 给床上的老人翻个身 |
 | 0.266 | 名单上的空白 | 名单上的一道横线 |
-| 0.260 | 黎明前的手枪 | 黎明前的两把手枪 |
 | 0.257 | 半夜的敲门 | 半夜的敲门声 |
+| 0.257 | 黎明前的手枪 | 黎明前的两把手枪 |
 | 0.252 | 三个师傅，一双手 | 沿街敲门 |
 | 0.247 | 第二次戴上的戒指 | 旧戒指第二次戴上 |
-| 0.246 | 提前寄来的问话单 | 区里寄来的问话单 |
-| 0.243 | 车站长椅上的两只手套 | 公园长椅上的两只手套 |
-| 0.239 | 门口多出来的一双小鞋 | 门口多出来的一双鞋 |
+| 0.247 | 提前寄来的问话单 | 区里寄来的问话单 |
+| 0.244 | 车站长椅上的两只手套 | 公园长椅上的两只手套 |
 | 0.239 | 借书卡上的第三个名字 | 借书卡上的地址栏 |
-| 0.233 | 一张给熟人的椅子 | 档案室的空编制 |
+| 0.239 | 门口多出来的一双小鞋 | 门口多出来的一双鞋 |
 | 0.233 | 师傅留下的那把尺 | 师傅留下的那把刨子 |
-| 0.229 | 舞会上的手套 | 乐队奏到第三支曲子 |
+| 0.233 | 一张给熟人的椅子 | 档案室的空编制 |
+| 0.228 | 舞会上的手套 | 乐队奏到第三支曲子 |
 | 0.228 | 院子门口的石灰线 | 村口的石灰线 |
 | 0.227 | 股金簿上的最后一个名字 | 股金簿上的名字 |
 | 0.226 | 厨房桌上的第三副碗筷 | 星期天的第三副碗筷 |

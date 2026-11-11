@@ -821,6 +821,27 @@ for (const seed of seeds) {
         .map((candidate) => ({ id: candidate.id, title: candidate.title })),
       forkSignals: review.forkSignals,
     })),
+    news: (run.world.news ?? [])
+      .slice()
+      .sort((a, b) => b.date.year - a.date.year || b.date.month - a.date.month)
+      .slice(0, 80)
+      .map((item) => ({
+        id: item.id,
+        date: item.date,
+        scope: item.scope,
+        category: item.category,
+        provenance: item.provenance,
+        reliability: item.reliability,
+        title: item.title,
+        summary: item.summary,
+        relatedEventIds: item.relatedEventIds,
+      })),
+    newsProvenanceCounts: Object.fromEntries(
+      ['reference', 'simulation', 'ambient', 'rumor'].map((provenance) => [
+        provenance,
+        (run.world.news ?? []).filter((item) => item.provenance === provenance).length,
+      ]),
+    ),
     lives: lives.map((life) => ({
       role: life.role,
       id: life.person.id,
